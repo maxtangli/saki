@@ -7,20 +7,28 @@ A japanese-mahjong solver.
 
 ## todo
 
-rush 0 5/29 scribble
+rush 0 scribble 5/29 
 
 - [x] terms in english
 - [x] new a Tile
 - [x] Tile.toString()
 - [x] new a Hand
 
-rush 1 6/2 init pj
+rush 1 init pj 6/2 
 
 - [x] init pj
 - [x] refactor&test
 - [x] Hand.toString()
 
-rush 2 judge pinfu
+rush 2 judge pinfu 6/3 
 
-- [ ] planing
-- [ ]
+- [x] MeldTypes
+- [ ] Hand.getMeldCompositions()
+- [x] new a TileSequence
+
+rush 3 hand 6/4
+
+- [x] refactor Tile&TileList
+- [x] Enum
+- [x] Tile::FromString()
+- [ ] TileList
