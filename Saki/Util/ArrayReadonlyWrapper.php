@@ -5,7 +5,7 @@ class ArrayReadonlyWrapper implements \IteratorAggregate, \Countable, \ArrayAcce
 
     private $innerArray;
 
-    function __construct($innerArray) {
+    function __construct(array $innerArray) {
         $this->innerArray = $innerArray;
     }
 

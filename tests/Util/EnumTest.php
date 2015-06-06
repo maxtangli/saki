@@ -4,11 +4,51 @@ class EnumMockClass1 extends \Saki\Util\Enum {
     static function getValue2StringMap() {
         return [1 => 'EnumMockClass1',2 => 'EnumMockClass1.2'];
     }
+
+    static function getClassName() {
+        return __CLASS__;
+    }
+
+    /**
+     * @param $value
+     * @return EnumMockClass1
+     */
+    static function getInstance($value) {
+        return parent::getInstance($value);
+    }
+
+    /**
+     * @param string $s
+     * @return EnumMockClass1
+     */
+    static function fromString($s) {
+        return parent::fromString($s);
+    }
 }
 
 class EnumMockClass2 extends EnumMockClass1 {
     static function getValue2StringMap() {
         return [1 => 'EnumMockClass2'];
+    }
+
+    static function getClassName() {
+        return __CLASS__;
+    }
+
+    /**
+     * @param $value
+     * @return EnumMockClass2
+     */
+    static function getInstance($value) {
+        return parent::getInstance($value);
+    }
+
+    /**
+     * @param string $s
+     * @return EnumMockClass2
+     */
+    static function fromString($s) {
+        return parent::fromString($s);
     }
 }
 

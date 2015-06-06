@@ -1,6 +1,6 @@
 <?php
 
-namespace Saki\Tile;
+namespace Saki;
 
 /*
  Suit Dot / Bamboo / Character
@@ -56,7 +56,7 @@ class Tile {
 
     function __construct(TileType $tileType, $number = null) {
         if (!self::valid($tileType, $number)) {
-            throw new \InvalidArgumentException();
+            throw new \InvalidArgumentException("Invalid argument \$tileType[$tileType], \$number[$number].Remind that \$number should be a int.");
         }
         $this->tileType = $tileType;
         $this->number = $number;

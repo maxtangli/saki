@@ -2,24 +2,26 @@
 namespace Saki\Util;
 
 /**
- * @see http://www.phptherightway.com/pages/Design-Patterns.html
+ * @see origin version from http://www.phptherightway.com/pages/Design-Patterns.html
  * @package Saki
  */
-class Singleton {
-    /**
-     * Returns the *Singleton* instance of this class.
-     *
-     * @staticvar Singleton $instance The *Singleton* instances of this class.
-     *
-     * @return Singleton The *Singleton* instance.
-     */
-    public static function getInstance() {
-        static $instance = null;
-        if (null === $instance) {
-            $instance = new static();
-        }
+abstract class Singleton {
 
-        return $instance;
+    private static $instances;
+
+    /**
+     * @return object the singleton instance of class
+     */
+    static function getInstance() {
+        $class = static::getClassName();
+        if (!isset(self::$instances[$class])) {
+            self::$instances[$class] = new $class();
+        }
+        return self::$instances[$class];
+    }
+
+    private static function getClassName() {
+        return get_called_class();
     }
 
     /**

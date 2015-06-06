@@ -1,5 +1,5 @@
 <?php
-namespace Saki\Tile;
+namespace Saki;
 
 use Saki\Util\Enum;
 
@@ -31,7 +31,7 @@ class TileType extends Enum {
     }
 
     /**
-     * @param int $value
+     * @param $value
      * @return TileType
      */
     static function getInstance($value) {
@@ -45,7 +45,6 @@ class TileType extends Enum {
     static function fromString($s) {
         return parent::fromString($s);
     }
-
 
     function isSuit() {
         switch ($this->getValue()) {
