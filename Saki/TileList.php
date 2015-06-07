@@ -88,9 +88,13 @@ class TileList extends ArrayLikeObject {
     }
 
     function add(Tile $newTile) {
+        $this->addMany([$newTile]);
+    }
+
+    function addMany(array $tiles) {
         $this->assertWritable();
         $newTiles = $this->toArray();
-        $newTiles[] = $newTile;
+        $newTiles = array_merge($newTiles, $tiles);
         $this->setInnerArray($newTiles);
     }
 

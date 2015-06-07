@@ -56,10 +56,9 @@ rush 4 hand 6/7 4.0h
 rush 5 round 6/5 2.5h 6/7 1.5h
 - [x] Wall
 - [x] TurnManager
-- [ ] Round
+- [x] new Round
+- [ ] Round flow
 - [ ] simple UI: draw and discard
-- [ ] overall flow
-
 
 ## note
 

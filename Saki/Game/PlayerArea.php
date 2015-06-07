@@ -16,9 +16,9 @@ class PlayerArea {
     private $discardedTileList;
     private $exposedMeldList;
 
-    function __construct(TileOrderedList $onHandTileOrderedList, TileList $discardedTileList = null, MeldList $exposedMeldList = null) {
-        $this->onHandTileOrderedList = $onHandTileOrderedList;
-        $this->discardedTileList = $discardedTileList ?: TileList::fromString('', false);
+    function __construct(TileOrderedList $onHandTileOrderedList = null, TileList $discardedTileList = null, MeldList $exposedMeldList = null) {
+        $this->onHandTileOrderedList = $onHandTileOrderedList ? : TileOrderedList::fromString('');
+        $this->discardedTileList = $discardedTileList ?: TileList::fromString('');
         $this->exposedMeldList = $exposedMeldList ?: new MeldList([]);
     }
 
