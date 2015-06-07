@@ -12,7 +12,7 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
     /**
      * @return mixed[]
      */
-    public function toArray() {
+    function toArray() {
         return $this->innerArray;
     }
 

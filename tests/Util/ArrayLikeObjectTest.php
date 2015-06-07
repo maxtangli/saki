@@ -1,8 +1,14 @@
 <?php
 
-namespace ArrayReadonlyWrapperTest;
+namespace ArrayLikeObjectTest;
 
 use Saki\Util\ArrayLikeObject;
+
+class ArrayLikeObjectMock extends ArrayLikeObject{
+    public function setInnerArray($innerArray) {
+        parent::setInnerArray($innerArray);
+    }
+}
 
 class ArrayLikeObjectTest extends \PHPUnit_Framework_TestCase {
     function testReferenceModify() {

@@ -3,10 +3,10 @@
 use Saki\Tile;
 use Saki\TileOrderedList;
 
-class HandTest extends PHPUnit_Framework_TestCase {
+class PlayerAreaTest extends PHPUnit_Framework_TestCase {
 
     function testOverall() {
-        $h = new \Saki\Game\Hand(\Saki\TileOrderedList::fromString('123m123p123sEEECC', false));
+        $h = new \Saki\Game\PlayerArea(\Saki\TileOrderedList::fromString('123m123p123sEEECC', false));
 
         $h->discard(\Saki\Tile::fromString('1m'));
         $this->assertCount(1, $h->getDiscardedTileList());

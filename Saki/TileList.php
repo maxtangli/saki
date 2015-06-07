@@ -22,7 +22,7 @@ class TileList extends ArrayLikeObject {
      */
     static function fromString($s, $readonly = false) {
         if (!static::validString($s)) {
-            throw new \InvalidArgumentException();
+            throw new \InvalidArgumentException("Invalid \$s[$s].");
         }
 
         $tiles = [];

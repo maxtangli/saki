@@ -11,7 +11,7 @@ use Saki\TileOrderedList;
 use Saki\Tile;
 use Saki\Meld\MeldType;
 
-class Hand {
+class PlayerArea {
     private $onHandTileOrderedList;
     private $discardedTileList;
     private $exposedMeldList;

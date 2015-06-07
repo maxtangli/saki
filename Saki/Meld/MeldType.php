@@ -3,7 +3,6 @@ namespace Saki\Meld;
 
 use Saki\TileList;
 use Saki\Util\Singleton;
-use Saki\Meld\MeldType;
 
 abstract class MeldType extends Singleton {
     function __toString() {

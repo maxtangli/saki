@@ -7,8 +7,8 @@ A japanese-mahjong solver.
 
 ## bad smell
 
-- [ ] ==,===,array_search => custom equalsTo()
-- [ ] ugly const REGEX_XXX =>  class TileRegex
+- [ ] ==,===,array_search => custom equalsTo() ?
+- [ ] ugly const REGEX_XXX =>  class TileRegex ?
 - [ ] static factory method such as fromString($s) force subclasses keep constructor signature => ?
 
 ## todo
@@ -42,7 +42,7 @@ rush 3 refactor 6/4 5.5h 6/6 2.5h
 - [x] Singleton override return
 - [x] fulfil test cases
 
-rush 4 hand 6/7 3.0h
+rush 4 hand 6/7 4.0h
 - [x] simple UI: TileList
 - [x] simple UI: remove a Tile
 - [x] Hand
@@ -53,12 +53,13 @@ rush 4 hand 6/7 3.0h
 - [x] refactor Meld, replace inheritance with association
 - [ ] exposed/concealed triplet/kong
 
-rush 5 hand UI
-- [ ] simple UI: draw and discard
-
-rush 6 round 6/5 2.5h
-- [ ] overall flow
+rush 5 round 6/5 2.5h 6/7 1.5h
+- [x] Wall
+- [x] TurnManager
 - [ ] Round
+- [ ] simple UI: draw and discard
+- [ ] overall flow
+
 
 ## note
 
