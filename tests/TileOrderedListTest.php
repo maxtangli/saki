@@ -35,4 +35,13 @@ class TileOrderedListTest extends PHPUnit_Framework_TestCase {
             [['1m', 'C', '1s','3m', '1m', '2m', 'E', '1p',], '1123m1p1sEC'],  // sort number and type
         ];
     }
+
+    function testFromString() {
+        $l = \Saki\TileOrderedList::fromString('312m', false);
+        $this->assertInstanceOf('Saki\TileOrderedList', $l);
+    }
+
+    function testOrderAfterModify() {
+
+    }
 }

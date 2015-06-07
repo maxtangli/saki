@@ -40,12 +40,12 @@ abstract class Singleton {
     private function __clone() {
     }
 
-    /**
-     * Private unserialize method to prevent unserializing of the *Singleton*
-     * instance.
-     *
-     * @return void
-     */
-    private function __wakeup() {
-    }
+//    /**
+//     * Private unserialize method to prevent unserializing of the *Singleton*
+//     * instance.
+//     *
+//     * @return void
+//     */
+//    private function __wakeup() {
+//    }
 }

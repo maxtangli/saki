@@ -60,8 +60,8 @@ abstract class Enum implements IEnum {
     private function __clone() {
     }
 
-    private function __wakeup() {
-    }
+//    private function __wakeup() {
+//    }
 
     function __toString() {
         return static::getValue2StringMap()[$this->getValue()];

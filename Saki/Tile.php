@@ -25,6 +25,11 @@ Meld Sequence / (Exposed / Concealed) Triplet / (Exposed / Concealed) Kong
  */
 
 class Tile {
+    const REGEX_SUIT_NUMBER = '[1-9]';
+    const REGEX_SUIT_TILE = '('.self::REGEX_SUIT_NUMBER.TileType::REGEX_SUIT_TYPE.')';
+    const REGEX_HONOR_TILE = TileType::REGEX_HONOR_TYPE;
+    const REGEX_TILE = '('.self::REGEX_SUIT_TILE.'|'.self::REGEX_HONOR_TILE.')';
+
     static function valid(TileType $tileType, $number) {
         return ($tileType->isSuit() && self::validNumber($number))
         || ($tileType->isHonor() && $number === null);
@@ -35,9 +40,8 @@ class Tile {
     }
 
     static function validString($s) {
-        $len = strlen($s);
-        return ($len==1 && TileType::validString($s) && TileType::fromString($s)->isHonor())
-            || ($len==2 && TileType::validString($s[1]) && TileType::fromString($s[1])->isSuit() && self::validNumber(intval($s[0])));
+        $regex = '/^'.self::REGEX_TILE.'$/';
+        return preg_match($regex, $s)===1;
     }
 
     static function fromString($s) {

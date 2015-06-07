@@ -3,8 +3,13 @@ namespace Saki\Meld;
 
 use Saki\TileList;
 use Saki\Util\Singleton;
+use Saki\Meld\MeldType;
 
-abstract class MeldType extends Singleton{
+abstract class MeldType extends Singleton {
+    function __toString() {
+        return get_called_class();
+    }
+
     abstract function getTileCount();
 
     final function valid(TileList $tileList) {
@@ -16,4 +21,11 @@ abstract class MeldType extends Singleton{
     }
 
     abstract protected function validFaces(TileList $tileList);
+
+    /**
+     * @return MeldType
+     */
+    static function getInstance() {
+        return parent::getInstance();
+    }
 }

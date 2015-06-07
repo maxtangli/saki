@@ -1,20 +1,85 @@
 <?php
 namespace Saki\Meld;
 
-use Saki\Meld\MeldType;
-use Saki;
-use Saki\Util\ArrayReadonlyWrapper;
+use Saki\Tile;
+use Saki\Util\ArrayLikeObject;
 
-class MeldList extends ArrayReadonlyWrapper {
+class MeldList extends ArrayLikeObject {
+    static function validString($s) {
+        $meldStrings = !empty($s) ? explode(',', $s) : [];
+        foreach ($meldStrings as $meldString) {
+            if (!Meld::validString($meldString)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * @param string $s
+     * @return MeldList
+     */
+    static function fromString($s) {
+        if (!static::validString($s)) {
+            throw new \InvalidArgumentException();
+        }
+        $meldStrings = !empty($s) ? explode(',', $s) : [];
+        $melds = array_map(function ($s) {
+            return Meld::fromString($s);
+        }, $meldStrings);
+        return new static($melds);
+    }
+
     function __construct(array $melds) {
         parent::__construct($melds);
     }
 
-    function getFilteredMelds(MeldType $meldType) {
+    /**
+     * @return Meld[]
+     */
+    public function toArray() {
+        return parent::toArray();
+    }
 
+    /**
+     * @param int $offset
+     * @return Meld
+     */
+    function offsetGet($offset) {
+        return parent::offsetGet($offset);
+    }
+
+    function __toString() {
+        $meldStrings = array_map(function ($meld) {
+            return $meld->__toString();
+        }, $this->toArray());
+        return implode(',', $meldStrings);
+    }
+
+    function add(Meld $meld) {
+        $newMelds = $this->toArray();
+        $newMelds[] = $meld;
+        $this->setInnerArray($newMelds);
+    }
+
+    function canPlusKong(Tile $tile) {
+        foreach ($this as $k => $meld) {
+            if ($meld->canAddKong($tile)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     function plusKong(Tile $tile) {
-        $melds = $this->getInnerArray();
+        foreach ($this as $k => $meld) {
+            if ($meld->canAddKong($tile)) {
+                $newMelds = $this->toArray();
+                $newMelds[$k] = $meld->getAddedKongMeld($tile);
+                $this->setInnerArray($newMelds);
+                return;
+            }
+        }
+        throw new \InvalidArgumentException("Invalid plusKong \$tile[$tile] for MeldList \$this[$this]");
     }
 }

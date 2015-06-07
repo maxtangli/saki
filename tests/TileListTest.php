@@ -9,7 +9,7 @@ class TileListTest extends PHPUnit_Framework_TestCase {
      * @dataProvider validStringProvider
      */
     function testValidString($s, $expected) {
-        $this->assertEquals($expected, TileList::validString($s), "$s");
+        $this->assertSame($expected, TileList::validString($s), "\$s[$s]");
     }
 
     function validStringProvider() {
@@ -18,7 +18,7 @@ class TileListTest extends PHPUnit_Framework_TestCase {
             ['11m', true],
             ['E11mE', true],
             ['11sE12s123123sESWNCN', true],
-            ['', false],
+            ['', true],
             ['1m1', false],
         ];
     }
@@ -27,7 +27,7 @@ class TileListTest extends PHPUnit_Framework_TestCase {
      * @dataProvider fromStringProvider
      */
     function testFromString($s, $tiles) {
-        $this->assertEquals($tiles, iterator_to_array(TileList::fromString($s)->getIterator()));
+        $this->assertEquals($tiles, iterator_to_array(TileList::fromString($s, false)->getIterator()));
     }
 
     function fromStringProvider() {
@@ -43,7 +43,7 @@ class TileListTest extends PHPUnit_Framework_TestCase {
             Tile::fromString('1m'), Tile::fromString('1m'), Tile::fromString('1m'),
         ]);
         foreach ($h as $t) {
-            $this->assertEquals('1m', $t->__toString());
+            $this->assertSame('1m', $t->__toString());
         }
     }
 
@@ -63,7 +63,7 @@ class TileListTest extends PHPUnit_Framework_TestCase {
     function testToString(array $tileStrings, $expected) {
         $tiles = array_map(function($v){return Tile::fromString($v);}, $tileStrings);
         $h = new Saki\TileList($tiles);
-        $this->assertEquals($expected, $h->__toString());
+        $this->assertSame($expected, $h->__toString());
     }
 
     function toStringProvider() {
@@ -74,11 +74,31 @@ class TileListTest extends PHPUnit_Framework_TestCase {
         ];
     }
 
-    function testReplace() {
+    function testAdd() {
+        $l = TileList::fromString('1m', false);
+        $l->add(Tile::fromString('2m'));
+        $this->assertSame('12m', $l->__toString());
+    }
 
+    function testReplace() {
+        $l = TileList::fromString('11m', false);
+        $l->replace(Tile::fromString('1m'), Tile::fromString('2m'));
+        $this->assertSame('21m', $l->__toString());
     }
 
     function testRemove() {
+        $l = TileList::fromString('12322m', false);
+        $l->remove(Tile::fromString('2m'));
+        $this->assertEquals('1322m', $l->__toString());
+        $expectedKey = 0;
+        foreach($l as $k => $v) {
+            $this->assertEquals($expectedKey++, $k);
+        }
+    }
 
+    function testRemoveMany() {
+        $l = TileList::fromString('123242m', false);
+        $l->removeMany([Tile::fromString('2m'),Tile::fromString('2m')]);
+        $this->assertEquals('1342m', $l->__toString());
     }
 }

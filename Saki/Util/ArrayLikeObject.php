@@ -1,15 +1,18 @@
 <?php
 namespace Saki\Util;
 
-class ArrayReadonlyWrapper implements \IteratorAggregate, \Countable, \ArrayAccess {
+class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
 
     private $innerArray;
 
     function __construct(array $innerArray) {
-        $this->innerArray = $innerArray;
+        $this->setInnerArray($innerArray);
     }
 
-    protected function getInnerArray() {
+    /**
+     * @return mixed[]
+     */
+    public function toArray() {
         return $this->innerArray;
     }
 
@@ -25,11 +28,15 @@ class ArrayReadonlyWrapper implements \IteratorAggregate, \Countable, \ArrayAcce
         return isset($this->innerArray[$offset]);
     }
 
+    /**
+     * @param int $offset
+     * @return mixed
+     */
     function offsetGet($offset) {
         if ($this->offsetExists($offset)) {
             return $this->innerArray[$offset];
         } else {
-            throw new \InvalidArgumentException();
+            throw new \InvalidArgumentException("Invalid \$offset[$offset] for \$innerArray[$this->innerArray].");
         }
     }
 

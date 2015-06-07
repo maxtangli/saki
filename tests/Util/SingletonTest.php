@@ -1,5 +1,7 @@
 <?php
 
+namespace SingletonTest;
+
 class SingletonMockClass1 extends \Saki\Util\Singleton {
     static function getInstance() {
         return parent::getInstance();
@@ -21,12 +23,12 @@ class SingletonMockClass3 extends SingletonMockClass2 {
 
 }
 
-class SingletonTest extends PHPUnit_Framework_TestCase {
+class SingletonTest extends \PHPUnit_Framework_TestCase {
     function testInheritance() {
         $s1 = SingletonMockClass1::getInstance();
         $s2 = SingletonMockClass2::getInstance();
-        $this->assertInstanceOf('SingletonMockClass1', $s1);
-        $this->assertInstanceOf('SingletonMockClass2', $s2);
+        $this->assertInstanceOf('SingletonTest\SingletonMockClass1', $s1);
+        $this->assertInstanceOf('SingletonTest\SingletonMockClass2', $s2);
         $this->assertNotEquals($s1, $s2);
     }
 
@@ -38,6 +40,6 @@ class SingletonTest extends PHPUnit_Framework_TestCase {
 
     function testUnsafeInheritance() {
         $s3 = SingletonMockClass3::getInstance();
-        $this->assertInstanceOf('SingletonMockClass3', $s3);
+        $this->assertInstanceOf('SingletonTest\SingletonMockClass3', $s3);
     }
 }

@@ -15,6 +15,9 @@ class TileType extends Enum {
     const GREEN = 9;
     const WHITE = 10;
 
+    const REGEX_SUIT_TYPE = '[smp]';
+    const REGEX_HONOR_TYPE = '[ESWNCFP]';
+
     static function getValue2StringMap() {
         return [
             self::BAMBOO => 's',
