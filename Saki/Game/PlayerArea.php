@@ -7,7 +7,7 @@ use Saki\Meld\MeldList;
 use Saki\Meld\SequenceMeldType;
 use Saki\Meld\TripletMeldType;
 use Saki\TileList;
-use Saki\TileOrderedList;
+use Saki\TileSortedList;
 use Saki\Tile;
 use Saki\Meld\MeldType;
 
@@ -16,8 +16,8 @@ class PlayerArea {
     private $discardedTileList;
     private $exposedMeldList;
 
-    function __construct(TileOrderedList $onHandTileOrderedList = null, TileList $discardedTileList = null, MeldList $exposedMeldList = null) {
-        $this->onHandTileOrderedList = $onHandTileOrderedList ? : TileOrderedList::fromString('');
+    function __construct(TileSortedList $onHandTileOrderedList = null, TileList $discardedTileList = null, MeldList $exposedMeldList = null) {
+        $this->onHandTileOrderedList = $onHandTileOrderedList ? : TileSortedList::fromString('');
         $this->discardedTileList = $discardedTileList ?: TileList::fromString('');
         $this->exposedMeldList = $exposedMeldList ?: new MeldList([]);
     }
@@ -75,7 +75,7 @@ class PlayerArea {
         if ($targetMeld->valid($targetTileList)) {
             $meld = new Meld($targetTileList, $targetMeld);
             $onHandTileList->removeMany($onHandTiles);
-            $this->getExposedMeldList()->add($meld);
+            $this->getExposedMeldList()->insert($meld);
         } else {
             throw new \InvalidArgumentException("Invalid \$targetTileList[$targetTileList] for \$targetMeld[$targetMeld]");
         }

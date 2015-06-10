@@ -56,10 +56,12 @@ class MeldList extends ArrayLikeObject {
         return implode(',', $meldStrings);
     }
 
-    function add(Meld $meld) {
-        $newMelds = $this->toArray();
-        $newMelds[] = $meld;
-        $this->setInnerArray($newMelds);
+    /**
+     * @param Meld $meld
+     * @param int|null default is last pos
+     */
+    function insert(Meld $meld, $pos = null) {
+        parent::insert($meld, $pos);
     }
 
     function canPlusKong(Tile $tile) {

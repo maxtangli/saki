@@ -5,13 +5,13 @@ use Saki\Util\ArrayLikeObject;
 
 class TileList extends ArrayLikeObject {
     const REGEX_EMPTY_LIST = '()';
-    const REGEX_SUIT_TOKEN = '('.Tile::REGEX_SUIT_NUMBER.'+'.TileType::REGEX_SUIT_TYPE.')';
+    const REGEX_SUIT_TOKEN = '(' . Tile::REGEX_SUIT_NUMBER . '+' . TileType::REGEX_SUIT_TYPE . ')';
     const REGEX_HONOR_TOKEN = Tile::REGEX_HONOR_TILE;
-    const REGEX_NOT_EMPTY_LIST = '('.self::REGEX_SUIT_TOKEN.'|'.self::REGEX_HONOR_TOKEN.')+';
-    const REGEX_LIST = '('.self::REGEX_EMPTY_LIST.'|'.self::REGEX_NOT_EMPTY_LIST.')';
+    const REGEX_NOT_EMPTY_LIST = '(' . self::REGEX_SUIT_TOKEN . '|' . self::REGEX_HONOR_TOKEN . ')+';
+    const REGEX_LIST = '(' . self::REGEX_EMPTY_LIST . '|' . self::REGEX_NOT_EMPTY_LIST . ')';
 
     static function validString($s) {
-        $regex = '/^'.self::REGEX_LIST.'$/';
+        $regex = '/^' . self::REGEX_LIST . '$/';
         return preg_match($regex, $s) === 1;
     }
 
@@ -43,6 +43,7 @@ class TileList extends ArrayLikeObject {
     }
 
     private $readonly;
+
     function __construct(array $tiles, $readonly = false) {
         parent::__construct($tiles);
         $this->readonly = $readonly;
@@ -79,12 +80,19 @@ class TileList extends ArrayLikeObject {
      * @param Tile $tileOnHand
      * @return int first index of $tileOnHand
      */
-    function toTargetIndex(Tile $tileOnHand) {
-        $i = array_search($tileOnHand, $this->toArray());
-        if ($i === false) {
-            throw new \InvalidArgumentException("Invalid target \$tile[$tileOnHand] for TileList\$this[$this].");
-        }
-        return $i;
+    function toFirstIndex(Tile $tileOnHand) {
+        return parent::toFirstIndex($tileOnHand);
+    }
+
+    /**
+     * @param int $cutPos
+     * @return TileList[] list($beginTileList, $remainTileList)
+     */
+    function getCutInTwoTileLists($cutPos) {
+        $tiles = $this->toArray();
+        $tiles1 = array_slice($tiles, 0, $cutPos);
+        $tiles2 = array_slice($tiles, $cutPos);
+        return [new self($tiles1), new self($tiles2)];
     }
 
     function add(Tile $newTile) {
@@ -93,29 +101,24 @@ class TileList extends ArrayLikeObject {
 
     function addMany(array $tiles) {
         $this->assertWritable();
-        $newTiles = $this->toArray();
-        $newTiles = array_merge($newTiles, $tiles);
-        $this->setInnerArray($newTiles);
+        parent::pushMany($tiles);
     }
 
     function replace(Tile $onHandTile, Tile $newTile) {
         $this->assertWritable();
-        $targetIndex = $this->toTargetIndex($onHandTile);
-        $newTiles = $this->toArray();
-        $newTiles[$targetIndex] = $newTile;
-        $this->setInnerArray($newTiles);
+        $targetIndex = $this->toFirstIndex($onHandTile);
+        parent::replace($targetIndex, $newTile);
     }
 
     function remove(Tile $onHandTile) {
         $this->assertWritable();
-        $newTiles = $this->toArray();
-        $targetIndex = $this->toTargetIndex($onHandTile);
-        array_splice($newTiles, $targetIndex, 1);
-        $this->setInnerArray($newTiles);
+        $targetIndex = $this->toFirstIndex($onHandTile);
+        parent::remove($targetIndex);
     }
 
     function removeMany(array $onHandTiles) {
         $this->assertWritable();
+        // NOTE: seems low efficiency, refactor if it does
         foreach ($onHandTiles as $onHandTile) {
             $this->remove($onHandTile);
         }

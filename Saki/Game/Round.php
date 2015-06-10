@@ -4,23 +4,20 @@ namespace Saki\Game;
 
 class Round {
     private $wall;
-    private $players;
+    private $playerList;
     private $dealerPlayer;
     private $playerAreas;
     private $turnManager;
 
-    function __construct(Wall $wall, array $players, $dealerPlayer) {
-        if (array_search($dealerPlayer, $players, true) === false) {
-            throw new \InvalidArgumentException("Invalid \$dealerPlayer[$dealerPlayer].");
-        }
+    function __construct(Wall $wall, PlayerList $playerList, $dealerPlayer) {
         $this->wall = $wall;
-        $this->players = $players;
+        $this->playerList = $playerList;
         $this->dealerPlayer = $dealerPlayer;
 
         $this->playerAreas = array_map(function ($v) {
             return new PlayerArea();
-        }, $players);
-        $this->turnManager = new TurnManager($players, $dealerPlayer);
+        }, range(1, count($playerList)));
+        $this->turnManager = new TurnManager($playerList->toArray(), $dealerPlayer);
 
         $this->init();
     }
@@ -29,16 +26,8 @@ class Round {
         return $this->wall;
     }
 
-    function getPlayers() {
-        return $this->players;
-    }
-
-    function getPlayerCount() {
-        return count($this->getPlayers());
-    }
-
-    protected function getPlayerIndex($player) {
-        return array_search($player, $this->getPlayers(), true);
+    function getPlayerList() {
+        return $this->playerList;
     }
 
     function getDealerPlayer() {
@@ -57,7 +46,7 @@ class Round {
      * @return PlayerArea
      */
     function getPlayerArea($player) {
-        return $this->getPlayerAreas()[$this->getPlayerIndex($player)];
+        return $this->getPlayerAreas()[$this->getPlayerList()->toFirstIndex($player)];
     }
 
     function getTurnManager() {
@@ -66,14 +55,13 @@ class Round {
 
     private function init() {
         $wall = $this->getWall();
-        $playerCount = $this->getPlayerCount();
+        $playerCount = count($this->getPlayerList());
         $turnManager = $this->getTurnManager();
 
         for ($i = 0; $i < 4; ++$i) {
             for ($cnt = 0; $cnt < $playerCount; ++$cnt) {
-                $this->getPlayerArea($turnManager->getCurrentPlayer())->getOnHandTileOrderedList()->addMany(
-                    $wall->popMany(4)
-                );
+                $currentPlayerArea = $this->getPlayerArea($turnManager->getCurrentPlayer());
+                $currentPlayerArea->getOnHandTileOrderedList()->addMany($wall->popMany(4));
                 $turnManager->toNextPlayer(false);
             }
         }
@@ -84,6 +72,10 @@ class Round {
         $this->getPlayerArea($this->getDealerPlayer())->getOnHandTileOrderedList()->add(
             $wall->pop()
         );
+    }
+
+    function getCandidateCommand() {
+
     }
 }
 

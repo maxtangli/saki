@@ -10,6 +10,7 @@ A japanese-mahjong solver.
 - [ ] ==,===,array_search => custom equalsTo() ?
 - [ ] ugly const REGEX_XXX =>  class TileRegex ?
 - [ ] static factory method such as fromString($s) force subclasses keep constructor signature => ?
+- [x] ArrayObjectLike modify methods => protected methods in ArrayObjectLike
 
 ## todo
 
@@ -26,11 +27,12 @@ rush 1 init pj 6/2 1h
 - [x] refactor&test
 - [x] Hand.toString()
 
-rush 2 judge pinfu 6/3 3h
+rush 2 judge pinfu 6/3 3h 6/9 2h
 
 - [x] MeldTypes
-- [ ] Hand.getMeldCompositions()
-- [x] new a TileSequence
+- [x] new a TileSequence 
+- [x] Hand.getMeldCompositions()
+- [x] refactor ArrayLikeObject
 
 rush 3 refactor 6/4 5.5h 6/6 2.5h
 
@@ -42,7 +44,7 @@ rush 3 refactor 6/4 5.5h 6/6 2.5h
 - [x] Singleton override return
 - [x] fulfil test cases
 
-rush 4 hand 6/7 4.0h
+rush 4 hand 6/7 4h
 - [x] simple UI: TileList
 - [x] simple UI: remove a Tile
 - [x] Hand
@@ -51,22 +53,43 @@ rush 4 hand 6/7 4.0h
 - [x] MeldList fromString
 - [x] given a TileList, analyze MeldType
 - [x] refactor Meld, replace inheritance with association
-- [ ] exposed/concealed triplet/kong
 
-rush 5 round 6/5 2.5h 6/7 1.5h
+
+rush 5 round 6/5 2.5h 6/7 1.5h 6/9 1.0h
 - [x] Wall
 - [x] TurnManager
 - [x] new Round
 - [ ] Round flow
 - [ ] simple UI: draw and discard
 
-## note
+to be scheduled
+- [ ] exposed/concealed triplet/kong
 
-round start
+## note - ObjectLikeArray
 
-for one player
- show possible commands
-  chou etc.
-  discard 
- execute a command
- to next player 
+loop/count/offsetGet
+all convenient modify methods, not exposed to client
+
+
+## note - round flow
+
+round init
+
+getCandidateCommands. command.priority
+
+send candidate commands to each player
+
+wait for each player decide command
+get a command
+ if decidedCommand.priority is biggest || not exist other player undecided
+  go to next process
+ else
+  keep wait
+
+command.execute($round): modify round tiles
+
+if gameover: no more drawable or one win
+ send result
+ new next round
+else
+ goto get commands

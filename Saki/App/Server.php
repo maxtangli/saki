@@ -3,7 +3,7 @@
 namespace Saki\App;
 
 use Saki\Tile;
-use Saki\TileOrderedList;
+use Saki\TileSortedList;
 
 class Server {
     private $data;
@@ -11,7 +11,7 @@ class Server {
     function __construct() {
         session_start();
         if (!isset($_SESSION['data']) || count($_SESSION['data']) === 1) {
-            $_SESSION['data'] = TileOrderedList::fromString('123m123s123pEEEWW', false);
+            $_SESSION['data'] = TileSortedList::fromString('123m123s123pEEEWW', false);
         }
         $this->data = $_SESSION['data'];
     }
@@ -21,12 +21,12 @@ class Server {
             $tileString = $_GET['tile'];
             $tile = Tile::fromString($tileString);
             $tileList = $this->data;
-            $tileList->remove([$tileList->toTargetIndex($tile)]);
+            $tileList->remove([$tileList->toFirstIndex($tile)]);
         }
     }
 
     /**
-     * @return TileOrderedList
+     * @return TileSortedList
      */
     function getData() {
         return $this->data;

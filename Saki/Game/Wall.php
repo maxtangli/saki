@@ -49,8 +49,7 @@ class Wall extends ArrayLikeObject {
      * @return Tile
      */
     function pop() {
-        list($tile) = $this->popMany(1);
-        return $tile;
+        return parent::pop();
     }
 
     /**
@@ -58,31 +57,14 @@ class Wall extends ArrayLikeObject {
      * @return Tile[]
      */
     function popMany($n) {
-        $newCurrentTiles = $this->toArray();
-        if (count($newCurrentTiles) < $n) {
-            throw new \InvalidArgumentException();
-        }
-
-        $ret = [];
-        for ($i = 0; $i < $n; ++$i) {
-            $ret[] = array_pop($newCurrentTiles);
-        }
-        $this->setInnerArray($newCurrentTiles);
-        return $ret;
+        return parent::popMany($n);
     }
 
     /**
      * @return Tile
      */
     function shift() {
-        $newCurrentTiles = $this->toArray();
-        if (count($newCurrentTiles) < 1) {
-            throw new \InvalidArgumentException();
-        }
-
-        $ret = array_shift($newCurrentTiles);
-        $this->setInnerArray($newCurrentTiles);
-        return $ret;
+        return parent::shift();
     }
 
     /**

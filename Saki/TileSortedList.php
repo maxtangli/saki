@@ -1,7 +1,7 @@
 <?php
 namespace Saki;
 
-class TileOrderedList extends TileList {
+class TileSortedList extends TileList {
 
     static function sort(array $tiles) {
         $tmp = $tiles;
@@ -32,7 +32,7 @@ class TileOrderedList extends TileList {
     /**
      * @param string $s
      * @param bool $readonly
-     * @return TileOrderedList
+     * @return TileSortedList
      */
     static function fromString($s, $readonly = false) {
         return parent::fromString($s, $readonly);
@@ -42,8 +42,8 @@ class TileOrderedList extends TileList {
         parent::__construct($this->sort($tiles), $readonly);
     }
 
-    protected function setInnerArray($innerArray) {
-        parent::setInnerArray(self::sort($innerArray));
+    protected function innerArrayChangedHook() {
+        parent::setInnerArray(self::sort($this->toArray()), false);
     }
 }
 

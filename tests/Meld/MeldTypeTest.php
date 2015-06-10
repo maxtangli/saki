@@ -4,6 +4,10 @@ use Saki\TileList;
 
 class MeldTypeTest extends PHPUnit_Framework_TestCase {
 
+    function testToString() {
+        $this->assertSame('SingleMeldType', \Saki\Meld\SingleMeldType::getInstance()->__toString());
+    }
+
     function testSingle() {
         $mt = \Saki\Meld\SingleMeldType::getInstance();
         $this->assertTrue($mt->valid(TileList::fromString('1m', false)));

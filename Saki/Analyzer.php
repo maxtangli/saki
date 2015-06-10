@@ -2,33 +2,41 @@
 
 namespace Saki;
 
-use Saki\TileList;
-
+use Saki\Meld\Meld;
+use Saki\Meld\MeldType;
+use Saki\Meld\MeldList;
 class Analyzer {
 
+    /**
+     * @param TileList|TileSortedList $tileList
+     * @param MeldType[] $meldTypes
+     * @return MeldList[]
+     */
     function getMeldCompositions(TileList $tileList, array $meldTypes) {
-        $tiles = iterator_to_array($tileList);
+        /*
+         * meldList(tiles) = all merge(a valid meld from begin, meldList(other tiles))
+         */
+        $actualTileList = $tileList instanceof TileSortedList ? $tileList : new TileSortedList($tileList->toArray());
 
-        $resultAryMelds = array();
+        $allMeldLists = [];
         foreach ($meldTypes as $meldType) {
-            $candidateTiles = array_slice($tiles, 0, $meldType->getTileCount());
-            if ($meldType->valid($candidateTiles)) {
-                $firstMeld = $candidateTiles;
-                $otherTiles = array_slice($tiles, $meldType->getTileCount());
-                if (!empty($otherTiles)) {
-                    $aryOtherMelds = $this->getMeldCompositionsImpl(new TileList($otherTiles), $meldTypes);
-                    if (!empty($aryOtherMelds)) {
-                        $aryMelds = array_map(function ($otherMelds) use ($firstMeld) {
-                            return array_merge([$firstMeld], $otherMelds);
-                        }, $aryOtherMelds);
-                        $resultAryMelds = array_merge($resultAryMelds, $aryMelds);
+            list($beginTileList, $remainTileList) = $actualTileList->getCutInTwoTileLists($meldType->getTileCount());
+            if ($meldType->valid($beginTileList)) {
+                $firstMeld = new Meld($beginTileList, $meldType);
+                if (count($remainTileList) > 0) {
+                    $thisMeldLists = $this->getMeldCompositions($remainTileList, $meldTypes);
+                    if (count($thisMeldLists) > 0) {
+                        foreach($thisMeldLists as $meldList) {
+                            $meldList->insert($firstMeld, 0);
+                        }
+                        $allMeldLists = array_merge($allMeldLists, $thisMeldLists);
                     }
                 } else {
-                    $aryMelds = [$firstMeld];
-                    $resultAryMelds = array_merge($resultAryMelds, $aryMelds);
+                    $thisMeldLists = [new MeldList([$firstMeld])];
+                    $allMeldLists = array_merge($allMeldLists, $thisMeldLists);
                 }
             }
         }
-        return $resultAryMelds;
+        return $allMeldLists;
     }
 }

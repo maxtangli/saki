@@ -6,7 +6,10 @@ use Saki\Util\Singleton;
 
 abstract class MeldType extends Singleton {
     function __toString() {
-        return get_called_class();
+        // Saki\Meld\MeldType -> MeldType
+        $actualClass = get_called_class();
+        $lastSeparatorPos = strrpos($actualClass, '\\');
+        return substr($actualClass, $lastSeparatorPos+1);
     }
 
     abstract function getTileCount();

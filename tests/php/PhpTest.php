@@ -75,6 +75,17 @@ class PhpTest extends \PHPUnit_Framework_TestCase{
 
         $a = explode(',', 'abc');
         $this->assertSame(['abc'], $a);
+    }
 
+    function testStrFind() {
+        $actualClass = 'A\\B\\C';
+        $lastSeparatorPos = strrpos($actualClass, '\\');
+        $this->assertEquals(3, $lastSeparatorPos);
+        $result =  substr($actualClass, $lastSeparatorPos+1);
+        $this->assertEquals('C', $result);
+    }
+
+    function testRange() {
+        $this->assertSame([3,2,1],range(3,1,-1));
     }
 }

@@ -3,7 +3,7 @@ namespace Saki\Meld;
 
 use Saki\Tile;
 use Saki\TileList;
-use Saki\TileOrderedList;
+use Saki\TileSortedList;
 use Saki\Util\ArrayLikeObject;
 
 class Meld extends ArrayLikeObject {
@@ -50,7 +50,7 @@ class Meld extends ArrayLikeObject {
         }
         $actualMeldType = $meldType ?: self::getMeldTypeAnalyzer()->analyzeMeldType($tileList);
 
-        $tileOrderedList = new TileOrderedList($tileList->toArray(), true);
+        $tileOrderedList = new TileSortedList($tileList->toArray(), true);
         parent::__construct($tileOrderedList->toArray());
         $this->tileReadonlyOrderedList = $tileOrderedList;
         $this->meldType = $actualMeldType;

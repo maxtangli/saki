@@ -11,7 +11,7 @@ class TileOrderedListTest extends PHPUnit_Framework_TestCase {
         $expectedTiles = [
             Tile::fromString('1m'), Tile::fromString('2m'), Tile::fromString('3m'),
         ];
-        $h = new \Saki\TileOrderedList($tiles);
+        $h = new \Saki\TileSortedList($tiles);
         for ($i = 0; $i < count($tiles); ++$i) {
             $this->assertEquals($expectedTiles[$i], $h[$i]);
         }
@@ -24,7 +24,7 @@ class TileOrderedListTest extends PHPUnit_Framework_TestCase {
     function testToString(array $tileStrings, $expected) {
         // order like 123m456p789s東東東中中
         $tiles = array_map(function($v){return Tile::fromString($v);}, $tileStrings);
-        $h = new Saki\TileOrderedList($tiles);
+        $h = new Saki\TileSortedList($tiles);
         $this->assertEquals($expected, $h->__toString());
     }
 
@@ -37,8 +37,8 @@ class TileOrderedListTest extends PHPUnit_Framework_TestCase {
     }
 
     function testFromString() {
-        $l = \Saki\TileOrderedList::fromString('312m', false);
-        $this->assertInstanceOf('Saki\TileOrderedList', $l);
+        $l = \Saki\TileSortedList::fromString('312m', false);
+        $this->assertInstanceOf('Saki\TileSortedList', $l);
     }
 
     function testOrderAfterModify() {
