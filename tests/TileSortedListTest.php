@@ -3,7 +3,7 @@
 use Saki\Tile;
 use Saki\TileList;
 
-class TileOrderedListTest extends PHPUnit_Framework_TestCase {
+class TileSortedListTest extends PHPUnit_Framework_TestCase {
     function testOverall() {
         $tiles = [
             Tile::fromString('3m'), Tile::fromString('1m'), Tile::fromString('2m'),

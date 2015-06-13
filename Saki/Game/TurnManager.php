@@ -3,28 +3,26 @@ namespace Saki\Game;
 
 class TurnManager {
     private $players;
+    private $currentPlayerIndex; // NOTE: InfiniteIterator seems buggy with SESSION
     private $currentTurn;
-
-    private $playerInfiniteIterator;
 
     function __construct(array $players, $currentPlayer = null, $currentTurn = 1) {
         if (count($players) < 1) {
             throw new \InvalidArgumentException("Invalid empty \$players.");
         }
 
-        $actualCurrentPlayer = $currentPlayer !== null ? $currentPlayer : $players[0];
-        if (array_search($actualCurrentPlayer, $players, true) === false) {
-            throw new \InvalidArgumentException("Invalid \$currentPlayer[$actualCurrentPlayer].");
+        if ($currentPlayer !== null) {
+            $currentPlayerIndex = array_search($currentPlayer, $players, true);
+            if ($currentPlayerIndex === false) {
+                throw new \InvalidArgumentException();
+            }
+        } else {
+            $currentPlayerIndex = 0;
         }
 
         $this->players = $players;
+        $this->currentPlayerIndex = $currentPlayerIndex;
         $this->currentTurn = $currentTurn;
-
-        $infiniteIterator = new \InfiniteIterator(new \ArrayIterator($players));
-        while ($infiniteIterator->current() !== $actualCurrentPlayer) {
-            $infiniteIterator->next();
-        }
-        $this->playerInfiniteIterator = $infiniteIterator;
     }
 
     function getPlayers() {
@@ -32,7 +30,7 @@ class TurnManager {
     }
 
     function getCurrentPlayer() {
-        return $this->playerInfiniteIterator->current();
+        return $this->getPlayers()[$this->currentPlayerIndex];
     }
 
     function getCurrentTurn() {
@@ -44,7 +42,7 @@ class TurnManager {
     }
 
     function toNextPlayer($addTurn = true) {
-        $this->playerInfiniteIterator->next();
+        $this->currentPlayerIndex = ($this->currentPlayerIndex + 1) % count($this->getPlayers());
         if ($addTurn) {
             ++$this->currentTurn;
         }

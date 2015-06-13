@@ -2,6 +2,8 @@
 
 namespace Saki\App;
 
+use Saki\Game\Game;
+use Saki\Command\Command;
 use Saki\Tile;
 use Saki\TileSortedList;
 
@@ -10,23 +12,32 @@ class Server {
 
     function __construct() {
         session_start();
-        if (!isset($_SESSION['data']) || count($_SESSION['data']) === 1) {
-            $_SESSION['data'] = TileSortedList::fromString('123m123s123pEEEWW', false);
+//        $_SESSION['data'] = null;
+        if (!isset($_SESSION['data'])) {
+            $this->reset();
         }
         $this->data = $_SESSION['data'];
     }
 
+    function reset() {
+        $game = new Game(4, 25000);
+        $_SESSION['data'] = $game;
+        $this->data = $_SESSION['data'];
+    }
+
     function process() {
-        if (isset($_GET['tile'])) {
-            $tileString = $_GET['tile'];
-            $tile = Tile::fromString($tileString);
-            $tileList = $this->data;
-            $tileList->remove([$tileList->toFirstIndex($tile)]);
+        if (isset($_GET['command'])) {
+            $commandString = $_GET['command'];
+            $game = $this->getData();
+            $command = $game->getCommandFactory()->createCommand($commandString);
+            $game->getCurrentRound()->acceptCommand($command);
+        } elseif (isset($_GET['reset'])) {
+            $this->reset();
         }
     }
 
     /**
-     * @return TileSortedList
+     * @return Game
      */
     function getData() {
         return $this->data;

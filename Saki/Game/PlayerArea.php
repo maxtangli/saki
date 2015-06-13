@@ -12,18 +12,20 @@ use Saki\Tile;
 use Saki\Meld\MeldType;
 
 class PlayerArea {
-    private $onHandTileOrderedList;
+    private $onHandTileSortedList;
     private $discardedTileList;
     private $exposedMeldList;
+    private $candidateTile;
 
-    function __construct(TileSortedList $onHandTileOrderedList = null, TileList $discardedTileList = null, MeldList $exposedMeldList = null) {
-        $this->onHandTileOrderedList = $onHandTileOrderedList ? : TileSortedList::fromString('');
+    function __construct(TileSortedList $onHandTileSortedList = null, TileList $discardedTileList = null, MeldList $exposedMeldList = null, Tile $candidateTile = null) {
+        $this->onHandTileSortedList = $onHandTileSortedList ?: TileSortedList::fromString('');
         $this->discardedTileList = $discardedTileList ?: TileList::fromString('');
         $this->exposedMeldList = $exposedMeldList ?: new MeldList([]);
+        $this->candidateTile = $candidateTile;
     }
 
-    function getOnHandTileOrderedList() {
-        return $this->onHandTileOrderedList;
+    function getOnHandTileSortedList() {
+        return $this->onHandTileSortedList;
     }
 
     function getDiscardedTileList() {
@@ -34,15 +36,67 @@ class PlayerArea {
         return $this->exposedMeldList;
     }
 
-    function discard(Tile $newTile) {
-        $this->getDiscardedTileList()->add($newTile);
+    function hasCandidateTile() {
+        return $this->candidateTile !== null;
     }
 
-    function replace(Tile $onHandTile, Tile $newTile) {
-        $this->getOnHandTileOrderedList()->replace($onHandTile, $newTile);
-        $this->discard($onHandTile);
+    function getCandidateTile() {
+        if (!$this->hasCandidateTile()) {
+            throw new \BadMethodCallException();
+        }
+        return $this->candidateTile;
     }
 
+    function setCandidateTile(Tile $tile) {
+        if ($tile === null) {
+            throw new \InvalidArgumentException();
+        }
+        $this->candidateTile = $tile;
+    }
+
+    function removeCandidateTile() {
+        if (!$this->hasCandidateTile()) {
+            throw new \BadMethodCallException();
+        }
+        $ret = $this->candidateTile;
+        $this->candidateTile = null;
+        return $ret;
+    }
+
+    /**
+     * @param $indexOrTile
+     * @throws \InvalidArgumentException
+     */
+    function discard($indexOrTile) {
+        if (is_int($indexOrTile)) {
+            $tileSortedList = $this->getOnHandTileSortedList();
+            if (isset($tileSortedList[$indexOrTile])) { //onHandIndex
+                $tile = $tileSortedList[$indexOrTile];
+            } elseif ($indexOrTile == count($tileSortedList) && $this->hasCandidateTile()) { // candidateIndex
+                $tile = $this->getCandidateTile();
+            } else {
+                throw new \InvalidArgumentException();
+            }
+        } elseif ($indexOrTile instanceof Tile) {
+            $tile = $indexOrTile;
+        } else {
+            throw new \InvalidArgumentException();
+        }
+
+        if ($this->hasCandidateTile()) {
+            if ($this->getCandidateTile() == $tile) { // discardCandidate
+                $this->getDiscardedTileList()->add($this->removeCandidateTile());
+            } else { // keepCandidateAndDiscardOnHand
+                $this->getOnHandTileSortedList()->replace($tile, $this->removeCandidateTile());
+                $this->getDiscardedTileList()->add($tile);
+            }
+        } else { // DiscardOnHand
+            $this->getOnHandTileSortedList()->remove($tile);
+            $this->getDiscardedTileList()->add($tile);
+        }
+    }
+
+    /*
     function chow(Tile $onHandTile1, Tile $onHandTile2, Tile $newTile) {
         $this->createMeld(SequenceMeldType::getInstance(), [$onHandTile1, $onHandTile2], $newTile);
     }
@@ -65,11 +119,11 @@ class PlayerArea {
 
     function plusKong(Tile $onHandTile) {
         $this->getExposedMeldList()->plusKong($onHandTile);
-        $this->getOnHandTileOrderedList()->remove($onHandTile);
+        $this->getOnHandTileSortedList()->remove($onHandTile);
     }
-
+*/
     protected function createMeld(MeldType $targetMeld, array $onHandTiles, Tile $newTile = null) {
-        $onHandTileList = $this->getOnHandTileOrderedList();
+        $onHandTileList = $this->getOnHandTileSortedList();
         $targetTiles = $newTile === null ? $onHandTiles : array_merge($onHandTiles, [$newTile]);
         $targetTileList = new TileList($targetTiles);
         if ($targetMeld->valid($targetTileList)) {
@@ -80,4 +134,5 @@ class PlayerArea {
             throw new \InvalidArgumentException("Invalid \$targetTileList[$targetTileList] for \$targetMeld[$targetMeld]");
         }
     }
+
 }
