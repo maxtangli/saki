@@ -169,6 +169,11 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         return $this->removeMany($positions);
     }
 
+    protected function shuffle() {
+        shuffle($this->innerArray);
+        $this->innerArrayChangedHook();
+    }
+
     protected function innerArrayChangedHook() {
 
     }

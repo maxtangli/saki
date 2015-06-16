@@ -13,7 +13,7 @@ class TileSortedList extends TileList {
 
     static function getDisplayPriority(Tile $tile) {
         $tileType = $tile->getTileType();
-        $base = [
+        $base = [ // 萬筒
             TileType::CHARACTER => 0,
             TileType::DOT => 9,
             TileType::BAMBOO => 18,
@@ -22,8 +22,8 @@ class TileSortedList extends TileList {
             TileType::WEST => 30,
             TileType::NORTH => 31,
             TileType::RED => 32,
-            TileType::GREEN => 33,
-            TileType::WHITE => 34,
+            TileType::WHITE => 33,
+            TileType::GREEN => 34,
         ][$tileType->getValue()];
         $plus = $tileType->isSuit() ? $tile->getNumber() : 0;
         return 34 - ($base + $plus);

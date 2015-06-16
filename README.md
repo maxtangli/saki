@@ -11,6 +11,7 @@ A japanese-mahjong solver.
 - [ ] ugly const REGEX_XXX =>  class TileRegex ?
 - [ ] static factory method such as fromString($s) force subclasses keep constructor signature => ?
 - [x] ArrayObjectLike modify methods => protected methods in ArrayObjectLike
+- [ ] ArrayObjectLike protected methods override is buggy => ?
 
 ## todo
 
@@ -72,68 +73,41 @@ rush 5 round flow: private phase 6/5 2.5h 6/7 1.5h 6/9 1h 6/10 4h 6/11 1h 6/12 3
 - [x] Player toString()/fromString()
 - [x] child commands fromString() 
 
-rush 6 exhaustive draw
+rush 6 exhaustive draw: first step
 
-- [ ] dead wall
-- [ ] after command execute
+- [x] DeadWall 0.5h
+- [x] refactor Wall 0.5h
+- [x] after command execute
 
-rush round flow: public phase
+rush 7 phase logic
 
-- [ ] PublicPhase
+- [x] detailed analyze 1h
+- [x] PublicPhaseCommandPoller 0.5h
+- [x] phase switch 2h
+- [ ] private phase: kang, pluseKang, zimo
+- [ ] public phase: chow, pon/kang, ron
+- [ ] over phase: drawn
+- [ ] over phase: ron/zimo
+- [ ] refactor ArrayLikeObject.impl
 
-rush round command
+rush next round& game over
 
-- [ ] Draw
-- [ ] DiscardDrawn, when drawn one exists
-- [ ] KeepDrawnAndDiscardOnHand, when drawn one exists
-- [ ] DiscardOnHand, when no drawn one exists
+features
 
-- [ ] RonWin 0+1
-- [ ] ZimoWin 0+0
-- [ ] Pass
+- rush fushu/point
+- rush dora/ red dora
+- rush player wind
+- rush yaku
+- more friendly UI
 
-- [ ] Chow 2+1
-- [ ] ExposedPon 2+1
-- [ ] ExposedKong 3+1
-
-- [ ] ConcealedKong 4+0
-
-- [ ] PlusKong(with other's tile) 0+1
-- [ ] PlusKong(with self's on hand tile) 1+0
-- [ ] PlusKong(with self's candidate tile) 0+0
-
-rush round draw
-
-rush yaku
-
-- [ ] Pinfu
-- [ ] Menqingzimo
-- [ ] Yipai
-
-rush fushu
-
-rush point
-
-rush dora
-
-rush red dora
-
-rush player wind
-
-- [ ] Changfeng
-- [ ] Zifeng
-- [ ] Yaku
-
-rush next round & game over
-
-advance features
+advanced features
 
 - multi-media
 - player AI
 - replay
 - player statistics
 
-more advance features
+more advanced features
 
 - tenhou client AI
 - chating AI
@@ -159,36 +133,77 @@ Command serialize
 
 ## note: round logic
 
-1. new phase
+new phase
 
-- [x] reset and shuffle wall, decide dealer player
+- reset and shuffle wall
+- decide dealer player
+- decide each player's wind
 
-2. init phase
+init phase
 
-- [x] each player draw 4*4 tiles
-- [x] dealer player draw 1 candidate tile
-- [x] go to dealer player's private phase
+- each player draw 4 tiles
+- goto dealer player's private phase
+ 
+p's private phase: before execute command
 
-3. player's turn: private phase
+- when enter: turn++, draw 1 tile if allowed
+- show candidate commands
+- always: discard one of onHand tile 
+- sometime: kang, plusKang, zimo
 
-- [x] only current player has candidate commands.
-- [ ] if command is WinOnSelfCommand, go to round-win phase.
+p's private phase: after execute command
 
-4. player's turn: public phase
+- if discard: go to public phase
+- if zimo: go to round-over phase
+- if kang/plusKang: drawBack, stay in private phase
 
-- [ ] all players except current one may have candidate commands.
-- [ ] only the highest-priority-command will be executed. If so, go to command-owner's turn.
-- [ ] if command is WinOnOtherCommand, go to round-win phase.
+p's public phase: before execute command
 
-5. round-win phase
+- only non-current players may have candidate commands
+- if none candidate commands exist: goto next player's private phase if remainTileCount > 0, otherwise go to over phase
+- if candidate commands exist, wait for each player's response, and execute the highest priority ones.
+- command types: ron, chow, pon, kang
 
-- [ ] calculate fushu and Yaku, which decides point
-- [ ] modify each player's point
-- [ ] go to next round's new phase
+p's public phase: after execute command
 
-detailed: list candidate commands in private phase
+- if ron: go to round-over phase
+- if chow/pon/kang: go to execute player's private phase?
 
-suppose drawn exists
+over phase
 
-- always: Discard
-- special:
+- draw or win
+- calculate points and modify players' points
+- new next round
+
+## note: getMelds(draft)
+
+getMeldCompositions(tileList)
+
+-idea: first tile should belong to one of the meld, otherwise empty result
+-solution:
+
+> list all possible meld that contains first tile
+> foreach possibleMelds as firstMeld
+>   reaminedTileList = tileList->remove($meld->toArray())
+>   remainedMeldLists = getMeldCompositiosn(tileList)
+>   if remainedMeldLlists not empty, merge firstMeld with remainedMeldLists
+
+list all possible meld that contains first tile
+
+getMelds(TileList, MeldType)
+
+- return getMeldsThatContainsFirstTile(TileList, MeldType) merge getMelds(TileList.remove(0), MeldType)
+
+getMeldsThatContainsFirstTile(TileList, MeldType)
+
+getMeldsThatContainsTile(TileList, MeldType, Tile)
+
+- sort+unique
+
+getCandidateMelds($tileList, $candidateTile, $meldTypes)
+
+simple soulution reuse getMeldCompositions:
+
+- add tile into newTileList and sort
+- getMeldLists
+- return meld in meldLists where meld contians candidateTile

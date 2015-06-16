@@ -11,9 +11,9 @@ class TileType extends Enum {
     const SOUTH = 5;
     const WEST = 6;
     const NORTH = 7;
-    const RED = 8;
+    const WHITE = 8;
     const GREEN = 9;
-    const WHITE = 10;
+    const RED = 10;
 
     const REGEX_SUIT_TYPE = '[smp]';
     const REGEX_HONOR_TYPE = '[ESWNCFP]';
@@ -27,9 +27,9 @@ class TileType extends Enum {
             self::SOUTH => 'S',
             self::WEST => 'W',
             self::NORTH => 'N',
-            self::RED => 'C',
-            self::GREEN => 'F',
             self::WHITE => 'P',
+            self::GREEN => 'F',
+            self::RED => 'C',
         ];
     }
 

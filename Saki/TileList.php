@@ -85,13 +85,13 @@ class TileList extends ArrayLikeObject {
     }
 
     /**
-     * @param int $cutPos
+     * @param int $firstPartLength
      * @return TileList[] list($beginTileList, $remainTileList)
      */
-    function getCutInTwoTileLists($cutPos) {
+    function getCutInTwoTileLists($firstPartLength) {
         $tiles = $this->toArray();
-        $tiles1 = array_slice($tiles, 0, $cutPos);
-        $tiles2 = array_slice($tiles, $cutPos);
+        $tiles1 = array_slice($tiles, 0, $firstPartLength);
+        $tiles2 = array_slice($tiles, $firstPartLength);
         return [new self($tiles1), new self($tiles2)];
     }
 
@@ -104,24 +104,49 @@ class TileList extends ArrayLikeObject {
         parent::pushMany($tiles);
     }
 
-    function replace(Tile $onHandTile, Tile $newTile) {
+    function replaceTile(Tile $onHandTile, Tile $newTile) {
         $this->assertWritable();
         $targetIndex = $this->toFirstIndex($onHandTile);
         parent::replace($targetIndex, $newTile);
     }
 
-    function remove(Tile $onHandTile) {
+    function removeTile(Tile $onHandTile) {
         $this->assertWritable();
         $targetIndex = $this->toFirstIndex($onHandTile);
         parent::remove($targetIndex);
     }
 
-    function removeMany(array $onHandTiles) {
+    function removeManyTiles(array $onHandTiles) {
         $this->assertWritable();
         // NOTE: seems low efficiency, refactor if it does
         foreach ($onHandTiles as $onHandTile) {
-            $this->remove($onHandTile);
+            $this->removeTile($onHandTile);
         }
+    }
+
+    function pop() {
+        $this->assertWritable();
+        return parent::pop();
+    }
+
+    function popMany($n) {
+        $this->assertWritable();
+        return parent::popMany($n);
+    }
+
+    function shift() {
+        $this->assertWritable();
+        return parent::shift();
+    }
+
+    function shiftMany($n) {
+        $this->assertWritable();
+        return parent::shiftMany($n);
+    }
+
+    function shuffle() {
+        $this->assertWritable();
+        parent::shuffle();
     }
 
     /**

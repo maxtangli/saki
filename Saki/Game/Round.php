@@ -5,20 +5,57 @@ namespace Saki\Game;
 use Saki\Tile;
 use Saki\Util\Enum;
 use Saki\Util\Utils;
+use Saki\Command\Command;
 
 class RoundPhase extends Enum {
     const INIT_PHASE = 1;
     const PRIVATE_PHASE = 2;
     const PUBLIC_PHASE = 3;
-    const ROUND_OVER_PHASE = 4;
+    const OVER_PHASE = 4;
 
     static function getValue2StringMap() {
         return [
             self::INIT_PHASE => 'init phase',
             self::PRIVATE_PHASE => 'private phase',
             self::PUBLIC_PHASE => 'public phase',
-            self::ROUND_OVER_PHASE => 'round-over phase',
+            self::OVER_PHASE => 'over phase',
         ];
+    }
+}
+
+class ZimoCommand extends Command {
+    function execute() {
+
+    }
+}
+
+class PassCommand extends Command {
+    function execute() {
+
+    }
+}
+
+class ChowCommand extends Command {
+    function execute() {
+
+    }
+}
+
+class PongCommand extends Command {
+    function execute() {
+
+    }
+}
+
+class KangCommand extends Command {
+    function execute() {
+
+    }
+}
+
+class RonCommand extends Command {
+    function execute() {
+
     }
 }
 
@@ -26,22 +63,18 @@ class Round {
     private $wall;
     private $playerList;
     private $dealerPlayer;
+
     private $playerAreas;
     private $turnManager;
     private $roundPhase;
+    private $publicPhaseCommandPoller;
 
     function __construct(Wall $wall, PlayerList $playerList, $dealerPlayer) {
         $this->wall = $wall;
         $this->playerList = $playerList;
         $this->dealerPlayer = $dealerPlayer;
 
-        $this->playerAreas = array_map(function ($v) {
-            return new PlayerArea();
-        }, range(1, count($playerList)));
-        $this->turnManager = new TurnManager($playerList->toArray(), $dealerPlayer);
-
-        $this->roundPhase = RoundPhase::getInstance(RoundPhase::INIT_PHASE);
-        $this->init();
+        $this->toInitPhase();
     }
 
     function getWall() {
@@ -63,6 +96,9 @@ class Round {
         return $this->playerAreas;
     }
 
+    /**
+     * @return TurnManager
+     */
     protected function getTurnManager() {
         return $this->turnManager;
     }
@@ -74,6 +110,17 @@ class Round {
         return $this->getTurnManager()->getCurrentPlayer();
     }
 
+    function getNextPlayer() {
+        return $this->getTurnManager()->getNextPlayer();
+    }
+
+    function setCurrentPlayer(Player $player, $addTurn) {
+        $this->getTurnManager()->toPlayer($player, $addTurn);
+    }
+
+    /**
+     * @return int
+     */
     function getCurrentTurn() {
         return $this->getTurnManager()->getCurrentTurn();
     }
@@ -87,9 +134,16 @@ class Round {
     }
 
     /**
+     * @return PlayerArea
+     */
+    function getCurrentPlayerArea() {
+        return $this->getPlayerArea($this->getCurrentPlayer());
+    }
+
+    /**
      * @return RoundPhase
      */
-    protected function getRoundPhase() {
+    function getRoundPhase() {
         return $this->roundPhase;
     }
 
@@ -97,28 +151,159 @@ class Round {
         $this->roundPhase = $roundPhase;
     }
 
-    private function init() {
-        $wall = $this->getWall();
-        $playerCount = count($this->getPlayerList());
-        $turnManager = $this->getTurnManager();
+    private function toInitPhase() {
+        $this->roundPhase = RoundPhase::getInstance(RoundPhase::INIT_PHASE);
+
+        // init fields
+        $this->playerAreas = array_map(function ($v) {
+            return new PlayerArea();
+        }, range(1, count($this->getPlayerList())));
+        $this->turnManager = new TurnManager($this->getPlayerList()->toArray(), $this->getDealerPlayer());
 
         // each player draw 4*4 tiles
+        $playerCount = count($this->getPlayerList());
+        $turnManager = $this->getTurnManager();
         for ($i = 0; $i < 4; ++$i) {
             for ($cnt = 0; $cnt < $playerCount; ++$cnt) {
-                $this->getPlayerArea($turnManager->getCurrentPlayer())->getOnHandTileSortedList()->addMany($this->getWall()->popMany(4));
-                $turnManager->toNextPlayer(false);
+                $this->getCurrentPlayerArea()->getOnHandTileSortedList()->addMany($this->getWall()->popMany(4));
+                $this->setCurrentPlayer($this->getNextPlayer(), false);
             }
         }
-
-        // dealer player draw 1 candidate tile
-        $this->currentPlayerDraw();
-
         // go to dealer player's private phase
-        $this->setRoundPhase(RoundPhase::getInstance(RoundPhase::PRIVATE_PHASE));
+        $this->toPrivatePhase($this->getDealerPlayer(), true);
     }
 
-    protected function currentPlayerDraw() {
-        $this->getPlayerArea($this->getCurrentPlayer())->setCandidateTile($this->getWall()->pop());
+    /**
+     * @param Player $player
+     * @param bool $drawTile
+     */
+    function toPrivatePhase(Player $player, $drawTile) {
+        if ($this->getWall()->getRemainTileCount() == 0 && $drawTile) {
+            $this->toOverPhase();
+        } else {
+            $this->setCurrentPlayer($player, true);
+            $this->setRoundPhase(RoundPhase::getInstance(RoundPhase::PRIVATE_PHASE));
+            if ($drawTile) {
+                $this->getPlayerArea($this->getCurrentPlayer())->setCandidateTile($this->getWall()->pop());
+            }
+        }
+    }
+
+    function toPublicPhase() {
+        $this->setRoundPhase(RoundPhase::getInstance(RoundPhase::PUBLIC_PHASE));
+
+        if ($this->publicPhaseCommandPoller === null) {
+            $this->publicPhaseCommandPoller = new PublicPhaseCommandPoller([]);
+        }
+
+        $poller = $this->publicPhaseCommandPoller;
+        $poller->init($this->getCandidateCommands());
+        if ($poller->isDecided()) { // no candidate commands exist
+            $this->toPrivatePhase($this->getNextPlayer(), true);
+        } else {
+            // waiting commands
+        }
+    }
+
+    function toOverPhase() {
+        $this->setRoundPhase(RoundPhase::getInstance(RoundPhase::OVER_PHASE));
+        // todo draw/win
+    }
+
+    function acceptCommand(Command $command) {
+        switch ($this->getRoundPhase()->getValue()) {
+            case RoundPhase::PRIVATE_PHASE:
+                $command->execute();
+                break;
+            case RoundPhase::PUBLIC_PHASE:
+                $poller = $this->getPublicPhaseCommandPoller();
+                $poller->acceptCommand($command);
+                if ($poller->isDecided()) {
+                    $todoCommands = $poller->getDecidedCommands();
+                    if (!empty($todoCommands)) {
+                        foreach ($todoCommands as $todoCommand) {
+                            $todoCommand->execute();
+                        }
+                    } else {
+                        $this->toPrivatePhase($this->getNextPlayer(), true);
+                    }
+                } else {
+                    // keep waiting
+                }
+                break;
+            default:
+                throw new \LogicException();
+        }
+    }
+
+    function discard(Player $player, Tile $tile) {
+        // private phase, currentPlayer
+        $valid = $this->getRoundPhase()->getValue() == RoundPhase::PRIVATE_PHASE && $player == $this->getCurrentPlayer();
+        if (!$valid) {
+            throw new \InvalidArgumentException();
+        }
+        // do
+        $this->getCurrentPlayerArea()->discard($tile);
+        // phase
+        $this->toPublicPhase();
+    }
+
+
+    function concealedKang(Player $player) {
+        // private phase, currentPlayer
+
+        // do
+
+        // stay in private phase
+    }
+
+    function plusKang(Player $player, Tile $tile) {
+        // private phase, currentPlayer
+
+        // do
+
+        // stay in private phase
+    }
+
+    function zimo(Player $player) {
+        /// private phase, currentPlayer
+
+        // do
+
+        // phase
+        $this->toOverPhase();
+    }
+
+    function chow(Player $player, Tile $tile1, Tile $tile2) {
+        // public
+        $valid = $this->getRoundPhase()->getValue() == RoundPhase::PUBLIC_PHASE && $player == $this->getTurnManager();
+        if (!$valid) {
+            throw new \InvalidArgumentException();
+        }
+        // do
+
+        // phase
+    }
+
+    function pon(Player $player, Tile $tile1, Tile $tile2) {
+        // public
+    }
+
+    function exposedKang(Player $player) {
+        // public
+
+        // do
+
+        // phase
+    }
+
+    function ron(Player $player) {
+        // public
+
+        // do
+
+        // phase
+        $this->toOverPhase();
     }
 
     /**
@@ -141,7 +326,7 @@ class Round {
                 break;
             case RoundPhase::PUBLIC_PHASE:
                 break;
-            case RoundPhase::ROUND_OVER_PHASE:
+            case RoundPhase::OVER_PHASE:
                 break;
             default:
                 throw new \LogicException();
@@ -154,20 +339,5 @@ class Round {
         return array_values(array_filter($this->getCandidateCommands(), function ($v) use ($player) {
             return $v->getPlayer() == $player;
         }));
-    }
-
-    function acceptCommand(\Saki\Command\Command $command) {
-        $command->execute();
-        switch ($this->getRoundPhase()->getValue()) {
-            case RoundPhase::PRIVATE_PHASE:
-                $this->getTurnManager()->toNextPlayer();
-                $this->currentPlayerDraw();
-                break;
-            case RoundPhase::PUBLIC_PHASE:
-                break;
-            case RoundPhase::ROUND_OVER_PHASE:
-            default:
-                throw new \LogicException();
-        }
     }
 }

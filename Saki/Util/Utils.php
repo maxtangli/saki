@@ -10,6 +10,20 @@ class Utils {
         return $trimmedToken;
     }
 
+    /**
+     * @param array $arr
+     * @param callable $key_selector
+     * @return array
+     */
+    static function array_group_by(array $arr, callable $key_selector) {
+        $result = [];
+        foreach ($arr as $i) {
+            $key = call_user_func($key_selector, $i);
+            $result[$key][] = $i;
+        }
+        return $result;
+    }
+
     private function __construct() {
 
     }

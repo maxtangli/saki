@@ -34,13 +34,5 @@ abstract class Command {
         return $this->player;
     }
 
-    function getPlayerArea() {
-        return $this->getRound()->getPlayerArea($this->getPlayer());
-    }
-
-    function setPlayer($player) {
-        $this->player = $player;
-    }
-
     abstract function execute();
 }

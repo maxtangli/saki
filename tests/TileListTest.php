@@ -82,13 +82,13 @@ class TileListTest extends PHPUnit_Framework_TestCase {
 
     function testReplace() {
         $l = TileList::fromString('11m', false);
-        $l->replace(Tile::fromString('1m'), Tile::fromString('2m'));
+        $l->replaceTile(Tile::fromString('1m'), Tile::fromString('2m'));
         $this->assertSame('21m', $l->__toString());
     }
 
     function testRemove() {
         $l = TileList::fromString('12322m', false);
-        $l->remove(Tile::fromString('2m'));
+        $l->removeTile(Tile::fromString('2m'));
         $this->assertEquals('1322m', $l->__toString());
         $expectedKey = 0;
         foreach($l as $k => $v) {
@@ -98,7 +98,7 @@ class TileListTest extends PHPUnit_Framework_TestCase {
 
     function testRemoveMany() {
         $l = TileList::fromString('123242m', false);
-        $l->removeMany([Tile::fromString('2m'),Tile::fromString('2m')]);
+        $l->removeManyTiles([Tile::fromString('2m'),Tile::fromString('2m')]);
         $this->assertEquals('1342m', $l->__toString());
     }
 }

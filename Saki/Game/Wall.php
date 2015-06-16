@@ -1,36 +1,34 @@
 <?php
 namespace Saki\Game;
 
-use Doctrine\Instantiator\Exception\InvalidArgumentException;
 use Saki\Tile;
 use Saki\TileList;
+use Saki\TileType;
 use Saki\Util\ArrayLikeObject;
 
-class Wall extends ArrayLikeObject {
+class Wall {
 
     static function getStandardTileList() {
         $s = '111122223333444455556666777788889999m' .
             '111122223333444455556666777788889999p' .
             '111122223333444455556666777788889999s' .
-            'EEEEWWWWSSSSNNNNCCCCFFFFPPPP';
+            'EEEESSSSWWWWNNNNCCCCPPPPFFFF';
         return TileList::fromString($s);
     }
 
     private $baseTileReadonlyList;
+    private $deadWall;
+    private $remainTileList;
 
-    function __construct(TileList $baseTileList, TileList $currentTileList = null) {
+    function __construct(TileList $baseTileList) {
+        $valid = $baseTileList->count() === 136;
+        if (!$valid) {
+            throw new \InvalidArgumentException();
+        }
+
         $tiles = $baseTileList->toArray();
         $this->baseTileReadonlyList = new TileList($tiles, true);
-        $actualCurrentTiles = $currentTileList ? $currentTileList->toArray() : $tiles;
-        parent::__construct($actualCurrentTiles);
-    }
-
-    function __toString() {
-        return (new TileList($this->toArray()))->__toString();
-    }
-
-    function getBaseTileReadonlyList() {
-        return $this->baseTileReadonlyList;
+        $this->init(false);
     }
 
     /**
@@ -38,18 +36,52 @@ class Wall extends ArrayLikeObject {
      * @param bool $shuffle
      */
     function init($shuffle = true) {
-        $newCurrentTiles = $this->getBaseTileReadonlyList()->toArray();
+        $baseTileList = new TileList($this->getBaseTileReadonlyList()->toArray());
         if ($shuffle) {
-            shuffle($newCurrentTiles);
+            $baseTileList->shuffle();
         }
-        $this->setInnerArray($newCurrentTiles);
+        list($deadWallTileLists, $currentTileList) = $baseTileList->getCutInTwoTileLists(14);
+        $this->deadWall = new DeadWall($deadWallTileLists);
+        $this->remainTileList = $currentTileList;
+    }
+
+    function __toString() {
+        return $this->getDeadWall()->__toString().','.$this->getRemainTileList()->__toString();
+    }
+
+    /**
+     * @return TileList
+     */
+    function getBaseTileReadonlyList() {
+        return $this->baseTileReadonlyList;
+    }
+
+    /**
+     * @return DeadWall
+     */
+    function getDeadWall() {
+        return $this->deadWall;
+    }
+
+    /**
+     * @return TileList
+     */
+    function getRemainTileList() {
+        return $this->remainTileList;
+    }
+
+    /**
+     * @return int
+     */
+    function getRemainTileCount() {
+        return count($this->getRemainTileList());
     }
 
     /**
      * @return Tile
      */
     function pop() {
-        return parent::pop();
+        return $this->getRemainTileList()->pop();
     }
 
     /**
@@ -57,29 +89,13 @@ class Wall extends ArrayLikeObject {
      * @return Tile[]
      */
     function popMany($n) {
-        return parent::popMany($n);
+        return $this->getRemainTileList()->popMany($n);
     }
 
     /**
      * @return Tile
      */
     function shift() {
-        return parent::shift();
+        return $this->getDeadWall()->shift();
     }
-
-    /**
-     * @return Tile[]
-     */
-    function toArray() {
-        return parent::toArray();
-    }
-
-    /**
-     * @return Tile
-     */
-    function offsetGet($offset) {
-        return parent::offsetGet($offset);
-    }
-
-
 }

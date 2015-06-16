@@ -27,6 +27,6 @@ class DiscardCommand extends Command {
     }
 
     function execute() {
-        $this->getPlayerArea()->discard($this->getTile());
+        $this->getRound()->discard($this->getPlayer(), $this->getTile());
     }
 }

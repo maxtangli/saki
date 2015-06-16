@@ -26,9 +26,9 @@ Meld Sequence / (Exposed / Concealed) Triplet / (Exposed / Concealed) Kong
 
 class Tile {
     const REGEX_SUIT_NUMBER = '[1-9]';
-    const REGEX_SUIT_TILE = '('.self::REGEX_SUIT_NUMBER.TileType::REGEX_SUIT_TYPE.')';
+    const REGEX_SUIT_TILE = '(' . self::REGEX_SUIT_NUMBER . TileType::REGEX_SUIT_TYPE . ')';
     const REGEX_HONOR_TILE = TileType::REGEX_HONOR_TYPE;
-    const REGEX_TILE = '('.self::REGEX_SUIT_TILE.'|'.self::REGEX_HONOR_TILE.')';
+    const REGEX_TILE = '(' . self::REGEX_SUIT_TILE . '|' . self::REGEX_HONOR_TILE . ')';
 
     static function valid(TileType $tileType, $number) {
         return ($tileType->isSuit() && self::validNumber($number))
@@ -40,15 +40,15 @@ class Tile {
     }
 
     static function validString($s) {
-        $regex = '/^'.self::REGEX_TILE.'$/';
-        return preg_match($regex, $s)===1;
+        $regex = '/^' . self::REGEX_TILE . '$/';
+        return preg_match($regex, $s) === 1;
     }
 
     static function fromString($s) {
         if (!self::validString($s)) {
             throw new \InvalidArgumentException();
         }
-        if (strlen($s)==1) {
+        if (strlen($s) == 1) {
             return new self(TileType::fromString($s));
         } else {
             return new self(TileType::fromString($s[1]), intval($s[0]));
@@ -80,5 +80,26 @@ class Tile {
     function __toString() {
         $tileType = $this->getTileType();
         return $tileType->isSuit() ? $this->getNumber() . $tileType->__toString() : $tileType->__toString();
+    }
+
+    function toNextTile() {
+        $currentType = $this->getTileType();
+        if ($currentType->isSuit()) {
+            $currentNumber = $this->getNumber();
+            $nextNumber = $currentNumber != 9 ? $currentNumber + 1 : 1;
+            return new Tile($currentType, $nextNumber);
+        } else {
+            $map = [
+                TileType::EAST => TileType::SOUTH,
+                TileType::SOUTH => TileType::WEST,
+                TileType::WEST => TileType::NORTH,
+                TileType::NORTH => TileType::EAST,
+                TileType::WHITE => TileType::GREEN,
+                TileType::GREEN => TileType::RED,
+                TileType::RED => TileType::WHITE,
+            ];
+            $nextType = $map[$currentType];
+            return new Tile($nextType);
+        }
     }
 }

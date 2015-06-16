@@ -87,11 +87,11 @@ class PlayerArea {
             if ($this->getCandidateTile() == $tile) { // discardCandidate
                 $this->getDiscardedTileList()->add($this->removeCandidateTile());
             } else { // keepCandidateAndDiscardOnHand
-                $this->getOnHandTileSortedList()->replace($tile, $this->removeCandidateTile());
+                $this->getOnHandTileSortedList()->replaceTile($tile, $this->removeCandidateTile());
                 $this->getDiscardedTileList()->add($tile);
             }
         } else { // DiscardOnHand
-            $this->getOnHandTileSortedList()->remove($tile);
+            $this->getOnHandTileSortedList()->removeTile($tile);
             $this->getDiscardedTileList()->add($tile);
         }
     }
@@ -128,7 +128,7 @@ class PlayerArea {
         $targetTileList = new TileList($targetTiles);
         if ($targetMeld->valid($targetTileList)) {
             $meld = new Meld($targetTileList, $targetMeld);
-            $onHandTileList->removeMany($onHandTiles);
+            $onHandTileList->removeManyTiles($onHandTiles);
             $this->getExposedMeldList()->insert($meld);
         } else {
             throw new \InvalidArgumentException("Invalid \$targetTileList[$targetTileList] for \$targetMeld[$targetMeld]");
