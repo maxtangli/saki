@@ -24,7 +24,7 @@ class WallTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(\Saki\Tile::fromString('F'), $t);
 
         // pop many
-        $ts = $w->popMany(4);
+        $ts = $w->pop(4);
         $this->assertCount(4, $ts);
         $this->assertEquals(\Saki\Tile::fromString('F'), $ts[0]);
         $this->assertEquals(\Saki\Tile::fromString('F'), $ts[1]);

@@ -31,15 +31,14 @@ class TileSortedList extends TileList {
 
     /**
      * @param string $s
-     * @param bool $readonly
      * @return TileSortedList
      */
-    static function fromString($s, $readonly = false) {
-        return parent::fromString($s, $readonly);
+    static function fromString($s) {
+        return parent::fromString($s);
     }
 
-    function __construct(array $tiles, $readonly = false) {
-        parent::__construct($this->sort($tiles), $readonly);
+    function __construct(array $tiles) {
+        parent::__construct($this->sort($tiles));
     }
 
     protected function innerArrayChangedHook() {

@@ -17,10 +17,9 @@ class TileList extends ArrayLikeObject {
 
     /**
      * @param string $s
-     * @param bool $readonly
      * @return TileList
      */
-    static function fromString($s, $readonly = false) {
+    static function fromString($s) {
         if (!static::validString($s)) {
             throw new \InvalidArgumentException("Invalid \$s[$s].");
         }
@@ -39,24 +38,11 @@ class TileList extends ArrayLikeObject {
             }
         }
 
-        return new static($tiles, $readonly);
+        return new static($tiles);
     }
 
-    private $readonly;
-
-    function __construct(array $tiles, $readonly = false) {
+    function __construct(array $tiles) {
         parent::__construct($tiles);
-        $this->readonly = $readonly;
-    }
-
-    function getReadonly() {
-        return $this->readonly;
-    }
-
-    protected function assertWritable() {
-        if ($this->getReadonly()) {
-            throw new \BadMethodCallException('Invalid method call on a readonly TileList.');
-        }
     }
 
     function __toString() {
@@ -77,14 +63,6 @@ class TileList extends ArrayLikeObject {
     }
 
     /**
-     * @param Tile $tileOnHand
-     * @return int first index of $tileOnHand
-     */
-    function toFirstIndex(Tile $tileOnHand) {
-        return parent::toFirstIndex($tileOnHand);
-    }
-
-    /**
      * @param int $firstPartLength
      * @return TileList[] list($beginTileList, $remainTileList)
      */
@@ -93,60 +71,6 @@ class TileList extends ArrayLikeObject {
         $tiles1 = array_slice($tiles, 0, $firstPartLength);
         $tiles2 = array_slice($tiles, $firstPartLength);
         return [new self($tiles1), new self($tiles2)];
-    }
-
-    function add(Tile $newTile) {
-        $this->addMany([$newTile]);
-    }
-
-    function addMany(array $tiles) {
-        $this->assertWritable();
-        parent::pushMany($tiles);
-    }
-
-    function replaceTile(Tile $onHandTile, Tile $newTile) {
-        $this->assertWritable();
-        $targetIndex = $this->toFirstIndex($onHandTile);
-        parent::replace($targetIndex, $newTile);
-    }
-
-    function removeTile(Tile $onHandTile) {
-        $this->assertWritable();
-        $targetIndex = $this->toFirstIndex($onHandTile);
-        parent::remove($targetIndex);
-    }
-
-    function removeManyTiles(array $onHandTiles) {
-        $this->assertWritable();
-        // NOTE: seems low efficiency, refactor if it does
-        foreach ($onHandTiles as $onHandTile) {
-            $this->removeTile($onHandTile);
-        }
-    }
-
-    function pop() {
-        $this->assertWritable();
-        return parent::pop();
-    }
-
-    function popMany($n) {
-        $this->assertWritable();
-        return parent::popMany($n);
-    }
-
-    function shift() {
-        $this->assertWritable();
-        return parent::shift();
-    }
-
-    function shiftMany($n) {
-        $this->assertWritable();
-        return parent::shiftMany($n);
-    }
-
-    function shuffle() {
-        $this->assertWritable();
-        parent::shuffle();
     }
 
     /**

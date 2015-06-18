@@ -2,19 +2,48 @@
 namespace Saki\Util;
 
 /**
- * convenient base class for ascend-number-key array like object.
+ * convenient base class for 0-begin-ascending-int-key-array like object.
  * @package Saki\Util
  */
 class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
+    /**
+     * @param array $a
+     * @return bool
+     */
+    final static function is0BeginAscendingIntKeyArray(array $a) {
+        return empty($a) || array_keys($a) === range(0, count($a) - 1);
+    }
+
+    /**
+     * @param mixed|array $valueOrValues
+     * @return array
+     */
+    final protected static function boxing($valueOrValues) {
+        return is_array($valueOrValues) ? array_values($valueOrValues) : [$valueOrValues];
+    }
+
+    /**
+     * @param array $values
+     * @param bool $originIsArray
+     * @return mixed|array valueOrValues
+     */
+    final protected static function unboxing(array $values, $originIsArray) {
+        if (!$originIsArray && count($values) != 1) {
+            throw new \InvalidArgumentException();
+        }
+        return $originIsArray ? $values : $values[0];
+    }
+
+    final protected static function isUniqueArray(array $a) {
+        return array_unique($a) == $a;
+    }
 
     private $innerArray;
 
+    /**
+     * @param array $innerArray
+     */
     function __construct(array $innerArray) {
-        $validArray = empty($innerArray) || array_keys($innerArray) === range(0, count($innerArray) - 1);
-        if (!$validArray) {
-            $innerArrayString = implode(',', $innerArray);
-            throw new \InvalidArgumentException("Invalid \$innerArray[$innerArrayString], ascend-number-key array expected.");
-        }
         $this->setInnerArray($innerArray);
     }
 
@@ -29,10 +58,17 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         return $this->innerArray;
     }
 
+    /**
+     * @return ArrayIterator
+     */
     function getIterator() {
         return new \ArrayIterator($this->innerArray);
     }
 
+    /**
+     * @param int $offset
+     * @return bool
+     */
     function offsetExists($offset) {
         return isset($this->innerArray[$offset]);
     }
@@ -49,129 +85,220 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         }
     }
 
+    /**
+     * @param int $offset
+     * @param mixed $value
+     */
     function offsetSet($offset, $value) {
-        throw new \BadMethodCallException();
+        if ($this->offsetExists($offset)) {
+            $this->innerArray[$offset] = $value;
+            $this->onInnerArrayChanged();
+        } else {
+            throw new \InvalidArgumentException("Invalid \$offset[$offset] for ArrayLikeObject \$this[$this].");
+        }
     }
 
+    /**
+     * @param int $offset
+     */
     function offsetUnset($offset) {
+        // NOTE: not supported since some of usages like unset($k1, $k2) would be buggy because of index-rearrange comes after modify
         throw new \BadMethodCallException();
     }
 
+    /**
+     * @return int
+     */
     function count() {
         return count($this->innerArray);
     }
 
-    protected function toFirstIndex($targetItem, $strict = false) {
-        $i = array_search($targetItem, $this->innerArray, $strict);
-        if ($i === false) {
-            throw new \InvalidArgumentException("Invalid target \$targetItem[$targetItem] for ArrayLikeObject \$this[$this] by \$strict[$strict].");
+    function setInnerArray(array $innerArray) {
+        if (!static::is0BeginAscendingIntKeyArray($innerArray)) {
+            $innerArrayString = implode(',', $innerArray);
+            throw new \InvalidArgumentException("Invalid \$innerArray[$innerArrayString], 0-begin-ascending-int-key-array expected.");
         }
-        return $i;
-    }
-
-    protected function setInnerArray($innerArray, $callHook = true) {
         $this->innerArray = $innerArray;
-        if ($callHook) {
-            $this->innerArrayChangedHook();
-        }
+        $this->onInnerArrayChanged();
     }
 
-    protected function assertValidPositions($posOrPositions) {
-        $positions = is_array($posOrPositions) ? $posOrPositions : [$posOrPositions];
-        foreach($positions as $pos) {
-            $validPos = 0 <= $pos && $pos <= $this->count();
-            if (!$validPos) {
-                throw new \InvalidArgumentException();
-            }
-        }
-    }
+    /**
+     * @param mixed|array $valueOrValues
+     * @param bool $strict
+     * @return int|int[] non-duplicate first indexes of $targetItems
+     */
+    function valueToIndex($valueOrValues, $strict = false) {
+        $targets = static::boxing($valueOrValues);
+        $equals = function ($v1, $v2) use ($strict) {
+            return $strict ? $v1 === $v2 : $v1 == $v2;
+        };
 
-    protected function insert($item, $pos = null) {
-        $this->insertMany([$item], $pos);
-    }
-
-    protected function insertMany(array $items, $pos = null) {
-        $actualPos = $pos !== null ? $pos : $this->count();
-        $this->assertValidPositions($actualPos);
-        array_splice($this->innerArray, $actualPos, 0, $items);
-        $this->innerArrayChangedHook();
-    }
-
-    protected function push($item) {
-        $this->insert($item, $this->count());
-    }
-
-    protected function pushMany(array $items) {
-        $this->insertMany($items, $this->count());
-    }
-
-    protected function unshift($item) {
-        $this->insert($item, 0);
-    }
-
-    protected function unshiftMany(array $items) {
-        $this->insertMany($items, 0);
-    }
-
-    protected function replace($pos, $obj) {
-        $this->assertValidPositions($pos);
-        $ret = $this->innerArray[$pos];
-        $this->innerArray[$pos] = $obj;
-        $this->innerArrayChangedHook();
-        return $ret;
-    }
-
-    protected function remove($pos) {
-        $this->assertValidPositions($pos);
-        $ret = $this->innerArray[$pos];
-        array_splice($this->innerArray, $pos, 1);
-        $this->innerArrayChangedHook();
-        return $ret;
-    }
-
-    protected function removeMany(array $positions) {
-        $this->assertValidPositions($positions);
+        $tobeFoundCount = count($targets);
+        $foundIndexes = array_fill(0, $tobeFoundCount, false);
         $innerArray = $this->innerArray;
-        $removedItems = array_map(function($pos)use($innerArray){return $innerArray[$pos];}, $positions);
-        $newItems = [];
-        foreach ($innerArray as $pos => $item) {
-            if (!in_array($pos, $positions)) {
-                $newItems[] = $item;
+        $innerArrayCount = count($innerArray);
+
+        for ($i = 0; $i < $innerArrayCount && $tobeFoundCount > 0; ++$i) {
+            $v = $innerArray[$i];
+
+            foreach ($targets as $k => $target) {
+                $alreadyFound = $foundIndexes[$k] !== false;
+                if (!$alreadyFound && $equals($target, $v)) {
+                    $foundIndexes[$k] = $i;
+                    --$tobeFoundCount;
+                    break;
+                }
             }
         }
-        $this->setInnerArray($newItems);
-        return $removedItems;
+
+        $allFound = $tobeFoundCount == 0;
+        if (!$allFound) {
+            $valueOrValuesString = is_array($valueOrValues) ? implode(',', $valueOrValues) : $valueOrValues;
+            throw new \InvalidArgumentException("Invalid \$valueOrValues[$valueOrValuesString] for " . __CLASS__ . " \$this[$this] by \$strict[$strict].");
+        }
+
+        $foundIndexOrIndexes = static::unboxing($foundIndexes, is_array($valueOrValues));
+        return $foundIndexOrIndexes;
     }
 
-    protected function pop() {
-        return $this->remove($this->count() - 1);
+    /**
+     * @param mixed|array $valueOrValues
+     * @param bool $strict
+     * @return bool
+     */
+    function valueExist($valueOrValues, $strict = false) {
+        try {
+            $this->valueToIndex($valueOrValues, $strict);
+        } catch (\InvalidArgumentException $e) {
+            return false;
+        }
+        return true;
     }
 
-    protected function popMany($n) {
-        if ($n > $this->count()) {
+    /**
+     * @param mixed|array $indexOrIndexes
+     * @return mixed|array
+     */
+    function indexToValue($indexOrIndexes) {
+        if (!$this->indexExist($indexOrIndexes)) {
+            throw new \InvalidArgumentException("Invalid \$indexOrIndexes[$indexOrIndexes] for " . __CLASS__ . " \$this[$this]");
+        }
+        $indexes = static::boxing($indexOrIndexes);
+        $values = array_map(function ($i) {
+            return $this[$i];
+        }, $indexes);
+        $valueOrValues = static::unboxing($values, is_array($indexOrIndexes));
+        return $valueOrValues;
+    }
+
+    /**
+     * @param mixed|array $indexOrIndexes
+     * @return bool
+     */
+    function indexExist($indexOrIndexes) {
+        $indexes = static::boxing($indexOrIndexes);
+        foreach ($indexes as $i) {
+            if (!$this->offsetExists($i)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function replaceByIndex($indexOrIndexes, $newValueOrValues) {
+        $indexes = static::boxing($indexOrIndexes);
+        $newValues = static::boxing($newValueOrValues);
+        $valid = $this->indexExist($indexOrIndexes) && static::isUniqueArray($indexes) && count($indexes) == count($newValues);
+        if (!$valid) {
             throw new \InvalidArgumentException();
         }
-        $high = $this->count() - 1;
-        $low = $high - $n + 1;
-        $positions = range($high, $low, -1);
-        return $this->removeMany($positions);
+        $replace = array_combine($indexes, $newValues);
+        $this->innerArray = array_replace($this->innerArray, $replace);
+        $this->onInnerArrayChanged();
     }
 
-    protected function shift() {
-        return $this->remove(0);
+    function replaceByValue($oldValueOrValues, $newValueOrValues, $strict = false) {
+        $indexOrIndexes = $this->valueToIndex($oldValueOrValues, $strict);
+        $this->replaceByIndex($indexOrIndexes, $newValueOrValues);
     }
 
-    protected function shiftMany($n) {
-        if ($n > $this->count()) {
+    /**
+     * @param mixed|array $valueOrValues
+     * @param int $pos
+     */
+    function insert($valueOrValues, $pos) {
+        $valid = $pos == $this->count() || $this->indexExist($pos);
+        if (!$valid) {
             throw new \InvalidArgumentException();
         }
-        $positions = range(0, $n - 1, 1);
-        return $this->removeMany($positions);
+        $values = static::boxing($valueOrValues);
+        array_splice($this->innerArray, $pos, 0, $values); // splice() will rearrange integer-keys
+        $this->onInnerArrayChanged();
     }
 
-    protected function shuffle() {
+    /**
+     * @param mixed|array $valueOrValues
+     */
+    function unShift($valueOrValues) {
+        $this->insert($valueOrValues, 0);
+    }
+
+    /**
+     * @param mixed|array $valueOrValues
+     */
+    function push($valueOrValues) {
+        $this->insert($valueOrValues, $this->count());
+    }
+
+    function removeByIndex($indexOrIndexes) {
+        $valid = !is_array($indexOrIndexes) || array_unique($indexOrIndexes)==$indexOrIndexes;
+        if (!$valid) {
+            throw new \InvalidArgumentException();
+        }
+
+        $ret = $this->indexToValue($indexOrIndexes);
+        $tobeRemovedIndexes = static::boxing($indexOrIndexes);
+
+        $filtered = array_filter($this->innerArray, function ($v, $k) use ($tobeRemovedIndexes) {
+            return array_search($k, $tobeRemovedIndexes) === false;
+        }, ARRAY_FILTER_USE_BOTH);
+        $this->innerArray = array_values($filtered);
+        $this->onInnerArrayChanged();
+        return $ret;
+    }
+
+    function removeByValue($valueOrValues) {
+        return $this->removeByIndex($this->valueToIndex($valueOrValues));
+    }
+
+    function shift($n = 1) {
+        $indexOrIndexes = $n == 1 ? 0 : range(0, $n - 1);
+        return $this->removeByIndex($indexOrIndexes);
+    }
+
+    function pop($n = 1) {
+        $count = $this->count();
+        $last = $count - 1;
+        $first = $last - $n + 1;
+        $indexOrIndexes = $n == 1 ? $last : range($last, $first);
+        return $this->removeByIndex($indexOrIndexes);
+    }
+
+    function shuffle() {
         shuffle($this->innerArray);
-        $this->innerArrayChangedHook();
+        $this->onInnerArrayChanged();
+    }
+
+    private $allowHook = true;
+    protected final function onInnerArrayChanged() {
+        if ($this->allowHook) {
+            $this->allowHook = false;
+            try {
+                $this->innerArrayChangedHook();
+            } finally {
+                $this->allowHook = true;
+            }
+        }
     }
 
     protected function innerArrayChangedHook() {

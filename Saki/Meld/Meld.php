@@ -50,7 +50,7 @@ class Meld extends ArrayLikeObject {
         }
         $actualMeldType = $meldType ?: self::getMeldTypeAnalyzer()->analyzeMeldType($tileList);
 
-        $tileOrderedList = new TileSortedList($tileList->toArray(), true);
+        $tileOrderedList = new TileSortedList($tileList->toArray());
         parent::__construct($tileOrderedList->toArray());
         $this->tileReadonlyOrderedList = $tileOrderedList;
         $this->meldType = $actualMeldType;
@@ -81,7 +81,7 @@ class Meld extends ArrayLikeObject {
             throw new \InvalidArgumentException("Invalid addKong \$tile[$tile] for Meld \$this[$this]");
         }
         $newTileList = new TileList($this->toArray());
-        $newTileList->add($tile);
+        $newTileList->push($tile);
         return new Meld($newTileList, KongMeldType::getInstance());
     }
 

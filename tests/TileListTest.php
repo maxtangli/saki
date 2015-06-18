@@ -76,19 +76,19 @@ class TileListTest extends PHPUnit_Framework_TestCase {
 
     function testAdd() {
         $l = TileList::fromString('1m', false);
-        $l->add(Tile::fromString('2m'));
+        $l->push(Tile::fromString('2m'));
         $this->assertSame('12m', $l->__toString());
     }
 
     function testReplace() {
         $l = TileList::fromString('11m', false);
-        $l->replaceTile(Tile::fromString('1m'), Tile::fromString('2m'));
+        $l->replaceByValue(Tile::fromString('1m'), Tile::fromString('2m'));
         $this->assertSame('21m', $l->__toString());
     }
 
     function testRemove() {
         $l = TileList::fromString('12322m', false);
-        $l->removeTile(Tile::fromString('2m'));
+        $l->removeByValue(Tile::fromString('2m'));
         $this->assertEquals('1322m', $l->__toString());
         $expectedKey = 0;
         foreach($l as $k => $v) {
@@ -98,7 +98,7 @@ class TileListTest extends PHPUnit_Framework_TestCase {
 
     function testRemoveMany() {
         $l = TileList::fromString('123242m', false);
-        $l->removeManyTiles([Tile::fromString('2m'),Tile::fromString('2m')]);
+        $l->removeByValue([Tile::fromString('2m'),Tile::fromString('2m')]);
         $this->assertEquals('1342m', $l->__toString());
     }
 }

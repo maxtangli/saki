@@ -42,6 +42,10 @@ class TileSortedListTest extends PHPUnit_Framework_TestCase {
     }
 
     function testOrderAfterModify() {
+        $l = \Saki\TileSortedList::fromString('132m', false);
+        $this->assertEquals('123m', $l->__toString());
 
+        $l->push(Tile::fromString('2m'));
+        $this->assertEquals('1223m', $l->__toString());
     }
 }

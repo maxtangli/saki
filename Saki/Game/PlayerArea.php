@@ -63,76 +63,60 @@ class PlayerArea {
         return $ret;
     }
 
-    /**
-     * @param $indexOrTile
-     * @throws \InvalidArgumentException
-     */
-    function discard($indexOrTile) {
-        if (is_int($indexOrTile)) {
-            $tileSortedList = $this->getOnHandTileSortedList();
-            if (isset($tileSortedList[$indexOrTile])) { //onHandIndex
-                $tile = $tileSortedList[$indexOrTile];
-            } elseif ($indexOrTile == count($tileSortedList) && $this->hasCandidateTile()) { // candidateIndex
-                $tile = $this->getCandidateTile();
-            } else {
-                throw new \InvalidArgumentException();
-            }
-        } elseif ($indexOrTile instanceof Tile) {
-            $tile = $indexOrTile;
-        } else {
+    function keepCandidateTileIfExist() {
+        if ($this->hasCandidateTile()) {
+            $this->getOnHandTileSortedList()->push($this->removeCandidateTile());
+        }
+    }
+
+    function draw(Tile $newTile) {
+        $valid = !$this->hasCandidateTile();
+        if (!$valid) {
             throw new \InvalidArgumentException();
         }
+        $this->setCandidateTile($newTile);
+    }
 
-        if ($this->hasCandidateTile()) {
-            if ($this->getCandidateTile() == $tile) { // discardCandidate
-                $this->getDiscardedTileList()->add($this->removeCandidateTile());
-            } else { // keepCandidateAndDiscardOnHand
-                $this->getOnHandTileSortedList()->replaceTile($tile, $this->removeCandidateTile());
-                $this->getDiscardedTileList()->add($tile);
-            }
-        } else { // DiscardOnHand
-            $this->getOnHandTileSortedList()->removeTile($tile);
-            $this->getDiscardedTileList()->add($tile);
+    function discard(Tile $selfTile) {
+        $valid = true;
+        if (!$valid) {
+            throw new \InvalidArgumentException();
         }
+        $this->keepCandidateTileIfExist();
+        $this->getOnHandTileSortedList()->removeByValue($selfTile);
+        $this->getDiscardedTileList()->push($selfTile);
     }
 
-    /*
-    function chow(Tile $onHandTile1, Tile $onHandTile2, Tile $newTile) {
-        $this->createMeld(SequenceMeldType::getInstance(), [$onHandTile1, $onHandTile2], $newTile);
-    }
-
-    function exposedPong(Tile $onHandTile1, Tile $onHandTile2, Tile $newTile) {
-        $this->createMeld(TripletMeldType::getInstance(), [$onHandTile1, $onHandTile2], $newTile);
-    }
-
-    function concealedPong(Tile $onHandTile1, Tile $onHandTile2, Tile $onHandTile3) {
-        $this->createMeld(TripletMeldType::getInstance(), [$onHandTile1, $onHandTile2, $onHandTile3]);
-    }
-
-    function exposedKong(Tile $onHandTile1, Tile $onHandTile2, Tile $onHandTile3, Tile $newTile) {
-        $this->createMeld(KongMeldType::getInstance(), [$onHandTile1, $onHandTile2, $onHandTile3], $newTile);
-    }
-
-    function concealedKong(Tile $onHandTile1, Tile $onHandTile2, Tile $onHandTile3, Tile $onHandTile4) {
-        $this->createMeld(KongMeldType::getInstance(), [$onHandTile1, $onHandTile2, $onHandTile3, $onHandTile4]);
-    }
-
-    function plusKong(Tile $onHandTile) {
-        $this->getExposedMeldList()->plusKong($onHandTile);
-        $this->getOnHandTileSortedList()->remove($onHandTile);
-    }
-*/
-    protected function createMeld(MeldType $targetMeld, array $onHandTiles, Tile $newTile = null) {
-        $onHandTileList = $this->getOnHandTileSortedList();
-        $targetTiles = $newTile === null ? $onHandTiles : array_merge($onHandTiles, [$newTile]);
-        $targetTileList = new TileList($targetTiles);
-        if ($targetMeld->valid($targetTileList)) {
-            $meld = new Meld($targetTileList, $targetMeld);
-            $onHandTileList->removeManyTiles($onHandTiles);
-            $this->getExposedMeldList()->insert($meld);
-        } else {
-            throw new \InvalidArgumentException("Invalid \$targetTileList[$targetTileList] for \$targetMeld[$targetMeld]");
+    function concealedKong(Tile $selfTile) {
+        $valid = true;
+        if (!$valid) {
+            throw new \InvalidArgumentException();
         }
+        $this->keepCandidateTileIfExist();
+        $this->getOnHandTileSortedList()->removeByValue([$selfTile,$selfTile,$selfTile,$selfTile]);
+        $meld = new Meld(new TileList([$selfTile, $selfTile, $selfTile, $selfTile]), KongMeldType::getInstance());
+        $this->getExposedMeldList()->insert($meld);
     }
 
+    function plusKong(Tile $selfTile) {
+        $valid = true;
+        if (!$valid) {
+            throw new \InvalidArgumentException();
+        }
+        $this->keepCandidateTileIfExist();
+        $this->getExposedMeldList()->plusKong($selfTile);
+        $this->getOnHandTileSortedList()->removeByValue($selfTile);
+    }
+
+    function chow(Tile $newTile, Tile $selfTile1, Tile $selfTile2) {
+
+    }
+
+    function pong(Tile $newTile) {
+
+    }
+
+    function exposedKong(Tile $newTile) {
+
+    }
 }

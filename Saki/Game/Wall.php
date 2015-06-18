@@ -78,18 +78,11 @@ class Wall {
     }
 
     /**
-     * @return Tile
-     */
-    function pop() {
-        return $this->getRemainTileList()->pop();
-    }
-
-    /**
      * @param int $n
-     * @return Tile[]
+     * @return Tile|Tile[]
      */
-    function popMany($n) {
-        return $this->getRemainTileList()->popMany($n);
+    function pop($n = 1) {
+        return $this->getRemainTileList()->pop($n);
     }
 
     /**

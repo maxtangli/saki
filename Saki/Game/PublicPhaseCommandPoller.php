@@ -1,15 +1,22 @@
 <?php
 namespace Saki\Game;
 
-class PublicPhaseCommandPoller {
+use Saki\Command\Command;
 
+class PublicPhaseCommandPoller {
     private $mapWaitingPlayerNo2priority;
     private $decidedCommands;
 
+    /**
+     * @param Command[] $commands
+     */
     function __construct(array $commands) {
         $this->init($commands);
     }
 
+    /**
+     * @param Command[] $commands
+     */
     function init(array $commands) {
         // record each player's highest priority
         $mapWaitingPlayerNo2priority = [];
@@ -23,6 +30,9 @@ class PublicPhaseCommandPoller {
         $this->decidedCommands = [];
     }
 
+    /**
+     * @param Command $command
+     */
     function acceptCommand(Command $command) {
         // possible commands: pass, chow, pong/kang, ron
         // handle decidedCommands
@@ -45,17 +55,27 @@ class PublicPhaseCommandPoller {
         unset($this->mapWaitingPlayerNo2priority[$command->getPlayer()->getNo()]);
     }
 
-    function isDecided() {
+    /**
+     * @return bool
+     */
+    function decided() {
         return empty($this->mapWaitingPlayerNo2priority);
     }
 
+    /**
+     * @return Command[]
+     */
     function getDecidedCommands() {
-        if (!$this->isDecided()) {
+        if (!$this->decided()) {
             throw new \InvalidArgumentException();
         }
         return $this->decidedCommands;
     }
 
+    /**
+     * @param Command $command
+     * @return int
+     */
     function getCommandPriority(Command $command) {
         // ron = ron
         // > pon/kang (one player only)

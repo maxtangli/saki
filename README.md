@@ -9,9 +9,9 @@ A japanese-mahjong solver.
 
 - [ ] ==,===,array_search => custom equalsTo() ?
 - [ ] ugly const REGEX_XXX =>  class TileRegex ?
-- [ ] static factory method such as fromString($s) force subclasses keep constructor signature => ?
+- [ ] static factory method such as fromString($s) force subclasses keep constructor signature => move to factory class?
 - [x] ArrayObjectLike modify methods => protected methods in ArrayObjectLike
-- [ ] ArrayObjectLike protected methods override is buggy => ?
+- [x] ArrayObjectLike protected methods override is buggy => refactor to public
 
 ## todo
 
@@ -83,21 +83,36 @@ rush 7 phase logic
 
 - [x] detailed analyze 1h
 - [x] PublicPhaseCommandPoller 0.5h
-- [x] phase switch 2h
+- [x] phase switch 2.5h
+- [ ] refactor: PlayerArea.candidateTile not convenient
 - [ ] private phase: kang, pluseKang, zimo
 - [ ] public phase: chow, pon/kang, ron
 - [ ] over phase: drawn
 - [ ] over phase: ron/zimo
 - [ ] refactor ArrayLikeObject.impl
 
+rush 8 refactor ArrayLikeObject
+
+- [x] analyze 1.0h
+- [x] implement iterate 0.5h
+- [x] implement retrieve 2h
+- [x] implement update 0.5h
+- [x] implement insert 0.5h
+- [x] implement delete 1h
+- [x] implement keep-sorted
+- [x] refactor usages 0.5h
+
 rush next round& game over
+
+rush yaku
+
+- [ ] pseudocode 3h
 
 features
 
 - rush fushu/point
 - rush dora/ red dora
 - rush player wind
-- rush yaku
 - more friendly UI
 
 advanced features
@@ -130,6 +145,43 @@ Command serialize
 
 - toString discard p1 4p
 - fromString DiscardCommand $round $player $params
+
+## note: ArrayLikeObject
+
+main responsibility
+
+- support foreach/count/isset/get/(set)
+- encapsulate PHP array operations
+
+modify operations visibility
+
+- all: extends ArrayLikeAccessable
+- none: implement ArrayLikeReadable and delegate to ArrayLikeAccessable
+- some: implement ArrayLikeReadable and delegate to ArrayLikeAccessable
+
+common operations
+
+- create by v[] (constructor)
+
+- retrieve k/k[]->all exist?
+- retrieve k/k[]->v/v[] ($this[])
+- retrieve v/v[]->all exist?
+- retrieve v/v[]->k/k[]
+
+- update v/v[] at k/k[] -> newV/newV[] ($this[]=)
+- update all v[] -> new v[]
+
+- insert pos v/v[], rearrange key
+- insert unshift v/v[], rearrange key
+- insert push v/v[], rearrange key
+
+- delete k/k[] (unset($this[])) rearrange key
+- delete shift->v/v[]
+- delete pop->v/v[]
+
+support keep-sorted
+
+- modifiedHook()
 
 ## note: round logic
 
