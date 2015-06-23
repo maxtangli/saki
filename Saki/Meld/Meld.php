@@ -69,7 +69,7 @@ class Meld extends ArrayLikeObject {
     }
 
     function canAddKong(Tile $tile) {
-        return $this->getMeldType() instanceof TripletMeldType && $this[0] == $tile;
+        return $this->getMeldType() instanceof TripleMeldType && $this[0] == $tile;
     }
 
     /**
@@ -82,7 +82,7 @@ class Meld extends ArrayLikeObject {
         }
         $newTileList = new TileList($this->toArray());
         $newTileList->push($tile);
-        return new Meld($newTileList, KongMeldType::getInstance());
+        return new Meld($newTileList, QuadMeldType::getInstance());
     }
 
     /**

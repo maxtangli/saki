@@ -11,10 +11,10 @@ class MeldTypeAnalyzer {
      */
     static function getDefaultCandidateMeldTypes() {
         return [
-            EyesMeldType::getInstance(),
-            SequenceMeldType::getInstance(),
-            TripletMeldType::getInstance(),
-            KongMeldType::getInstance(),
+            PairMeldType::getInstance(),
+            RunMeldType::getInstance(),
+            TripleMeldType::getInstance(),
+            QuadMeldType::getInstance(),
         ];
     }
 

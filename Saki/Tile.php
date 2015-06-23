@@ -66,6 +66,11 @@ class Tile {
         $this->number = $number;
     }
 
+    function __toString() {
+        $tileType = $this->getTileType();
+        return $tileType->isSuit() ? $this->getNumber() . $tileType->__toString() : $tileType->__toString();
+    }
+
     function getTileType() {
         return $this->tileType;
     }
@@ -77,9 +82,32 @@ class Tile {
         return $this->number;
     }
 
-    function __toString() {
-        $tileType = $this->getTileType();
-        return $tileType->isSuit() ? $this->getNumber() . $tileType->__toString() : $tileType->__toString();
+    function isSuit() {
+        return $this->getTileType()->isSuit();
+    }
+
+    function isHonor() {
+        return $this->getTileType()->isHonor();
+    }
+
+    function isWind() {
+        return $this->getTileType()->isWind();
+    }
+
+    function isDragon() {
+        return $this->getTileType()->isDragon();
+    }
+
+    function isSimple() {
+        return $this->isSuit() && !in_array($this->getNumber(), [1, 9]);
+    }
+
+    function isTerminal() {
+        return $this->isSuit() && in_array($this->getNumber(), [1, 9]);
+    }
+
+    function isTerminalOrHonor() {
+        return $this->isTerminal() || $this->isHonor();
     }
 
     function toNextTile() {
@@ -94,9 +122,9 @@ class Tile {
                 TileType::SOUTH => TileType::WEST,
                 TileType::WEST => TileType::NORTH,
                 TileType::NORTH => TileType::EAST,
+                TileType::RED => TileType::WHITE,
                 TileType::WHITE => TileType::GREEN,
                 TileType::GREEN => TileType::RED,
-                TileType::RED => TileType::WHITE,
             ];
             $nextType = $map[$currentType];
             return new Tile($nextType);

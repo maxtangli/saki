@@ -53,7 +53,7 @@ $round = $data->getCurrentRound();
     </tr>
     <tr>
         <td class="tg-031e">round</td>
-        <td class="tg-031e" colspan="2">turn&nbsp;<?= $round->getCurrentTurn() ?></td>
+        <td class="tg-031e" colspan="2">turn&nbsp;<?= todo ?></td>
     </tr>
     <tr>
         <td class="tg-031e">wall</td>

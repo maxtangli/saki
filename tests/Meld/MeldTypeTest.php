@@ -15,13 +15,13 @@ class MeldTypeTest extends PHPUnit_Framework_TestCase {
     }
 
     function testEyes() {
-        $mt = \Saki\Meld\EyesMeldType::getInstance();
+        $mt = \Saki\Meld\PairMeldType::getInstance();
         $this->assertTrue($mt->valid(TileList::fromString('11m', false)));
         $this->assertFalse($mt->valid(TileList::fromString('111m', false)));
     }
 
     function testSequence() {
-        $mt = \Saki\Meld\SequenceMeldType::getInstance();
+        $mt = \Saki\Meld\RunMeldType::getInstance();
         $this->assertTrue($mt->valid(TileList::fromString('123m', false)));
         $this->assertTrue($mt->valid(TileList::fromString('132m', false)));
         $this->assertTrue($mt->valid(TileList::fromString('213m', false)));
@@ -33,7 +33,7 @@ class MeldTypeTest extends PHPUnit_Framework_TestCase {
     }
 
     function testTriplet() {
-        $mt = \Saki\Meld\TripletMeldType::getInstance();
+        $mt = \Saki\Meld\TripleMeldType::getInstance();
         $this->assertTrue($mt->valid(TileList::fromString('111m', false)));
         $this->assertFalse($mt->valid(TileList::fromString('11m1s', false)));
         $this->assertFalse($mt->valid(TileList::fromString('11m', false)));

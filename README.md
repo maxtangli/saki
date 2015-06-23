@@ -79,17 +79,15 @@ rush 6 exhaustive draw: first step
 - [x] refactor Wall 0.5h
 - [x] after command execute
 
-rush 7 phase logic
+rush 7 phase flow
 
 - [x] detailed analyze 1h
 - [x] PublicPhaseCommandPoller 0.5h
 - [x] phase switch 2.5h
-- [ ] refactor: PlayerArea.candidateTile not convenient
-- [ ] private phase: kang, pluseKang, zimo
-- [ ] public phase: chow, pon/kang, ron
-- [ ] over phase: drawn
-- [ ] over phase: ron/zimo
-- [ ] refactor ArrayLikeObject.impl
+- [x] public phase: chow 0.5h
+- [x] refactor Round to support test for chow 0.5h
+- [x] public phase: pon/kang 0.5h
+- [x] bug: turn calculate 1.0h
 
 rush 8 refactor ArrayLikeObject
 
@@ -102,11 +100,26 @@ rush 8 refactor ArrayLikeObject
 - [x] implement keep-sorted
 - [x] refactor usages 0.5h
 
-rush next round& game over
+rush 9 next round
+
+- [ ] over phase: drawn
+- [ ] over phase: ron/zimo
+
+- [ ] public phase: ron
+- [ ] private phase: win on self
+- [ ] refactor: PlayerArea.candidateTile not convenient
+
+rush concealed triple/quad
+
+- [ ] private phase: kang, pluseKang
 
 rush yaku
 
-- [ ] pseudocode 3h
+- [ ] pseudocode 3.5h
+- [x] yaku.xls 1.5h
+- [x] refactor: rename terms to follow yaku names 0.5h
+
+rush game over
 
 features
 
@@ -131,11 +144,6 @@ more advanced features
 
 ## note
 
-ObjectLikeArray
-
-- loop/count/offsetGet
-- all convenient modify methods, not exposed to client
-
 Command
 
 - RoundCommand operates on round, Round do not know Concrete Command? thus adding new Command will be easy?
@@ -145,6 +153,36 @@ Command serialize
 
 - toString discard p1 4p
 - fromString DiscardCommand $round $player $params
+
+## note: Yaku
+
+melds-concerned
+
+- SevenPairs
+
+- Peace
+- DoubleRun
+- ThreeColorRuns
+- FullStraight
+- MixedOutsideHand
+- PureOutsideHand
+
+- ValueTiles
+- AllTriples
+- ThreeConcealedTriples
+
+tiles-concerned
+
+- AllSimples
+- HalfFlush
+- FullFlush
+
+tiles-not-concerned
+
+- Reach
+- ConcealedSelfDraw
+- FirstTurnWin
+- FinalTileWin
 
 ## note: ArrayLikeObject
 
@@ -208,6 +246,11 @@ p's private phase: after execute command
 - if discard: go to public phase
 - if zimo: go to round-over phase
 - if kang/plusKang: drawBack, stay in private phase
+
+p's public phase: basic version
+
+- public phase means waiting for other's response for current player's action
+- poller responsible for select a final action for public phase
 
 p's public phase: before execute command
 

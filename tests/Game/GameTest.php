@@ -15,7 +15,6 @@ class GameTest extends PHPUnit_Framework_TestCase {
         $g1 = new \Saki\Game\Game(4,40000);
 
         $g2 = unserialize(serialize($g1));
-        $this->assertEquals($g1->getCurrentRound()->getCurrentTurn(), $g2->getCurrentRound()->getCurrentTurn());
         $this->assertEquals($g1, $g2);
 
 //        session_start();

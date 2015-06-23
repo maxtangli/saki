@@ -3,7 +3,7 @@ namespace Saki\Meld;
 
 use Saki\TileList;
 
-class SequenceMeldType extends MeldType {
+class RunMeldType extends MeldType {
     function getTileCount() {
         return 3;
     }

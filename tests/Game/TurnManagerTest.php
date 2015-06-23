@@ -2,26 +2,30 @@
 
 
 class TurnManagerTest extends PHPUnit_Framework_TestCase {
-    function testOverall() {
+    function testInitialState() {
         $players = ['saki', 'nodoka', 'koromo'];
-        $currentPlayer = 'koromo';
-        // new
-        $m = new \Saki\Game\TurnManager($players, $currentPlayer);
-        $this->assertSame($currentPlayer, $m->getCurrentPlayer());
+        $m = new \Saki\Game\TurnManager($players, 'saki', 0);
+        $this->assertEquals($players, $m->getPlayers());
+        $this->assertEquals(3, $m->getPlayerCount());
+        $this->assertEquals('saki', $m->getCurrentPlayer());
+        $this->assertEquals('nodoka', $m->getNextPlayer());
+        $this->assertEquals(0, $m->getCurrentPlayerTurn());
+        $this->assertEquals(0, $m->getTotalTurn());
+    }
 
-        // toNextPlayer
-        $m = new \Saki\Game\TurnManager($players, $currentPlayer, 0);
-        $expectedPlayer = ['koromo', 'saki', 'nodoka'];
+    /**
+     * @depends testInitialState
+     */
+    function testToNext() {
+        $players = ['saki', 'nodoka', 'koromo'];
+        $m = new \Saki\Game\TurnManager($players, 'saki', 0);
+        $m->toPlayer('koromo');
+        $expectedPlayer = ['koromo','saki', 'nodoka'];
         for ($i = 0; $i < count($players); ++$i) {
             $this->assertSame($expectedPlayer[$i], $m->getCurrentPlayer());
-            $this->assertSame($i, $m->getCurrentTurn());
+            $this->assertSame(1, $m->getCurrentPlayerTurn());
+            $this->assertSame($i+1, $m->getTotalTurn());
             $m->toNextPlayer();
         }
-
-        // toPlayer
-        $m = new \Saki\Game\TurnManager($players, $currentPlayer, 1);
-        $m->toPlayer('saki');
-        $this->assertSame('saki', $m->getCurrentPlayer());
-        $this->assertSame(2, $m->getCurrentTurn());
     }
 }

@@ -1,11 +1,11 @@
 <?php
 namespace Saki\Game;
 
-use Saki\Meld\KongMeldType;
+use Saki\Meld\QuadMeldType;
 use Saki\Meld\Meld;
 use Saki\Meld\MeldList;
-use Saki\Meld\SequenceMeldType;
-use Saki\Meld\TripletMeldType;
+use Saki\Meld\RunMeldType;
+use Saki\Meld\TripleMeldType;
 use Saki\TileList;
 use Saki\TileSortedList;
 use Saki\Tile;
@@ -63,7 +63,7 @@ class PlayerArea {
         return $ret;
     }
 
-    function keepCandidateTileIfExist() {
+    function moveCandidateTileToHandIfExist() {
         if ($this->hasCandidateTile()) {
             $this->getOnHandTileSortedList()->push($this->removeCandidateTile());
         }
@@ -82,7 +82,7 @@ class PlayerArea {
         if (!$valid) {
             throw new \InvalidArgumentException();
         }
-        $this->keepCandidateTileIfExist();
+        $this->moveCandidateTileToHandIfExist();
         $this->getOnHandTileSortedList()->removeByValue($selfTile);
         $this->getDiscardedTileList()->push($selfTile);
     }
@@ -92,9 +92,9 @@ class PlayerArea {
         if (!$valid) {
             throw new \InvalidArgumentException();
         }
-        $this->keepCandidateTileIfExist();
+        $this->moveCandidateTileToHandIfExist();
         $this->getOnHandTileSortedList()->removeByValue([$selfTile,$selfTile,$selfTile,$selfTile]);
-        $meld = new Meld(new TileList([$selfTile, $selfTile, $selfTile, $selfTile]), KongMeldType::getInstance());
+        $meld = new Meld(new TileList([$selfTile, $selfTile, $selfTile, $selfTile]), QuadMeldType::getInstance());
         $this->getExposedMeldList()->insert($meld);
     }
 
@@ -103,20 +103,26 @@ class PlayerArea {
         if (!$valid) {
             throw new \InvalidArgumentException();
         }
-        $this->keepCandidateTileIfExist();
+        $this->moveCandidateTileToHandIfExist();
         $this->getExposedMeldList()->plusKong($selfTile);
         $this->getOnHandTileSortedList()->removeByValue($selfTile);
     }
 
     function chow(Tile $newTile, Tile $selfTile1, Tile $selfTile2) {
-
+        $meld = new Meld(new TileList([$newTile, $selfTile1, $selfTile2]), RunMeldType::getInstance());
+        $this->getOnHandTileSortedList()->removeByValue([$selfTile1, $selfTile2]);
+        $this->getExposedMeldList()->insert($meld);
     }
 
     function pong(Tile $newTile) {
-
+        $meld = new Meld(new TileList([$newTile, $newTile, $newTile]), TripleMeldType::getInstance());
+        $this->getOnHandTileSortedList()->removeByValue([$newTile, $newTile]);
+        $this->getExposedMeldList()->insert($meld);
     }
 
     function exposedKong(Tile $newTile) {
-
+        $meld = new Meld(new TileList([$newTile, $newTile, $newTile,$newTile]), QuadMeldType::getInstance());
+        $this->getOnHandTileSortedList()->removeByValue([$newTile, $newTile, $newTile]);
+        $this->getExposedMeldList()->insert($meld);
     }
 }

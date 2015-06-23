@@ -205,6 +205,14 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         return true;
     }
 
+    function getFirst() {
+        return $this->indexToValue(0);
+    }
+
+    function getLast() {
+        return $this->indexToValue($this->count()-1);
+    }
+
     function replaceByIndex($indexOrIndexes, $newValueOrValues) {
         $indexes = static::boxing($indexOrIndexes);
         $newValues = static::boxing($newValueOrValues);

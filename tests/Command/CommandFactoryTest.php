@@ -14,7 +14,6 @@ class CommandFactoryTest extends PHPUnit_Framework_TestCase {
         $this->assertInstanceOf('\Saki\Command\DiscardCommand', $command);
         $this->assertEquals($t, $command->getTile());
 
-        $r->acceptCommand($command);
-        $this->assertEquals(2, $r->getCurrentTurn());
+        //$r->acceptCommand($command);
     }
 }

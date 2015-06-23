@@ -3,7 +3,7 @@ namespace Saki\Meld;
 
 use Saki\TileList;
 
-class EyesMeldType extends MeldType {
+class PairMeldType extends MeldType {
     function getTileCount() {
         return 2;
     }

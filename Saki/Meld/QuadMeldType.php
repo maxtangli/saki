@@ -3,7 +3,7 @@ namespace Saki\Meld;
 
 use Saki\TileList;
 
-class KongMeldType extends MeldType {
+class QuadMeldType extends MeldType {
     function getTileCount() {
         return 4;
     }

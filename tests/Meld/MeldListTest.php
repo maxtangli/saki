@@ -6,7 +6,7 @@ class MeldListTest extends PHPUnit_Framework_TestCase {
     function testOverall() {
 
         $l = new MeldList([
-            new Meld(\Saki\TileList::fromString('11m'), \Saki\Meld\EyesMeldType::getInstance())
+            new Meld(\Saki\TileList::fromString('11m'), \Saki\Meld\PairMeldType::getInstance())
         ]);
     }
 
