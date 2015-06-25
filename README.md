@@ -86,7 +86,7 @@ rush 7 phase flow
 - [x] phase switch 2.5h
 - [x] public phase: chow 0.5h
 - [x] refactor Round to support test for chow 0.5h
-- [x] public phase: pon/kang 0.5h
+- [x] public phase: pon/kong 0.5h
 - [x] bug: turn calculate 1.0h
 
 rush 8 refactor ArrayLikeObject
@@ -100,18 +100,23 @@ rush 8 refactor ArrayLikeObject
 - [x] implement keep-sorted
 - [x] refactor usages 0.5h
 
-rush 9 next round
+rush 9 concealed triple/quad
+
+- [x] concealed meld 1h
+- [x] refactor: PlayerArea.candidateTile not convenient 0.2h
+- [x] PlayerArea.canXXX 0.3h
+- [x] refactor public phase chow/pong/kong 0.3h
+- [x] private phase: kong, plusKong 0.7h
+
+rush next round
 
 - [ ] over phase: drawn
 - [ ] over phase: ron/zimo
 
-- [ ] public phase: ron
+rush win
+
+- [ ] public phase: win on other
 - [ ] private phase: win on self
-- [ ] refactor: PlayerArea.candidateTile not convenient
-
-rush concealed triple/quad
-
-- [ ] private phase: kang, pluseKang
 
 rush yaku
 
@@ -184,6 +189,18 @@ tiles-not-concerned
 - FirstTurnWin
 - FinalTileWin
 
+## note: plus kong
+
+in private phase
+
+- plusKongBySelf: plus declared triple meld with 1 self tile. meld isExposed or isConcealed (keep).
+- concealedKong: turn 4 self tile into a quad meld. meld isConcealed (new).
+
+in public phase
+
+- plusKongByOther: plus declared triple meld with 1 other tile. meld isExposed (force).
+- exposedKong: turn 3 self and 1 other tile into a quad meld. meld isExposed (new).
+
 ## note: ArrayLikeObject
 
 main responsibility
@@ -239,13 +256,13 @@ p's private phase: before execute command
 - when enter: turn++, draw 1 tile if allowed
 - show candidate commands
 - always: discard one of onHand tile 
-- sometime: kang, plusKang, zimo
+- sometime: kong, plusKong, zimo
 
 p's private phase: after execute command
 
 - if discard: go to public phase
 - if zimo: go to round-over phase
-- if kang/plusKang: drawBack, stay in private phase
+- if kong/plusKong: drawBack, stay in private phase
 
 p's public phase: basic version
 
@@ -257,12 +274,12 @@ p's public phase: before execute command
 - only non-current players may have candidate commands
 - if none candidate commands exist: goto next player's private phase if remainTileCount > 0, otherwise go to over phase
 - if candidate commands exist, wait for each player's response, and execute the highest priority ones.
-- command types: ron, chow, pon, kang
+- command types: ron, chow, pon, kong
 
 p's public phase: after execute command
 
 - if ron: go to round-over phase
-- if chow/pon/kang: go to execute player's private phase?
+- if chow/pon/kong: go to execute player's private phase?
 
 over phase
 

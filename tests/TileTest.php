@@ -34,12 +34,4 @@ class TileTest extends PHPUnit_Framework_TestCase {
         $m4 = Tile::fromString('E');
         $this->assertEquals($m3, $m4);
     }
-
-    function testSerialize() {
-        $m = Tile::fromString('E');
-        $s = serialize($m);
-        $m2 = unserialize($s);
-        $this->assertEquals($m, $m2);
-        $this->assertNotSame($m, $m2);
-    }
 }

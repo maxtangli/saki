@@ -31,12 +31,22 @@ class TurnManager {
         return $this->items[$this->currentIndex];
     }
 
+    function getPrevPlayer() {
+        $nextIndex = ($this->currentIndex - 1 + $this->getPlayerCount()) % $this->getPlayerCount();
+        return $this->items[$nextIndex]->getPlayer();
+    }
+
     function getCurrentPlayer() {
         return $this->getCurrentItem()->getPlayer();
     }
 
     function getNextPlayer() {
         $nextIndex = ($this->currentIndex + 1) % $this->getPlayerCount();
+        return $this->items[$nextIndex]->getPlayer();
+    }
+
+    function getNextNextPlayer() {
+        $nextIndex = ($this->currentIndex + 2) % $this->getPlayerCount();
         return $this->items[$nextIndex]->getPlayer();
     }
 

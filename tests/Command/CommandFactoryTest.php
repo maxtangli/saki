@@ -7,7 +7,7 @@ class CommandFactoryTest extends PHPUnit_Framework_TestCase {
 
         $r= $game->getCurrentRound();
         $p = $r->getCurrentPlayer();
-        $t = $r->getPlayerArea($p)->getOnHandTileSortedList()[0];
+        $t = $r->getPlayerArea($p)->getHandTileSortedList()[0];
 
         $s = implode(' ', ['discard', $p, $t]);
         $command = $f->createCommand($s);

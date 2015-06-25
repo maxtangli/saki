@@ -39,7 +39,7 @@ abstract class MixedOutsideHandYaku extends Yaku {
     }
 
     function existIn($round, $player) {
-        // allMelds = playerArea.exposedMeldList merge playerArea.onHandTiles.analyzeMeldList
+        // allMelds = playerArea.declaredMeldList merge playerArea.onHandTiles.analyzeMeldList
         //  .filter RunMeldType. count > 1
         //  .all is19orHonor
     }
@@ -51,7 +51,7 @@ abstract class PureOutsideHandYaku extends Yaku {
     }
 
     function existIn($round, $player) {
-        // allMelds = playerArea.exposedMeldList merge playerArea.onHandTiles.analyzeMeldList
+        // allMelds = playerArea.declaredMeldList merge playerArea.onHandTiles.analyzeMeldList
         //  .filter RunMeldType. count > 1
         //  .all is19
     }
@@ -63,7 +63,7 @@ abstract class FullStraightRunsYaku extends Yaku {
     }
 
     function existIn($round, $player) {
-        // playerArea.exposedMeldList merge playerArea.onHandTiles.analyzeMeldList
+        // playerArea.declaredMeldList merge playerArea.onHandTiles.analyzeMeldList
         // melds.filter RunMeldType.group by numberAlign.exist 123/456/789
     }
 }
@@ -85,7 +85,7 @@ abstract class ThreeColorRunsYaku extends Yaku {
     }
 
     function existIn($round, $player) {
-        // playerArea.exposedMeldList merge playerArea.onHandTiles.analyzeMeldList
+        // playerArea.declaredMeldList merge playerArea.onHandTiles.analyzeMeldList
         // melds.filter RunMeldType.group by numberAlign.any count($member)==3
     }
 }
@@ -96,7 +96,7 @@ abstract class AllTriplesYaku extends Yaku {
     }
 
     function existIn($round, $player) {
-        // playerArea.exposedMeldList merge playerArea.onHandTiles.analyzeMeldList
+        // playerArea.declaredMeldList merge playerArea.onHandTiles.analyzeMeldList
         // melds.map TripleType.all is Triple
     }
 }
@@ -118,7 +118,7 @@ abstract class DoubleRunYaku extends Yaku {
     }
 
     function existIn($round, $player) {
-        // playerArea.exposedMeldList.empty
+        // playerArea.declaredMeldList.empty
         // playerArea.onHandTiles.analyzeMeldList
         //  .filter Sequence.group by equality.where count($member) == 2. self count==1
     }
@@ -130,7 +130,7 @@ abstract class PeaceYaku extends Yaku {
     }
 
     function existIn($round, $player) {
-        // playerArea.exposedMeldList.empty
+        // playerArea.declaredMeldList.empty
         // playerArea.onHandTiles.analyzeMeldList
         //  .is 3sequence + 1 eyes
         //  . eyes. all tile isSuit
@@ -145,7 +145,7 @@ abstract class ValueTilesYaku extends Yaku { // Red White Green SelfWind RoundWi
 
     function existIn($round, $player) {
         // targetMeldTypes = Pong/Kang
-        // playerArea.onHandTiles.analyzeMeldList merge playerArea.exposedMeldList
+        // playerArea.onHandTiles.analyzeMeldList merge playerArea.declaredMeldList
         // exist MeldType
     }
 
@@ -160,7 +160,7 @@ abstract class HalfFlushYaku extends Yaku {
     }
 
     function existIn($round, $player) {
-        // playerArea.onHandTileList.tiles merge playerArea.exposedMeldList.tiles
+        // playerArea.onHandTileList.tiles merge playerArea.declaredMeldList.tiles
         // tiles.filter isSuit.map tileType.all same
         // tiles.filter isHonor.not empty
     }
@@ -172,7 +172,7 @@ abstract class FullFlushYaku extends Yaku {
     }
 
     function existIn($round, $player) {
-        // playerArea.onHandTileList.tiles merge playerArea.exposedMeldList.tiles
+        // playerArea.onHandTileList.tiles merge playerArea.declaredMeldList.tiles
         // tiles.filter isSuit.map tileType.all same
         // tiles.filter isHonor.empty
     }
@@ -206,7 +206,7 @@ abstract class ConcealedSelfDrawYaku extends Yaku {
     }
 
     function existIn($round, $player) {
-        // playerArea.exposedMeldList.empty
+        // playerArea.declaredMeldList.empty
         // winInfo.winningTileGetWay is SelfDraw
     }
 }

@@ -66,18 +66,18 @@ class MeldList extends ArrayLikeObject {
 
     function canPlusKong(Tile $tile) {
         foreach ($this as $k => $meld) {
-            if ($meld->canAddKong($tile)) {
+            if ($meld->canPlusKong($tile)) {
                 return true;
             }
         }
         return false;
     }
 
-    function plusKong(Tile $tile) {
+    function plusKong(Tile $tile, $forceExposed) {
         foreach ($this as $k => $meld) {
-            if ($meld->canAddKong($tile)) {
+            if ($meld->canPlusKong($tile)) {
                 $newMelds = $this->toArray();
-                $newMelds[$k] = $meld->getAddedKongMeld($tile);
+                $newMelds[$k] = $meld->getPlusKongMeld($tile, $forceExposed);
                 $this->setInnerArray($newMelds);
                 return;
             }

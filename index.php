@@ -67,7 +67,7 @@ $round = $data->getCurrentRound();
             <td class="tg-031e">candidate&nbsp;<?= $playerArea->hasCandidateTile() ? $playerArea->getCandidateTile() : '' ?></td>
         </tr>
         <tr>
-            <td class="tg-031e">onHand(<?= count($playerArea->getOnHandTileSortedList()) ?>)&nbsp;<?= $playerArea->getOnHandTileSortedList() ?></td>
+            <td class="tg-031e">onHand(<?= count($playerArea->getHandTileSortedList()) ?>)&nbsp;<?= $playerArea->getHandTileSortedList() ?></td>
             <td class="tg-031e" rowspan="2">
                 commands
                 <form action="index.php">
@@ -78,7 +78,7 @@ $round = $data->getCurrentRound();
             </td>
         </tr>
         <tr>
-            <td class="tg-031e">exposed(<?= count($playerArea->getExposedMeldList()) ?>)&nbsp;<?= $playerArea->getExposedMeldList() ?></td>
+            <td class="tg-031e">exposed(<?= count($playerArea->getDeclaredMeldList()) ?>)&nbsp;<?= $playerArea->getDeclaredMeldList() ?></td>
         </tr>
     <?php } ?>
 </table>

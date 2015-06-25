@@ -12,28 +12,28 @@ use Saki\Tile;
 use Saki\Meld\MeldType;
 
 class PlayerArea {
-    private $onHandTileSortedList;
+    private $handTileSortedList;
     private $discardedTileList;
-    private $exposedMeldList;
+    private $declaredMeldList;
     private $candidateTile;
 
     function __construct(TileSortedList $onHandTileSortedList = null, TileList $discardedTileList = null, MeldList $exposedMeldList = null, Tile $candidateTile = null) {
-        $this->onHandTileSortedList = $onHandTileSortedList ?: TileSortedList::fromString('');
+        $this->handTileSortedList = $onHandTileSortedList ?: TileSortedList::fromString('');
         $this->discardedTileList = $discardedTileList ?: TileList::fromString('');
-        $this->exposedMeldList = $exposedMeldList ?: new MeldList([]);
+        $this->declaredMeldList = $exposedMeldList ?: new MeldList([]);
         $this->candidateTile = $candidateTile;
     }
 
-    function getOnHandTileSortedList() {
-        return $this->onHandTileSortedList;
+    function getHandTileSortedList() {
+        return $this->handTileSortedList;
     }
 
     function getDiscardedTileList() {
         return $this->discardedTileList;
     }
 
-    function getExposedMeldList() {
-        return $this->exposedMeldList;
+    function getDeclaredMeldList() {
+        return $this->declaredMeldList;
     }
 
     function hasCandidateTile() {
@@ -63,66 +63,100 @@ class PlayerArea {
         return $ret;
     }
 
-    function moveCandidateTileToHandIfExist() {
-        if ($this->hasCandidateTile()) {
-            $this->getOnHandTileSortedList()->push($this->removeCandidateTile());
-        }
+    function drawInit($otherTileOrTiles) {
+        // always valid
+        $this->getHandTileSortedList()->push($otherTileOrTiles);
     }
 
     function draw(Tile $newTile) {
-        $valid = !$this->hasCandidateTile();
-        if (!$valid) {
-            throw new \InvalidArgumentException();
-        }
+        // always valid
+        $this->getHandTileSortedList()->push($newTile);
         $this->setCandidateTile($newTile);
     }
 
+    function drawReplacement(Tile $newTile) {
+        // always valid
+        $this->getHandTileSortedList()->push($newTile);
+        $this->setCandidateTile($newTile);
+    }
+
+    function canDiscard(Tile $selfTile) {
+        return $this->getHandTileSortedList()->valueExist($selfTile);
+    }
+
     function discard(Tile $selfTile) {
-        $valid = true;
-        if (!$valid) {
-            throw new \InvalidArgumentException();
-        }
-        $this->moveCandidateTileToHandIfExist();
-        $this->getOnHandTileSortedList()->removeByValue($selfTile);
+        $this->getHandTileSortedList()->removeByValue($selfTile); // valid test
         $this->getDiscardedTileList()->push($selfTile);
+        if ($this->hasCandidateTile()) {
+            $this->removeCandidateTile();
+        }
     }
 
-    function concealedKong(Tile $selfTile) {
-        $valid = true;
-        if (!$valid) {
+    function canKongBySelf(Tile $selfTile) {
+        return $this->getHandTileSortedList()->valueExist([$selfTile, $selfTile, $selfTile, $selfTile]);
+    }
+
+    function kongBySelf(Tile $selfTile) {
+        $this->getHandTileSortedList()->removeByValue([$selfTile, $selfTile, $selfTile, $selfTile]); // valid test
+        $meld = new Meld(new TileList([$selfTile, $selfTile, $selfTile, $selfTile]), QuadMeldType::getInstance(), false);
+        $this->getDeclaredMeldList()->insert($meld);
+        if ($this->hasCandidateTile() && $this->getCandidateTile() == $selfTile) {
+            $this->removeCandidateTile();
+        }
+    }
+
+    function canPlusKongBySelf(Tile $selfTile) {
+        return $this->getDeclaredMeldList()->canPlusKong($selfTile) && $this->getHandTileSortedList()->valueExist($selfTile);
+    }
+
+    function plusKongBySelf(Tile $selfTile) {
+        if (!$this->canPlusKongBySelf($selfTile)) {
             throw new \InvalidArgumentException();
         }
-        $this->moveCandidateTileToHandIfExist();
-        $this->getOnHandTileSortedList()->removeByValue([$selfTile,$selfTile,$selfTile,$selfTile]);
-        $meld = new Meld(new TileList([$selfTile, $selfTile, $selfTile, $selfTile]), QuadMeldType::getInstance());
-        $this->getExposedMeldList()->insert($meld);
-    }
 
-    function plusKong(Tile $selfTile) {
-        $valid = true;
-        if (!$valid) {
-            throw new \InvalidArgumentException();
+        $this->getDeclaredMeldList()->plusKong($selfTile, false);
+        $this->getHandTileSortedList()->removeByValue($selfTile);
+        if ($this->hasCandidateTile() && $this->getCandidateTile() == $selfTile) {
+            $this->removeCandidateTile();
         }
-        $this->moveCandidateTileToHandIfExist();
-        $this->getExposedMeldList()->plusKong($selfTile);
-        $this->getOnHandTileSortedList()->removeByValue($selfTile);
     }
 
-    function chow(Tile $newTile, Tile $selfTile1, Tile $selfTile2) {
-        $meld = new Meld(new TileList([$newTile, $selfTile1, $selfTile2]), RunMeldType::getInstance());
-        $this->getOnHandTileSortedList()->removeByValue([$selfTile1, $selfTile2]);
-        $this->getExposedMeldList()->insert($meld);
+    function canChowByOther(Tile $otherTile, Tile $selfTile1, Tile $selfTile2) {
+        return RunMeldType::getInstance()->valid(new TileList([$otherTile, $selfTile1, $selfTile2]))
+        && $this->getHandTileSortedList()->valueExist([$selfTile1, $selfTile2]);
     }
 
-    function pong(Tile $newTile) {
-        $meld = new Meld(new TileList([$newTile, $newTile, $newTile]), TripleMeldType::getInstance());
-        $this->getOnHandTileSortedList()->removeByValue([$newTile, $newTile]);
-        $this->getExposedMeldList()->insert($meld);
+    function chowByOther(Tile $otherTile, Tile $selfTile1, Tile $selfTile2) {
+        $meld = new Meld(new TileList([$otherTile, $selfTile1, $selfTile2]), RunMeldType::getInstance()); // valid test before remove
+        $this->getHandTileSortedList()->removeByValue([$selfTile1, $selfTile2]); // valid test
+        $this->getDeclaredMeldList()->insert($meld);
     }
 
-    function exposedKong(Tile $newTile) {
-        $meld = new Meld(new TileList([$newTile, $newTile, $newTile,$newTile]), QuadMeldType::getInstance());
-        $this->getOnHandTileSortedList()->removeByValue([$newTile, $newTile, $newTile]);
-        $this->getExposedMeldList()->insert($meld);
+    function canPongByOther(Tile $otherTile) {
+        return $this->getHandTileSortedList()->valueExist([$otherTile, $otherTile]);
+    }
+
+    function pongByOther(Tile $otherTile) {
+        $this->getHandTileSortedList()->removeByValue([$otherTile, $otherTile]); // valid test
+        $meld = new Meld(new TileList([$otherTile, $otherTile, $otherTile]), TripleMeldType::getInstance());
+        $this->getDeclaredMeldList()->insert($meld);
+    }
+
+    function canKongByOther(Tile $otherTile) {
+        $this->getHandTileSortedList()->valueExist([$otherTile, $otherTile, $otherTile]);
+    }
+
+    function kongByOther(Tile $otherTile) {
+        $this->getHandTileSortedList()->removeByValue([$otherTile, $otherTile, $otherTile]); // valid test
+        $meld = new Meld(new TileList([$otherTile, $otherTile, $otherTile, $otherTile]), QuadMeldType::getInstance());
+        $this->getDeclaredMeldList()->insert($meld);
+    }
+
+    function canPlusKongByOther(Tile $otherTile) {
+        return $this->getDeclaredMeldList()->canPlusKong($otherTile);
+    }
+
+    function plusKongByOther(Tile $otherTile) {
+        $this->getDeclaredMeldList()->plusKong($otherTile, true); // valid test
     }
 }
