@@ -2,35 +2,41 @@
 
 namespace Saki\Yaku;
 
-class YakuAnalyzer {
-    function getYakuList($round, $player) {
+use Saki\Util\Singleton;
 
+abstract class Yaku extends Singleton {
+    final function getFansu($isExposed) {
+            return $isExposed ? $this->getExposedFansu() : $this->getConcealedFansu();
     }
-}
 
-class YakuList {
-    // Yaku[] sorted in display order
-    // totalYakuCount
-    // YakuLevel: manguan, tiaoman, beiman, sanbeiman, yiman, shuangyiman, sanyiman
-}
+    abstract function getConcealedFansu();
+    abstract function getExposedFansu();
 
-abstract class Yaku {
-    abstract function getFansu();
+    final function requireConcealed() {
+        return $this->getExposedFansu() == 0;
+    }
 
-    abstract function existIn($round, $player);
+    abstract function require4WinSetAnd1Pair();
+
+    final function existIn(YakuAnalyzerSubTarget $subTarget) {
+        return (!$this->requireConcealed() || $subTarget->isConcealed())
+            && (!$this->require4WinSetAnd1Pair() || $subTarget->is4WinSetAnd1Pair())
+            && $this->existInImpl($subTarget);
+    }
+
+    abstract protected function existInImpl(YakuAnalyzerSubTarget $subTarget);
+
+    /**
+     * @return Yaku
+     */
+    static function getInstance() {
+        return parent::getInstance();
+    }
+
+
 }
 
 /*
-abstract class Yaku extends Yaku {
-    function getFansu() {
-        return 1;
-    }
-
-    function existIn($round, $player) {
-        // playerArea.onHandTiles.
-    }
-}
- */
 
 // melds-concerned
 abstract class MixedOutsideHandYaku extends Yaku {
@@ -121,20 +127,6 @@ abstract class DoubleRunYaku extends Yaku {
         // playerArea.declaredMeldList.empty
         // playerArea.onHandTiles.analyzeMeldList
         //  .filter Sequence.group by equality.where count($member) == 2. self count==1
-    }
-}
-
-abstract class PeaceYaku extends Yaku {
-    function getFansu() {
-        return 1;
-    }
-
-    function existIn($round, $player) {
-        // playerArea.declaredMeldList.empty
-        // playerArea.onHandTiles.analyzeMeldList
-        //  .is 3sequence + 1 eyes
-        //  . eyes. all tile isSuit
-        // winInfo.winningTile is not middle in sequence(at least one case)
     }
 }
 
@@ -230,3 +222,5 @@ abstract class FinalTileWinYaku extends Yaku {
         // wall.remainTileCount = 0
     }
 }
+
+*/

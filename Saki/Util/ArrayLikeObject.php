@@ -122,6 +122,14 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         $this->onInnerArrayChanged();
     }
 
+    function isAll(callable $predicate) {
+        return Utils::array_all($this->toArray(), $predicate);
+    }
+
+    function isAny(callable $predicate) {
+        return Utils::array_any($this->toArray(), $predicate);
+    }
+
     /**
      * @param mixed|array $valueOrValues
      * @param bool $strict
@@ -235,7 +243,7 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
      * @param int $pos
      */
     function insert($valueOrValues, $pos) {
-        $valid = $pos == $this->count() || $this->indexExist($pos);
+        $valid = is_int($pos) && $pos == $this->count() || $this->indexExist($pos);
         if (!$valid) {
             throw new \InvalidArgumentException();
         }

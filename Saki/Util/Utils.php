@@ -26,7 +26,7 @@ class Utils {
 
     static function array_all(array $a, callable $predicate) {
         foreach ($a as $v) {
-            if (!$predicate($v)) {
+            if ($predicate($v) == false) {
                 return false;
             }
         }
@@ -35,7 +35,7 @@ class Utils {
 
     static function array_any(array $a, callable $predicate) {
         foreach ($a as $v) {
-            if ($predicate($v)) {
+            if ($predicate($v) == true) {
                 return true;
             }
         }

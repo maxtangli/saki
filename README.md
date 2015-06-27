@@ -108,21 +108,32 @@ rush 9 concealed triple/quad
 - [x] refactor public phase chow/pong/kong 0.3h
 - [x] private phase: kong, plusKong 0.7h
 
+rush 10 first yaku impl: all runs yaku
+
+- [x] pseudocode 3.5h
+- [x] yaku.xls 1.5h
+- [x] refactor: rename terms to follow yaku names 0.5h
+- [x] organize code 1.0h
+- [x] is4WinSetAnd1Pair() 0.2h
+- [x] allRunsYaku 1.1h
+
+rush 11 more yaku
+
+- [ ] ReachYaku 0.2h
+- [ ] Reach logic
+
+
+rush red dora
+
+rush win
+
+- [ ] private phase: win on self
+- [ ] public phase: win on other
+
 rush next round
 
 - [ ] over phase: drawn
 - [ ] over phase: ron/zimo
-
-rush win
-
-- [ ] public phase: win on other
-- [ ] private phase: win on self
-
-rush yaku
-
-- [ ] pseudocode 3.5h
-- [x] yaku.xls 1.5h
-- [x] refactor: rename terms to follow yaku names 0.5h
 
 rush game over
 

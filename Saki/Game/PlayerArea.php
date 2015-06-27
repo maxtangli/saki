@@ -16,12 +16,14 @@ class PlayerArea {
     private $discardedTileList;
     private $declaredMeldList;
     private $candidateTile;
+    private $isReach;
 
-    function __construct(TileSortedList $onHandTileSortedList = null, TileList $discardedTileList = null, MeldList $exposedMeldList = null, Tile $candidateTile = null) {
+    function __construct(TileSortedList $onHandTileSortedList = null, TileList $discardedTileList = null, MeldList $exposedMeldList = null, Tile $candidateTile = null, $isReach = true) {
         $this->handTileSortedList = $onHandTileSortedList ?: TileSortedList::fromString('');
         $this->discardedTileList = $discardedTileList ?: TileList::fromString('');
         $this->declaredMeldList = $exposedMeldList ?: new MeldList([]);
         $this->candidateTile = $candidateTile;
+        $this->isReach = $isReach;
     }
 
     function getHandTileSortedList() {
@@ -42,7 +44,7 @@ class PlayerArea {
 
     function getCandidateTile() {
         if (!$this->hasCandidateTile()) {
-            throw new \BadMethodCallException();
+            throw new \BadMethodCallException('Candidate tile not existed.');
         }
         return $this->candidateTile;
     }
@@ -63,6 +65,13 @@ class PlayerArea {
         return $ret;
     }
 
+    function isReach() {
+        return $this->isReach;
+    }
+
+    /**
+     * @param Tile|Tile[] $otherTileOrTiles
+     */
     function drawInit($otherTileOrTiles) {
         // always valid
         $this->getHandTileSortedList()->push($otherTileOrTiles);
@@ -99,7 +108,7 @@ class PlayerArea {
     function kongBySelf(Tile $selfTile) {
         $this->getHandTileSortedList()->removeByValue([$selfTile, $selfTile, $selfTile, $selfTile]); // valid test
         $meld = new Meld(new TileList([$selfTile, $selfTile, $selfTile, $selfTile]), QuadMeldType::getInstance(), false);
-        $this->getDeclaredMeldList()->insert($meld);
+        $this->getDeclaredMeldList()->push($meld);
         if ($this->hasCandidateTile() && $this->getCandidateTile() == $selfTile) {
             $this->removeCandidateTile();
         }
@@ -129,7 +138,7 @@ class PlayerArea {
     function chowByOther(Tile $otherTile, Tile $selfTile1, Tile $selfTile2) {
         $meld = new Meld(new TileList([$otherTile, $selfTile1, $selfTile2]), RunMeldType::getInstance()); // valid test before remove
         $this->getHandTileSortedList()->removeByValue([$selfTile1, $selfTile2]); // valid test
-        $this->getDeclaredMeldList()->insert($meld);
+        $this->getDeclaredMeldList()->push($meld);
     }
 
     function canPongByOther(Tile $otherTile) {
@@ -139,7 +148,7 @@ class PlayerArea {
     function pongByOther(Tile $otherTile) {
         $this->getHandTileSortedList()->removeByValue([$otherTile, $otherTile]); // valid test
         $meld = new Meld(new TileList([$otherTile, $otherTile, $otherTile]), TripleMeldType::getInstance());
-        $this->getDeclaredMeldList()->insert($meld);
+        $this->getDeclaredMeldList()->push($meld);
     }
 
     function canKongByOther(Tile $otherTile) {
@@ -149,7 +158,7 @@ class PlayerArea {
     function kongByOther(Tile $otherTile) {
         $this->getHandTileSortedList()->removeByValue([$otherTile, $otherTile, $otherTile]); // valid test
         $meld = new Meld(new TileList([$otherTile, $otherTile, $otherTile, $otherTile]), QuadMeldType::getInstance());
-        $this->getDeclaredMeldList()->insert($meld);
+        $this->getDeclaredMeldList()->push($meld);
     }
 
     function canPlusKongByOther(Tile $otherTile) {

@@ -37,7 +37,7 @@ class MeldList extends ArrayLikeObject {
     /**
      * @return Meld[]
      */
-    public function toArray() {
+    function toArray() {
         return parent::toArray();
     }
 
@@ -56,12 +56,9 @@ class MeldList extends ArrayLikeObject {
         return implode(',', $meldStrings);
     }
 
-    /**
-     * @param Meld $meld
-     * @param int|null default is last pos
-     */
-    function insert(Meld $meld, $pos = null) {
-        parent::insert($meld, $pos);
+    function getFilteredMeldList(callable $filter) {
+        $melds = array_filter($this->toArray(), $filter);
+        return new self(array_values($melds));
     }
 
     function canPlusKong(Tile $tile) {

@@ -166,7 +166,7 @@ class Round {
         }, range(1, count($this->getPlayerList())));
         $this->turnManager = new TurnManager($this->getPlayerList()->toArray(), $this->getDealerPlayer(), 0);
 
-        // each player draw 4*4 tiles
+        // each player draw initial tiles
         $playerCount = count($this->getPlayerList());
         $drawTileCounts = [4,4,4,1];
         foreach ($drawTileCounts as $drawTileCount) {
@@ -255,8 +255,12 @@ class Round {
 
     function winBySelf(Player $player) {
         /// private phase, currentPlayer
-
-        // do
+        $valid = $this->getRoundPhase()->getValue() == RoundPhase::PRIVATE_PHASE && $player == $this->getCurrentPlayer();
+        if (!$valid) {
+            throw new \InvalidArgumentException();
+        }
+        // do todo
+        $yakuList = null;
 
         // phase
         $this->toOverPhase();

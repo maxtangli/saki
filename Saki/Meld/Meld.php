@@ -93,9 +93,13 @@ class Meld extends ArrayLikeObject {
         return $this->getMeldType() instanceof PairMeldType;
     }
 
+    /**
+     * @return bool
+     */
     function isRun() {
         return $this->getMeldType() instanceof RunMeldType;
     }
+
 
     function isTriple($exposedFlag = null) {
         return $this->getMeldType() instanceof TripleMeldType && ($exposedFlag === null || $this->isExposed()===$exposedFlag);
@@ -109,6 +113,10 @@ class Meld extends ArrayLikeObject {
         return $this->isTriple($exposedFlag) || $this->isQuad($exposedFlag);
     }
 
+    /**
+     * 面子
+     * @return bool
+     */
     function isWinSet() {
         return $this->isRun() || $this->isTriple() || $this->isQuad();
     }
