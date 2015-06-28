@@ -2,26 +2,32 @@
 
 namespace Saki\Yaku;
 
+use Saki\Meld\Meld;
+use Saki\Tile;
+use Saki\TileType;
 use Saki\Util\Singleton;
 
 abstract class Yaku extends Singleton {
-    final function getFansu($isExposed) {
-            return $isExposed ? $this->getExposedFansu() : $this->getConcealedFansu();
+    function __toString() {
+        $cls = get_called_class();
+        return str_replace('Yaku', '', $cls);
     }
 
-    abstract function getConcealedFansu();
-    abstract function getExposedFansu();
+    final function getFanCount($isExposed) {
+        return $isExposed ? $this->getExposedFanCount() : $this->getConcealedFanCount();
+    }
+
+    abstract function getConcealedFanCount();
+
+    abstract function getExposedFanCount();
 
     final function requireConcealed() {
-        return $this->getExposedFansu() == 0;
+        return $this->getExposedFanCount() == 0;
     }
-
-    abstract function require4WinSetAnd1Pair();
 
     final function existIn(YakuAnalyzerSubTarget $subTarget) {
         return (!$this->requireConcealed() || $subTarget->isConcealed())
-            && (!$this->require4WinSetAnd1Pair() || $subTarget->is4WinSetAnd1Pair())
-            && $this->existInImpl($subTarget);
+        && $this->existInImpl($subTarget);
     }
 
     abstract protected function existInImpl(YakuAnalyzerSubTarget $subTarget);
@@ -32,8 +38,6 @@ abstract class Yaku extends Singleton {
     static function getInstance() {
         return parent::getInstance();
     }
-
-
 }
 
 /*
@@ -220,6 +224,65 @@ abstract class FinalTileWinYaku extends Yaku {
 
     function existIn($round, $player) {
         // wall.remainTileCount = 0
+    }
+}
+
+
+class StringKeyMap {
+    private $a;
+
+    function __construct() {
+        $this->a = [];
+    }
+
+    function get($key) {
+        return $this->a[$this->toNormalizedKey($key)];
+    }
+
+    function existKey($key) {
+        return isset($this->a[$this->toNormalizedKey($key)]);
+    }
+
+    function set($key, $value) {
+        $this->a[$this->toNormalizedKey($key)] = $value;
+    }
+
+    function add($key, $value) {
+        if ($this->existKey($key)) {
+            throw new \InvalidArgumentException();
+        }
+        $this->set($key, $value);
+    }
+
+    static function toNormalizedKey($key) {
+        return (string) $key;
+    }
+}
+
+class PhaseOverInfo {
+
+    static function createExhaustedDraw($allPlayers, $isWaitingHands) {
+
+    }
+
+    static function createWinOnSelf($allPlayers, $winPlayer, $yakuList) {
+
+    }
+
+    static function createWinOnOther($allPlayers, $winPlayer, $yakuList, $losePlayer) {
+
+    }
+
+    static function createMultipleWinOnOther($allPlayers, $winPlayers, $yakuLists, $losePlayer) {
+
+    }
+
+    protected function __construct() {
+
+    }
+
+    function calculateScoreChange() {
+
     }
 }
 

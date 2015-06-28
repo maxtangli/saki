@@ -5,12 +5,13 @@ use Saki\Game\PlayerArea;
 use Saki\Meld\Meld;
 use Saki\Meld\MeldList;
 use Saki\Tile;
+use Saki\Game\Player;
 
 class YakuAnalyzerSubTarget extends YakuAnalyzerTarget {
     private $handMeldList;
 
-    function __construct(MeldList $handMeldList, PlayerArea $playerArea) {
-        parent::__construct($playerArea);
+    function __construct(MeldList $handMeldList, PlayerArea $playerArea, Player $player) {
+        parent::__construct($playerArea, $player);
         $this->handMeldList = $handMeldList;
     }
 
@@ -48,10 +49,6 @@ class YakuAnalyzerSubTarget extends YakuAnalyzerTarget {
 
     function isAllSuit() {
         return $this->getHandTileSortedList()->isAll(function(Tile $tile){return $tile->isSuit();});
-    }
-
-    function isReach() {
-
     }
 
     /**

@@ -4,16 +4,12 @@ namespace Saki\Yaku;
 use Saki\Tile;
 
 class AllRunsYaku extends Yaku {
-    function getConcealedFansu() {
+    function getConcealedFanCount() {
         return 1;
     }
 
-    function getExposedFansu() {
+    function getExposedFanCount() {
         return 0;
-    }
-
-    function require4WinSetAnd1Pair() {
-        return true;
     }
 
     function existInImpl(YakuAnalyzerSubTarget $subTarget) {
@@ -33,21 +29,3 @@ class AllRunsYaku extends Yaku {
     }
 }
 
-class ReachYaku extends Yaku {
-    function getConcealedFansu() {
-        return 1;
-    }
-
-    function getExposedFansu() {
-        return 0;
-    }
-
-    function require4WinSetAnd1Pair() {
-        return false;
-    }
-
-    protected function existInImpl(YakuAnalyzerSubTarget $subTarget) {
-        return $subTarget->isReach(); // tile
-    }
-
-}

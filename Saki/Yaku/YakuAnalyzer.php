@@ -6,6 +6,13 @@ class YakuAnalyzer {
 
     static function getDefaultYakus() {
         return [
+            ReachYaku::getInstance(),
+            RedValueTilesYaku::getInstance(),
+            WhiteValueTilesYaku::getInstance(),
+            GreenValueTilesYaku::getInstance(),
+            SelfWindValueTilesYaku::getInstance(),
+            RoundWindValueTilesYaku::getInstance(),
+            AllSimplesYaku::getInstance(),
             AllRunsYaku::getInstance(),
         ];
     }
@@ -28,10 +35,7 @@ class YakuAnalyzer {
         // get analyzerResult[]
 
         // return where yakuCount is max
-
-        $result = new YakuAnalyzerResult();
-        $result->setYakuList(new YakuList([]));
-        return $result;
+        throw new \BadMethodCallException('Not implemented');
     }
 
     /**
@@ -52,14 +56,46 @@ class YakuAnalyzer {
      * @return YakuAnalyzerResult
      */
     function analyzeSubTarget(YakuAnalyzerSubTarget $subTarget) {
+        /*
+         * reach: isReach , 4winSetAnd1Pair or other winTiles
+         * other yaku: has yaku means is wintile / clear
+         *
+         * win state
+         * - not win tiles: win tiles not exist
+         * - discarded win tile: win tiles exist but pinfu discarded
+         * - no yaku: win tiles exist but yaku count = 0
+         * - win: win tiles exist and yaku count > 0
+         */
+
         $yakuList = new YakuList([]);
-        foreach ($this->yakus as $yaku) {
-            if ($yaku->existIn($subTarget)) {
-                $yakuList->push($yaku); // yakuList onChange hook: remove mutually-excluded yaku. or removeExcludedMethod.
+        if ($this->isWinTiles($subTarget)) {
+            foreach ($this->yakus as $yaku) {
+                if ($yaku->existIn($subTarget)) {
+                    $yakuList->push($yaku); // yakuList onChange hook: remove mutually-excluded yaku. or removeExcludedMethod.
+                }
             }
+            if ($yakuList->count() == 0) {
+                $winState = WinState::getNoYakuInstance();
+            } else {
+                if ($this->isDiscaredWinTile($subTarget)) {
+                    $winState = WinState::getDiscardedWinTileInstance();
+                } else {
+                    $winState = WinState::getWinInstance();
+                }
+            }
+        } else {
+            $winState = WinState::getNotWinTilesInstance();
         }
-        $result = new YakuAnalyzerResult();
-        $result->setYakuList($yakuList);
+
+        $result = new YakuAnalyzerResult($winState, $yakuList);
         return $result;
+    }
+
+    function isWinTiles(YakuAnalyzerSubTarget $subTarget) {
+        return $subTarget->is4WinSetAnd1Pair(); // todo
+    }
+
+    function isDiscaredWinTile(YakuAnalyzerSubTarget $subTarget) {
+        return false; // todo
     }
 }

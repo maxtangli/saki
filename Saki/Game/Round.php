@@ -61,6 +61,13 @@ class Round {
     }
 
     /**
+     * @return Tile
+     */
+    function getRoundWind() {
+        return Tile::fromString('E'); // todo
+    }
+
+    /**
      * @return Wall
      */
     function getWall() {
@@ -168,7 +175,7 @@ class Round {
 
         // each player draw initial tiles
         $playerCount = count($this->getPlayerList());
-        $drawTileCounts = [4,4,4,1];
+        $drawTileCounts = [4, 4, 4, 1];
         foreach ($drawTileCounts as $drawTileCount) {
             for ($cnt = 0; $cnt < $playerCount; ++$cnt) {
                 $this->drawInit($this->getCurrentPlayer(), $drawTileCount);
@@ -224,7 +231,29 @@ class Round {
             throw new \InvalidArgumentException();
         }
         // do
-        $this->getCurrentPlayerArea()->discard($selfTile);
+        $this->getPlayerArea($player)->discard($selfTile);
+        // switch phase
+        $this->toPublicPhase();
+    }
+
+    function reach(Player $player, Tile $selfTile) {
+        // valid: private phase, currentPlayer
+        $valid = $this->getRoundPhase()->getValue() == RoundPhase::PRIVATE_PHASE && $player == $this->getCurrentPlayer();
+        if (!$valid) {
+            throw new \InvalidArgumentException();
+        }
+        // valid: reach condition todo
+        /**
+         * https://ja.wikipedia.org/wiki/%E7%AB%8B%E7%9B%B4
+         * 条件
+         * - 聴牌していること。
+         * - 門前であること。すなわち、チー、ポン、明槓をしていないこと。
+         * - トビ有りのルールならば、点棒を最低でも1000点持っていること。つまり立直棒として1000点を供託したときにハコを割ってしまうような場合、立直はできない。供託時にちょうど0点になる場合、認められる場合と認められない場合がある。トビ無しの場合にハコを割っていた場合も、点棒を借りてリーチをかけることを認める場合と認めない場合がある。
+         * - 壁牌（山）の残りが王牌を除いて4枚（三人麻雀では3枚）以上あること。すなわち立直を宣言した後で少なくとも1回の自摸が残されているということ。ただし、鳴きや暗槓が入って結果的に自摸の機会なく流局したとしてもペナルティはない。
+         * - 4人全員が立直をかけた場合、四家立直として流局となる（四家立直による途中流局を認めないルールもあり、その場合は続行される）。
+         */
+        // do
+        $this->getPlayerArea($player)->reach($selfTile);
         // switch phase
         $this->toPublicPhase();
     }
@@ -264,6 +293,14 @@ class Round {
 
         // phase
         $this->toOverPhase();
+    }
+
+    function passPublicPhase() {
+        $valid = $this->getRoundPhase()->getValue() == RoundPhase::PUBLIC_PHASE;
+        if (!$valid) {
+            throw new \InvalidArgumentException();
+        }
+        $this->toPrivatePhase($this->getCurrentPlayer(), true);
     }
 
     function chowByOther(Player $player, Tile $tile1, Tile $tile2) {

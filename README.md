@@ -119,9 +119,13 @@ rush 10 first yaku impl: all runs yaku
 
 rush 11 more yaku
 
-- [ ] ReachYaku 0.2h
-- [ ] Reach logic
+- [x] ReachYaku 0.7h
+- [x] WinState 0.7h
+- [x] ValueTilesYaku 0.6h
+- [x] AllSimplesYaku
+- [x] test 0.2h
 
+rush 12 
 
 rush red dora
 
@@ -170,47 +174,43 @@ Command serialize
 - toString discard p1 4p
 - fromString DiscardCommand $round $player $params
 
-## note: Yaku
+## note
 
-melds-concerned
+after 1 tile discarded, for every player judge:
 
-- SevenPairs
+    possibleTileList = onHand + candidate
+    possibleMeldList = analyzeMeld candidateTileList
+    yakuList = analyzeYaku possibleMeldList, exposedMeldList, discardedTileList, isLizhi, turn ...
 
-- Peace
-- DoubleRun
-- ThreeColorRuns
-- FullStraight
-- MixedOutsideHand
-- PureOutsideHand
+isWaitingHand? iterate all possible candidate tile -> winning tile
+TileSet.getUniqueTiles
+todo zhengting?
 
-- ValueTiles
-- AllTriples
-- ThreeConcealedTriples
+    onHandMeldLists = MeldAnalyzer.analyze(onHandTileList)
+    totalMeldLists = onHandMeldLists merge declaredMeldLists
 
-tiles-concerned
+foreach onHandMeldList
+analyze yakuList
+return yakulist.highest yaku ones
 
-- AllSimples
-- HalfFlush
-- FullFlush
+## note: win state
 
-tiles-not-concerned
-
-- Reach
-- ConcealedSelfDraw
-- FirstTurnWin
-- FinalTileWin
+- not win tiles: win tiles not exist
+- discarded win tile: win tiles exist but pinfu discarded
+- no yaku: win tiles exist but yaku count = 0
+- win: win tiles exist and yaku count > 0
 
 ## note: plus kong
 
 in private phase
 
 - plusKongBySelf: plus declared triple meld with 1 self tile. meld isExposed or isConcealed (keep).
-- concealedKong: turn 4 self tile into a quad meld. meld isConcealed (new).
+- kongBySelf: turn 4 self tile into a quad meld. meld isConcealed (new).
 
 in public phase
 
 - plusKongByOther: plus declared triple meld with 1 other tile. meld isExposed (force).
-- exposedKong: turn 3 self and 1 other tile into a quad meld. meld isExposed (new).
+- kongByOther: turn 3 self and 1 other tile into a quad meld. meld isExposed (new).
 
 ## note: ArrayLikeObject
 

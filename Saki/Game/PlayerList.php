@@ -1,6 +1,7 @@
 <?php
 namespace Saki\Game;
 
+use Saki\Tile;
 use Saki\Util\ArrayLikeObject;
 
 class PlayerList extends ArrayLikeObject {
@@ -10,9 +11,15 @@ class PlayerList extends ArrayLikeObject {
      * @return Player[]
      */
     static function createPlayers($n, $initialScore) {
-        return array_map(function ($i) use ($initialScore) {
-            return new Player($i, $initialScore);
-        }, range(1, $n));
+        $data = [
+            [1, $initialScore, Tile::fromString('E')],
+            [2, $initialScore, Tile::fromString('S')],
+            [3, $initialScore, Tile::fromString('W')],
+            [4, $initialScore, Tile::fromString('N')],
+        ];
+        return array_map(function ($v) {
+            return new Player($v[0], $v[1], $v[2]);
+        },$data);
     }
 
     /**

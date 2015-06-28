@@ -60,7 +60,7 @@ class Meld extends ArrayLikeObject {
         if ($meldType !== null && !$meldType->valid($tileList)) {
             throw new \InvalidArgumentException();
         }
-        $actualMeldType = $meldType ?: self::getMeldTypeAnalyzer()->analyzeMeldType($tileList);
+        $actualMeldType = $meldType !== null ? $meldType: self::getMeldTypeAnalyzer()->analyzeMeldType($tileList);
         $validConcealed = $exposed || ($actualMeldType instanceof TripleMeldType || $actualMeldType instanceof QuadMeldType);
         if (!$validConcealed) {
             throw new \InvalidArgumentException(sprintf('Invalid argument $exposed[%s] for $actualMeldType[%s].', $exposed, $actualMeldType));

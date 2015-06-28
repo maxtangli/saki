@@ -18,7 +18,7 @@ class PlayerArea {
     private $candidateTile;
     private $isReach;
 
-    function __construct(TileSortedList $onHandTileSortedList = null, TileList $discardedTileList = null, MeldList $exposedMeldList = null, Tile $candidateTile = null, $isReach = true) {
+    function __construct(TileSortedList $onHandTileSortedList = null, TileList $discardedTileList = null, MeldList $exposedMeldList = null, Tile $candidateTile = null, $isReach = false) {
         $this->handTileSortedList = $onHandTileSortedList ?: TileSortedList::fromString('');
         $this->discardedTileList = $discardedTileList ?: TileList::fromString('');
         $this->declaredMeldList = $exposedMeldList ?: new MeldList([]);
@@ -67,6 +67,18 @@ class PlayerArea {
 
     function isReach() {
         return $this->isReach;
+    }
+
+    function setIsReach($isReach) {
+        $this->isReach = $isReach;
+    }
+
+    function reach(Tile $selfTile) {
+        if ($this->isReach) {
+            throw new \InvalidArgumentException();
+        }
+        $this->discard($selfTile);
+        $this->isReach = true;
     }
 
     /**
