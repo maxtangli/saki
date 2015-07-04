@@ -1,7 +1,7 @@
 <?php
 namespace Saki\Meld;
 
-use Saki\TileList;
+use Saki\Tile\TileList;
 use Saki\Util\Singleton;
 
 abstract class MeldType extends Singleton {
@@ -9,7 +9,7 @@ abstract class MeldType extends Singleton {
         // Saki\Meld\MeldType -> MeldType
         $actualClass = get_called_class();
         $lastSeparatorPos = strrpos($actualClass, '\\');
-        return substr($actualClass, $lastSeparatorPos+1);
+        return substr($actualClass, $lastSeparatorPos + 1);
     }
 
     abstract function getTileCount();

@@ -1,6 +1,6 @@
 <?php
 
-namespace Saki;
+namespace Saki\Tile;
 
 /*
  Suit Dot / Bamboo / Character

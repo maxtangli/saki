@@ -2,7 +2,7 @@
 
 class EnumMockClass1 extends \Saki\Util\Enum {
     static function getValue2StringMap() {
-        return [1 => 'EnumMockClass1',2 => 'EnumMockClass1.2'];
+        return [1 => 'EnumMockClass1', 2 => 'EnumMockClass1.2'];
     }
 
     static function getClassName() {

@@ -76,9 +76,9 @@ class ArrayLikeObjectTest extends \PHPUnit_Framework_TestCase {
 
     function replaceByIndexProvider() {
         return [
-            [[0,-1,2], [0,1,2], 1, -1],
-            [[0,-1,2], [0,1,2], [1], [-1]],
-            [[0,-1,-2], [0,1,2], [1,2], [-1,-2]],
+            [[0, -1, 2], [0, 1, 2], 1, -1],
+            [[0, -1, 2], [0, 1, 2], [1], [-1]],
+            [[0, -1, -2], [0, 1, 2], [1, 2], [-1, -2]],
         ];
     }
 

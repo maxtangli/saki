@@ -1,15 +1,14 @@
 <?php
 namespace Saki\Game;
 
-use Saki\Meld\QuadMeldType;
 use Saki\Meld\Meld;
 use Saki\Meld\MeldList;
+use Saki\Meld\QuadMeldType;
 use Saki\Meld\RunMeldType;
 use Saki\Meld\TripleMeldType;
-use Saki\TileList;
-use Saki\TileSortedList;
-use Saki\Tile;
-use Saki\Meld\MeldType;
+use Saki\Tile\Tile;
+use Saki\Tile\TileList;
+use Saki\Tile\TileSortedList;
 
 class PlayerArea {
     private $handTileSortedList;
@@ -18,14 +17,21 @@ class PlayerArea {
     private $candidateTile;
     private $isReach;
 
-    function __construct(TileSortedList $onHandTileSortedList = null, TileList $discardedTileList = null, MeldList $exposedMeldList = null, Tile $candidateTile = null, $isReach = false) {
-        $this->handTileSortedList = $onHandTileSortedList ?: TileSortedList::fromString('');
-        $this->discardedTileList = $discardedTileList ?: TileList::fromString('');
-        $this->declaredMeldList = $exposedMeldList ?: new MeldList([]);
-        $this->candidateTile = $candidateTile;
-        $this->isReach = $isReach;
+    function __construct(TileSortedList $onHandTileSortedList = null) {
+        $this->init($onHandTileSortedList);
     }
 
+    function init(TileSortedList $onHandTileSortedList = null) {
+        $this->handTileSortedList = $onHandTileSortedList ?: TileSortedList::fromString('');
+        $this->discardedTileList = TileList::fromString('');
+        $this->declaredMeldList = new MeldList([]);
+        $this->candidateTile = null;
+        $this->isReach = false;
+    }
+
+    /**
+     * @return TileSortedList
+     */
     function getHandTileSortedList() {
         return $this->handTileSortedList;
     }
@@ -82,7 +88,7 @@ class PlayerArea {
     }
 
     /**
-     * @param Tile|Tile[] $otherTileOrTiles
+     * @param \Saki\Tile\Tile|Tile[] $otherTileOrTiles
      */
     function drawInit($otherTileOrTiles) {
         // always valid

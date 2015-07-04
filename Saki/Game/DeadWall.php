@@ -1,9 +1,8 @@
 <?php
 namespace Saki\Game;
 
-use Saki\Tile;
-use Saki\TileList;
-use Saki\Util\ArrayLikeObject;
+use Saki\Tile\Tile;
+use Saki\Tile\TileList;
 
 class DeadWall {
     // 0 2 |4 6 8 10 12
@@ -38,21 +37,21 @@ class DeadWall {
     }
 
     /**
-     * @return Tile[]
+     * @return \Saki\Tile\Tile[]
      */
     function getOpenedDoraIndicators() {
         return array_slice($this->doraIndicators, $this->openedDoraIndicatorCount);
     }
 
     /**
-     * @return Tile[]
+     * @return \Saki\Tile\Tile[]
      */
     function getOpenedUraDoraIndicators() {
         return $this->uraDoraOpened ? array_slice($this->uraDoraIndicators, $this->openedDoraIndicatorCount) : [];
     }
 
     /**
-     * @return Tile[]
+     * @return \Saki\Tile\Tile[]
      */
     function getOpenedAllDoraIndicators() {
         return array_merge($this->getOpenedDoraIndicators(), $this->getOpenedUraDoraIndicators());

@@ -1,7 +1,8 @@
 <?php
 namespace Saki\Yaku;
 
-use Saki\Tile;
+use Saki\Tile\Tile;
+use Saki\Win\WinAnalyzerSubTarget;
 
 class AllSimplesYaku extends Yaku {
     function getConcealedFanCount() {
@@ -12,7 +13,7 @@ class AllSimplesYaku extends Yaku {
         return 1;
     }
 
-    protected function existInImpl(YakuAnalyzerSubTarget $subTarget) {
+    protected function existInImpl(WinAnalyzerSubTarget $subTarget) {
         return $subTarget->getAllTileSortedList()->isAll(function (Tile $tile) {
             return $tile->isSimple();
         });

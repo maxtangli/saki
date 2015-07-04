@@ -1,8 +1,9 @@
 <?php
 namespace Saki\Command;
+
+use Saki\Game\Player;
 use Saki\Game\Round;
 use Saki\Util\Utils;
-use Saki\Game\Player;
 
 /**
  * A Command is meaningful only when bing with a Round

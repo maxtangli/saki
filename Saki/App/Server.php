@@ -3,9 +3,6 @@
 namespace Saki\App;
 
 use Saki\Game\Game;
-use Saki\Command\Command;
-use Saki\Tile;
-use Saki\TileSortedList;
 
 class Server {
     private $data;

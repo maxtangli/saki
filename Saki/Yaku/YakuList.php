@@ -8,7 +8,22 @@ class YakuList extends ArrayLikeObject {
     // totalYakuCount
     // YakuLevel: manguan, tiaoman, beiman, sanbeiman, yiman, shuangyiman, sanyiman
 
-    function getFanCount($isExposed) {
+    private $isExposed;
+
+    function __construct(array $innerArray, $isExposed) {
+        parent::__construct($innerArray);
+        if (!is_bool($isExposed)) {
+            throw new \InvalidArgumentException();
+        }
+        $this->isExposed = $isExposed;
+    }
+
+    function isExposed() {
+        return $this->isExposed;
+    }
+
+    function getFanCount() {
+        $isExposed = $this->isExposed();
         $fanCounts = array_map(function (Yaku $yaku) use ($isExposed) {
             return $yaku->getFanCount($isExposed);
         }, $this->toArray());

@@ -1,5 +1,5 @@
 <?php
-namespace Saki;
+namespace Saki\Tile;
 
 use Saki\Util\ArrayLikeObject;
 

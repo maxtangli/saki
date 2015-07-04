@@ -1,7 +1,7 @@
 <?php
 namespace Saki\Yaku;
 
-use Saki\Tile;
+use Saki\Win\WinAnalyzerSubTarget;
 
 class AllRunsYaku extends Yaku {
     function getConcealedFanCount() {
@@ -12,7 +12,7 @@ class AllRunsYaku extends Yaku {
         return 0;
     }
 
-    function existInImpl(YakuAnalyzerSubTarget $subTarget) {
+    function existInImpl(WinAnalyzerSubTarget $subTarget) {
         /**
          * https://ja.wikipedia.org/wiki/%E5%B9%B3%E5%92%8C_(%E9%BA%BB%E9%9B%80)
          * 平和の成立条件は以下の4つである。
@@ -24,8 +24,6 @@ class AllRunsYaku extends Yaku {
         return $subTarget->is4RunAnd1Pair()
         && $subTarget->isAllSuit()
         && $subTarget->isTwoSidesRunWaiting();
-
-        // winInfo.winningTile is not middle in sequence(at least one case)
     }
 }
 

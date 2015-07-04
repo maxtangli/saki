@@ -1,7 +1,7 @@
 <?php
 
-use Saki\Tile;
-use Saki\TileList;
+use Saki\Tile\Tile;
+use Saki\Tile\TileList;
 
 class TileListTest extends PHPUnit_Framework_TestCase {
 
@@ -61,8 +61,10 @@ class TileListTest extends PHPUnit_Framework_TestCase {
      * @dataProvider toStringProvider
      */
     function testToString(array $tileStrings, $expected) {
-        $tiles = array_map(function($v){return Tile::fromString($v);}, $tileStrings);
-        $h = new Saki\TileList($tiles);
+        $tiles = array_map(function ($v) {
+            return Tile::fromString($v);
+        }, $tileStrings);
+        $h = new \Saki\Tile\TileList($tiles);
         $this->assertSame($expected, $h->__toString());
     }
 
@@ -91,14 +93,14 @@ class TileListTest extends PHPUnit_Framework_TestCase {
         $l->removeByValue(Tile::fromString('2m'));
         $this->assertEquals('1322m', $l->__toString());
         $expectedKey = 0;
-        foreach($l as $k => $v) {
+        foreach ($l as $k => $v) {
             $this->assertEquals($expectedKey++, $k);
         }
     }
 
     function testRemoveMany() {
         $l = TileList::fromString('123242m', false);
-        $l->removeByValue([Tile::fromString('2m'),Tile::fromString('2m')]);
+        $l->removeByValue([Tile::fromString('2m'), Tile::fromString('2m')]);
         $this->assertEquals('1342m', $l->__toString());
     }
 }

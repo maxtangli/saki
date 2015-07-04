@@ -1,18 +1,18 @@
 <?php
 
-namespace Saki;
+namespace Saki\Meld;
 
-use Saki\Meld\Meld;
-use Saki\Meld\MeldType;
-use Saki\Meld\MeldList;
-class Analyzer {
+use Saki\Tile\TileList;
+use Saki\Tile\TileSortedList;
+
+class MeldCompositionsAnalyzer {
 
     /**
-     * @param TileList|TileSortedList $tileList
+     * @param TileList|\Saki\Tile\TileSortedList $tileList
      * @param MeldType[] $meldTypes
      * @return MeldList[]
      */
-    function getMeldCompositions(TileList $tileList, array $meldTypes) {
+    function analyzeMeldCompositions(TileList $tileList, array $meldTypes) {
         /*
          * meldList(tiles) = all merge(a valid meld from begin, meldList(other tiles))
          */
@@ -24,9 +24,9 @@ class Analyzer {
             if ($meldType->valid($beginTileList)) {
                 $firstMeld = new Meld($beginTileList, $meldType);
                 if (count($remainTileList) > 0) {
-                    $thisMeldLists = $this->getMeldCompositions($remainTileList, $meldTypes);
+                    $thisMeldLists = $this->analyzeMeldCompositions($remainTileList, $meldTypes);
                     if (count($thisMeldLists) > 0) {
-                        foreach($thisMeldLists as $meldList) {
+                        foreach ($thisMeldLists as $meldList) {
                             $meldList->insert($firstMeld, 0);
                         }
                         $allMeldLists = array_merge($allMeldLists, $thisMeldLists);

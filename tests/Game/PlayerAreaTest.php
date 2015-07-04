@@ -1,15 +1,12 @@
 <?php
 
-use Saki\Tile;
-use Saki\TileSortedList;
-
 class PlayerAreaTest extends PHPUnit_Framework_TestCase {
 
     function testOverall() {
-        $h = new \Saki\Game\PlayerArea(\Saki\TileSortedList::fromString('123m123p123sEEECC', false));
+        $h = new \Saki\Game\PlayerArea(\Saki\Tile\TileSortedList::fromString('123m123p123sEEECC', false));
 
         /*
-        $h->discardCandidate(\Saki\Tile::fromString('1m'));
+        $h->discardCandidate(\Saki\Tile\Tile::fromString('1m'));
         $this->assertCount(1, $h->getDiscardedTileList());
 
         $h->replace(Tile::fromString('1s'), Tile::fromString('4s'));

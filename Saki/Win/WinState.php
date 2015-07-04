@@ -1,5 +1,5 @@
 <?php
-namespace Saki\Yaku;
+namespace Saki\Win;
 
 use Saki\Util\Enum;
 

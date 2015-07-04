@@ -2,7 +2,8 @@
 namespace Saki\Yaku;
 
 use Saki\Meld\Meld;
-use Saki\Tile;
+use Saki\Tile\Tile;
+use Saki\Win\WinAnalyzerSubTarget;
 
 abstract class ValueTilesYaku extends Yaku {
     function getConcealedFanCount() {
@@ -13,7 +14,7 @@ abstract class ValueTilesYaku extends Yaku {
         return 1;
     }
 
-    protected function existInImpl(YakuAnalyzerSubTarget $subTarget) {
+    protected function existInImpl(WinAnalyzerSubTarget $subTarget) {
         $meldList = $subTarget->getAllMeldList()->getFilteredMeldList(function (Meld $meld) {
             return $meld->isTripleOrQuad();
         });
@@ -22,5 +23,5 @@ abstract class ValueTilesYaku extends Yaku {
         });
     }
 
-    abstract function isValueTile(Tile $tile, YakuAnalyzerSubTarget $subTarget);
+    abstract function isValueTile(Tile $tile, WinAnalyzerSubTarget $subTarget);
 }

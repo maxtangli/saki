@@ -18,21 +18,21 @@ class WallTest extends PHPUnit_Framework_TestCase {
             '111122223333444455556666777788889999p' .
             '111122223333444455556666777788889999s' .
             'EEEESSSSWWWWNNNNCCCCPPPPFFFF';
-        $tileList = \Saki\TileList::fromString($s);
+        $tileList = \Saki\Tile\TileList::fromString($s);
         $w = new Wall($tileList);
         $t = $w->pop();
-        $this->assertEquals(\Saki\Tile::fromString('F'), $t);
+        $this->assertEquals(\Saki\Tile\Tile::fromString('F'), $t);
 
         // pop many
         $ts = $w->pop(4);
         $this->assertCount(4, $ts);
-        $this->assertEquals(\Saki\Tile::fromString('F'), $ts[0]);
-        $this->assertEquals(\Saki\Tile::fromString('F'), $ts[1]);
-        $this->assertEquals(\Saki\Tile::fromString('F'), $ts[2]);
-        $this->assertEquals(\Saki\Tile::fromString('P'), $ts[3]);
+        $this->assertEquals(\Saki\Tile\Tile::fromString('F'), $ts[0]);
+        $this->assertEquals(\Saki\Tile\Tile::fromString('F'), $ts[1]);
+        $this->assertEquals(\Saki\Tile\Tile::fromString('F'), $ts[2]);
+        $this->assertEquals(\Saki\Tile\Tile::fromString('P'), $ts[3]);
 
         // shift
         $t = $w->shift();
-        $this->assertEquals(\Saki\Tile::fromString('1m'), $t);
+        $this->assertEquals(\Saki\Tile\Tile::fromString('1m'), $t);
     }
 }

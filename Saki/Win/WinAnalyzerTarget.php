@@ -1,12 +1,13 @@
 <?php
-namespace Saki\Yaku;
+namespace Saki\Win;
 
 use Saki\Game\Player;
 use Saki\Game\PlayerArea;
-use Saki\Tile;
-use Saki\TileSortedList;
+use Saki\Meld\MeldList;
+use Saki\Tile\Tile;
+use Saki\Tile\TileSortedList;
 
-class YakuAnalyzerTarget {
+class WinAnalyzerTarget {
     private $playerArea;
     private $player;
 
@@ -29,7 +30,7 @@ class YakuAnalyzerTarget {
 
     function getAllTileSortedList() {
         $sortedList = new TileSortedList($this->getHandTileSortedList()->toArray());
-        foreach($this->getDeclaredMeldList() as $meld) {
+        foreach ($this->getDeclaredMeldList() as $meld) {
             $sortedList->push($meld->toArray());
         }
         return $sortedList;
@@ -49,5 +50,29 @@ class YakuAnalyzerTarget {
 
     function getRoundWind() {
         return Tile::fromString('E'); // todo
+    }
+
+    function toSubTarget(MeldList $handMeldList) {
+        return new WinAnalyzerSubTarget($handMeldList, $this->playerArea, $this->player);
+    }
+
+    /**
+     * 門前清
+     */
+    function isConcealed() {
+        return count($this->getDeclaredMeldList()) == 0;
+    }
+
+    /**
+     * 鳴き牌あり
+     */
+    function isExposed() {
+        return !$this->isConcealed();
+    }
+
+    function isAllSuit() {
+        return $this->getHandTileSortedList()->isAll(function (Tile $tile) {
+            return $tile->isSuit();
+        });
     }
 }

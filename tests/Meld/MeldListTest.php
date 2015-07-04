@@ -1,12 +1,13 @@
 <?php
 
-use Saki\Meld\MeldList;
 use Saki\Meld\Meld;
+use Saki\Meld\MeldList;
+
 class MeldListTest extends PHPUnit_Framework_TestCase {
     function testOverall() {
 
         $l = new MeldList([
-            new Meld(\Saki\TileList::fromString('11m'), \Saki\Meld\PairMeldType::getInstance())
+            new Meld(\Saki\Tile\TileList::fromString('11m'), \Saki\Meld\PairMeldType::getInstance())
         ]);
     }
 
@@ -26,8 +27,8 @@ class MeldListTest extends PHPUnit_Framework_TestCase {
             ['', true],
             ['11s', true],
             ['11s,11s', true],
-            [',',false],
-            [',11s',false]
+            [',', false],
+            [',11s', false]
         ];
     }
 

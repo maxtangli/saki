@@ -1,7 +1,7 @@
 <?php
 namespace Saki\Meld;
 
-use Saki\TileList;
+use Saki\Tile\TileList;
 
 class PairMeldType extends MeldType {
     function getTileCount() {

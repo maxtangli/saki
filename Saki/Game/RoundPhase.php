@@ -19,6 +19,34 @@ class RoundPhase extends Enum {
     }
 
     /**
+     * @return RoundPhase
+     */
+    static function getInitPhaseInstance() {
+        return static::getInstance(self::INIT_PHASE);
+    }
+
+    /**
+     * @return RoundPhase
+     */
+    static function getPrivatePhaseInstance() {
+        return static::getInstance(self::PRIVATE_PHASE);
+    }
+
+    /**
+     * @return RoundPhase
+     */
+    static function getPublicPhaseInstance() {
+        return static::getInstance(self::PUBLIC_PHASE);
+    }
+
+    /**
+     * @return RoundPhase
+     */
+    static function getOverPhaseInstance() {
+        return static::getInstance(self::OVER_PHASE);
+    }
+
+    /**
      * @param $value
      * @return RoundPhase
      */
@@ -33,6 +61,4 @@ class RoundPhase extends Enum {
     static function fromString($s) {
         return parent::fromString($s);
     }
-
-
 }

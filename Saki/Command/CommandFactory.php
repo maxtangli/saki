@@ -27,7 +27,7 @@ class CommandFactory {
         $commandTokens = explode(' ', $commandString);
 
         $commandClassString = $commandTokens[0]; // discard
-        $commandClass = __NAMESPACE__.'\\'.ucfirst($commandClassString).'Command'; // DiscardCommand
+        $commandClass = __NAMESPACE__ . '\\' . ucfirst($commandClassString) . 'Command'; // DiscardCommand
 
         $round = $this->getGame()->getCurrentRound();
 

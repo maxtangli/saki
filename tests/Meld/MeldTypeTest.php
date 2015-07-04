@@ -1,6 +1,6 @@
 <?php
 
-use Saki\TileList;
+use Saki\Tile\TileList;
 
 class MeldTypeTest extends PHPUnit_Framework_TestCase {
 

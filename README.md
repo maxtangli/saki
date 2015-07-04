@@ -12,6 +12,7 @@ A japanese-mahjong solver.
 - [ ] static factory method such as fromString($s) force subclasses keep constructor signature => move to factory class?
 - [x] ArrayObjectLike modify methods => protected methods in ArrayObjectLike
 - [x] ArrayObjectLike protected methods override is buggy => refactor to public
+- [ ] PlayerList pass as argument
 
 ## todo
 
@@ -125,44 +126,140 @@ rush 11 more yaku
 - [x] AllSimplesYaku
 - [x] test 0.2h
 
-rush 12 
+rush 12 win flow
 
-rush red dora
+- [x] analyze target 0.7h
+- [x] use-case analyze 2.2h
 
-rush win
+- [x] remove TurnManager into PlayerList 0.5h
+- [x] bug: not drawn. cause; PlayerList sharable -> unsharable 0.7h
+- [x] adapt Round with PlayerList 0.3h
 
-- [ ] private phase: win on self
+- [x] private phase: win on self 0.8h
+- [x] over phase: exhaustive drawn 0.6h
+
+rush win detail & next round
+
 - [ ] public phase: win on other
-
-rush next round
-
-- [ ] over phase: drawn
-- [ ] over phase: ron/zimo
+- [ ] score table
+- [ ] over phase: exhaustive drawn
+- [ ] over phase: winBySelf
+- [ ] over phase: winByOther
+- [ ] over phase: multipleByOther
 
 rush game over
 
-features
+- [ ] result: winner order, final score
 
-- rush fushu/point
-- rush dora/ red dora
-- rush player wind
-- more friendly UI
+rush simple ui
+rush red dora
+
+- [ ] discard/createMeld logic
+- [ ] impl
+
+rush all yaku
+
+- [ ] yakuman logic
+- [ ] not-count-yaku logic
+
+rush etc
+
+- [ ] bug: getMeldCompositions
+
+rush next round drawn
+
+- [ ] over phase: four kong drawn
+- [ ] over phase: four reach drawn
+- [ ] over phase: 99 drawn
+
+rush candidate commands
+rush server logic
 
 advanced features
 
+- multi player
 - multi-media
 - player AI
 - replay
 - player statistics
 
-more advanced features
+## note: overPhase
 
-- tenhou client AI
-- chating AI
-- skill mode
-- training mode
+types
 
-## note
+- exhaustive draw: each player isWaiting? scores delta depend on isWaiting.
+- winOnSelf: winPlayer, fuCount, fanCount, yakuList. scores depend on fu/fanCount + isDealer. 
+
+scores delta format? 
+ 
+- show origin score& delta
+
+when to modify player scores?
+
+- toOverPhase(): modify scores, keep scoreDeltaInfo
+- view: show result type -> show result type concerned info -> show scoreDeltaInfo
+
+## note: to next round
+
+if game over
+ show GameResult
+else nextDealer = $roundResult.getNextDealer
+return new Round($playerList, $nextDealer)
+
+game over: lastRound, nextDealer != dealer
+
+## note: GameResult
+
+1st p1 45000 +5000 etc-rank-concerned-info
+...
+...
+...
+
+## note: RoundResult
+
+roundWind roundWindTurn selfWindTurn
+(East) (4) (Round 2)
+
+no selfWind roundTurn score
+(p1) (South) (turn 10) (score 40000)
+...
+...
+...
+
+## note: result.tpl $roundResult (pass required info to decouple from Round)
+
+- winOnSelf
+
+p1 winOnSelf
+
+yaku1 1ban
+yaku2 1ban
+dora  2ban
+
+70fu 4ban +7700(total scoreDelta = baseScoreDelta + reachScoreDelta + dealerScoreDelta)
+
+p1 xxxx + 7700 -> xxxx
+p2 xxxx - xxxx -> xxxx
+p3 xxxx - xxxx -> xxxx
+p4 xxxx - xxxx -> xxxx
+
+next round = winnner is dealer ? winner : dealer's next
+
+- exhaustive draw
+
+p1 waiting
+p2 waiting
+p3 waiting
+p4 not waiting
+
+p1 xxxx + 7700 -> xxxx
+p2 xxxx - xxxx -> xxxx
+p3 xxxx - xxxx -> xxxx
+p4 xxxx - xxxx -> xxxx
+
+next round = dealer is waiting ?
+
+## note: Command
 
 Command
 
@@ -174,7 +271,7 @@ Command serialize
 - toString discard p1 4p
 - fromString DiscardCommand $round $player $params
 
-## note
+## note: isWait
 
 after 1 tile discarded, for every player judge:
 

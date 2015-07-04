@@ -1,9 +1,9 @@
 <?php
-namespace Saki\Yaku;
+namespace Saki\Win;
 
-use Saki\Util\Enum;
+use Saki\Yaku\YakuList;
 
-class YakuAnalyzerResult {
+class WinAnalyzerResult {
     /**
      * @var WinState
      */
@@ -14,7 +14,7 @@ class YakuAnalyzerResult {
      */
     private $yakuList;
 
-    function __construct($winState, $yakuList) {
+    function __construct(WinState $winState, YakuList $yakuList) {
         $this->winState = $winState;
         $this->yakuList = $yakuList;
     }

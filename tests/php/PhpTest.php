@@ -7,12 +7,13 @@ class EqMockA {
 
 }
 
-class EqMockB extends EqMockA{
+class EqMockB extends EqMockA {
 
 }
 
 class CalledClassMockA {
     public $calledClass;
+
     function __construct() {
         $this->calledClass = get_called_class();
     }
@@ -23,13 +24,14 @@ class CalledClassMockB extends CalledClassMockA {
 }
 
 class PassArgumentArrayMock {
-    public $a = [1,2,3];
+    public $a = [1, 2, 3];
+
     function getA() {
         return $this->a;
     }
 }
 
-class PhpTest extends \PHPUnit_Framework_TestCase{
+class PhpTest extends \PHPUnit_Framework_TestCase {
     function testOperatorEq() {
         $a = new EqMockA();
         $a2 = new EqMockA();
@@ -41,9 +43,9 @@ class PhpTest extends \PHPUnit_Framework_TestCase{
 
     function testCalledClass() {
         $a = new CalledClassMockA();
-        $this->assertEquals('tests\php\CalledClassMockA',$a->calledClass);
+        $this->assertEquals('tests\php\CalledClassMockA', $a->calledClass);
         $b = new CalledClassMockB();
-        $this->assertEquals('tests\php\CalledClassMockB',$b->calledClass);
+        $this->assertEquals('tests\php\CalledClassMockB', $b->calledClass);
     }
 
     function testBool() {
@@ -59,14 +61,14 @@ class PhpTest extends \PHPUnit_Framework_TestCase{
         $obj = new PassArgumentArrayMock();
         $getA = $obj->getA();
         $getA[0] = 0;
-        $this->assertEquals([0,2,3], $getA);
-        $this->assertEquals([1,2,3], $obj->getA()); // array will pass by value
+        $this->assertEquals([0, 2, 3], $getA);
+        $this->assertEquals([1, 2, 3], $obj->getA()); // array will pass by value
     }
 
     function testArraySplice() {
-        $a = [1,0,1,2,3];
+        $a = [1, 0, 1, 2, 3];
         array_splice($a, 0, 1);
-        $this->assertEquals([0,1,2,3], $a); // number key rearrange after splice
+        $this->assertEquals([0, 1, 2, 3], $a); // number key rearrange after splice
     }
 
     function testExplode() {
@@ -81,11 +83,11 @@ class PhpTest extends \PHPUnit_Framework_TestCase{
         $actualClass = 'A\\B\\C';
         $lastSeparatorPos = strrpos($actualClass, '\\');
         $this->assertEquals(3, $lastSeparatorPos);
-        $result =  substr($actualClass, $lastSeparatorPos+1);
+        $result = substr($actualClass, $lastSeparatorPos + 1);
         $this->assertEquals('C', $result);
     }
 
     function testRange() {
-        $this->assertSame([3,2,1],range(3,1,-1));
+        $this->assertSame([3, 2, 1], range(3, 1, -1));
     }
 }

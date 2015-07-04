@@ -1,10 +1,8 @@
 <?php
 
-use Saki\Tile;
-use Saki\TileList;
 use Saki\Meld\Meld;
-use Saki\Meld\TripleMeldType;
-use Saki\Meld\QuadMeldType;
+use Saki\Tile\Tile;
+use Saki\Tile\TileList;
 
 class MeldTest extends PHPUnit_Framework_TestCase {
 
@@ -45,16 +43,16 @@ class MeldTest extends PHPUnit_Framework_TestCase {
     function testAddKong() {
         // canPlusKong
         $meld = new \Saki\Meld\Meld(TileList::fromString('111m'), \Saki\Meld\TripleMeldType::getInstance());
-        $this->assertTrue($meld->canPlusKong(\Saki\Tile::fromString('1m')));
-        $this->assertFalse($meld->canPlusKong(\Saki\Tile::fromString('1s')));
+        $this->assertTrue($meld->canPlusKong(\Saki\Tile\Tile::fromString('1m')));
+        $this->assertFalse($meld->canPlusKong(Tile::fromString('1s')));
         // plusKong get Quad
-        $meld2 = $meld->getPlusKongMeld(\Saki\Tile::fromString('1m'), false);
+        $meld2 = $meld->getPlusKongMeld(\Saki\Tile\Tile::fromString('1m'), false);
         $this->assertSame('1111m', $meld2->__toString());
         $this->assertEquals(\Saki\Meld\QuadMeldType::getInstance(), $meld2->getMeldType());
     }
 
     /**
-     * @depends testAddKong
+     * @depends      testAddKong
      * @dataProvider addKongIsExposedProvider
      */
     function testAddKongIsExposed($before, $forceExposed, $after) {

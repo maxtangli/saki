@@ -1,10 +1,7 @@
 <?php
 namespace Saki\Game;
 
-use Saki\Tile;
-use Saki\TileList;
-use Saki\TileType;
-use Saki\Util\ArrayLikeObject;
+use Saki\Tile\TileList;
 
 class Wall {
 
@@ -46,7 +43,7 @@ class Wall {
     }
 
     function __toString() {
-        return $this->getDeadWall()->__toString().','.$this->getRemainTileList()->__toString();
+        return $this->getDeadWall()->__toString() . ',' . $this->getRemainTileList()->__toString();
     }
 
     /**
@@ -79,14 +76,14 @@ class Wall {
 
     /**
      * @param int $n
-     * @return Tile|Tile[]
+     * @return \Saki\Tile\Tile|\Saki\Tile\Tile[]
      */
     function pop($n = 1) {
         return $this->getRemainTileList()->pop($n);
     }
 
     /**
-     * @return Tile
+     * @return \Saki\Tile\Tile
      */
     function shift() {
         return $this->getDeadWall()->shift();

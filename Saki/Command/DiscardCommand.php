@@ -3,7 +3,7 @@ namespace Saki\Command;
 
 use Saki\Game\Player;
 use Saki\Game\Round;
-use Saki\Tile;
+use Saki\Tile\Tile;
 
 class DiscardCommand extends Command {
     static function fromString(Round $round, Player $player, $stringTokens) {

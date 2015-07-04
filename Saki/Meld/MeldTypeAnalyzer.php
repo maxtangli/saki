@@ -2,8 +2,7 @@
 
 namespace Saki\Meld;
 
-use Doctrine\Instantiator\Exception\InvalidArgumentException;
-use Saki\TileList;
+use Saki\Tile\TileList;
 
 class MeldTypeAnalyzer {
     /**
@@ -40,7 +39,7 @@ class MeldTypeAnalyzer {
      */
     function analyzeMeldType(TileList $tileList, $allowNoMatch = false) {
         $candidateMeldTypes = $this->getCandidateMeldTypes();
-        foreach($candidateMeldTypes as $meldType) {
+        foreach ($candidateMeldTypes as $meldType) {
             if ($meldType->valid($tileList)) {
                 return $meldType;
             }

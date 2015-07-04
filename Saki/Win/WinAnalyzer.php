@@ -1,7 +1,21 @@
 <?php
-namespace Saki\Yaku;
+namespace Saki\Win;
 
-class YakuAnalyzer {
+use Saki\Meld\MeldCompositionsAnalyzer;
+use Saki\Meld\MeldList;
+use Saki\Meld\MeldTypeAnalyzer;
+use Saki\Util\Utils;
+use Saki\Yaku\AllRunsYaku;
+use Saki\Yaku\AllSimplesYaku;
+use Saki\Yaku\GreenValueTilesYaku;
+use Saki\Yaku\ReachYaku;
+use Saki\Yaku\RedValueTilesYaku;
+use Saki\Yaku\RoundWindValueTilesYaku;
+use Saki\Yaku\SelfWindValueTilesYaku;
+use Saki\Yaku\WhiteValueTilesYaku;
+use Saki\Yaku\YakuList;
+
+class WinAnalyzer {
     private $yakus;
 
     static function getDefaultYakus() {
@@ -26,21 +40,34 @@ class YakuAnalyzer {
     }
 
     /**
-     * @param YakuAnalyzerTarget $target
-     * @return YakuAnalyzerResult
+     * @param WinAnalyzerTarget $target
+     * @return WinAnalyzerResult
      */
-    function analyzeTarget(YakuAnalyzerTarget $target) {
+    function analyzeTarget(WinAnalyzerTarget $target) {
         // handTiles target -> handMelds[] subTarget
-
+        $analyzer = new MeldCompositionsAnalyzer();
+        $meldTypes = MeldTypeAnalyzer::getDefaultCandidateMeldTypes();
+        $meldCompositions = $analyzer->analyzeMeldCompositions($target->getHandTileSortedList(), $meldTypes);
+        if (empty($meldCompositions)) {
+            return new WinAnalyzerResult(WinState::getNotWinTilesInstance(), new YakuList([], $target->isExposed()));
+        }
         // get analyzerResult[]
+        $subTargets = array_map(function (MeldList $meldList) use ($target) {
+            return $target->toSubTarget($meldList);
+        }, $meldCompositions);
+        $results = $this->analyzeSubTargets($subTargets);
 
         // return where yakuCount is max
-        throw new \BadMethodCallException('Not implemented');
+        $isExposed = $target->isExposed();
+        $result = Utils::array_max($results, function (WinAnalyzerResult $result) use ($isExposed) {
+            return $result->getYakuList()->getFanCount($isExposed);
+        });
+        return $result;
     }
 
     /**
-     * @param YakuAnalyzerSubTarget[] $subTargets
-     * @return YakuAnalyzerResult[]
+     * @param WinAnalyzerSubTarget[] $subTargets
+     * @return WinAnalyzerResult[]
      */
     function analyzeSubTargets(array $subTargets) {
         $results = [];
@@ -52,10 +79,10 @@ class YakuAnalyzer {
     }
 
     /**
-     * @param YakuAnalyzerSubTarget $subTarget
-     * @return YakuAnalyzerResult
+     * @param WinAnalyzerSubTarget $subTarget
+     * @return WinAnalyzerResult
      */
-    function analyzeSubTarget(YakuAnalyzerSubTarget $subTarget) {
+    function analyzeSubTarget(WinAnalyzerSubTarget $subTarget) {
         /*
          * reach: isReach , 4winSetAnd1Pair or other winTiles
          * other yaku: has yaku means is wintile / clear
@@ -67,11 +94,11 @@ class YakuAnalyzer {
          * - win: win tiles exist and yaku count > 0
          */
 
-        $yakuList = new YakuList([]);
+        $yakuList = new YakuList([], $subTarget->isExposed());
         if ($this->isWinTiles($subTarget)) {
             foreach ($this->yakus as $yaku) {
                 if ($yaku->existIn($subTarget)) {
-                    $yakuList->push($yaku); // yakuList onChange hook: remove mutually-excluded yaku. or removeExcludedMethod.
+                    $yakuList->push($yaku); // winAnalyzerResult onChange hook: remove mutually-excluded yaku. or removeExcludedMethod.
                 }
             }
             if ($yakuList->count() == 0) {
@@ -87,15 +114,15 @@ class YakuAnalyzer {
             $winState = WinState::getNotWinTilesInstance();
         }
 
-        $result = new YakuAnalyzerResult($winState, $yakuList);
+        $result = new WinAnalyzerResult($winState, $yakuList);
         return $result;
     }
 
-    function isWinTiles(YakuAnalyzerSubTarget $subTarget) {
+    function isWinTiles(WinAnalyzerSubTarget $subTarget) {
         return $subTarget->is4WinSetAnd1Pair(); // todo
     }
 
-    function isDiscaredWinTile(YakuAnalyzerSubTarget $subTarget) {
+    function isDiscaredWinTile(WinAnalyzerSubTarget $subTarget) {
         return false; // todo
     }
 }

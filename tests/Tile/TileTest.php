@@ -1,7 +1,7 @@
 <?php
 
-use Saki\Tile;
-use Saki\TileType;
+use Saki\Tile\Tile;
+use Saki\Tile\TileType;
 
 class TileTest extends PHPUnit_Framework_TestCase {
 

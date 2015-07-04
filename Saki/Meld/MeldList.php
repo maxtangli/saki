@@ -1,7 +1,7 @@
 <?php
 namespace Saki\Meld;
 
-use Saki\Tile;
+use Saki\Tile\Tile;
 use Saki\Util\ArrayLikeObject;
 
 class MeldList extends ArrayLikeObject {

@@ -1,13 +1,12 @@
 <?php
-namespace Saki\Yaku;
+namespace Saki\Win;
 
+use Saki\Game\Player;
 use Saki\Game\PlayerArea;
 use Saki\Meld\Meld;
 use Saki\Meld\MeldList;
-use Saki\Tile;
-use Saki\Game\Player;
 
-class YakuAnalyzerSubTarget extends YakuAnalyzerTarget {
+class WinAnalyzerSubTarget extends WinAnalyzerTarget {
     private $handMeldList;
 
     function __construct(MeldList $handMeldList, PlayerArea $playerArea, Player $player) {
@@ -26,29 +25,26 @@ class YakuAnalyzerSubTarget extends YakuAnalyzerTarget {
         return $allMeldList;
     }
 
-    /**
-     * 門前清
-     */
-    function isConcealed() {
-        return count($this->getDeclaredMeldList())==0;
-    }
-
     function is4WinSetAnd1Pair() {
         $meldList = $this->getAllMeldList();
-        $winSetList = $meldList->getFilteredMeldList(function(Meld $meld){return $meld->isWinSet();});
-        $pairList = $meldList->getFilteredMeldList(function(Meld $meld){return $meld->isPair();});
+        $winSetList = $meldList->getFilteredMeldList(function (Meld $meld) {
+            return $meld->isWinSet();
+        });
+        $pairList = $meldList->getFilteredMeldList(function (Meld $meld) {
+            return $meld->isPair();
+        });
         return count($winSetList) == 4 && count($pairList) == 1;
     }
 
     function is4RunAnd1Pair() {
         $meldList = $this->getAllMeldList();
-        $runList = $meldList->getFilteredMeldList(function(Meld $meld){return $meld->isRun();});
-        $pairList = $meldList->getFilteredMeldList(function(Meld $meld){return $meld->isPair();});
+        $runList = $meldList->getFilteredMeldList(function (Meld $meld) {
+            return $meld->isRun();
+        });
+        $pairList = $meldList->getFilteredMeldList(function (Meld $meld) {
+            return $meld->isPair();
+        });
         return count($runList) == 4 && count($pairList) == 1;
-    }
-
-    function isAllSuit() {
-        return $this->getHandTileSortedList()->isAll(function(Tile $tile){return $tile->isSuit();});
     }
 
     /**
@@ -75,8 +71,12 @@ class YakuAnalyzerSubTarget extends YakuAnalyzerTarget {
      * 両面待ち 78 -> 678 or 789
      */
     function isTwoSidesRunWaiting() {
-        $runMeldList = $this->getAllMeldList()->getFilteredMeldList(function(Meld $meld){return $meld->isRun();});
+        $runMeldList = $this->getAllMeldList()->getFilteredMeldList(function (Meld $meld) {
+            return $meld->isRun();
+        });
         $winTile = $this->getWinTile();
-        return $runMeldList->isAny(function(Meld $runMeld)use($winTile){return $runMeld->getFirst()==$winTile || $runMeld->getLast()==$winTile;});
+        return $runMeldList->isAny(function (Meld $runMeld) use ($winTile) {
+            return $runMeld->getFirst() == $winTile || $runMeld->getLast() == $winTile;
+        });
     }
 }

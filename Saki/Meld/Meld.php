@@ -1,9 +1,9 @@
 <?php
 namespace Saki\Meld;
 
-use Saki\Tile;
-use Saki\TileList;
-use Saki\TileSortedList;
+use Saki\Tile\Tile;
+use Saki\Tile\TileList;
+use Saki\Tile\TileSortedList;
 use Saki\Util\ArrayLikeObject;
 
 class Meld extends ArrayLikeObject {
@@ -26,7 +26,7 @@ class Meld extends ArrayLikeObject {
     static function validString($s) {
         try {
             static::fromString($s);
-        } catch(\InvalidArgumentException $e) {
+        } catch (\InvalidArgumentException $e) {
             return false;
         }
         return true;
@@ -41,11 +41,11 @@ class Meld extends ArrayLikeObject {
         if (preg_match($regex, $s) !== 1) {
             throw new \InvalidArgumentException(sprintf('Invalid $s[%s] for Meld.', $s));
         }
-        $exposed = $s[0]!=='(';
-        $tileListString = $exposed ? $s : substr($s, 1, strlen($s)-2);
+        $exposed = $s[0] !== '(';
+        $tileListString = $exposed ? $s : substr($s, 1, strlen($s) - 2);
         $tileList = TileList::fromString($tileListString);
         return new static($tileList, null, $exposed);
-     }
+    }
 
     private $tileReadonlyOrderedList;
     private $meldType;
@@ -60,7 +60,7 @@ class Meld extends ArrayLikeObject {
         if ($meldType !== null && !$meldType->valid($tileList)) {
             throw new \InvalidArgumentException();
         }
-        $actualMeldType = $meldType !== null ? $meldType: self::getMeldTypeAnalyzer()->analyzeMeldType($tileList);
+        $actualMeldType = $meldType !== null ? $meldType : self::getMeldTypeAnalyzer()->analyzeMeldType($tileList);
         $validConcealed = $exposed || ($actualMeldType instanceof TripleMeldType || $actualMeldType instanceof QuadMeldType);
         if (!$validConcealed) {
             throw new \InvalidArgumentException(sprintf('Invalid argument $exposed[%s] for $actualMeldType[%s].', $exposed, $actualMeldType));
@@ -102,11 +102,11 @@ class Meld extends ArrayLikeObject {
 
 
     function isTriple($exposedFlag = null) {
-        return $this->getMeldType() instanceof TripleMeldType && ($exposedFlag === null || $this->isExposed()===$exposedFlag);
+        return $this->getMeldType() instanceof TripleMeldType && ($exposedFlag === null || $this->isExposed() === $exposedFlag);
     }
 
     function isQuad($exposedFlag = null) {
-        return $this->getMeldType() instanceof QuadMeldType && ($exposedFlag === null || $this->isExposed()===$exposedFlag);
+        return $this->getMeldType() instanceof QuadMeldType && ($exposedFlag === null || $this->isExposed() === $exposedFlag);
     }
 
     function isTripleOrQuad($exposedFlag = null) {
@@ -146,7 +146,7 @@ class Meld extends ArrayLikeObject {
     }
 
     /**
-     * @return Tile[]
+     * @return \Saki\Tile\Tile[]
      */
     public function toArray() {
         return parent::toArray();
@@ -154,7 +154,7 @@ class Meld extends ArrayLikeObject {
 
     /**
      * @param int $offset
-     * @return Tile
+     * @return \Saki\Tile\Tile
      */
     function offsetGet($offset) {
         return parent::offsetGet($offset);

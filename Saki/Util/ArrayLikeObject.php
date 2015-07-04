@@ -130,6 +130,13 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         return Utils::array_any($this->toArray(), $predicate);
     }
 
+    function walk(callable $callback) {
+        foreach ($this as $v) {
+            $callback($v);
+        }
+        // do not call onInnerArrayChanged since innerArray k-v relation not changed
+    }
+
     /**
      * @param mixed|array $valueOrValues
      * @param bool $strict
@@ -218,7 +225,7 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
     }
 
     function getLast() {
-        return $this->indexToValue($this->count()-1);
+        return $this->indexToValue($this->count() - 1);
     }
 
     function replaceByIndex($indexOrIndexes, $newValueOrValues) {
@@ -267,7 +274,7 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
     }
 
     function removeByIndex($indexOrIndexes) {
-        $valid = !is_array($indexOrIndexes) || array_unique($indexOrIndexes)==$indexOrIndexes;
+        $valid = !is_array($indexOrIndexes) || array_unique($indexOrIndexes) == $indexOrIndexes;
         if (!$valid) {
             throw new \InvalidArgumentException();
         }
@@ -306,6 +313,7 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
     }
 
     private $allowHook = true;
+
     protected final function onInnerArrayChanged() {
         if ($this->allowHook) {
             $this->allowHook = false;
