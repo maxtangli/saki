@@ -18,7 +18,7 @@ abstract class Enum implements IEnum {
 
     /**
      * @param $value
-     * @return object
+     * @return Enum
      */
     static function getInstance($value) {
         $class = static::getClassName();
@@ -29,8 +29,16 @@ abstract class Enum implements IEnum {
     }
 
     /**
+     * @return Enum[]
+     */
+    static function getAllInstances() {
+        $allValues = array_keys(static::getValue2StringMap());
+        return array_map(function($v){return static::getInstance($v);}, $allValues);
+    }
+
+    /**
      * @param string $s
-     * @return object
+     * @return Enum
      */
     static function fromString($s) {
         $v = array_search($s, static::getValue2StringMap());

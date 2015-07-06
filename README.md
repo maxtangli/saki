@@ -138,6 +138,10 @@ rush 12 win flow
 - [x] private phase: win on self 0.8h
 - [x] over phase: exhaustive drawn 0.6h
 
+rush 13 win score
+
+- [x] score table 3h
+
 rush win detail & next round
 
 - [ ] public phase: win on other

@@ -2,6 +2,7 @@
 namespace Saki\Game\RoundResult;
 
 use Saki\Game\Player;
+use Saki\Util\Singleton;
 use Saki\Win\WinAnalyzerResult;
 
 class WinBySelfRoundResult extends RoundResult {
@@ -36,3 +37,4 @@ class WinBySelfRoundResult extends RoundResult {
         return $delta;
     }
 }
+
