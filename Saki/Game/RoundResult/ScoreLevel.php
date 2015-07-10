@@ -11,6 +11,7 @@ class ScoreLevel extends Enum {
     const SAN_BAI_MAN = 5;
     const YAKU_MAN = 6;
     const W_YAKU_MAN = 7;
+    const MULTI_YAKU_MAN = 9;
 
     static function getValue2StringMap() {
         return [
@@ -24,6 +25,11 @@ class ScoreLevel extends Enum {
         ];
     }
 
+    /**
+     * @param int $fanCount
+     * @param int|null $fuCount
+     * @return ScoreLevel
+     */
     static function fromFanAndFuCount($fanCount, $fuCount = null) {
         switch ($fanCount) {
             case 1:
@@ -53,8 +59,31 @@ class ScoreLevel extends Enum {
                 $v = self::HANE_MAN;
             break;
             default:
-                $v = self::YAKU_MAN;
+                if ($fanCount >= 39) {
+                    $v = self::MULTI_YAKU_MAN;
+                } elseif ($fanCount >= 26) {
+                    $v = self::W_YAKU_MAN;
+                } else {
+                    $v = self::YAKU_MAN;
+                }
         }
         return static::getInstance($v);
     }
+
+    function isYakuMan() {
+        $targetValues = [
+            self::YAKU_MAN, self::W_YAKU_MAN, self::MULTI_YAKU_MAN
+        ];
+        return in_array($this->getValue(), $targetValues);
+    }
+
+    /**
+     * @param $value
+     * @return ScoreLvel
+     */
+    static function getInstance($value) {
+        return parent::getInstance($value);
+    }
+
+
 }

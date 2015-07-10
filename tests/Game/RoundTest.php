@@ -19,12 +19,12 @@ class RoundTest extends PHPUnit_Framework_TestCase {
     protected $roundAfterDiscard1m;
 
     protected function setUp() {
-        $playerList = new PlayerList(PlayerList::createPlayers(3, 40000));
+        $playerList = new PlayerList(PlayerList::createPlayers(4, 40000));
         $wall = new Wall(Wall::getStandardTileList());
         $dealerPlayer = $playerList[0];
         $this->initialRound = new Round($wall, $playerList, $dealerPlayer);
 
-        $playerList2 = new PlayerList(PlayerList::createPlayers(3, 40000));
+        $playerList2 = new PlayerList(PlayerList::createPlayers(4, 40000));
         $wall2 = new Wall(Wall::getStandardTileList());
         $dealerPlayer2 = $playerList2[0];
         $r = new Round($wall2, $playerList2, $dealerPlayer2);
@@ -174,13 +174,16 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         $r->winBySelf($r->getCurrentPlayer());
         // phase changed
         $this->assertEquals(RoundPhase::getInstance(RoundPhase::OVER_PHASE), $r->getRoundPhase());
-        // score changed todo
+        // score changed
         foreach ($r->getPlayerList() as $player) {
-            $delta = $r->getRoundResult()->getScoreDelta($player)->getDelta();
+            $scoreDelta = $r->getRoundResult()->getScoreDelta($player);
+            $deltaInt = $scoreDelta->getDeltaInt();
             if ($player == $r->getDealerPlayer()) {
-                $this->assertGreaterThan(0, $delta);
+                $this->assertGreaterThan(0, $deltaInt);
+                $this->assertEquals($scoreDelta->getAfter(), $player->getScore(), $scoreDelta);
             } else {
-                $this->assertLessThan(0, $delta);
+                $this->assertLessThan(0, $deltaInt);
+                $this->assertEquals($scoreDelta->getAfter(), $player->getScore(), $scoreDelta);
             }
         }
     }

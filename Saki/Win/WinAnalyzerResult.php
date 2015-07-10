@@ -1,6 +1,8 @@
 <?php
 namespace Saki\Win;
 
+use Saki\Game\RoundResult\ScoreLevel;
+use Saki\Game\RoundResult\ScoreTable;
 use Saki\Yaku\YakuList;
 
 class WinAnalyzerResult {
@@ -25,5 +27,21 @@ class WinAnalyzerResult {
 
     function getYakuList() {
         return $this->yakuList;
+    }
+
+    function getFuCount() {
+        return 40; // todo
+    }
+
+    function getFanCount() {
+        return $this->getYakuList()->getFanCount();
+    }
+
+    function getScoreLevel() {
+        return ScoreLevel::fromFanAndFuCount($this->getFanCount(), $this->getFuCount());
+    }
+
+    function getScoreItem() {
+        return ScoreTable::getInstance()->getScoreItem($this->getFanCount(), $this->getFuCount());
     }
 }

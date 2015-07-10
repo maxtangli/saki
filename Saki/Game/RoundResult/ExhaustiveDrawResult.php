@@ -5,19 +5,20 @@ use Saki\Game\Player;
 use Saki\Util\Utils;
 
 class ExhaustiveDrawResult extends RoundResult {
-    private $allPlayers;
+    private $players;
     private $isWaitings;
 
     /**
-     * @param Player[] $allPlayers
+     * @param Player[] $players
      * @param bool[] $isWaitings
      */
-    function __construct(array $allPlayers, array $isWaitings) {
-        $valid = count($allPlayers) == count($isWaitings);
+    function __construct(array $players, array $isWaitings) {
+        parent::__construct($players);
+        $valid = count($players) == count($isWaitings);
         if (!$valid) {
             throw new \InvalidArgumentException();
         }
-        $this->allPlayers = $allPlayers;
+        $this->players = $players;
         $this->isWaitings = $isWaitings;
     }
 
@@ -45,7 +46,7 @@ class ExhaustiveDrawResult extends RoundResult {
     }
 
     function isWaiting(Player $player) {
-        $i = array_search($player, $this->allPlayers, false);
+        $i = array_search($player, $this->players, false);
         if ($i === false) {
             throw new \InvalidArgumentException();
         }

@@ -2,14 +2,16 @@
 
 class WinAnalyzerTest extends \PHPUnit_Framework_TestCase {
     function testAllRunsYaku() {
+
+        $player = new \Saki\Game\Player(1, 40000, \Saki\Tile\Tile::fromString('E'));
+
         $playerArea = new \Saki\Game\PlayerArea();
         $playerArea->drawInit(\Saki\Tile\TileList::fromString('123m456m789m123s55s')->toArray());
         $playerArea->setCandidateTile(\Saki\Tile\Tile::fromString('1m'));
-        $player = new \Saki\Game\Player(1, 40000, \Saki\Tile\Tile::fromString('E'));
-        //$target = new \Saki\Win\WinAnalyzerTarget($playerArea);
+        $player->setPlayerArea($playerArea);
 
         $meldList = \Saki\Meld\MeldList::fromString('123m,456m,789m,123s,55s');
-        $subTarget = new \Saki\Win\WinAnalyzerSubTarget($meldList, $playerArea, $player);
+        $subTarget = new \Saki\Win\WinAnalyzerSubTarget($meldList, $player);
 
         $yaku = \Saki\Yaku\AllRunsYaku::getInstance();
         $this->assertTrue($yaku->existIn($subTarget));

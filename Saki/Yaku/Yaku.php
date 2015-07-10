@@ -15,12 +15,16 @@ abstract class Yaku extends Singleton {
         return $isExposed ? $this->getExposedFanCount() : $this->getConcealedFanCount();
     }
 
-    abstract function getConcealedFanCount();
+    abstract protected function getConcealedFanCount();
 
-    abstract function getExposedFanCount();
+    abstract protected function getExposedFanCount();
 
     final function requireConcealed() {
         return $this->getExposedFanCount() == 0;
+    }
+
+    final function isYakuMan() {
+        return $this->getConcealedFanCount() >= 13 || $this->getExposedFanCount() >= 13;
     }
 
     final function existIn(WinAnalyzerSubTarget $subTarget) {
@@ -29,6 +33,10 @@ abstract class Yaku extends Singleton {
     }
 
     abstract protected function existInImpl(WinAnalyzerSubTarget $subTarget);
+
+    function getExcludedYakus() {
+        return [];
+    }
 
     /**
      * @return Yaku

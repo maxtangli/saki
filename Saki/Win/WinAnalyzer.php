@@ -7,6 +7,8 @@ use Saki\Meld\MeldTypeAnalyzer;
 use Saki\Util\Utils;
 use Saki\Yaku\AllRunsYaku;
 use Saki\Yaku\AllSimplesYaku;
+use Saki\Yaku\FourConcealedTriplesOnePairWaitingYaku;
+use Saki\Yaku\FourConcealedTriplesYaku;
 use Saki\Yaku\GreenValueTilesYaku;
 use Saki\Yaku\ReachYaku;
 use Saki\Yaku\RedValueTilesYaku;
@@ -20,6 +22,7 @@ class WinAnalyzer {
 
     static function getDefaultYakus() {
         return [
+            // 1 fan
             ReachYaku::getInstance(),
             RedValueTilesYaku::getInstance(),
             WhiteValueTilesYaku::getInstance(),
@@ -28,6 +31,10 @@ class WinAnalyzer {
             RoundWindValueTilesYaku::getInstance(),
             AllSimplesYaku::getInstance(),
             AllRunsYaku::getInstance(),
+            // yaku man
+            FourConcealedTriplesYaku::getInstance(),
+            // w yaku man
+            FourConcealedTriplesOnePairWaitingYaku::getInstance(),
         ];
     }
 
@@ -101,6 +108,8 @@ class WinAnalyzer {
                     $yakuList->push($yaku); // winAnalyzerResult onChange hook: remove mutually-excluded yaku. or removeExcludedMethod.
                 }
             }
+            $yakuList->normalize();
+
             if ($yakuList->count() == 0) {
                 $winState = WinState::getNoYakuInstance();
             } else {

@@ -14,7 +14,6 @@ use Saki\Win\WinState;
 class Round {
     private $wall;
     private $playerList;
-    private $dealerPlayer;
 
     private $roundPhase;
     private $roundResult;
@@ -24,7 +23,7 @@ class Round {
     function __construct(Wall $wall, PlayerList $playerList, Player $dealerPlayer) {
         $this->wall = $wall;
         $this->playerList = $playerList;
-        $this->dealerPlayer = $dealerPlayer;
+        $playerList->setDealerPlayer($dealerPlayer);
         $playerList->toPlayer($dealerPlayer, false);
 
         $this->yakuAnalyzer = new WinAnalyzer();
@@ -67,7 +66,7 @@ class Round {
      * @return Player
      */
     function getDealerPlayer() {
-        return $this->dealerPlayer;
+        return $this->getPlayerList()->getDealerPlayer();
     }
 
     /**
@@ -175,7 +174,8 @@ class Round {
         $this->roundResult = $result;
         // modify scores
         foreach ($this->getPlayerList() as $player) {
-            $player->setScore($result->getScoreDelta($player)->getAfter());
+            $afterScore = $result->getScoreDelta($player)->getAfter();
+            $player->setScore($afterScore);
         }
     }
 
@@ -257,7 +257,7 @@ class Round {
         }
         // do
         $analyzer = $this->getYakuAnalyzer();
-        $target = new WinAnalyzerTarget($this->getCurrentPlayer()->getPlayerArea(), $this->getCurrentPlayer());
+        $target = new WinAnalyzerTarget($this->getCurrentPlayer());
         $winResult = $analyzer->analyzeTarget($target);
         if ($winResult->getWinState() != WinState::getWinInstance()) {
             throw new \InvalidArgumentException();

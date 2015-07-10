@@ -9,8 +9,8 @@ class ScoreTableTest extends PHPUnit_Framework_TestCase {
      */
     function testPayScore($expectedPayScore, $receiverIsDealer, $fanCount, $fuCount, $winBySelf, $payerIsDealer) {
         $table = ScoreTable::getInstance();
-        $item = $table->getScoreItem($receiverIsDealer, $fanCount, $fuCount);
-        $payScore = $item->getPayScore($winBySelf, $payerIsDealer);
+        $item = $table->getScoreItem($fanCount, $fuCount);
+        $payScore = $item->getPayScore($receiverIsDealer, $winBySelf, $payerIsDealer);
         $this->assertEquals($expectedPayScore, $payScore);
     }
 

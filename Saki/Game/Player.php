@@ -5,17 +5,27 @@ use Saki\Tile\Tile;
 
 class Player {
     private $no;
+
     private $score;
     private $selfWind;
     private $turn;
+    /**
+     * @var PlayerArea
+     */
     private $playerArea;
 
-    function __construct($no, $score, Tile $selfWind, $turn = 0, PlayerArea $playerArea = null) {
+    function __construct($no, $score, Tile $selfWind) {
         $this->no = $no;
         $this->score = $score;
         $this->selfWind = $selfWind;
-        $this->turn = $turn;
-        $this->playerArea = $playerArea ?: new PlayerArea();
+        $this->turn = 0;
+        $this->playerArea = new PlayerArea();
+    }
+
+    function reset(Tile $selfWind) {
+        $this->selfWind = $selfWind;
+        $this->turn = 0;
+        $this->playerArea->init();
     }
 
     function __toString() {
@@ -42,6 +52,10 @@ class Player {
         $this->selfWind = $selfWind;
     }
 
+    function isDealer() {
+        return $this->getSelfWind()==Tile::fromString('E');
+    }
+
     function getTurn() {
         return $this->turn;
     }
@@ -59,6 +73,9 @@ class Player {
     }
 
     function setPlayerArea($playerArea) {
+        if ($playerArea === null) {
+            throw new \InvalidArgumentException();
+        }
         $this->playerArea = $playerArea;
     }
 }

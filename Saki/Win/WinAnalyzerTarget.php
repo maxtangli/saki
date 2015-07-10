@@ -8,24 +8,22 @@ use Saki\Tile\Tile;
 use Saki\Tile\TileSortedList;
 
 class WinAnalyzerTarget {
-    private $playerArea;
     private $player;
 
-    function __construct(PlayerArea $playerArea, Player $player) {
-        $this->playerArea = $playerArea;
+    function __construct(Player $player) {
         $this->player = $player;
     }
-
+    
     function getHandTileSortedList() {
-        return $this->playerArea->getHandTileSortedList();
+        return $this->player->getPlayerArea()->getHandTileSortedList();
     }
 
     function getDiscardedTileList() {
-        return $this->playerArea->getDiscardedTileList();;
+        return $this->player->getPlayerArea()->getDiscardedTileList();;
     }
 
     function getDeclaredMeldList() {
-        return $this->playerArea->getDeclaredMeldList();
+        return $this->player->getPlayerArea()->getDeclaredMeldList();
     }
 
     function getAllTileSortedList() {
@@ -37,11 +35,11 @@ class WinAnalyzerTarget {
     }
 
     function getWinTile() {
-        return $this->playerArea->getCandidateTile();
+        return $this->player->getPlayerArea()->getCandidateTile();
     }
 
     function isReach() {
-        return $this->playerArea->isReach();
+        return $this->player->getPlayerArea()->isReach();
     }
 
     function getSelfWind() {
@@ -53,7 +51,7 @@ class WinAnalyzerTarget {
     }
 
     function toSubTarget(MeldList $handMeldList) {
-        return new WinAnalyzerSubTarget($handMeldList, $this->playerArea, $this->player);
+        return new WinAnalyzerSubTarget($handMeldList, $this->player);
     }
 
     /**

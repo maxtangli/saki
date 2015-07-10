@@ -9,8 +9,8 @@ use Saki\Meld\MeldList;
 class WinAnalyzerSubTarget extends WinAnalyzerTarget {
     private $handMeldList;
 
-    function __construct(MeldList $handMeldList, PlayerArea $playerArea, Player $player) {
-        parent::__construct($playerArea, $player);
+    function __construct(MeldList $handMeldList, Player $player) {
+        parent::__construct($player);
         $this->handMeldList = $handMeldList;
     }
 
@@ -45,6 +45,20 @@ class WinAnalyzerSubTarget extends WinAnalyzerTarget {
             return $meld->isPair();
         });
         return count($runList) == 4 && count($pairList) == 1;
+    }
+
+    function is4TripleOrQuadAnd1Pair($concealed = null) {
+        $meldList = $this->getAllMeldList();
+        $tripleList = $meldList->getFilteredMeldList(function (Meld $meld) {
+            return $meld->isTripleOrQuad();
+        });
+        $pairList = $meldList->getFilteredMeldList(function (Meld $meld) {
+            return $meld->isPair();
+        });
+        $matchConcealed = $concealed === null || $tripleList->isAll(function (Meld $meld) use ($concealed) {
+                return $meld->isConcealed() == $concealed;
+            });
+        return count($tripleList) == 4 && count($pairList) == 1 && $matchConcealed;
     }
 
     /**

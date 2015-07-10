@@ -138,14 +138,29 @@ rush 12 win flow
 - [x] private phase: win on self 0.8h
 - [x] over phase: exhaustive drawn 0.6h
 
-rush 13 win score
+rush 13 score table
 
-- [x] score table 3h
+- [x] score table 3.3h
+- [x] analyze 0.6h
+- [x] refactor PlayerList 0.4h
+- [x] bug: RoundResult.getOriginScore() 0.3h
+
+rush 14 win score
+
+- [ ] winByOther
+- [ ] fu count
+- [ ] reach score
+- [ ] round n score
+
+rush all yaku
+
+- [ ] test design
+- [x] not-count-yaku logic
+- [x] yaku-man logic 1h
 
 rush win detail & next round
 
 - [ ] public phase: win on other
-- [ ] score table
 - [ ] over phase: exhaustive drawn
 - [ ] over phase: winBySelf
 - [ ] over phase: winByOther
@@ -161,11 +176,6 @@ rush red dora
 - [ ] discard/createMeld logic
 - [ ] impl
 
-rush all yaku
-
-- [ ] yakuman logic
-- [ ] not-count-yaku logic
-
 rush etc
 
 - [ ] bug: getMeldCompositions
@@ -174,7 +184,7 @@ rush next round drawn
 
 - [ ] over phase: four kong drawn
 - [ ] over phase: four reach drawn
-- [ ] over phase: 99 drawn
+- [ ] over phase: 9-kind 9-tile drawn
 
 rush candidate commands
 rush server logic

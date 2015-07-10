@@ -2,22 +2,16 @@
 namespace Saki\Game\RoundResult;
 
 use Saki\Game\Player;
-use Saki\Util\Singleton;
 use Saki\Win\WinAnalyzerResult;
 
 class WinBySelfRoundResult extends RoundResult {
-    private $allPlayers;
     private $winPlayer;
     private $winAnalyzerResult;
 
-    function __construct(array $allPlayers, Player $winPlayer, WinAnalyzerResult $winAnalyzerResult) {
-        $this->allPlayers = $allPlayers;
+    function __construct(array $players, Player $winPlayer, WinAnalyzerResult $winAnalyzerResult) {
+        parent::__construct($players);
         $this->winPlayer = $winPlayer;
         $this->winAnalyzerResult = $winAnalyzerResult;
-    }
-
-    function getAllPlayers() {
-        return $this->allPlayers;
     }
 
     function getWinPlayer() {
@@ -32,9 +26,15 @@ class WinBySelfRoundResult extends RoundResult {
      * @param Player $player
      * @return ScoreDelta
      */
-    function getScoreDeltaInt(Player $player) { // todo
-        $delta = $player == $this->getWinPlayer() ? 1200 : -400;
-        return $delta;
+    function getScoreDeltaInt(Player $player) {
+        $scoreItem = $this->getWinAnalyzerResult()->getScoreItem();
+
+        $receiverIsDealer = $this->getWinPlayer()->isDealer();
+        $winBySelf = true;
+        $payerIsDealer = $player->isDealer();
+        $deltaInt = $player == $this->getWinPlayer() ? $scoreItem->getReceiveScore($receiverIsDealer, $winBySelf)
+            : -$scoreItem->getPayScore($receiverIsDealer, $winBySelf, $payerIsDealer);
+        return $deltaInt;
     }
 }
 

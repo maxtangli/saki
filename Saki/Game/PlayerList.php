@@ -11,6 +11,10 @@ class PlayerList extends ArrayLikeObject {
      * @return Player[]
      */
     static function createPlayers($n, $initialScore) {
+        if ($n != 4) {
+            throw new \InvalidArgumentException('Invalid player count.');
+        }
+
         $data = [
             [1, $initialScore, Tile::fromString('E')],
             [2, $initialScore, Tile::fromString('S')],
@@ -72,9 +76,35 @@ class PlayerList extends ArrayLikeObject {
     /**
      * @return Player
      */
-    function getPlayer($offset) {
-        $i = ($this->currentIndex + $offset + $this->count()) % $this->count();
+    function getPlayer($offset,Player $basePlayer = null) {
+        $baseIndex = $basePlayer === null ? $this->currentIndex : $this->valueToIndex($basePlayer);
+        $i = ($baseIndex + $offset + $this->count()) % $this->count();
         return $this[$i];
+    }
+
+    /**
+     * @return Player
+     */
+    function getDealerPlayer() {
+        foreach ($this as $player) {
+            if ($player->isDealer()) {
+                return $player;
+            }
+        }
+        throw new \LogicException();
+    }
+
+    function setDealerPlayer(Player $player) {
+        if (!$this->valueExist($player)) {
+            throw new \InvalidArgumentException();
+        }
+        $selfWinds = [
+            Tile::fromString('E'), Tile::fromString('S'), Tile::fromString('W'), Tile::fromString('N'),
+        ];
+        $playerCount = $this->count();
+        for ($i = 0; $i < $playerCount; ++$i) {
+            $this->getPlayer($i, $player)->setSelfWind($selfWinds[$i]);
+        }
     }
 
     /**

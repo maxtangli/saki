@@ -29,4 +29,23 @@ class YakuList extends ArrayLikeObject {
         }, $this->toArray());
         return array_sum($fanCounts);
     }
+
+    function normalize() {
+        // if exist yaku-man yaku, remove all not-yaku-man yaku
+        $yakuMans = array_filter($this->toArray(), function (Yaku $yaku) {
+            return $yaku->isYakuMan();
+        });
+        if (count($yakuMans) > 0) {
+            $this->setInnerArray($yakuMans);
+        }
+
+        // remove excluded yakus
+        $excludedYakus = array_reduce($this->toArray(), function (array $carry, Yaku $yaku) {
+            return array_merge($carry, $yaku->getExcludedYakus());
+        }, []);
+        $remainYakus = array_filter($this->toArray(), function (Yaku $yaku)use($excludedYakus) {
+            return !in_array($yaku, $excludedYakus);
+        });
+        $this->setInnerArray($remainYakus);
+    }
 }

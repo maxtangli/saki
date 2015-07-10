@@ -2,32 +2,30 @@
 namespace Saki\Game\RoundResult;
 
 class ScoreTableItem {
-    private $receiverIsDealer;
     private $baseScore;
 
-    function __construct($receiverIsDealer, $baseScore) {
-        $this->receiverIsDealer = $receiverIsDealer;
+    function __construct($baseScore) {
         $this->baseScore = $baseScore;;
     }
-
-    function getReceiverIsDealer() {
-        return $this->receiverIsDealer;
-    }
-
-    /**
-     * @return int
-     */
+    
     function getBaseScore() {
         return $this->baseScore;
     }
 
-    /**
-     * @param bool $winBySelf
-     * @param bool $payerIsDealer
-     * @return int
-     */
-    function getPayScore($winBySelf, $payerIsDealer) {
-        if ($this->getReceiverIsDealer() && $payerIsDealer) {
+    function getReceiveScore($receiverIsDealer, $winBySelf) {
+        if (!$winBySelf) {
+            return $this->getPayScore($receiverIsDealer, $winBySelf, false);
+        } else {
+            if ($receiverIsDealer) {
+                return 3 * $this->getPayScore($receiverIsDealer, $winBySelf, false);
+            } else {
+                return 2 * $this->getPayScore($receiverIsDealer, $winBySelf, false) + $this->getPayScore($receiverIsDealer, $winBySelf, true);
+            }
+        }
+    }
+
+    function getPayScore($receiverIsDealer, $winBySelf, $payerIsDealer) {
+        if ($receiverIsDealer && $payerIsDealer) {
             throw new \InvalidArgumentException();
         }
 
@@ -42,9 +40,9 @@ class ScoreTableItem {
          * 親のツモ和了の時の子の払い    ＝    基本点 x2 (総計 x6)
          */
         if ($winBySelf) {
-            $ratio = ($this->getReceiverIsDealer() || $payerIsDealer) ? 2 : 1;
+            $ratio = ($receiverIsDealer || $payerIsDealer) ? 2 : 1;
         } else {
-            $ratio = $this->getReceiverIsDealer() ? 6 : 4;
+            $ratio = $receiverIsDealer ? 6 : 4;
         }
         $score = $this->getBaseScore() * $ratio;
 
