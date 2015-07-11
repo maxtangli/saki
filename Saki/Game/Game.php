@@ -7,9 +7,9 @@ class Game {
     private $currentRound;
 
     function __construct($n, $initialScore) {
-        $wall = new Wall(Wall::getStandardTileList());
+        $wall = new Wall(TileSet::getStandardTileSet());
         $wall->reset();
-        $playerList = new PlayerList(PlayerList::createPlayers($n, $initialScore));
+        $playerList = new PlayerList($n, $initialScore);
         $dealerPlayer = $playerList[0];
         $this->currentRound = new Round($wall, $playerList, $dealerPlayer);
     }

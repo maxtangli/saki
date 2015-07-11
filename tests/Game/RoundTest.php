@@ -6,6 +6,7 @@ use Saki\Game\RoundPhase;
 use Saki\Game\Wall;
 use Saki\Meld\Meld;
 use Saki\Tile\Tile;
+use Saki\Game\TileSet;
 
 class RoundTest extends PHPUnit_Framework_TestCase {
 
@@ -19,13 +20,13 @@ class RoundTest extends PHPUnit_Framework_TestCase {
     protected $roundAfterDiscard1m;
 
     protected function setUp() {
-        $playerList = new PlayerList(PlayerList::createPlayers(4, 40000));
-        $wall = new Wall(Wall::getStandardTileList());
+        $playerList = new PlayerList(4, 40000);
+        $wall = new Wall(TileSet::getStandardTileSet());
         $dealerPlayer = $playerList[0];
         $this->initialRound = new Round($wall, $playerList, $dealerPlayer);
 
-        $playerList2 = new PlayerList(PlayerList::createPlayers(4, 40000));
-        $wall2 = new Wall(Wall::getStandardTileList());
+        $playerList2 = new PlayerList(4, 40000);
+        $wall2 = new Wall(TileSet::getStandardTileSet());
         $dealerPlayer2 = $playerList2[0];
         $r = new Round($wall2, $playerList2, $dealerPlayer2);
         $discardPlayer = $r->getCurrentPlayer();
@@ -112,7 +113,7 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         $r = $this->roundAfterDiscard1m;
         // setup
         $prePlayer = $r->getCurrentPlayer();
-        $actPlayer = $r->getNextNextPlayer();
+        $actPlayer = $r->getPlayerList()->getOffsetPlayer(2);
         $actPlayer->getPlayerArea()->getHandTileSortedList()->replaceByIndex([0, 1], [Tile::fromString('1m'), Tile::fromString('1m')]);
         // execute
         $tileCountBefore = $actPlayer->getPlayerArea()->getHandTileSortedList()->count();
@@ -130,7 +131,7 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         $r = $this->roundAfterDiscard1m;
         // setup
         $prePlayer = $r->getCurrentPlayer();
-        $actPlayer = $r->getNextNextPlayer();
+        $actPlayer = $r->getPlayerList()->getOffsetPlayer(2);
         $actPlayer->getPlayerArea()->getHandTileSortedList()->replaceByIndex([0, 1, 2], [Tile::fromString('1m'), Tile::fromString('1m'), Tile::fromString('1m')]);
         // execute
         $tileCountBefore = $actPlayer->getPlayerArea()->getHandTileSortedList()->count();
@@ -148,7 +149,7 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         $r = $this->roundAfterDiscard1m;
         // setup
         $prePlayer = $r->getCurrentPlayer();
-        $actPlayer = $r->getNextNextPlayer();
+        $actPlayer = $r->getPlayerList()->getOffsetPlayer(2);
         $actPlayer->getPlayerArea()->getDeclaredMeldList()->push(Meld::fromString('111m'));
         // execute
         $tileCountBefore = $actPlayer->getPlayerArea()->getHandTileSortedList()->count();
@@ -205,7 +206,14 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         $r->toNextRound();
         $this->assertEquals(RoundPhase::getPrivatePhaseInstance(), $r->getRoundPhase());
         $this->assertEquals($dealer, $r->getDealerPlayer());
-        // todo initial state
+        // todo test initial state
+    }
+
+    function testGameOver() {
+        $r = $this->getWinBySelfRound();
+        $r->getRoundData()->setRoundWindTurn(4);
+        $r->winBySelf($r->getCurrentPlayer());
+        $this->assertTrue($r->isGameOver());
     }
 
     function testExhaustiveDraw() {

@@ -43,7 +43,5 @@ class WinBySelfRoundResult extends RoundResult {
     function getNextDealerPlayer() {
         return $this->getWinPlayer();
     }
-
-
 }
 

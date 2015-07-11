@@ -88,13 +88,6 @@ class Round {
     }
 
     /**
-     * @return Player
-     */
-    function getNextNextPlayer() {
-        return $this->getPlayerList()->getNextNextPlayer();
-    }
-
-    /**
      * @param Player $player
      * @param bool $addTurn
      */
@@ -183,10 +176,27 @@ class Round {
         }
     }
 
+    function isGameOver() {
+        $isOverPhase = $this->getRoundPhase()==RoundPhase::getOverPhaseInstance();
+        $isLastRound = $this->getRoundData()->isLastRoundWindTurn(); // todo east-south game
+        $isTopPlayerEnoughScore = $this->getPlayerList()->getTopPlayer()->getScore() >= 30000; // todo
+        return $isOverPhase && $isLastRound && $isTopPlayerEnoughScore;
+    }
+
+    function getGameResult() {
+        if (!$this->isGameOver()) {
+            throw new \InvalidArgumentException('Game is not over.');
+        }
+        return new GameResult($this->getPlayerList()->toArray());
+    }
+
     function toNextRound() {
-        $valid = $this->getRoundPhase() == RoundPhase::getOverPhaseInstance();
-        if (!$valid) {
-            throw new \InvalidArgumentException();
+        if ($this->getRoundPhase() != RoundPhase::getOverPhaseInstance()) {
+            throw new \InvalidArgumentException('Not over phase.');
+        }
+
+        if ($this->isGameOver()) {
+            throw new \InvalidArgumentException('Game is over.');
         }
 
         $nextDealerPlayer = $this->getRoundResult()->getNextDealerPlayer();

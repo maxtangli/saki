@@ -5,34 +5,32 @@ use Saki\Tile\Tile;
 use Saki\Util\ArrayLikeObject;
 
 class PlayerList extends ArrayLikeObject {
-    /**
-     * @param int $n
-     * @param int $initialScore
-     * @return Player[]
-     */
-    static function createPlayers($n, $initialScore) {
-        if ($n != 4) {
-            throw new \InvalidArgumentException('Invalid player count.');
-        }
 
-        $data = [
-            [1, $initialScore, Tile::fromString('E')],
-            [2, $initialScore, Tile::fromString('S')],
-            [3, $initialScore, Tile::fromString('W')],
-            [4, $initialScore, Tile::fromString('N')],
-        ];
-        return array_map(function ($v) {
-            return new Player($v[0], $v[1], $v[2]);
-        }, array_slice($data, 0, $n));
+    static function getStandardPlayerList() {
+        return new self(4, 25000);
     }
 
     private $currentIndex;
     private $items;
 
     /**
-     * @param Player[] $players
+     * @param int $n
+     * @param int $initialScore
      */
-    function __construct(array $players) {
+    function __construct($n, $initialScore) {
+        if ($n != 4) {
+            throw new \InvalidArgumentException('Invalid player count.');
+        }
+        $data = [
+            [1, $initialScore, Tile::fromString('E')],
+            [2, $initialScore, Tile::fromString('S')],
+            [3, $initialScore, Tile::fromString('W')],
+            [4, $initialScore, Tile::fromString('N')],
+        ];
+        $players = array_map(function ($v) {
+            return new Player($v[0], $v[1], $v[2]);
+        }, array_slice($data, 0, $n));
+
         parent::__construct($players);
         $this->currentIndex = 0;
         $this->items = $players;
@@ -52,8 +50,14 @@ class PlayerList extends ArrayLikeObject {
     /**
      * @return Player
      */
-    function getPrevPrevPlayer() {
-        return $this->getOffsetPlayer(-2);
+    function getTopPlayer() {
+        $topPlayer = $this[0];
+        foreach($this as $player) {
+            if ($player->getScore() > $topPlayer->getScore()) {
+                $topPlayer = $player;
+            }
+        }
+        return $topPlayer;
     }
 
     /**
@@ -75,13 +79,6 @@ class PlayerList extends ArrayLikeObject {
      */
     function getNextPlayer() {
         return $this->getOffsetPlayer(1);
-    }
-
-    /**
-     * @return Player
-     */
-    function getNextNextPlayer() {
-        return $this->getOffsetPlayer(2);
     }
 
     /**

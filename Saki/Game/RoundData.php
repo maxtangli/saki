@@ -22,7 +22,7 @@ class RoundData {
 
     function __construct() {
         $this->accumulatedReachCount = 0;
-        $this->wall = new Wall(Wall::getStandardTileList());
+        $this->wall = new Wall(TileSet::getStandardTileSet());
         $this->init();
     }
 
@@ -75,6 +75,11 @@ class RoundData {
 
     function setRoundWindTurn($roundWindTurn) {
         $this->roundWindTurn = $roundWindTurn;
+    }
+
+    function isLastRoundWindTurn() {
+        $playerCount = 4; // todo
+        return $this->roundWindTurn == $playerCount;
     }
 
     function getSelfWindTurn() {

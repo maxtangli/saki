@@ -1,14 +1,15 @@
 <?php
 
 use Saki\Game\Wall;
+use Saki\Game\TileSet;
 
 class WallTest extends PHPUnit_Framework_TestCase {
     function testOverall() {
         $standardCnt = 136;
 
         // new, no shuffle
-        $w = new Wall(Wall::getStandardTileList());
-        $this->assertCount($standardCnt, $w->getBaseTileReadonlyList());
+        $w = new Wall(TileSet::getStandardTileSet());
+        $this->assertCount($standardCnt, $w->getTileSet());
 
         // init and shuffle
         $w->reset(true);
@@ -19,7 +20,8 @@ class WallTest extends PHPUnit_Framework_TestCase {
             '111122223333444455556666777788889999s' .
             'EEEESSSSWWWWNNNNCCCCPPPPFFFF';
         $tileList = \Saki\Tile\TileList::fromString($s);
-        $w = new Wall($tileList);
+        $tileSet = new TileSet($tileList);
+        $w = new Wall($tileSet);
         $t = $w->pop();
         $this->assertEquals(\Saki\Tile\Tile::fromString('F'), $t);
 

@@ -159,15 +159,14 @@ rush 14 next round 1.4h
 
 rush 15 game over
 
-- [ ] result: winner order, final score
-
-rush red dora
-
-- [ ] discard/createMeld logic
-- [ ] impl
+- [x] refactor: 0.4h
+- [x] finalScore 1h
+- [x] result: winner order, final score 0.4h
 
 rush etc
 
+- [ ] east-south round
+- [ ] initial score rule
 - [ ] bug: getMeldCompositions
 
 rush win score
@@ -176,25 +175,27 @@ rush win score
 - [ ] reach score
 - [ ] round n score
 
-rush all yaku
-
-- [ ] test design
-- [x] not-count-yaku logic
-- [x] yaku-man logic 1h
-
-rush win detail
+rush win/draw detail
 
 - [ ] public phase: win on other
-- [ ] over phase: exhaustive drawn
-- [ ] over phase: winBySelf
-- [ ] over phase: winByOther
-- [ ] over phase: multipleByOther
+- [ ] public phase: multiple win on other
 
 rush draw detail
 
 - [ ] over phase: four kong drawn
 - [ ] over phase: four reach drawn
 - [ ] over phase: 9-kind 9-tile drawn
+
+rush all yaku
+
+- [ ] test design
+- [x] not-count-yaku logic
+- [x] yaku-man logic 1h
+
+rush red dora
+
+- [ ] discard/createMeld logic
+- [ ] impl
 
 rush simple ui
 
@@ -208,6 +209,31 @@ advanced features
 - player AI
 - replay
 - player statistics
+
+## note: game over score
+
+順位ウマ 4位と3位の者から1位と2位の者に支払われる
++20
++10
+-10
+-20
+
+オカ トップ者が総取りする
+配給原点（はいきゅうげんてん） 半荘開始時の持ち点
+原点（げんてん） 半荘終了時の成績評価に使う
+
+25000 -> 31100 +1100 +1.1 +2 +20 = +22
+25000 -> 24400 -5600 -5.6 -6     = -6
+25000 -> 22300 -7700 -7.7 -8     = -8
+25000 -> 22200 -7800 -7.8 -8     = -8
+
+result tpl
+
+rank player finalScore scorePoint
+1st p1 31100 +42
+2nd p2 24400 +4
+3rd p3 22300 -18
+4th p4 22200 -28
 
 ## note: overPhase
 

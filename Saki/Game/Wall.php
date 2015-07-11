@@ -2,29 +2,20 @@
 namespace Saki\Game;
 
 use Saki\Tile\TileList;
+use Saki\Tile\TileSortedList;
 
 class Wall {
-
-    static function getStandardTileList() {
-        $s = '111122223333444455556666777788889999m' .
-            '111122223333444455556666777788889999p' .
-            '111122223333444455556666777788889999s' .
-            'EEEESSSSWWWWNNNNCCCCPPPPFFFF';
-        return TileList::fromString($s);
-    }
-
-    private $baseTileReadonlyList;
+    private $tileSet;
     private $deadWall;
     private $remainTileList;
 
-    function __construct(TileList $baseTileList) {
-        $valid = $baseTileList->count() === 136;
+    function __construct(TileSet $tileSet) {
+        $valid = $tileSet->count() === 136;
         if (!$valid) {
             throw new \InvalidArgumentException();
         }
 
-        $tiles = $baseTileList->toArray();
-        $this->baseTileReadonlyList = new TileList($tiles, true);
+        $this->tileSet = $tileSet;
         $this->reset(false);
     }
 
@@ -33,7 +24,7 @@ class Wall {
      * @param bool $shuffle
      */
     function reset($shuffle = true) {
-        $baseTileList = new TileList($this->getBaseTileReadonlyList()->toArray());
+        $baseTileList = new TileList($this->getTileSet()->toArray());
         if ($shuffle) {
             $baseTileList->shuffle();
         }
@@ -47,10 +38,10 @@ class Wall {
     }
 
     /**
-     * @return TileList
+     * @return TileSet
      */
-    function getBaseTileReadonlyList() {
-        return $this->baseTileReadonlyList;
+    function getTileSet() {
+        return $this->tileSet;
     }
 
     /**
@@ -71,7 +62,7 @@ class Wall {
      * @return int
      */
     function getRemainTileCount() {
-        return count($this->getRemainTileList());
+        return $this->getRemainTileList()->count();
     }
 
     /**
