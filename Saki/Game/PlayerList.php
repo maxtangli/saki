@@ -38,45 +38,58 @@ class PlayerList extends ArrayLikeObject {
         $this->items = $players;
     }
 
+    function reset(Player $dealerPlayer) {
+        if (!$this->valueExist($dealerPlayer)) {
+            throw new \InvalidArgumentException();
+        }
+        array_walk($this->items, function (Player $player) {
+            $player->reset(Tile::fromString('E'));
+        });
+        $this->setDealerPlayer($dealerPlayer);
+        $this->toPlayer($dealerPlayer, false);
+    }
+
     /**
      * @return Player
      */
     function getPrevPrevPlayer() {
-        return $this->getPlayer(-2);
+        return $this->getOffsetPlayer(-2);
     }
 
     /**
      * @return Player
      */
     function getPrevPlayer() {
-        return $this->getPlayer(-1);
+        return $this->getOffsetPlayer(-1);
     }
 
     /**
      * @return Player
      */
     function getCurrentPlayer() {
-        return $this->getPlayer(0);
+        return $this->getOffsetPlayer(0);
     }
 
     /**
      * @return Player
      */
     function getNextPlayer() {
-        return $this->getPlayer(1);
+        return $this->getOffsetPlayer(1);
     }
 
     /**
      * @return Player
      */
     function getNextNextPlayer() {
-        return $this->getPlayer(2);
+        return $this->getOffsetPlayer(2);
     }
 
     /**
+     * @param int $offset
+     * @param Player $basePlayer
      * @return Player
      */
-    function getPlayer($offset,Player $basePlayer = null) {
+    function getOffsetPlayer($offset, Player $basePlayer = null) {
         $baseIndex = $basePlayer === null ? $this->currentIndex : $this->valueToIndex($basePlayer);
         $i = ($baseIndex + $offset + $this->count()) % $this->count();
         return $this[$i];
@@ -103,7 +116,7 @@ class PlayerList extends ArrayLikeObject {
         ];
         $playerCount = $this->count();
         for ($i = 0; $i < $playerCount; ++$i) {
-            $this->getPlayer($i, $player)->setSelfWind($selfWinds[$i]);
+            $this->getOffsetPlayer($i, $player)->setSelfWind($selfWinds[$i]);
         }
     }
 

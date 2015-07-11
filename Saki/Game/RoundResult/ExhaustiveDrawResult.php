@@ -45,6 +45,13 @@ class ExhaustiveDrawResult extends RoundResult {
         }
     }
 
+    /**
+     * @return Player
+     */
+    function getNextDealerPlayer() {
+        return $this->getOriginDealerPlayer();
+    }
+
     function isWaiting(Player $player) {
         $i = array_search($player, $this->players, false);
         if ($i === false) {

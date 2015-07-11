@@ -164,12 +164,8 @@ class RoundTest extends PHPUnit_Framework_TestCase {
     }
 
     function testWinBySelf() {
-        $r = $this->initialRound;
         // setup
-        $r->getCurrentPlayer()->getPlayerArea()->getHandTileSortedList()->setInnerArray(
-            \Saki\Tile\TileList::fromString('123m456m789m123s55s')->toArray()
-        );
-        $r->getCurrentPlayer()->getPlayerArea()->setCandidateTile(Tile::fromString('1m'));
+        $r = $this->getWinBySelfRound();
         // execute
         $r->winBySelf($r->getCurrentPlayer());
         // phase changed
@@ -186,6 +182,30 @@ class RoundTest extends PHPUnit_Framework_TestCase {
                 $this->assertEquals($scoreDelta->getAfter(), $player->getScore(), $scoreDelta);
             }
         }
+    }
+
+    /**
+     * @return Round
+     */
+    protected function getWinBySelfRound() {
+        $r = $this->initialRound;
+        // setup
+        $r->getCurrentPlayer()->getPlayerArea()->getHandTileSortedList()->setInnerArray(
+            \Saki\Tile\TileList::fromString('123m456m789m123s55s')->toArray()
+        );
+        $r->getCurrentPlayer()->getPlayerArea()->setCandidateTile(Tile::fromString('1m'));
+        return $r;
+    }
+
+    function testToNextRound() {
+        $r = $this->getWinBySelfRound();
+        $dealer = $r->getCurrentPlayer();
+
+        $r->winBySelf($dealer);
+        $r->toNextRound();
+        $this->assertEquals(RoundPhase::getPrivatePhaseInstance(), $r->getRoundPhase());
+        $this->assertEquals($dealer, $r->getDealerPlayer());
+        // todo initial state
     }
 
     function testExhaustiveDraw() {

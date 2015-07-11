@@ -2,16 +2,18 @@
 namespace Saki\Win;
 
 use Saki\Game\Player;
-use Saki\Game\PlayerArea;
+use Saki\Game\RoundData;
 use Saki\Meld\MeldList;
 use Saki\Tile\Tile;
 use Saki\Tile\TileSortedList;
 
 class WinAnalyzerTarget {
     private $player;
+    private $roundData;
 
-    function __construct(Player $player) {
+    function __construct(Player $player, RoundData $roundData) {
         $this->player = $player;
+        $this->roundData = $roundData;
     }
     
     function getHandTileSortedList() {
@@ -47,11 +49,11 @@ class WinAnalyzerTarget {
     }
 
     function getRoundWind() {
-        return Tile::fromString('E'); // todo
+        return $this->roundData->getRoundWind();
     }
 
     function toSubTarget(MeldList $handMeldList) {
-        return new WinAnalyzerSubTarget($handMeldList, $this->player);
+        return new WinAnalyzerSubTarget($handMeldList, $this->player, $this->roundData);
     }
 
     /**

@@ -16,27 +16,27 @@ A japanese-mahjong solver.
 
 ## todo
 
-rush 0 scribble 5/29 1.5h
+rush 0 scribble 1.5h
 
 - [x] terms in english
 - [x] new a Tile
 - [x] Tile.toString()
 - [x] new a Hand
 
-rush 1 init pj 6/2 1h
+rush 1 init pj 1h
 
 - [x] init pj
 - [x] refactor&test
 - [x] Hand.toString()
 
-rush 2 judge pinfu 6/3 3h 6/9 2h
+rush 2 judge pinfu 5h
 
 - [x] MeldTypes
 - [x] new a TileSequence 
 - [x] Hand.getMeldCompositions()
 - [x] refactor ArrayLikeObject
 
-rush 3 refactor 6/4 5.5h 6/6 2.5h
+rush 3 refactor 8h
 
 - [x] refactor Tile&TileList
 - [x] Enum
@@ -46,7 +46,7 @@ rush 3 refactor 6/4 5.5h 6/6 2.5h
 - [x] Singleton override return
 - [x] fulfil test cases
 
-rush 4 hand 6/7 4h
+rush 4 hand 4h
 - [x] simple UI: TileList
 - [x] simple UI: remove a Tile
 - [x] Hand
@@ -56,7 +56,7 @@ rush 4 hand 6/7 4h
 - [x] given a TileList, analyze MeldType
 - [x] refactor Meld, replace inheritance with association
 
-rush 5 round flow: private phase 6/5 2.5h 6/7 1.5h 6/9 1h 6/10 4h 6/11 1h 6/12 3h 6/13 1.5h
+rush 5 round flow: private phase 14.5h
 - [x] Wall
 - [x] TurnManager
 - [x] new Round
@@ -74,13 +74,13 @@ rush 5 round flow: private phase 6/5 2.5h 6/7 1.5h 6/9 1h 6/10 4h 6/11 1h 6/12 3
 - [x] Player toString()/fromString()
 - [x] child commands fromString() 
 
-rush 6 exhaustive draw: first step
+rush 6 exhaustive draw: first step 1h
 
 - [x] DeadWall 0.5h
 - [x] refactor Wall 0.5h
 - [x] after command execute
 
-rush 7 phase flow
+rush 7 phase flow 6.5h
 
 - [x] detailed analyze 1h
 - [x] PublicPhaseCommandPoller 0.5h
@@ -90,7 +90,7 @@ rush 7 phase flow
 - [x] public phase: pon/kong 0.5h
 - [x] bug: turn calculate 1.0h
 
-rush 8 refactor ArrayLikeObject
+rush 8 refactor ArrayLikeObject 6h
 
 - [x] analyze 1.0h
 - [x] implement iterate 0.5h
@@ -101,7 +101,7 @@ rush 8 refactor ArrayLikeObject
 - [x] implement keep-sorted
 - [x] refactor usages 0.5h
 
-rush 9 concealed triple/quad
+rush 9 concealed triple/quad 2.5h
 
 - [x] concealed meld 1h
 - [x] refactor: PlayerArea.candidateTile not convenient 0.2h
@@ -109,7 +109,7 @@ rush 9 concealed triple/quad
 - [x] refactor public phase chow/pong/kong 0.3h
 - [x] private phase: kong, plusKong 0.7h
 
-rush 10 first yaku impl: all runs yaku
+rush 10 first yaku impl: all runs yaku 7.8h
 
 - [x] pseudocode 3.5h
 - [x] yaku.xls 1.5h
@@ -118,7 +118,9 @@ rush 10 first yaku impl: all runs yaku
 - [x] is4WinSetAnd1Pair() 0.2h
 - [x] allRunsYaku 1.1h
 
-rush 11 more yaku
+rush 1-10 57.8h
+
+rush 11 more yaku 2.2h
 
 - [x] ReachYaku 0.7h
 - [x] WinState 0.7h
@@ -126,7 +128,7 @@ rush 11 more yaku
 - [x] AllSimplesYaku
 - [x] test 0.2h
 
-rush 12 win flow
+rush 12 win flow 5.8h
 
 - [x] analyze target 0.7h
 - [x] use-case analyze 2.2h
@@ -138,16 +140,38 @@ rush 12 win flow
 - [x] private phase: win on self 0.8h
 - [x] over phase: exhaustive drawn 0.6h
 
-rush 13 score table
+rush 13 score table 4.6h
 
 - [x] score table 3.3h
 - [x] analyze 0.6h
 - [x] refactor PlayerList 0.4h
 - [x] bug: RoundResult.getOriginScore() 0.3h
 
-rush 14 win score
+rush 14 next round 1.4h
 
-- [ ] winByOther
+- [x] RoundData 0.3h
+- [x] reach condition 0.2h
+- [x] PlayerList.reset() 0.2h
+- [x] refactor: move $wall into RoundData 0.1h
+- [x] analyzerTarget constructor: add $roundData 0.1h
+- [x] toNextRound() 0.2h
+- [x] roundResult->getNextPlayer() 0.3h
+
+rush 15 game over
+
+- [ ] result: winner order, final score
+
+rush red dora
+
+- [ ] discard/createMeld logic
+- [ ] impl
+
+rush etc
+
+- [ ] bug: getMeldCompositions
+
+rush win score
+
 - [ ] fu count
 - [ ] reach score
 - [ ] round n score
@@ -158,7 +182,7 @@ rush all yaku
 - [x] not-count-yaku logic
 - [x] yaku-man logic 1h
 
-rush win detail & next round
+rush win detail
 
 - [ ] public phase: win on other
 - [ ] over phase: exhaustive drawn
@@ -166,25 +190,13 @@ rush win detail & next round
 - [ ] over phase: winByOther
 - [ ] over phase: multipleByOther
 
-rush game over
-
-- [ ] result: winner order, final score
-
-rush simple ui
-rush red dora
-
-- [ ] discard/createMeld logic
-- [ ] impl
-
-rush etc
-
-- [ ] bug: getMeldCompositions
-
-rush next round drawn
+rush draw detail
 
 - [ ] over phase: four kong drawn
 - [ ] over phase: four reach drawn
 - [ ] over phase: 9-kind 9-tile drawn
+
+rush simple ui
 
 rush candidate commands
 rush server logic

@@ -11,7 +11,7 @@ class WallTest extends PHPUnit_Framework_TestCase {
         $this->assertCount($standardCnt, $w->getBaseTileReadonlyList());
 
         // init and shuffle
-        $w->init(true);
+        $w->reset(true);
 
         // pop
         $s = '111122223333444455556666777788889999m' .

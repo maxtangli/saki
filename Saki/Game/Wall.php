@@ -25,14 +25,14 @@ class Wall {
 
         $tiles = $baseTileList->toArray();
         $this->baseTileReadonlyList = new TileList($tiles, true);
-        $this->init(false);
+        $this->reset(false);
     }
 
     /**
      * set $currentTileList based on $baseTileList
      * @param bool $shuffle
      */
-    function init($shuffle = true) {
+    function reset($shuffle = true) {
         $baseTileList = new TileList($this->getBaseTileReadonlyList()->toArray());
         if ($shuffle) {
             $baseTileList->shuffle();

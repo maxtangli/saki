@@ -2,15 +2,15 @@
 namespace Saki\Win;
 
 use Saki\Game\Player;
-use Saki\Game\PlayerArea;
 use Saki\Meld\Meld;
 use Saki\Meld\MeldList;
+use Saki\Game\RoundData;
 
 class WinAnalyzerSubTarget extends WinAnalyzerTarget {
     private $handMeldList;
 
-    function __construct(MeldList $handMeldList, Player $player) {
-        parent::__construct($player);
+    function __construct(MeldList $handMeldList, Player $player, RoundData $roundData) {
+        parent::__construct($player, $roundData);
         $this->handMeldList = $handMeldList;
     }
 

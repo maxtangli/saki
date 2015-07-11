@@ -127,11 +127,15 @@ class WinAnalyzer {
         return $result;
     }
 
-    function isWinTiles(WinAnalyzerSubTarget $subTarget) {
+    protected function isWinTiles(WinAnalyzerSubTarget $subTarget) {
         return $subTarget->is4WinSetAnd1Pair(); // todo
     }
 
-    function isDiscaredWinTile(WinAnalyzerSubTarget $subTarget) {
+    protected function isDiscaredWinTile(WinAnalyzerSubTarget $subTarget) {
+        return false; // todo
+    }
+
+    function isWaiting(WinAnalyzerTarget $target) {
         return false; // todo
     }
 }

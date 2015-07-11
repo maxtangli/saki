@@ -4,6 +4,9 @@ namespace Saki\Game\RoundResult;
 use Saki\Game\Player;
 
 abstract class RoundResult {
+    /**
+     * @var Player[]
+     */
     private $players;
     private $originScores;
     function __construct(array $players) {
@@ -26,6 +29,15 @@ abstract class RoundResult {
         return $this->originScores[$k];
     }
 
+    protected function getOriginDealerPlayer() {
+        foreach($this->getPlayers() as $player) {
+            if ($player->isDealer()) {
+                return $player;
+            }
+        }
+        throw new \LogicException();
+    }
+
     /**
      * @param Player $player
      * @return ScoreDelta
@@ -39,4 +51,9 @@ abstract class RoundResult {
      * @return int
      */
     abstract function getScoreDeltaInt(Player $player);
+
+    /**
+     * @return Player
+     */
+    abstract function getNextDealerPlayer();
 }

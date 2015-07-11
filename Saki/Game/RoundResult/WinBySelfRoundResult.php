@@ -36,5 +36,14 @@ class WinBySelfRoundResult extends RoundResult {
             : -$scoreItem->getPayScore($receiverIsDealer, $winBySelf, $payerIsDealer);
         return $deltaInt;
     }
+
+    /**
+     * @return Player
+     */
+    function getNextDealerPlayer() {
+        return $this->getWinPlayer();
+    }
+
+
 }
 

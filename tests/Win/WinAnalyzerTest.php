@@ -11,7 +11,7 @@ class WinAnalyzerTest extends \PHPUnit_Framework_TestCase {
         $player->setPlayerArea($playerArea);
 
         $meldList = \Saki\Meld\MeldList::fromString('123m,456m,789m,123s,55s');
-        $subTarget = new \Saki\Win\WinAnalyzerSubTarget($meldList, $player);
+        $subTarget = new \Saki\Win\WinAnalyzerSubTarget($meldList, $player, new \Saki\Game\RoundData());
 
         $yaku = \Saki\Yaku\AllRunsYaku::getInstance();
         $this->assertTrue($yaku->existIn($subTarget));
