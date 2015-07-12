@@ -1,5 +1,5 @@
 <?php
-namespace Saki\Game\RoundResult;
+namespace Saki\Game\Result;
 
 class ScoreTableItem {
     private $baseScore;

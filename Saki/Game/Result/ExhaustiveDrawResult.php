@@ -1,5 +1,5 @@
 <?php
-namespace Saki\Game\RoundResult;
+namespace Saki\Game\Result;
 
 use Saki\Game\Player;
 use Saki\Util\Utils;
@@ -48,8 +48,8 @@ class ExhaustiveDrawResult extends RoundResult {
     /**
      * @return Player
      */
-    function getNextDealerPlayer() {
-        return $this->getOriginDealerPlayer();
+    function isKeepDealer() {
+        return $this->isWaiting($this->getOriginDealerPlayer());
     }
 
     function isWaiting(Player $player) {

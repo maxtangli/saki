@@ -2,7 +2,7 @@
 namespace Saki\Game;
 
 use Saki\Tile\TileList;
-use Saki\Tile\TileSortedList;
+use Saki\Tile\TileSet;
 
 class Wall {
     private $tileSet;

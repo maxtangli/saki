@@ -1,5 +1,5 @@
 <?php
-namespace Saki\Game\RoundResult;
+namespace Saki\Game\Result;
 
 use Saki\Game\Player;
 
@@ -53,7 +53,7 @@ abstract class RoundResult {
     abstract function getScoreDeltaInt(Player $player);
 
     /**
-     * @return Player
+     * @return bool
      */
-    abstract function getNextDealerPlayer();
+    abstract function isKeepDealer();
 }

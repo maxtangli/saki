@@ -1,5 +1,5 @@
 <?php
-namespace Saki\Game\RoundResult;
+namespace Saki\Game\Result;
 
 use Saki\Game\Player;
 use Saki\Win\WinAnalyzerResult;
@@ -40,8 +40,8 @@ class WinBySelfRoundResult extends RoundResult {
     /**
      * @return Player
      */
-    function getNextDealerPlayer() {
-        return $this->getWinPlayer();
+    function isKeepDealer() {
+        return $this->getWinPlayer() == $this->getOriginDealerPlayer();
     }
 }
 

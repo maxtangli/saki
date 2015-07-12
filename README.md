@@ -163,11 +163,20 @@ rush 15 game over
 - [x] finalScore 1h
 - [x] result: winner order, final score 0.4h
 
-rush etc
+rush 16 game over fix
 
+- [x] isLastRound() 0.6h
+- [x] refactor: move PlayerList into RoundData 1.1h
+- [x] bug: PlayerList  0.4h
+
+rush etc: normal priority
 - [ ] east-south round
+- [ ] bug: getTopPlayer() is wrong when same score top players exist
+- [ ] bug: getMeldCompositions() won't count for 112233s like tiles
+
+rush etc: low priority
 - [ ] initial score rule
-- [ ] bug: getMeldCompositions
+- [ ] refactor: move DrawScore logic into separate class
 
 rush win score
 
@@ -209,6 +218,18 @@ advanced features
 - player AI
 - replay
 - player statistics
+
+## note: round over & game over
+
+isGameOver
+
+NorthRoundWind 4 SelfRoundWind 0 -> gameover 
+
+LastRoundWind 4 or extraRoundWind any  
+- 
+
+
+
 
 ## note: game over score
 

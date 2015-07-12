@@ -1,7 +1,7 @@
 <?php
 
 use Saki\Game\Wall;
-use Saki\Game\TileSet;
+use Saki\Tile\TileSet;
 
 class WallTest extends PHPUnit_Framework_TestCase {
     function testOverall() {

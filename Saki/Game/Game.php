@@ -2,16 +2,13 @@
 namespace Saki\Game;
 
 use Saki\Command\CommandFactory;
+use Saki\Tile\TileSet;
 
 class Game {
     private $currentRound;
 
-    function __construct($n, $initialScore) {
-        $wall = new Wall(TileSet::getStandardTileSet());
-        $wall->reset();
-        $playerList = new PlayerList($n, $initialScore);
-        $dealerPlayer = $playerList[0];
-        $this->currentRound = new Round($wall, $playerList, $dealerPlayer);
+    function __construct() {
+        $this->currentRound = new Round();
     }
 
     function getCurrentRound() {

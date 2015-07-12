@@ -40,10 +40,13 @@ class PlayerList extends ArrayLikeObject {
         if (!$this->valueExist($dealerPlayer)) {
             throw new \InvalidArgumentException();
         }
-        array_walk($this->items, function (Player $player) {
-            $player->reset(Tile::fromString('E'));
-        });
-        $this->setDealerPlayer($dealerPlayer);
+        $selfWinds = [
+            Tile::fromString('E'), Tile::fromString('S'), Tile::fromString('W'), Tile::fromString('N'),
+        ];
+        $count = $this->count();
+        for ($offset = 0; $offset < $count; ++$offset) {
+            $this->getOffsetPlayer($offset, $dealerPlayer)->reset($selfWinds[$offset]);
+        }
         $this->toPlayer($dealerPlayer, false);
     }
 
@@ -64,21 +67,37 @@ class PlayerList extends ArrayLikeObject {
      * @return Player
      */
     function getPrevPlayer() {
-        return $this->getOffsetPlayer(-1);
+        return $this->getCurrentOffsetPlayer(-1);
     }
 
     /**
      * @return Player
      */
     function getCurrentPlayer() {
-        return $this->getOffsetPlayer(0);
+        return $this->items[$this->currentIndex];
     }
 
     /**
      * @return Player
      */
     function getNextPlayer() {
-        return $this->getOffsetPlayer(1);
+        return $this->getCurrentOffsetPlayer(1);
+    }
+
+    /**
+     * @param int $offset
+     * @return Player
+     */
+    function getCurrentOffsetPlayer($offset) {
+        return $this->getOffsetPlayer($offset, $this->getCurrentPlayer());
+    }
+
+    /**
+     * @param int $offset
+     * @return Player
+     */
+    function getDealerOffsetPlayer($offset) {
+        return $this->getOffsetPlayer($offset, $this->getDealerPlayer());
     }
 
     /**
@@ -86,8 +105,8 @@ class PlayerList extends ArrayLikeObject {
      * @param Player $basePlayer
      * @return Player
      */
-    function getOffsetPlayer($offset, Player $basePlayer = null) {
-        $baseIndex = $basePlayer === null ? $this->currentIndex : $this->valueToIndex($basePlayer);
+    function getOffsetPlayer($offset, Player $basePlayer) {
+        $baseIndex = $this->valueToIndex($basePlayer);
         $i = ($baseIndex + $offset + $this->count()) % $this->count();
         return $this[$i];
     }
@@ -96,25 +115,16 @@ class PlayerList extends ArrayLikeObject {
      * @return Player
      */
     function getDealerPlayer() {
+        $result = [];
         foreach ($this as $player) {
             if ($player->isDealer()) {
-                return $player;
+                $result[] = $player;
             }
         }
-        throw new \LogicException();
-    }
-
-    function setDealerPlayer(Player $player) {
-        if (!$this->valueExist($player)) {
-            throw new \InvalidArgumentException();
+        if (count($result) != 1) {
+            throw new \LogicException('not one and only one dealer.');
         }
-        $selfWinds = [
-            Tile::fromString('E'), Tile::fromString('S'), Tile::fromString('W'), Tile::fromString('N'),
-        ];
-        $playerCount = $this->count();
-        for ($i = 0; $i < $playerCount; ++$i) {
-            $this->getOffsetPlayer($i, $player)->setSelfWind($selfWinds[$i]);
-        }
+        return $result[0];
     }
 
     /**

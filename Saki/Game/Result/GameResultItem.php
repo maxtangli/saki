@@ -1,5 +1,5 @@
 <?php
-namespace Saki\Game;
+namespace Saki\Game\Result;
 
 class GameResultItem {
     private $rank; // 1-4

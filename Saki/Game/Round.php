@@ -2,9 +2,10 @@
 
 namespace Saki\Game;
 
-use Saki\Game\RoundResult\ExhaustiveDrawResult;
-use Saki\Game\RoundResult\RoundResult;
-use Saki\Game\RoundResult\WinBySelfRoundResult;
+use Saki\Game\Result\ExhaustiveDrawResult;
+use Saki\Game\Result\GameResult;
+use Saki\Game\Result\RoundResult;
+use Saki\Game\Result\WinBySelfRoundResult;
 use Saki\Tile\Tile;
 use Saki\Util\Utils;
 use Saki\Win\WinAnalyzer;
@@ -12,24 +13,15 @@ use Saki\Win\WinAnalyzerTarget;
 use Saki\Win\WinState;
 
 class Round {
-    private $playerList;
-
     private $roundData;
     private $roundResult;
-
     private $roundPhase;
-
     private $yakuAnalyzer;
 
-    function __construct(Wall $wall, PlayerList $playerList, Player $dealerPlayer) {
-        $this->wall = $wall;
-        $this->playerList = $playerList;
-        $playerList->setDealerPlayer($dealerPlayer);
-        $playerList->toPlayer($dealerPlayer, false);
-
-        $this->roundData = new RoundData();
-        $this->roundData->setWall($wall);
-
+    function __construct(RoundData $roundData = null) {
+        $this->roundData = $roundData !== null ? $roundData : new RoundData();
+        $this->roundResult = null;
+        $this->roundPhase = null;
         $this->yakuAnalyzer = new WinAnalyzer();
         $this->toInitPhase();
     }
@@ -39,6 +31,24 @@ class Round {
      */
     function getRoundResult() {
         return $this->roundResult;
+    }
+
+    /**
+     * @return RoundData
+     */
+    function getRoundData() {
+        return $this->roundData;
+    }
+
+    /**
+     * @return RoundPhase
+     */
+    function getRoundPhase() {
+        return $this->roundPhase;
+    }
+
+    protected function setRoundPhase(RoundPhase $roundPhase) {
+        $this->roundPhase = $roundPhase;
     }
 
     function getYakuAnalyzer() {
@@ -56,7 +66,7 @@ class Round {
      * @return PlayerList
      */
     function getPlayerList() {
-        return $this->playerList;
+        return $this->getRoundData()->getPlayerList();
     }
 
     /**
@@ -95,34 +105,8 @@ class Round {
         $this->getPlayerList()->toPlayer($player, $addTurn);
     }
 
-    /**
-     * @return RoundData
-     */
-    function getRoundData() {
-        return $this->roundData;
-    }
-
-    /**
-     * @return RoundPhase
-     */
-    function getRoundPhase() {
-        return $this->roundPhase;
-    }
-
-    protected function setRoundPhase(RoundPhase $roundPhase) {
-        $this->roundPhase = $roundPhase;
-    }
-
     protected function toInitPhase() {
         $this->roundPhase = RoundPhase::getInstance(RoundPhase::INIT_PHASE);
-
-        // clear fields
-        $this->getPlayerList()->walk(function (Player $player) {
-            $player->setTurn(0);
-            $player->getPlayerArea()->init();
-        });
-
-        // each player assign SelfWind todo
 
         // each player draw initial tiles
         $playerCount = $this->getPlayerList()->count();
@@ -136,8 +120,6 @@ class Round {
 
         // go to dealer player's private phase
         $this->toPrivatePhase($this->getDealerPlayer(), true);
-        Utils::assertEqual(14, $this->getDealerPlayer()->getPlayerArea()->getHandTileSortedList()->count());
-        Utils::assertEqual(true, $this->getDealerPlayer()->getPlayerArea()->hasCandidateTile());
     }
 
     /**
@@ -146,11 +128,15 @@ class Round {
      */
     protected function toPrivatePhase(Player $player, $drawTile) {
         if ($this->getWall()->getRemainTileCount() == 0 && $drawTile) {
+            // exhaustive draw
             $players = $this->getPlayerList()->toArray();
-            $isWaitings = array_map(function ($v) {
-                return true;
-            }, $players); // todo
-            $result = new ExhaustiveDrawResult($players, $isWaitings);
+            $analyzer = $this->getYakuAnalyzer();
+            $roundData = $this->getRoundData();
+            $isWaitingStates = array_map(function (Player $player)use($analyzer, $roundData) {
+                $target = new WinAnalyzerTarget($player, $roundData);
+                return $analyzer->isWaiting($target);
+            }, $players);
+            $result = new ExhaustiveDrawResult($players, $isWaitingStates);
             $this->toOverPhase($result);
         } else {
             $this->setRoundPhase(RoundPhase::getInstance(RoundPhase::PRIVATE_PHASE));
@@ -178,9 +164,26 @@ class Round {
 
     function isGameOver() {
         $isOverPhase = $this->getRoundPhase()==RoundPhase::getOverPhaseInstance();
-        $isLastRound = $this->getRoundData()->isLastRoundWindTurn(); // todo east-south game
-        $isTopPlayerEnoughScore = $this->getPlayerList()->getTopPlayer()->getScore() >= 30000; // todo
-        return $isOverPhase && $isLastRound && $isTopPlayerEnoughScore;
+        if (!$isOverPhase) {
+            return false;
+        }
+
+        $roundData = $this->getRoundData();
+        if ($roundData->isLastNorthRoundWindTurn()) { // 北入终局，游戏结束
+            return true;
+        } elseif (!$roundData->isLastOrExtraRoundWindTurn()) { // 指定场数未达，游戏未结束
+            return false;
+        } else { // 达到指定场数
+            $topPlayer = $this->getPlayerList()->getTopPlayer();
+            $isTopPlayerEnoughScore = $topPlayer->getScore() >= 30000; // todo rule
+            if (!$isTopPlayerEnoughScore) { // 若首位点数未达原点，游戏未结束
+                return false;
+            } else { // 首位点数达到原点，非连庄 或 连庄者达首位，游戏结束
+                $keepDealer = $this->getRoundResult()->isKeepDealer();
+                $dealerIsTopPlayer = $this->getDealerPlayer() == $topPlayer;
+                return (!$keepDealer || $dealerIsTopPlayer);
+            }
+        }
     }
 
     function getGameResult() {
@@ -199,13 +202,8 @@ class Round {
             throw new \InvalidArgumentException('Game is over.');
         }
 
-        $nextDealerPlayer = $this->getRoundResult()->getNextDealerPlayer();
-        $this->getPlayerList()->reset($nextDealerPlayer);
-
-        $dealerChanged = $nextDealerPlayer != $this->getDealerPlayer();
-        $roundChanged = $dealerChanged && $this->getDealerPlayer()->getNo() == 1;
-        $this->getRoundData()->toNextRound($dealerChanged, $roundChanged);
-
+        $keepDealer = $this->getRoundResult()->isKeepDealer();
+        $this->getRoundData()->reset($keepDealer);
         $this->roundResult = null;
 
         $this->toInitPhase();

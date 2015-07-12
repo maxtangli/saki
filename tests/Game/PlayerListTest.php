@@ -4,16 +4,21 @@ use Saki\Game\PlayerList;
 
 class PlayerListTest extends PHPUnit_Framework_TestCase {
     function testInitialState() {
-        $m = new PlayerList(4, 10000);
+        $m = new PlayerList(4, 25000);
+        foreach ($m as $k => $p) {
+            $this->assertEquals($k+1, $p->getNo());
+        }
         list($p1, $p2, $p3, $p4) = $m->toArray();
         $this->assertEquals($p1, $m->getCurrentPlayer());
-        $this->assertEquals($p2, $m->getNextPlayer());
-        $this->assertEquals($p3, $m->getOffsetPlayer(2));
+        $this->assertEquals($p1, $m->getDealerPlayer());
+
+        // current/dealer offset
+        for ($i = 0; $i < 4; ++$i) {
+            $this->assertEquals($m[$i], $m->getCurrentOffsetPlayer($i));
+            $this->assertEquals($m[$i], $m->getDealerOffsetPlayer($i));
+        }
     }
 
-    /**
-     * @depends testInitialState
-     */
     function testToNext() {
         $m = new PlayerList(4, 10000);
         list($p1, $p2, $p3, $p4) = $m->toArray();
@@ -23,6 +28,15 @@ class PlayerListTest extends PHPUnit_Framework_TestCase {
             $this->assertSame($expectedPlayer[$i], $m->getCurrentPlayer(), sprintf('[%s] vs [%s]', $expectedPlayer[$i], $m->getCurrentPlayer()));
             $this->assertSame(1, $m->getCurrentPlayer()->getTurn());
             $m->toNextPlayer();
+        }
+
+        // current/dealer offset
+        $m->reset($p3);
+        $this->assertEquals($p3, $m->getCurrentPlayer());
+        $this->assertEquals($p3, $m->getDealerPlayer());
+        for ($i = 0; $i < 4; ++$i) {
+            $this->assertEquals($expectedPlayer[$i], $m->getCurrentOffsetPlayer($i), $i);
+            $this->assertEquals($expectedPlayer[$i], $m->getDealerOffsetPlayer($i), $i);
         }
     }
 }

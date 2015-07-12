@@ -1,5 +1,9 @@
 <?php
-namespace Saki\Game;
+namespace Saki\Game\Result;
+
+use Saki\Game\Player;
+use Saki\Game\原点;
+use Saki\Game\配給原点;
 
 class GameResult {
 

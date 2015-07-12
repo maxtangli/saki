@@ -2,55 +2,51 @@
 namespace Saki\Game;
 
 use Saki\Tile\Tile;
+use Saki\Tile\TileSet;
 
 class RoundData {
-    // e.x. [東] [1] 局 [0] 本場
-
     /**
      * @var Tile
      */
-    private $roundWind;
-    private $roundWindTurn;
-    private $selfWindTurn;
+    private $roundWind; // [東] 1 局
+     // 東 [1] 局
+    private $selfWindTurn; // [0] 本場
 
+    private $lastRoundWind; // [東]風戦・東[南]戦
     /**
      * @var Wall
      */
     private $wall; // 牌山
+    private $accumulatedReachCount; // 積み棒
+    /**
+     * @var PlayerList
+     */
+    private $playerList;
 
-    private $accumulatedReachCount; // 場棒
-
+    /**
+     * default: 4 player, east game, 25000-30000 initial score,
+     */
     function __construct() {
-        $this->accumulatedReachCount = 0;
+        $this->roundWind = Tile::fromString('E');
+        $this->selfWindTurn = 0;
+        $this->lastRoundWind = Tile::fromString('E');
         $this->wall = new Wall(TileSet::getStandardTileSet());
-        $this->init();
+        $this->accumulatedReachCount = 0;
+        $this->playerList = PlayerList::getStandardPlayerList();
     }
 
-    function init() {
-        $this->reset(Tile::fromString('E'), 1, 0);
-    }
-
-    function toNextRound($dealerChanged, $roundChanged) {
-        $keepSelfWind = !$dealerChanged;
-        $keepRoundWind = !$roundChanged;
-        if ($keepSelfWind) {
-            if (!$keepRoundWind) {
-                throw new \InvalidArgumentException();
-            }
-            $this->reset($this->getRoundWind(), $this->getRoundWindTurn(), $this->getSelfWindTurn() + 1);
-        } else {
-            $roundWind = $keepRoundWind ? $this->getRoundWind() : $this->getRoundWind()->toNextTile();
-            $roundWindTurn = $keepRoundWind ? $this->getRoundWindTurn() : 1;
-            $selfWindTurn = $this->getSelfWindTurn() + 1;
-            $this->reset($roundWind, $roundWindTurn, $selfWindTurn);
+    function reset($keepDealer) {
+        if (!is_bool($keepDealer)) {
+            throw new \InvalidArgumentException('bool expected.');
         }
-    }
-
-    protected function reset(Tile $roundWind, $roundWindTurn, $selfWindTurn) {
+        $nextDealer = $keepDealer ? $this->getPlayerList()->getDealerPlayer() : $this->getPlayerList()->getDealerOffsetPlayer(1);
+        $roundChanged = !$keepDealer && $nextDealer->getNo() == 1;
+        if ($roundChanged) {
+            $this->roundWind = $this->getRoundWind()->toNextTile();
+        }
+        $this->selfWindTurn = $keepDealer ? $this->getSelfWindTurn() + 1 : 0;
         $this->getWall()->reset(true);
-        $this->roundWind = $roundWind;
-        $this->roundWindTurn = $roundWindTurn;
-        $this->selfWindTurn = $selfWindTurn;
+        $this->getPlayerList()->reset($nextDealer);
     }
 
     function getWall() {
@@ -70,16 +66,7 @@ class RoundData {
     }
 
     function getRoundWindTurn() {
-        return $this->roundWindTurn;
-    }
-
-    function setRoundWindTurn($roundWindTurn) {
-        $this->roundWindTurn = $roundWindTurn;
-    }
-
-    function isLastRoundWindTurn() {
-        $playerCount = 4; // todo
-        return $this->roundWindTurn == $playerCount;
+        return $this->getPlayerList()->getDealerPlayer()->getNo();
     }
 
     function getSelfWindTurn() {
@@ -90,6 +77,14 @@ class RoundData {
         $this->selfWindTurn = $selfWindTurn;
     }
 
+    function getLastRoundWind() {
+        return $this->lastRoundWind;
+    }
+
+    function setLastRoundWind($lastRoundWind) {
+        $this->lastRoundWind = $lastRoundWind;
+    }
+
     function getAccumulatedReachCount() {
         return $this->accumulatedReachCount;
     }
@@ -98,11 +93,39 @@ class RoundData {
         $this->accumulatedReachCount = $accumulatedReachCount;
     }
 
+    function getPlayerList() {
+        return $this->playerList;
+    }
+
+    function setPlayerList($playerList) {
+        $this->playerList = $playerList;
+    }
+
+    function getAccumulatedSelfWindTurnScore() {
+        return $this->getSelfWindTurn() * 300;
+    }
+
     function getAccumulatedReachScore() {
         return $this->getAccumulatedReachCount() * 1000;
     }
 
     function addAccumulatedReachCount() {
         $this->setAccumulatedReachCount($this->getAccumulatedReachCount() + 1);
+    }
+
+    function isLastNorthRoundWindTurn() {
+        $playerCount = $this->getPlayerList()->count();
+        return $this->getRoundWind() == Tile::fromString('N') && $this->getRoundWindTurn() == $playerCount;
+    }
+
+    function isLastOrExtraRoundWindTurn() {
+        $windNos = [
+            'E' => 1, 'S' => 2, 'W' => 3, 'N' => 4,
+        ];
+        list($roundWindNo, $lastRoundWindNo) = [$windNos[(string)$this->getRoundWind()], $windNos[(string)$this->getLastRoundWind()]];
+        $playerCount = $this->getPlayerList()->count();
+        $isLastRoundWind = ($roundWindNo == $lastRoundWindNo) && $this->getRoundWindTurn() == $playerCount;
+        $isExtraRoundWind = $roundWindNo > $lastRoundWindNo;
+        return $isLastRoundWind || $isExtraRoundWind;
     }
 }

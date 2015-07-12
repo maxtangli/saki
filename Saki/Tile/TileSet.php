@@ -1,8 +1,5 @@
 <?php
-namespace Saki\Game;
-
-use Saki\Tile\TileList;
-use Saki\Tile\TileSortedList;
+namespace Saki\Tile;
 
 class TileSet extends TileSortedList {
     static function getStandardTileSet() {

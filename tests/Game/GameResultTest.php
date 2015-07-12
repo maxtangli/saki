@@ -21,7 +21,7 @@ class GameResultTest extends PHPUnit_Framework_TestCase {
             [3, -18],
             [4, -28],
         ];
-        $r = new \Saki\Game\GameResult($players);
+        $r = new \Saki\Game\Result\GameResult($players);
         foreach ($players as $k => $player) {
             $item = $r->getResultItem($player);
             list($expectedRank, $expectedPoint) = [$expected[$k][0], $expected[$k][1]];

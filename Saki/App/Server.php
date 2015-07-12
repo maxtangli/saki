@@ -17,7 +17,7 @@ class Server {
     }
 
     function reset() {
-        $game = new Game(4, 25000);
+        $game = new Game();
         $_SESSION['data'] = $game;
         $this->data = $_SESSION['data'];
     }
