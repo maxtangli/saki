@@ -93,4 +93,8 @@ class WinAnalyzerSubTarget extends WinAnalyzerTarget {
             return $runMeld->getFirst() == $winTile || $runMeld->getLast() == $winTile;
         });
     }
+
+    function getFuCount() {
+        return 20; // todo
+    }
 }

@@ -15,10 +15,12 @@ class WinAnalyzerResult {
      * @var YakuList
      */
     private $yakuList;
+    private $fuCount;
 
-    function __construct(WinState $winState, YakuList $yakuList) {
+    function __construct(WinState $winState, YakuList $yakuList, $fuCount) {
         $this->winState = $winState;
         $this->yakuList = $yakuList;
+        $this->fuCount = $fuCount;
     }
 
     function getWinState() {
@@ -30,7 +32,7 @@ class WinAnalyzerResult {
     }
 
     function getFuCount() {
-        return 40; // todo
+        return $this->fuCount;
     }
 
     function getFanCount() {

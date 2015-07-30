@@ -13,7 +13,7 @@ class ExhaustiveDrawResult extends RoundResult {
      * @param bool[] $isWaitings
      */
     function __construct(array $players, array $isWaitings) {
-        parent::__construct($players);
+        parent::__construct($players, false);
         $valid = count($players) == count($isWaitings);
         if (!$valid) {
             throw new \InvalidArgumentException();

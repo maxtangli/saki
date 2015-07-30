@@ -157,79 +157,64 @@ rush 14 next round 1.4h
 - [x] toNextRound() 0.2h
 - [x] roundResult->getNextPlayer() 0.3h
 
-rush 15 game over
+rush 15 game over 1.8h
 
 - [x] refactor: 0.4h
 - [x] finalScore 1h
 - [x] result: winner order, final score 0.4h
 
-rush 16 game over fix
+rush 16 game over fix 2.1h
 
 - [x] isLastRound() 0.6h
 - [x] refactor: move PlayerList into RoundData 1.1h
 - [x] bug: PlayerList  0.4h
 
+rush 17 win issues
+
+- [x] reach score
+- [x] round n score 0.3h
+- [x] game over: minus score 0.1h
+- [x] WinRoundResult 0.5h
+- [x] public phase: win on other 
+- [x] public phase: multiple win on other 0.4h
+- [x] test design 0.3h
+
 rush etc: normal priority
+
+- [ ] refactor: round roller
 - [ ] east-south round
 - [ ] bug: getTopPlayer() is wrong when same score top players exist
 - [ ] bug: getMeldCompositions() won't count for 112233s like tiles
 
-rush etc: low priority
-- [ ] initial score rule
-- [ ] refactor: move DrawScore logic into separate class
-
-rush win score
-
-- [ ] fu count
-- [ ] reach score
-- [ ] round n score
-
-rush win/draw detail
-
-- [ ] public phase: win on other
-- [ ] public phase: multiple win on other
-
-rush draw detail
-
-- [ ] over phase: four kong drawn
-- [ ] over phase: four reach drawn
-- [ ] over phase: 9-kind 9-tile drawn
-
 rush all yaku
 
+- [ ] fu count
 - [ ] test design
 - [x] not-count-yaku logic
 - [x] yaku-man logic 1h
+- [ ] other yakus
 
 rush red dora
 
 - [ ] discard/createMeld logic
 - [ ] impl
 
+rush etc: low priority
+- [ ] initial score rule
+- [ ] refactor: move DrawScore logic into separate class
+- [ ] over phase: four kong drawn
+- [ ] over phase: four reach drawn
+- [ ] over phase: 9-kind 9-tile drawn
+
+rush code review & more tests
+
 rush simple ui
 
 rush candidate commands
 rush server logic
 
-advanced features
-
-- multi player
-- multi-media
-- player AI
-- replay
-- player statistics
-
-## note: round over & game over
-
-isGameOver
-
-NorthRoundWind 4 SelfRoundWind 0 -> gameover 
-
-LastRoundWind 4 or extraRoundWind any  
-- 
-
-
-
+rush replay
+rush player statistics
 
 ## note: game over score
 

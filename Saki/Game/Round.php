@@ -7,7 +7,6 @@ use Saki\Game\Result\GameResult;
 use Saki\Game\Result\RoundResult;
 use Saki\Game\Result\WinBySelfRoundResult;
 use Saki\Tile\Tile;
-use Saki\Util\Utils;
 use Saki\Win\WinAnalyzer;
 use Saki\Win\WinAnalyzerTarget;
 use Saki\Win\WinState;
@@ -132,7 +131,7 @@ class Round {
             $players = $this->getPlayerList()->toArray();
             $analyzer = $this->getYakuAnalyzer();
             $roundData = $this->getRoundData();
-            $isWaitingStates = array_map(function (Player $player)use($analyzer, $roundData) {
+            $isWaitingStates = array_map(function (Player $player) use ($analyzer, $roundData) {
                 $target = new WinAnalyzerTarget($player, $roundData);
                 return $analyzer->isWaiting($target);
             }, $players);
@@ -160,16 +159,22 @@ class Round {
             $afterScore = $result->getScoreDelta($player)->getAfter();
             $player->setScore($afterScore);
         }
+        // clear accumulatedReachCount if isWin
+        if ($result->isWin()) {
+            $this->getRoundData()->setAccumulatedReachCount(0);
+        }
     }
 
     function isGameOver() {
-        $isOverPhase = $this->getRoundPhase()==RoundPhase::getOverPhaseInstance();
+        $isOverPhase = $this->getRoundPhase() == RoundPhase::getOverPhaseInstance();
         if (!$isOverPhase) {
             return false;
         }
 
         $roundData = $this->getRoundData();
-        if ($roundData->isLastNorthRoundWindTurn()) { // 北入终局，游戏结束
+        if ($roundData->hasMinusScorePlayer()) { // 有玩家被打飞，游戏结束
+            return true;
+        } elseif ($roundData->isLastNorthRoundWindTurn()) { // 北入终局，游戏结束
             return true;
         } elseif (!$roundData->isLastOrExtraRoundWindTurn()) { // 指定场数未达，游戏未结束
             return false;
@@ -322,7 +327,8 @@ class Round {
         if ($winResult->getWinState() != WinState::getWinInstance()) {
             throw new \InvalidArgumentException();
         }
-        $roundResult = new WinBySelfRoundResult($this->getPlayerList()->toArray(), $player, $winResult);
+        $roundResult = new WinBySelfRoundResult($this->getPlayerList()->toArray(), $player, $winResult,
+            $this->getRoundData()->getAccumulatedReachCount(), $this->getRoundData()->getSelfWindTurn());
         // phase
         $this->toOverPhase($roundResult);
     }

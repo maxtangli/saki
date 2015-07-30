@@ -101,16 +101,12 @@ class RoundData {
         $this->playerList = $playerList;
     }
 
-    function getAccumulatedSelfWindTurnScore() {
-        return $this->getSelfWindTurn() * 300;
-    }
-
-    function getAccumulatedReachScore() {
-        return $this->getAccumulatedReachCount() * 1000;
-    }
-
     function addAccumulatedReachCount() {
         $this->setAccumulatedReachCount($this->getAccumulatedReachCount() + 1);
+    }
+
+    function hasMinusScorePlayer() {
+        return $this->getPlayerList()->isAny(function(Player $player){return $player->getScore() < 0;});
     }
 
     function isLastNorthRoundWindTurn() {

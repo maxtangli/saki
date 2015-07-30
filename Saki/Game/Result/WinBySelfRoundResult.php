@@ -4,44 +4,19 @@ namespace Saki\Game\Result;
 use Saki\Game\Player;
 use Saki\Win\WinAnalyzerResult;
 
-class WinBySelfRoundResult extends RoundResult {
-    private $winPlayer;
-    private $winAnalyzerResult;
-
-    function __construct(array $players, Player $winPlayer, WinAnalyzerResult $winAnalyzerResult) {
-        parent::__construct($players);
-        $this->winPlayer = $winPlayer;
-        $this->winAnalyzerResult = $winAnalyzerResult;
-    }
-
-    function getWinPlayer() {
-        return $this->winPlayer;
-    }
-
-    function getWinAnalyzerResult() {
-        return $this->winAnalyzerResult;
-    }
-
+class WinBySelfRoundResult extends WinRoundResult {
     /**
-     * @param Player $player
-     * @return ScoreDelta
+     * @param array $players
+     * @param Player $winPlayer
+     * @param WinAnalyzerResult $winAnalyzerResult
+     * @param int $accumulatedReachCount
+     * @param int $selfWindTurn
      */
-    function getScoreDeltaInt(Player $player) {
-        $scoreItem = $this->getWinAnalyzerResult()->getScoreItem();
-
-        $receiverIsDealer = $this->getWinPlayer()->isDealer();
-        $winBySelf = true;
-        $payerIsDealer = $player->isDealer();
-        $deltaInt = $player == $this->getWinPlayer() ? $scoreItem->getReceiveScore($receiverIsDealer, $winBySelf)
-            : -$scoreItem->getPayScore($receiverIsDealer, $winBySelf, $payerIsDealer);
-        return $deltaInt;
-    }
-
-    /**
-     * @return Player
-     */
-    function isKeepDealer() {
-        return $this->getWinPlayer() == $this->getOriginDealerPlayer();
+    function __construct(array $players, Player $winPlayer, WinAnalyzerResult $winAnalyzerResult, $accumulatedReachCount, $selfWindTurn) {
+        $losePlayers = array_values(array_filter($players, function (Player $player) use ($winPlayer) {
+            return $player != $winPlayer;
+        }));
+        parent::__construct($players, [$winPlayer], [$winAnalyzerResult], $losePlayers, $accumulatedReachCount, $selfWindTurn);
     }
 }
 

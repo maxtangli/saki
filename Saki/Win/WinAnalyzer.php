@@ -56,7 +56,7 @@ class WinAnalyzer {
         $meldTypes = MeldTypeAnalyzer::getDefaultCandidateMeldTypes();
         $meldCompositions = $analyzer->analyzeMeldCompositions($target->getHandTileSortedList(), $meldTypes);
         if (empty($meldCompositions)) {
-            return new WinAnalyzerResult(WinState::getNotWinTilesInstance(), new YakuList([], $target->isExposed()));
+            return new WinAnalyzerResult(WinState::getNotWinTilesInstance(), new YakuList([], $target->isExposed()), 0);
         }
         // get analyzerResult[]
         $subTargets = array_map(function (MeldList $meldList) use ($target) {
@@ -123,7 +123,7 @@ class WinAnalyzer {
             $winState = WinState::getNotWinTilesInstance();
         }
 
-        $result = new WinAnalyzerResult($winState, $yakuList);
+        $result = new WinAnalyzerResult($winState, $yakuList, $subTarget->getFuCount());
         return $result;
     }
 
