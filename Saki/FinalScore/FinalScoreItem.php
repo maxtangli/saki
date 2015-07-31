@@ -1,15 +1,15 @@
 <?php
-namespace Saki\Game\Result;
+namespace Saki\FinalScore;
 
-class GameResultItem {
+class FinalScoreItem {
     private $rank; // 1-4
     private $finalScore;
-    private $scorePoint;
+    private $finalPoint;
 
-    function __construct($rank, $finalScore, $scorePoint) {
+    function __construct($rank, $finalScore, $finalPoint) {
         $this->rank = $rank;
         $this->finalScore = $finalScore;
-        $this->scorePoint = $scorePoint;
+        $this->finalPoint = $finalPoint;
     }
 
     function getRank() {
@@ -20,7 +20,7 @@ class GameResultItem {
         return $this->finalScore;
     }
 
-    function getScorePoint() {
-        return $this->scorePoint;
+    function getFinalPoint() {
+        return $this->finalPoint;
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Saki\Game;
 
+use Saki\FinalScore\FinalScoreStrategyTarget;
 use Saki\Game\Result\ExhaustiveDrawResult;
 use Saki\Game\Result\GameResult;
 use Saki\Game\Result\RoundResult;
@@ -191,11 +192,16 @@ class Round {
         }
     }
 
-    function getGameResult() {
-        if (!$this->isGameOver()) {
+    /**
+     * @param bool $requireGameOver
+     * @return \Saki\FinalScore\FinalScoreItem[]
+     */
+    function getFinalScoreItems($requireGameOver = true) {
+        if ($requireGameOver && !$this->isGameOver()) {
             throw new \InvalidArgumentException('Game is not over.');
         }
-        return new GameResult($this->getPlayerList()->toArray());
+        $target = new FinalScoreStrategyTarget($this->getPlayerList());
+        return $this->getRoundData()->getFinalScoreStrategy()->getFinalScoreItems($target);
     }
 
     function toNextRound() {

@@ -1,6 +1,10 @@
 <?php
 namespace Saki\Game;
 
+use Saki\FinalScore\CompositeFinalScoreStrategy;
+use Saki\FinalScore\MoundFinalScoreStrategy;
+use Saki\FinalScore\RankingHorseFinalScoreStrategy;
+use Saki\FinalScore\RankingHorseType;
 use Saki\Tile\Tile;
 use Saki\Tile\TileSet;
 
@@ -24,6 +28,11 @@ class RoundData {
     private $playerList;
 
     /**
+     * @var FinalScoreStrategy
+     */
+    private $finalScoreStrategy;
+
+    /**
      * default: 4 player, east game, 25000-30000 initial score,
      */
     function __construct() {
@@ -33,6 +42,10 @@ class RoundData {
         $this->wall = new Wall(TileSet::getStandardTileSet());
         $this->accumulatedReachCount = 0;
         $this->playerList = PlayerList::getStandardPlayerList();
+        $this->finalScoreStrategy = new CompositeFinalScoreStrategy([
+            RankingHorseFinalScoreStrategy::fromType(RankingHorseType::getInstance(RankingHorseType::UMA_10_20)),
+            new MoundFinalScoreStrategy(25000, 30000),
+        ]);
     }
 
     function reset($keepDealer) {
@@ -123,5 +136,9 @@ class RoundData {
         $isLastRoundWind = ($roundWindNo == $lastRoundWindNo) && $this->getRoundWindTurn() == $playerCount;
         $isExtraRoundWind = $roundWindNo > $lastRoundWindNo;
         return $isLastRoundWind || $isExtraRoundWind;
+    }
+
+    function getFinalScoreStrategy() {
+        return $this->finalScoreStrategy;
     }
 }

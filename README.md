@@ -179,9 +179,13 @@ rush 17 win issues
 - [x] public phase: multiple win on other 0.4h
 - [x] test design 0.3h
 
+rush 18 refactor
+
+- [x] refactor: score strategy 2h
+- [ ] refactor: round roller 0.5h
+
 rush etc: normal priority
 
-- [ ] refactor: round roller
 - [ ] east-south round
 - [ ] bug: getTopPlayer() is wrong when same score top players exist
 - [ ] bug: getMeldCompositions() won't count for 112233s like tiles

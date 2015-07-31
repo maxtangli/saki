@@ -251,4 +251,28 @@ class RoundTest extends PHPUnit_Framework_TestCase {
 
         $this->assertInstanceOf('Saki\Game\Result\ExhaustiveDrawResult', $r->getRoundResult());
     }
+
+    function testGetFinalScoreItems() {
+        $r = $this->initialRound;
+        $scores = [
+            31100,24400,22300,22200
+        ];
+        foreach($r->getPlayerList() as $k => $player) {
+            $player->setScore($scores[$k]);
+        }
+
+        $expected = [
+            [1, 42],
+            [2, 4],
+            [3, -18],
+            [4, -28],
+        ];
+        $items = $r->getFinalScoreItems(false);
+        foreach ($r->getPlayerList() as $k => $player) {
+            $item = $items[$k];
+            list($expectedRank, $expectedPoint) = [$expected[$k][0], $expected[$k][1]];
+            $this->assertEquals($expectedRank, $item->getRank());
+            $this->assertEquals($expectedPoint, $item->getFinalPoint());
+        }
+    }
 }
