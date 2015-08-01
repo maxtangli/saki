@@ -11,7 +11,7 @@ class ScoreStrategyTest extends PHPUnit_Framework_TestCase {
             [30000, 10000],
             [40000, 30000],
         ];
-        $playerList = \Saki\Game\PlayerList::getStandardPlayerList();
+        $playerList = \Saki\Game\PlayerList::createStandard();
         foreach($set as $k => list($score, $expectedScore)) {
             $playerList[$k]->setScore($score);
         }
@@ -31,7 +31,7 @@ class ScoreStrategyTest extends PHPUnit_Framework_TestCase {
             [22300, -8000],
             [22200, -8000],
         ];
-        $playerList = \Saki\Game\PlayerList::getStandardPlayerList();
+        $playerList = \Saki\Game\PlayerList::createStandard();
         foreach($set as $k => list($score, $expectedScore)) {
             $playerList[$k]->setScore($score);
         }
@@ -54,7 +54,7 @@ class ScoreStrategyTest extends PHPUnit_Framework_TestCase {
             [22300, -8000 + -10000],
             [22200, -8000 -30000],
         ];
-        $playerList = \Saki\Game\PlayerList::getStandardPlayerList();
+        $playerList = \Saki\Game\PlayerList::createStandard();
         foreach($set as $k => list($score, $expectedScore)) {
             $playerList[$k]->setScore($score);
         }

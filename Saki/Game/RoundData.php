@@ -33,6 +33,11 @@ class RoundData {
     private $finalScoreStrategy;
 
     /**
+     * @var TileAreas
+     */
+    private $tileAreas;
+
+    /**
      * default: 4 player, east game, 25000-30000 initial score,
      */
     function __construct() {
@@ -41,11 +46,12 @@ class RoundData {
         $this->lastRoundWind = Tile::fromString('E');
         $this->wall = new Wall(TileSet::getStandardTileSet());
         $this->accumulatedReachCount = 0;
-        $this->playerList = PlayerList::getStandardPlayerList();
+        $this->playerList = PlayerList::createStandard();
         $this->finalScoreStrategy = new CompositeFinalScoreStrategy([
             RankingHorseFinalScoreStrategy::fromType(RankingHorseType::getInstance(RankingHorseType::UMA_10_20)),
             new MoundFinalScoreStrategy(25000, 30000),
         ]);
+        $this->tileAreas = new TileAreas($this->wall, $this->playerList);
     }
 
     function reset($keepDealer) {
@@ -114,6 +120,14 @@ class RoundData {
         $this->playerList = $playerList;
     }
 
+    function getFinalScoreStrategy() {
+        return $this->finalScoreStrategy;
+    }
+
+    function getTileAreas() {
+        return $this->tileAreas;
+    }
+
     function addAccumulatedReachCount() {
         $this->setAccumulatedReachCount($this->getAccumulatedReachCount() + 1);
     }
@@ -136,9 +150,5 @@ class RoundData {
         $isLastRoundWind = ($roundWindNo == $lastRoundWindNo) && $this->getRoundWindTurn() == $playerCount;
         $isExtraRoundWind = $roundWindNo > $lastRoundWindNo;
         return $isLastRoundWind || $isExtraRoundWind;
-    }
-
-    function getFinalScoreStrategy() {
-        return $this->finalScoreStrategy;
     }
 }

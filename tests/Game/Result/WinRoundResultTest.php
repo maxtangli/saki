@@ -2,7 +2,7 @@
 
 class WinRoundResultTest extends PHPUnit_Framework_TestCase {
     function testWinBySelf() {
-        $playerList = \Saki\Game\PlayerList::getStandardPlayerList();
+        $playerList = \Saki\Game\PlayerList::createStandard();
         $players = $playerList->toArray();
         $yakuList = new \Saki\Yaku\YakuList(
             [\Saki\Yaku\AllRunsYaku::getInstance(),
@@ -40,7 +40,7 @@ class WinRoundResultTest extends PHPUnit_Framework_TestCase {
     }
 
     function testWinByOther() {
-        $playerList = \Saki\Game\PlayerList::getStandardPlayerList();
+        $playerList = \Saki\Game\PlayerList::createStandard();
         $players = $playerList->toArray();
         $yakuList = new \Saki\Yaku\YakuList(
             [\Saki\Yaku\AllRunsYaku::getInstance(),

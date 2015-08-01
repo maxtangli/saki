@@ -6,7 +6,7 @@ use Saki\Util\ArrayLikeObject;
 
 class PlayerList extends ArrayLikeObject {
 
-    static function getStandardPlayerList() {
+    static function createStandard() {
         return new self(4, 25000);
     }
 

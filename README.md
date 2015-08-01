@@ -182,6 +182,8 @@ rush 17 win issues
 rush 18 refactor
 
 - [x] refactor: score strategy 2h
+- [x] refactor: TileAreas 0.5h
+- [ ] refactor: reach
 - [ ] refactor: round roller 0.5h
 
 rush etc: normal priority

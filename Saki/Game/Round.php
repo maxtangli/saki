@@ -113,7 +113,7 @@ class Round {
         $drawTileCounts = [4, 4, 4, 1];
         foreach ($drawTileCounts as $drawTileCount) {
             for ($cnt = 0; $cnt < $playerCount; ++$cnt) {
-                $this->drawInit($this->getCurrentPlayer(), $drawTileCount);
+                $this->getRoundData()->getTileAreas()->drawInit($this->getCurrentPlayer(), $drawTileCount);
                 $this->setCurrentPlayer($this->getNextPlayer(), false);
             }
         }
@@ -142,7 +142,7 @@ class Round {
             $this->setRoundPhase(RoundPhase::getInstance(RoundPhase::PRIVATE_PHASE));
             $this->setCurrentPlayer($player, true);
             if ($drawTile) {
-                $this->draw($player);
+                $this->getRoundData()->getTileAreas()->draw($player);
             }
         }
     }
@@ -220,36 +220,15 @@ class Round {
         $this->toInitPhase();
     }
 
-    protected function drawInit(Player $player, $drawTileCount) {
-        $player->getPlayerArea()->drawInit($this->getWall()->pop($drawTileCount));
-    }
-
-    protected function draw(Player $player) {
-        $player->getPlayerArea()->draw($this->getWall()->pop());
-    }
-
-    protected function drawReplacement(Player $player) {
-        $player->getPlayerArea()->draw($this->getWall()->shift());
-    }
-
     function discard(Player $player, Tile $selfTile) {
-        // valid: private phase, currentPlayer
-        $valid = $this->getRoundPhase()->getValue() == RoundPhase::PRIVATE_PHASE && $player == $this->getCurrentPlayer();
-        if (!$valid) {
-            throw new \InvalidArgumentException(sprintf('[%s], [%s], [%s]', $this->getRoundPhase(), $player, $this->getCurrentPlayer()));
-        }
-        // do
-        $player->getPlayerArea()->discard($selfTile);
+        $this->assertPrivatePhase($player);
+        $this->getRoundData()->getTileAreas()->discard($player, $selfTile);
         // switch phase
         $this->toPublicPhase();
     }
 
     function reach(Player $player, Tile $selfTile) {
-        // valid: private phase, currentPlayer
-        $valid = $this->getRoundPhase()->getValue() == RoundPhase::PRIVATE_PHASE && $player == $this->getCurrentPlayer();
-        if (!$valid) {
-            throw new \InvalidArgumentException();
-        }
+        $this->assertPrivatePhase($player);
         // valid: reach condition
         /**
          * https://ja.wikipedia.org/wiki/%E7%AB%8B%E7%9B%B4
@@ -297,35 +276,19 @@ class Round {
     }
 
     function kongBySelf(Player $player, Tile $selfTile) {
-        // valid: private phase, currentPlayer
-        $valid = $this->getRoundPhase()->getValue() == RoundPhase::PRIVATE_PHASE && $player == $this->getCurrentPlayer();
-        if (!$valid) {
-            throw new \InvalidArgumentException();
-        }
-        // do
-        $player->getPlayerArea()->kongBySelf($selfTile);
-        $this->drawReplacement($player);
+        $this->assertPrivatePhase($player);
+        $this->getRoundData()->getTileAreas()->kongBySelf($player, $selfTile);
         // stay in private phase
     }
 
     function plusKongBySelf(Player $player, Tile $selfTile) {
-        // valid: private phase, currentPlayer
-        $valid = $this->getRoundPhase()->getValue() == RoundPhase::PRIVATE_PHASE && $player == $this->getCurrentPlayer();
-        if (!$valid) {
-            throw new \InvalidArgumentException();
-        }
-        // do
-        $player->getPlayerArea()->plusKongBySelf($selfTile);
-        $this->drawReplacement($player);
+        $this->assertPrivatePhase($player);
+        $this->getRoundData()->getTileAreas()->plusKongBySelf($player, $selfTile);
         // stay in private phase
     }
 
     function winBySelf(Player $player) {
-        /// private phase, currentPlayer
-        $valid = $this->getRoundPhase()->getValue() == RoundPhase::PRIVATE_PHASE && $player == $this->getCurrentPlayer();
-        if (!$valid) {
-            throw new \InvalidArgumentException();
-        }
+        $this->assertPrivatePhase($player);
         // do
         $analyzer = $this->getYakuAnalyzer();
         $target = new WinAnalyzerTarget($player, $this->getRoundData());
@@ -339,90 +302,64 @@ class Round {
         $this->toOverPhase($roundResult);
     }
 
-    function passPublicPhase() {
-        $valid = $this->getRoundPhase()->getValue() == RoundPhase::PUBLIC_PHASE;
+    protected function assertPrivatePhase($player) {
+        $valid = $this->getRoundPhase()->getValue() == RoundPhase::PRIVATE_PHASE && $player == $this->getCurrentPlayer();
         if (!$valid) {
             throw new \InvalidArgumentException();
         }
+    }
+
+    function passPublicPhase() {
+        $this->assertPublicPhase();
         $this->toPrivatePhase($this->getCurrentPlayer(), true);
     }
 
     function chowByOther(Player $player, Tile $tile1, Tile $tile2) {
-        // valid: public phase, next player
-        $valid = $this->getRoundPhase()->getValue() == RoundPhase::PUBLIC_PHASE && $player == $this->getNextPlayer();
-        if (!$valid) {
-            throw new \InvalidArgumentException();
-        }
-        // execute
-        $currentPlayerArea = $this->getCurrentPlayer()->getPlayerArea();
-        $playerArea = $player->getPlayerArea();
-        $targetTile = $currentPlayerArea->getDiscardedTileList()->getLast(); // test valid
-        $playerArea->chowByOther($targetTile, $tile1, $tile2); // test valid
-        $currentPlayerArea->getDiscardedTileList()->pop();
+        $this->assertPublicPhase($player);
+        $this->getRoundData()->getTileAreas()->chowByOther($player, $tile1, $tile2, $this->getCurrentPlayer());
         // switch phase
         $this->toPrivatePhase($player, false);
     }
 
     function pongByOther(Player $player) {
-        // valid: public phase, non-current player
-        $valid = $this->getRoundPhase()->getValue() == RoundPhase::PUBLIC_PHASE && $player != $this->getCurrentPlayer();
-        if (!$valid) {
-            throw new \InvalidArgumentException();
-        }
-        // execute
-        $currentPlayerArea = $this->getCurrentPlayer()->getPlayerArea();
-        $playerArea = $player->getPlayerArea();
-        $targetTile = $currentPlayerArea->getDiscardedTileList()->getLast(); // test valid
-        $playerArea->pongByOther($targetTile); // test valid
-        $currentPlayerArea->getDiscardedTileList()->pop();
+        $this->assertPublicPhase($player);
+        $this->getRoundData()->getTileAreas()->pongByOther($player, $this->getCurrentPlayer());
         // switch phase
         $this->toPrivatePhase($player, false);
     }
 
     function kongByOther(Player $player) {
-        // valid: public phase, non-current player
-        $valid = $this->getRoundPhase()->getValue() == RoundPhase::PUBLIC_PHASE && $player != $this->getCurrentPlayer();
-        if (!$valid) {
-            throw new \InvalidArgumentException();
-        }
-        // execute
-        $currentPlayerArea = $this->getCurrentPlayer()->getPlayerArea();
-        $playerArea = $player->getPlayerArea();
-        $targetTile = $currentPlayerArea->getDiscardedTileList()->getLast(); // test valid
-        $playerArea->kongByOther($targetTile); // test valid
-        $this->drawReplacement($player);
-        $currentPlayerArea->getDiscardedTileList()->pop();
+        $this->assertPublicPhase($player);
+        $this->getRoundData()->getTileAreas()->kongByOther($player, $this->getCurrentPlayer());
         // switch phase
         $this->toPrivatePhase($player, false);
     }
 
     function plusKongByOther(Player $player) {
-        // valid: public phase, non-current player
-        $valid = $this->getRoundPhase()->getValue() == RoundPhase::PUBLIC_PHASE && $player != $this->getCurrentPlayer();
-        if (!$valid) {
-            throw new \InvalidArgumentException();
-        }
-        // execute
-        $currentPlayerArea = $this->getCurrentPlayer()->getPlayerArea();
-        $playerArea = $player->getPlayerArea();
-        $targetTile = $currentPlayerArea->getDiscardedTileList()->getLast(); // test valid
-        $playerArea->plusKongByOther($targetTile);
-        $this->drawReplacement($player);
-        $currentPlayerArea->getDiscardedTileList()->pop();
+        $this->assertPublicPhase($player);
+        $this->getRoundData()->getTileAreas()->plusKongByOther($player, $this->getCurrentPlayer());
         // switch phase
         $this->toPrivatePhase($player, false);
     }
 
     function winByOther(Player $player) {
-        // public
-
+        $this->assertPublicPhase($player);
         // do
 
         // phase
     }
 
     function multipleWinByOther(array $players) {
+        // do
 
+        // phase
+    }
+
+    protected function assertPublicPhase($player = null) {
+        $valid = $this->getRoundPhase()->getValue() == RoundPhase::PUBLIC_PHASE && ($player != $this->getCurrentPlayer());
+        if (!$valid) {
+            throw new \InvalidArgumentException();
+        }
     }
 }
 
