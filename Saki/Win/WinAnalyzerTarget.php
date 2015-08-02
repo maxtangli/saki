@@ -49,7 +49,7 @@ class WinAnalyzerTarget {
     }
 
     function getRoundWind() {
-        return $this->roundData->getRoundWind();
+        return $this->roundData->getRoundWindData()->getRoundWind();
     }
 
     function toSubTarget(MeldList $handMeldList) {

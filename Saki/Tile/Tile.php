@@ -126,7 +126,7 @@ class Tile {
                 TileType::WHITE => TileType::GREEN,
                 TileType::GREEN => TileType::RED,
             ];
-            $nextType = $map[$currentType];
+            $nextType = TileType::getInstance($map[$currentType->getValue()]);
             return new Tile($nextType);
         }
     }

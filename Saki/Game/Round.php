@@ -175,9 +175,9 @@ class Round {
         $roundData = $this->getRoundData();
         if ($roundData->hasMinusScorePlayer()) { // 有玩家被打飞，游戏结束
             return true;
-        } elseif ($roundData->isLastNorthRoundWindTurn()) { // 北入终局，游戏结束
+        } elseif ($roundData->getRoundWindData()->isFinalRound()) { // 北入终局，游戏结束
             return true;
-        } elseif (!$roundData->isLastOrExtraRoundWindTurn()) { // 指定场数未达，游戏未结束
+        } elseif (!$roundData->getRoundWindData()->isLastOrExtraRound()) { // 指定场数未达，游戏未结束
             return false;
         } else { // 达到指定场数
             $topPlayer = $this->getPlayerList()->getTopPlayer();
@@ -271,6 +271,8 @@ class Round {
 
         // do
         $player->getPlayerArea()->reach($selfTile);
+        $player->setScore($player->getScore()-1000);
+        $this->getRoundData()->addAccumulatedReachCount();
         // switch phase
         $this->toPublicPhase();
     }
@@ -297,7 +299,7 @@ class Round {
             throw new \InvalidArgumentException();
         }
         $roundResult = new WinBySelfRoundResult($this->getPlayerList()->toArray(), $player, $winResult,
-            $this->getRoundData()->getAccumulatedReachCount(), $this->getRoundData()->getSelfWindTurn());
+            $this->getRoundData()->getAccumulatedReachCount(), $this->getRoundData()->getRoundWindData()->getSelfWindTurn());
         // phase
         $this->toOverPhase($roundResult);
     }

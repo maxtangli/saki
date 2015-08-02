@@ -209,9 +209,9 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         for($nTodo = 3; $nTodo >0; --$nTodo) {
             $rd->reset(false);
         }
-        $this->assertEquals(4, $rd->getRoundWindTurn());
-        $this->assertTrue($rd->isLastOrExtraRoundWindTurn());
-        $this->assertFalse($rd->isLastNorthRoundWindTurn());
+        $this->assertEquals(4, $rd->getRoundWindData()->getRoundWindTurn());
+        $this->assertTrue($rd->getRoundWindData()->isLastOrExtraRound());
+        $this->assertFalse($rd->getRoundWindData()->isFinalRound());
 
     }
 
