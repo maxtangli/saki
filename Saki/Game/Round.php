@@ -3,10 +3,10 @@
 namespace Saki\Game;
 
 use Saki\FinalScore\FinalScoreStrategyTarget;
-use Saki\Game\Result\ExhaustiveDrawResult;
-use Saki\Game\Result\GameResult;
-use Saki\Game\Result\RoundResult;
-use Saki\Game\Result\WinBySelfRoundResult;
+use Saki\RoundResult\ExhaustiveDrawResult;
+use Saki\RoundResult\GameResult;
+use Saki\RoundResult\RoundResult;
+use Saki\RoundResult\WinBySelfRoundResult;
 use Saki\Tile\Tile;
 use Saki\Win\WinAnalyzer;
 use Saki\Win\WinAnalyzerTarget;
@@ -153,12 +153,12 @@ class Round {
             return false;
         } else { // 达到指定场数
             $topPlayers = $this->getPlayerList()->getTopPlayers();
-            if (count($topPlayers)!=1) {
+            if (count($topPlayers) != 1) {
                 return false; // 并列第一，游戏未结束
             }
 
             $topPlayer = $topPlayers[0];
-            $isTopPlayerEnoughScore =  $topPlayer->getScore() >= 30000; // todo rule
+            $isTopPlayerEnoughScore = $topPlayer->getScore() >= 30000; // todo rule
             if (!$isTopPlayerEnoughScore) { // 若首位点数未达原点，游戏未结束
                 return false;
             } else { // 首位点数达到原点，非连庄 或 连庄者达首位，游戏结束

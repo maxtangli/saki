@@ -15,7 +15,7 @@ class WinAnalyzerTarget {
         $this->player = $player;
         $this->roundData = $roundData;
     }
-    
+
     function getHandTileSortedList() {
         return $this->player->getPlayerArea()->getHandTileSortedList();
     }

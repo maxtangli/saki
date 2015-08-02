@@ -1,5 +1,5 @@
 <?php
-namespace Saki\Game\Result;
+namespace Saki\RoundResult;
 
 use Saki\Game\Player;
 use Saki\Util\Utils;

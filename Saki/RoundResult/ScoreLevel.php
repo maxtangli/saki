@@ -1,6 +1,7 @@
 <?php
-namespace Saki\Game\Result;
+namespace Saki\RoundResult;
 
+use Saki\RoundResult\ScoreLvel;
 use Saki\Util\Enum;
 
 class ScoreLevel extends Enum {
@@ -53,11 +54,11 @@ class ScoreLevel extends Enum {
             case 9:
             case 10:
                 $v = self::HANE_MAN;
-            break;
+                break;
             case 11:
             case 12:
                 $v = self::HANE_MAN;
-            break;
+                break;
             default:
                 if ($fanCount >= 39) {
                     $v = self::MULTI_YAKU_MAN;

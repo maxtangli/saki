@@ -3,7 +3,6 @@ namespace Saki\Game;
 
 use Saki\Tile\Tile;
 use Saki\Util\ArrayLikeObject;
-use Saki\Util\Utils;
 
 class PlayerList extends ArrayLikeObject {
 
@@ -57,7 +56,7 @@ class PlayerList extends ArrayLikeObject {
     function getTopPlayers() {
         $topPlayers = [];
         $topScore = 0;
-        foreach($this as $player) {
+        foreach ($this as $player) {
             if ($player->getScore() >= $topScore) {
                 if ($player->getScore() > $topScore) {
                     $topPlayers = [$player];

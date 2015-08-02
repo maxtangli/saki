@@ -2,7 +2,6 @@
 namespace Saki\Game;
 
 use Saki\Command\CommandFactory;
-use Saki\Tile\TileSet;
 
 class Game {
     private $currentRound;

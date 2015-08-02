@@ -181,7 +181,7 @@ rush 17 win issues 1.6h
 - [x] public phase: multiple win on other 0.4h
 - [x] test design 0.3h
 
-rush 18 refactor
+rush 18 refactor 5h
 
 - [x] refactor: score strategy 2h
 - [x] refactor: TileAreas 0.5h
@@ -189,9 +189,19 @@ rush 18 refactor
 - [x] refactor: accumulatedReachCount, remove unnecessary methods in Round&RoundData. 0.8h
 - [x] bug: getTopPlayer() is wrong when same score top players exist 0.2h
 
+rush 19 client-server style ui
+
+- [ ] analyze
+- [ ] c/s
+- [ ] layout design
+- [ ] image resources
+- [ ] ui
+
 rush etc: normal priority
 
+- [ ] Round winByOther calls
 - [ ] bug: getMeldCompositions() won't count for 112233s like tiles
+- [ ] refactor: RoundResult
 
 rush all yaku
 
@@ -213,8 +223,6 @@ rush etc: low priority
 - [ ] over phase: 9-kind 9-tile drawn
 
 rush code review & more tests
-
-rush client-server style ui
 
 rush candidate commands
 rush server logic

@@ -2,9 +2,9 @@
 namespace Saki\Win;
 
 use Saki\Game\Player;
+use Saki\Game\RoundData;
 use Saki\Meld\Meld;
 use Saki\Meld\MeldList;
-use Saki\Game\RoundData;
 
 class WinAnalyzerSubTarget extends WinAnalyzerTarget {
     private $handMeldList;

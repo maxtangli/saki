@@ -1,5 +1,5 @@
 <?php
-namespace Saki\Game\Result;
+namespace Saki\RoundResult;
 
 use Saki\Util\Singleton;
 

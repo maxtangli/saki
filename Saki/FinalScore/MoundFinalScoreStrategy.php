@@ -37,7 +37,7 @@ class MoundFinalScoreStrategy extends FinalScoreStrategy {
     function getScoreDelta(FinalScoreStrategyTarget $target, $player) {
         $originScoreDelta = $target->getLastRoundScore($player) - $this->getOriginScore();
         $finalDelta = $originScoreDelta >= 0 ? ceil($originScoreDelta / 1000) * 1000 : floor($originScoreDelta / 1000) * 1000;
-        if ($target->getLastRoundScoreRanking($player)==1) {
+        if ($target->getLastRoundScoreRanking($player) == 1) {
             $finalDelta += $this->getReturnScore($target->getPlayerCount());
         }
         return intval($finalDelta);

@@ -1,5 +1,5 @@
 <?php
-namespace Saki\Game\Result;
+namespace Saki\RoundResult;
 
 class ScoreTableItem {
     private $baseScore;
@@ -7,7 +7,7 @@ class ScoreTableItem {
     function __construct($baseScore) {
         $this->baseScore = $baseScore;;
     }
-    
+
     function getBaseScore() {
         return $this->baseScore;
     }

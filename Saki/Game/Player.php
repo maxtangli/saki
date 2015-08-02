@@ -53,7 +53,7 @@ class Player {
     }
 
     function isDealer() {
-        return $this->getSelfWind()==Tile::fromString('E');
+        return $this->getSelfWind() == Tile::fromString('E');
     }
 
     function getTurn() {

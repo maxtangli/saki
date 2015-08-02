@@ -33,7 +33,9 @@ abstract class Enum implements IEnum {
      */
     static function getAllInstances() {
         $allValues = array_keys(static::getValue2StringMap());
-        return array_map(function($v){return static::getInstance($v);}, $allValues);
+        return array_map(function ($v) {
+            return static::getInstance($v);
+        }, $allValues);
     }
 
     /**

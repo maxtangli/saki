@@ -1,12 +1,9 @@
 <?php
 
-use Saki\Game\PlayerList;
 use Saki\Game\Round;
 use Saki\Game\RoundPhase;
-use Saki\Game\Wall;
 use Saki\Meld\Meld;
 use Saki\Tile\Tile;
-use Saki\Tile\TileSet;
 
 class RoundTest extends PHPUnit_Framework_TestCase {
 
@@ -208,7 +205,7 @@ class RoundTest extends PHPUnit_Framework_TestCase {
     function testRoundData() {
         $rd = new \Saki\Game\RoundData();
         $this->assertEquals($rd->getPlayerList()->count(), $rd->getPlayerList()->getLast()->getNo());
-        for($nTodo = 3; $nTodo >0; --$nTodo) {
+        for ($nTodo = 3; $nTodo > 0; --$nTodo) {
             $rd->reset(false);
         }
         $this->assertEquals(4, $rd->getRoundWindData()->getRoundWindTurn());
@@ -252,15 +249,16 @@ class RoundTest extends PHPUnit_Framework_TestCase {
             }
         }
 
-        $this->assertInstanceOf('Saki\Game\Result\ExhaustiveDrawResult', $r->getRoundResult());
+        $cls = get_class(new \Saki\RoundResult\ExhaustiveDrawResult(\Saki\Game\PlayerList::createStandard()->toArray(), [false, false, false, false]));
+        $this->assertInstanceOf($cls, $r->getRoundResult());
     }
 
     function testGetFinalScoreItems() {
         $r = $this->initialRound;
         $scores = [
-            31100,24400,22300,22200
+            31100, 24400, 22300, 22200
         ];
-        foreach($r->getPlayerList() as $k => $player) {
+        foreach ($r->getPlayerList() as $k => $player) {
             $player->setScore($scores[$k]);
         }
 

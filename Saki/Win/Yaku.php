@@ -1,9 +1,8 @@
 <?php
 
-namespace Saki\Yaku;
+namespace Saki\Win;
 
 use Saki\Util\Singleton;
-use Saki\Win\WinAnalyzerSubTarget;
 
 abstract class Yaku extends Singleton {
     function __toString() {

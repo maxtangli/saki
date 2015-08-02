@@ -1,5 +1,5 @@
 <?php
-namespace Saki\Yaku;
+namespace Saki\Win;
 
 use Saki\Util\ArrayLikeObject;
 
@@ -43,7 +43,7 @@ class YakuList extends ArrayLikeObject {
         $excludedYakus = array_reduce($this->toArray(), function (array $carry, Yaku $yaku) {
             return array_merge($carry, $yaku->getExcludedYakus());
         }, []);
-        $remainYakus = array_filter($this->toArray(), function (Yaku $yaku)use($excludedYakus) {
+        $remainYakus = array_filter($this->toArray(), function (Yaku $yaku) use ($excludedYakus) {
             return !in_array($yaku, $excludedYakus);
         });
         $this->setInnerArray($remainYakus);

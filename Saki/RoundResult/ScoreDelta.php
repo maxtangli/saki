@@ -1,5 +1,5 @@
 <?php
-namespace Saki\Game\Result;
+namespace Saki\RoundResult;
 
 class ScoreDelta {
     private $before;

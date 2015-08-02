@@ -5,17 +5,6 @@ use Saki\Meld\MeldCompositionsAnalyzer;
 use Saki\Meld\MeldList;
 use Saki\Meld\MeldTypeAnalyzer;
 use Saki\Util\Utils;
-use Saki\Yaku\AllRunsYaku;
-use Saki\Yaku\AllSimplesYaku;
-use Saki\Yaku\FourConcealedTriplesOnePairWaitingYaku;
-use Saki\Yaku\FourConcealedTriplesYaku;
-use Saki\Yaku\GreenValueTilesYaku;
-use Saki\Yaku\ReachYaku;
-use Saki\Yaku\RedValueTilesYaku;
-use Saki\Yaku\RoundWindValueTilesYaku;
-use Saki\Yaku\SelfWindValueTilesYaku;
-use Saki\Yaku\WhiteValueTilesYaku;
-use Saki\Yaku\YakuList;
 
 class WinAnalyzer {
     private $yakus;

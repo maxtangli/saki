@@ -4,11 +4,12 @@ namespace Saki\FinalScore;
 
 use Saki\Util\Enum;
 
-class RankingHorseType extends Enum{
+class RankingHorseType extends Enum {
     const UMA_5_10 = 1;
     const UMA_10_20 = 2;
     const UMA_10_30 = 3;
     const UMA_20_30 = 4;
+
     static function getValue2StringMap() {
         return [
             self::UMA_5_10 => '5-10',
@@ -17,6 +18,7 @@ class RankingHorseType extends Enum{
             self::UMA_20_30 => '20-30',
         ];
     }
+
     function toHorseScores() {
         $a = [
             self::UMA_5_10 => [10000, 5000, -5000, -10000],

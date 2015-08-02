@@ -1,6 +1,6 @@
 <?php
 
-use Saki\Game\Result\ScoreTable;
+use Saki\RoundResult\ScoreTable;
 
 class ScoreTableTest extends PHPUnit_Framework_TestCase {
     /**

@@ -1,5 +1,5 @@
 <?php
-namespace Saki\Game\Result;
+namespace Saki\RoundResult;
 
 use Saki\Game\Player;
 
@@ -10,13 +10,16 @@ abstract class RoundResult {
     private $players;
     private $originScores;
     private $isWin;
+
     function __construct(array $players, $isWin) {
         if (count($players) != 4 || !is_bool($isWin)) {
             throw new \InvalidArgumentException();
         }
         $this->players = $players;
         $this->isWin = $isWin;
-        $this->originScores = array_map(function(Player $player){return $player->getScore();}, $players);
+        $this->originScores = array_map(function (Player $player) {
+            return $player->getScore();
+        }, $players);
     }
 
     function getPlayers() {
@@ -40,7 +43,7 @@ abstract class RoundResult {
     }
 
     protected function getOriginDealerPlayer() {
-        foreach($this->getPlayers() as $player) {
+        foreach ($this->getPlayers() as $player) {
             if ($player->isDealer()) {
                 return $player;
             }

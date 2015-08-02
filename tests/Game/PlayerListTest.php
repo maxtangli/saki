@@ -6,7 +6,7 @@ class PlayerListTest extends PHPUnit_Framework_TestCase {
     function testInitialState() {
         $m = new PlayerList(4, 25000);
         foreach ($m as $k => $p) {
-            $this->assertEquals($k+1, $p->getNo());
+            $this->assertEquals($k + 1, $p->getNo());
         }
         list($p1, $p2, $p3, $p4) = $m->toArray();
         $this->assertEquals($p1, $m->getCurrentPlayer());

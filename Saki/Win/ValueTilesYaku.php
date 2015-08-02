@@ -1,9 +1,8 @@
 <?php
-namespace Saki\Yaku;
+namespace Saki\Win;
 
 use Saki\Meld\Meld;
 use Saki\Tile\Tile;
-use Saki\Win\WinAnalyzerSubTarget;
 
 abstract class ValueTilesYaku extends Yaku {
     function getConcealedFanCount() {

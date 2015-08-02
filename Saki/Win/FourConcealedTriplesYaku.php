@@ -1,8 +1,6 @@
 <?php
-namespace Saki\Yaku;
+namespace Saki\Win;
 
-use Saki\Win\WinAnalyzerSubTarget;
-use Saki\Meld\Meld;
 class FourConcealedTriplesYaku extends Yaku {
     function getConcealedFanCount() {
         return 13;

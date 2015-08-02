@@ -1,9 +1,8 @@
 <?php
 namespace Saki\Win;
 
-use Saki\Game\Result\ScoreLevel;
-use Saki\Game\Result\ScoreTable;
-use Saki\Yaku\YakuList;
+use Saki\RoundResult\ScoreLevel;
+use Saki\RoundResult\ScoreTable;
 
 class WinAnalyzerResult {
     /**
