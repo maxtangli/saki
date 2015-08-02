@@ -4,7 +4,7 @@ namespace Saki\Game;
 use Saki\Tile\Tile;
 use Saki\Util\Enum;
 
-class GameLengthType extends Enum {
+class TotalRoundType extends Enum {
     const EAST = 1;
     const EAST_SOUTH = 2;
     const FULL = 4;
@@ -43,7 +43,7 @@ class GameLengthType extends Enum {
 
     /**
      * @param $value
-     * @return GameLengthType
+     * @return TotalRoundType
      */
     static function getInstance($value) {
         return parent::getInstance($value);

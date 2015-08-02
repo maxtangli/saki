@@ -163,13 +163,15 @@ rush 15 game over 1.8h
 - [x] finalScore 1h
 - [x] result: winner order, final score 0.4h
 
+rush 11-15 15.8h
+
 rush 16 game over fix 2.1h
 
 - [x] isLastRound() 0.6h
 - [x] refactor: move PlayerList into RoundData 1.1h
 - [x] bug: PlayerList  0.4h
 
-rush 17 win issues
+rush 17 win issues 1.6h
 
 - [x] reach score
 - [x] round n score 0.3h
@@ -184,12 +186,11 @@ rush 18 refactor
 - [x] refactor: score strategy 2h
 - [x] refactor: TileAreas 0.5h
 - [x] refactor: RoundWindData 1.5h
-- [ ] refactor: reach
+- [x] refactor: accumulatedReachCount, remove unnecessary methods in Round&RoundData. 0.8h
+- [x] bug: getTopPlayer() is wrong when same score top players exist 0.2h
 
 rush etc: normal priority
 
-- [ ] east-south round
-- [ ] bug: getTopPlayer() is wrong when same score top players exist
 - [ ] bug: getMeldCompositions() won't count for 112233s like tiles
 
 rush all yaku
@@ -206,7 +207,6 @@ rush red dora
 - [ ] impl
 
 rush etc: low priority
-- [ ] initial score rule
 - [ ] refactor: move DrawScore logic into separate class
 - [ ] over phase: four kong drawn
 - [ ] over phase: four reach drawn
@@ -214,7 +214,7 @@ rush etc: low priority
 
 rush code review & more tests
 
-rush simple ui
+rush client-server style ui
 
 rush candidate commands
 rush server logic

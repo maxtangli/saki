@@ -57,9 +57,9 @@ $round = $data->getCurrentRound();
     </tr>
     <tr>
         <td class="tg-031e">wall</td>
-        <td class="tg-031e" colspan="2">remain&nbsp;<?= count($round->getWall()) ?></td>
+        <td class="tg-031e" colspan="2">remain&nbsp;<?= count($round->getRoundData()->getTileAreas()->getWall()) ?></td>
     </tr>
-    <?php foreach ($round->getPlayerList() as $player) {
+    <?php foreach ($round->getRoundData()->getPlayerList() as $player) {
         $playerArea = $round->getPlayerArea($player) ?>
         <tr>
             <td class="tg-031e" rowspan="3">player&nbsp;<?= $player ?></td>

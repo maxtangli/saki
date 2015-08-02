@@ -37,15 +37,16 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         // phase
         $this->assertEquals(RoundPhase::getPrivatePhaseInstance(), $r->getRoundPhase());
         // initial current player
-        $this->assertSame($r->getDealerPlayer(), $r->getCurrentPlayer());
+        $dealerPlayer = $r->getRoundData()->getPlayerList()->getDealerPlayer();
+        $this->assertSame($dealerPlayer, $r->getCurrentPlayer());
         // initial candidate tile
-        $this->assertCount(14, $r->getDealerPlayer()->getPlayerArea()->getHandTileSortedList());
-        $this->assertTrue($r->getDealerPlayer()->getPlayerArea()->hasCandidateTile());
+        $this->assertCount(14, $dealerPlayer->getPlayerArea()->getHandTileSortedList());
+        $this->assertTrue($dealerPlayer->getPlayerArea()->hasCandidateTile());
 
         // initial on-hand tile count
         foreach ($r->getPlayerList() as $player) {
             $onHandTileList = $player->getPlayerArea()->getHandTileSortedList();
-            $expected = $player == $r->getDealerPlayer() ? 14 : 13;
+            $expected = $player == $dealerPlayer ? 14 : 13;
             $this->assertCount($expected, $onHandTileList, sprintf('%s %s', $player, count($onHandTileList)));
         }
     }
@@ -89,7 +90,7 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         $r = $this->roundAfterDiscard1m;
         // setup
         $prePlayer = $r->getCurrentPlayer();
-        $actPlayer = $r->getNextPlayer();
+        $actPlayer = $r->getRoundData()->getPlayerList()->getNextPlayer();
         $actPlayer->getPlayerArea()->getHandTileSortedList()->replaceByIndex([0, 1], [Tile::fromString('2m'), Tile::fromString('3m')]);
         // execute
         $tileCountBefore = $actPlayer->getPlayerArea()->getHandTileSortedList()->count();
@@ -166,10 +167,11 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         // phase changed
         $this->assertEquals(RoundPhase::getInstance(RoundPhase::OVER_PHASE), $r->getRoundPhase());
         // score changed
+        $dealerPlayer = $r->getRoundData()->getPlayerList()->getDealerPlayer();
         foreach ($r->getPlayerList() as $player) {
             $scoreDelta = $r->getRoundResult()->getScoreDelta($player);
             $deltaInt = $scoreDelta->getDeltaInt();
-            if ($player == $r->getDealerPlayer()) {
+            if ($player == $dealerPlayer) {
                 $this->assertGreaterThan(0, $deltaInt);
                 $this->assertEquals($scoreDelta->getAfter(), $player->getScore(), $scoreDelta);
             } else {
@@ -199,7 +201,7 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         $r->winBySelf($dealer);
         $r->toNextRound();
         $this->assertEquals(RoundPhase::getPrivatePhaseInstance(), $r->getRoundPhase());
-        $this->assertEquals($dealer, $r->getDealerPlayer());
+        $this->assertEquals($dealer, $r->getRoundData()->getPlayerList()->getDealerPlayer());
         // todo test initial state
     }
 
@@ -231,9 +233,10 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         $r->winBySelf($r->getCurrentPlayer());
 
         $this->assertFalse($r->isGameOver());
-        $r->getDealerPlayer()->setScore('29999');
+        $dealerPlayer = $r->getRoundData()->getPlayerList()->getDealerPlayer();
+        $dealerPlayer->setScore('29999');
         $this->assertFalse($r->isGameOver());
-        $r->getDealerPlayer()->setScore('30000');
+        $dealerPlayer->setScore('30000');
         $this->assertTrue($r->isGameOver());
     }
 

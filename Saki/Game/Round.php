@@ -56,13 +56,6 @@ class Round {
     }
 
     /**
-     * @return Wall
-     */
-    function getWall() {
-        return $this->getRoundData()->getWall();
-    }
-
-    /**
      * @return PlayerList
      */
     function getPlayerList() {
@@ -72,29 +65,8 @@ class Round {
     /**
      * @return Player
      */
-    function getDealerPlayer() {
-        return $this->getPlayerList()->getDealerPlayer();
-    }
-
-    /**
-     * @return Player
-     */
-    function getPrevPlayer() {
-        return $this->getPlayerList()->getPrevPlayer();
-    }
-
-    /**
-     * @return Player
-     */
     function getCurrentPlayer() {
-        return $this->getPlayerList()->getCurrentPlayer();
-    }
-
-    /**
-     * @return Player
-     */
-    function getNextPlayer() {
-        return $this->getPlayerList()->getNextPlayer();
+        return $this->getRoundData()->getPlayerList()->getCurrentPlayer();
     }
 
     /**
@@ -106,7 +78,7 @@ class Round {
     }
 
     protected function toInitPhase() {
-        $this->roundPhase = RoundPhase::getInstance(RoundPhase::INIT_PHASE);
+        $this->roundPhase = RoundPhase::getInitPhaseInstance();
 
         // each player draw initial tiles
         $playerCount = $this->getPlayerList()->count();
@@ -114,12 +86,12 @@ class Round {
         foreach ($drawTileCounts as $drawTileCount) {
             for ($cnt = 0; $cnt < $playerCount; ++$cnt) {
                 $this->getRoundData()->getTileAreas()->drawInit($this->getCurrentPlayer(), $drawTileCount);
-                $this->setCurrentPlayer($this->getNextPlayer(), false);
+                $this->setCurrentPlayer($this->getRoundData()->getPlayerList()->getNextPlayer(), false);
             }
         }
 
         // go to dealer player's private phase
-        $this->toPrivatePhase($this->getDealerPlayer(), true);
+        $this->toPrivatePhase($this->getRoundData()->getPlayerList()->getDealerPlayer(), true);
     }
 
     /**
@@ -127,7 +99,7 @@ class Round {
      * @param bool $drawTile
      */
     protected function toPrivatePhase(Player $player, $drawTile) {
-        if ($this->getWall()->getRemainTileCount() == 0 && $drawTile) {
+        if ($this->getRoundData()->getTileAreas()->getWall()->getRemainTileCount() == 0 && $drawTile) {
             // exhaustive draw
             $players = $this->getPlayerList()->toArray();
             $analyzer = $this->getYakuAnalyzer();
@@ -139,7 +111,7 @@ class Round {
             $result = new ExhaustiveDrawResult($players, $isWaitingStates);
             $this->toOverPhase($result);
         } else {
-            $this->setRoundPhase(RoundPhase::getInstance(RoundPhase::PRIVATE_PHASE));
+            $this->setRoundPhase(RoundPhase::getPrivatePhaseInstance());
             $this->setCurrentPlayer($player, true);
             if ($drawTile) {
                 $this->getRoundData()->getTileAreas()->draw($player);
@@ -148,11 +120,11 @@ class Round {
     }
 
     protected function toPublicPhase() {
-        $this->setRoundPhase(RoundPhase::getInstance(RoundPhase::PUBLIC_PHASE));
+        $this->setRoundPhase(RoundPhase::getPublicPhaseInstance());
     }
 
     protected function toOverPhase(RoundResult $result) {
-        $this->setRoundPhase(RoundPhase::getInstance(RoundPhase::OVER_PHASE));
+        $this->setRoundPhase(RoundPhase::getOverPhaseInstance());
         // save result
         $this->roundResult = $result;
         // modify scores
@@ -162,7 +134,7 @@ class Round {
         }
         // clear accumulatedReachCount if isWin
         if ($result->isWin()) {
-            $this->getRoundData()->setAccumulatedReachCount(0);
+            $this->getRoundData()->getTileAreas()->setAccumulatedReachCount(0);
         }
     }
 
@@ -173,20 +145,25 @@ class Round {
         }
 
         $roundData = $this->getRoundData();
-        if ($roundData->hasMinusScorePlayer()) { // 有玩家被打飞，游戏结束
+        if ($roundData->getPlayerList()->hasMinusScorePlayer()) { // 有玩家被打飞，游戏结束
             return true;
         } elseif ($roundData->getRoundWindData()->isFinalRound()) { // 北入终局，游戏结束
             return true;
         } elseif (!$roundData->getRoundWindData()->isLastOrExtraRound()) { // 指定场数未达，游戏未结束
             return false;
         } else { // 达到指定场数
-            $topPlayer = $this->getPlayerList()->getTopPlayer();
-            $isTopPlayerEnoughScore = $topPlayer->getScore() >= 30000; // todo rule
+            $topPlayers = $this->getPlayerList()->getTopPlayers();
+            if (count($topPlayers)!=1) {
+                return false; // 并列第一，游戏未结束
+            }
+
+            $topPlayer = $topPlayers[0];
+            $isTopPlayerEnoughScore =  $topPlayer->getScore() >= 30000; // todo rule
             if (!$isTopPlayerEnoughScore) { // 若首位点数未达原点，游戏未结束
                 return false;
             } else { // 首位点数达到原点，非连庄 或 连庄者达首位，游戏结束
                 $keepDealer = $this->getRoundResult()->isKeepDealer();
-                $dealerIsTopPlayer = $this->getDealerPlayer() == $topPlayer;
+                $dealerIsTopPlayer = $this->getRoundData()->getPlayerList()->getDealerPlayer() == $topPlayer;
                 return (!$keepDealer || $dealerIsTopPlayer);
             }
         }
@@ -241,7 +218,7 @@ class Round {
          * - 4人全員が立直をかけた場合、四家立直として流局となる（四家立直による途中流局を認めないルールもあり、その場合は続行される）。
          */
         $notReachYet = !$player->getPlayerArea()->isReach();
-        if (!$notReachYet) {
+        if (!$notReachYet) { // PlayerArea
             throw new \InvalidArgumentException('Reach condition violated: not reach yet.');
         }
 
@@ -253,17 +230,17 @@ class Round {
         }
 
         $isConcealed = $target->isConcealed();
-        if (!$isConcealed) {
+        if (!$isConcealed) { // PlayerArea
             throw new \InvalidArgumentException('Reach condition violated: is concealed.');
         }
 
         $enoughScore = $player->getScore() >= 1000;
-        if (!$enoughScore) {
+        if (!$enoughScore) { // PlayerArea
             throw new \InvalidArgumentException('Reach condition violated: at least 1000 score.');
         }
 
-        $hasDrawTileChance = $this->getWall()->getRemainTileCount() >= 4;
-        if (!$hasDrawTileChance) {
+        $hasDrawTileChance = $this->getRoundData()->getTileAreas()->getWall()->getRemainTileCount() >= 4;
+        if (!$hasDrawTileChance) { // TilesArea
             throw new \InvalidArgumentException('Reach condition violated: at least 1 draw tile chance.');
         }
 
@@ -271,8 +248,8 @@ class Round {
 
         // do
         $player->getPlayerArea()->reach($selfTile);
-        $player->setScore($player->getScore()-1000);
-        $this->getRoundData()->addAccumulatedReachCount();
+        $player->setScore($player->getScore() - 1000);
+        $this->getRoundData()->getTileAreas()->addAccumulatedReachCount();
         // switch phase
         $this->toPublicPhase();
     }
@@ -299,13 +276,13 @@ class Round {
             throw new \InvalidArgumentException();
         }
         $roundResult = new WinBySelfRoundResult($this->getPlayerList()->toArray(), $player, $winResult,
-            $this->getRoundData()->getAccumulatedReachCount(), $this->getRoundData()->getRoundWindData()->getSelfWindTurn());
+            $this->getRoundData()->getTileAreas()->getAccumulatedReachCount(), $this->getRoundData()->getRoundWindData()->getSelfWindTurn());
         // phase
         $this->toOverPhase($roundResult);
     }
 
     protected function assertPrivatePhase($player) {
-        $valid = $this->getRoundPhase()->getValue() == RoundPhase::PRIVATE_PHASE && $player == $this->getCurrentPlayer();
+        $valid = $this->getRoundPhase() == RoundPhase::getPrivatePhaseInstance() && $player == $this->getCurrentPlayer();
         if (!$valid) {
             throw new \InvalidArgumentException();
         }
@@ -358,7 +335,7 @@ class Round {
     }
 
     protected function assertPublicPhase($player = null) {
-        $valid = $this->getRoundPhase()->getValue() == RoundPhase::PUBLIC_PHASE && ($player != $this->getCurrentPlayer());
+        $valid = $this->getRoundPhase() == RoundPhase::getPublicPhaseInstance() && ($player != $this->getCurrentPlayer());
         if (!$valid) {
             throw new \InvalidArgumentException();
         }

@@ -3,6 +3,7 @@ namespace Saki\Game;
 
 use Saki\Tile\Tile;
 use Saki\Util\ArrayLikeObject;
+use Saki\Util\Utils;
 
 class PlayerList extends ArrayLikeObject {
 
@@ -51,16 +52,22 @@ class PlayerList extends ArrayLikeObject {
     }
 
     /**
-     * @return Player
+     * @return Player[]
      */
-    function getTopPlayer() {
-        $topPlayer = $this[0];
+    function getTopPlayers() {
+        $topPlayers = [];
+        $topScore = 0;
         foreach($this as $player) {
-            if ($player->getScore() > $topPlayer->getScore()) {
-                $topPlayer = $player;
+            if ($player->getScore() >= $topScore) {
+                if ($player->getScore() > $topScore) {
+                    $topPlayers = [$player];
+                } else {
+                    $topPlayers[] = $player;
+                }
+                $topScore = $player->getScore();
             }
         }
-        return $topPlayer;
+        return $topPlayers;
     }
 
     /**
@@ -125,6 +132,12 @@ class PlayerList extends ArrayLikeObject {
             throw new \LogicException('not one and only one dealer.');
         }
         return $result[0];
+    }
+
+    function hasMinusScorePlayer() {
+        return $this->isAny(function (Player $player) {
+            return $player->getScore() < 0;
+        });
     }
 
     /**

@@ -8,14 +8,28 @@ use Saki\Tile\Tile;
 class TileAreas {
     private $wall;
     private $playerList;
+    private $accumulatedReachCount; // 積み棒
 
-    function __construct(Wall $wall, \Saki\Game\PlayerList $playerList) {
+    function __construct(Wall $wall, PlayerList $playerList) {
         $this->wall = $wall;
         $this->playerList = $playerList;
+        $this->accumulatedReachCount = 0;
     }
 
     function getWall() {
         return $this->wall;
+    }
+
+    function getAccumulatedReachCount() {
+        return $this->accumulatedReachCount;
+    }
+
+    function setAccumulatedReachCount($accumulatedReachCount) {
+        $this->accumulatedReachCount = $accumulatedReachCount;
+    }
+
+    function addAccumulatedReachCount() {
+        $this->setAccumulatedReachCount($this->getAccumulatedReachCount() + 1);
     }
 
     function drawInit(Player $player, $drawTileCount) {
@@ -33,8 +47,6 @@ class TileAreas {
     function discard(Player $player, Tile $selfTile) {
         $player->getPlayerArea()->discard($selfTile);
     }
-
-    // todo reach
 
     function kongBySelf(Player $player, Tile $selfTile) {
         $player->getPlayerArea()->kongBySelf($selfTile);
