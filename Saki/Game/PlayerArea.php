@@ -130,22 +130,28 @@ class PlayerArea {
         if ($this->hasCandidateTile() && $this->getCandidateTile() == $selfTile) {
             $this->removeCandidateTile();
         }
+        return $meld;
     }
 
     function canPlusKongBySelf(Tile $selfTile) {
         return $this->getDeclaredMeldList()->canPlusKong($selfTile) && $this->getHandTileSortedList()->valueExist($selfTile);
     }
 
+    /**
+     * @param Tile $selfTile
+     * @return Meld
+     */
     function plusKongBySelf(Tile $selfTile) {
         if (!$this->canPlusKongBySelf($selfTile)) {
             throw new \InvalidArgumentException();
         }
 
-        $this->getDeclaredMeldList()->plusKong($selfTile, false);
+        $newMeld = $this->getDeclaredMeldList()->plusKong($selfTile, false);
         $this->getHandTileSortedList()->removeByValue($selfTile);
         if ($this->hasCandidateTile() && $this->getCandidateTile() == $selfTile) {
             $this->removeCandidateTile();
         }
+        return $newMeld;
     }
 
     function canChowByOther(Tile $otherTile, Tile $selfTile1, Tile $selfTile2) {
@@ -157,6 +163,7 @@ class PlayerArea {
         $meld = new Meld(new TileList([$otherTile, $selfTile1, $selfTile2]), RunMeldType::getInstance()); // valid test before remove
         $this->getHandTileSortedList()->removeByValue([$selfTile1, $selfTile2]); // valid test
         $this->getDeclaredMeldList()->push($meld);
+        return $meld;
     }
 
     function canPongByOther(Tile $otherTile) {
@@ -167,6 +174,7 @@ class PlayerArea {
         $this->getHandTileSortedList()->removeByValue([$otherTile, $otherTile]); // valid test
         $meld = new Meld(new TileList([$otherTile, $otherTile, $otherTile]), TripleMeldType::getInstance());
         $this->getDeclaredMeldList()->push($meld);
+        return $meld;
     }
 
     function canKongByOther(Tile $otherTile) {
@@ -177,6 +185,7 @@ class PlayerArea {
         $this->getHandTileSortedList()->removeByValue([$otherTile, $otherTile, $otherTile]); // valid test
         $meld = new Meld(new TileList([$otherTile, $otherTile, $otherTile, $otherTile]), QuadMeldType::getInstance());
         $this->getDeclaredMeldList()->push($meld);
+        return $meld;
     }
 
     function canPlusKongByOther(Tile $otherTile) {
@@ -184,6 +193,7 @@ class PlayerArea {
     }
 
     function plusKongByOther(Tile $otherTile) {
-        $this->getDeclaredMeldList()->plusKong($otherTile, true); // valid test
+        $meld = $this->getDeclaredMeldList()->plusKong($otherTile, true); // valid test
+        return $meld;
     }
 }

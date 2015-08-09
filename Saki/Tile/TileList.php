@@ -76,7 +76,7 @@ class TileList extends ArrayLikeObject {
     /**
      * @return Tile[]
      */
-    public function toArray() {
+    function toArray() {
         return parent::toArray();
     }
 
@@ -86,6 +86,14 @@ class TileList extends ArrayLikeObject {
      */
     function offsetGet($offset) {
         return parent::offsetGet($offset);
+    }
+
+    function validPrivatePhaseCount() {
+        return $this->count() % 3 == 2;
+    }
+
+    function validPublicPhaseCount() {
+        return $this->count() % 3 == 1;
     }
 }
 

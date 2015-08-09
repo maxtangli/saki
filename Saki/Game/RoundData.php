@@ -12,6 +12,7 @@ class RoundData {
     private $playerList;
     private $finalScoreStrategy;
     private $tileAreas;
+    private $roundPhase;
 
     /**
      * default: 4 player, east game, 25000-30000 initial score,
@@ -25,6 +26,7 @@ class RoundData {
         ]);
         $wall = new Wall(TileSet::getStandardTileSet());
         $this->tileAreas = new TileAreas($wall, $this->playerList);
+        $this->roundPhase = RoundPhase::getInitPhaseInstance();
     }
 
     function reset($keepDealer) {
@@ -35,6 +37,7 @@ class RoundData {
         $nextDealer = $keepDealer ? $this->getPlayerList()->getDealerPlayer() : $this->getPlayerList()->getDealerOffsetPlayer(1);
         $this->getPlayerList()->reset($nextDealer);
         $this->getTileAreas()->getWall()->reset(true);
+        $this->setRoundPhase(RoundPhase::getInitPhaseInstance());
     }
 
     function getRoundWindData() {
@@ -51,5 +54,13 @@ class RoundData {
 
     function getTileAreas() {
         return $this->tileAreas;
+    }
+
+    function getRoundPhase() {
+        return $this->roundPhase;
+    }
+
+    function setRoundPhase(RoundPhase $roundPhase) {
+        $this->roundPhase = $roundPhase;
     }
 }

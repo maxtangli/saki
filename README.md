@@ -189,7 +189,22 @@ rush 18 refactor 5h
 - [x] refactor: accumulatedReachCount, remove unnecessary methods in Round&RoundData. 0.8h
 - [x] bug: getTopPlayer() is wrong when same score top players exist 0.2h
 
-rush 19 client-server style ui
+rush 19 yaku analyzer detail
+
+- [x] refactor: validCount, winState 0.5h
+- [x] adpat public phase 0.7h
+- [ ] waitingAnalyzer
+- [ ] sideWaiting etc
+
+rush 20 all yaku
+
+- [ ] fu count
+- [ ] test design
+- [x] not-count-yaku logic
+- [x] yaku-man logic 1h
+- [ ] other yakus
+
+rush client-server style ui
 
 - [ ] analyze
 - [ ] c/s
@@ -202,14 +217,6 @@ rush etc: normal priority
 - [ ] Round winByOther calls
 - [ ] bug: getMeldCompositions() won't count for 112233s like tiles
 - [ ] refactor: RoundResult
-
-rush all yaku
-
-- [ ] fu count
-- [ ] test design
-- [x] not-count-yaku logic
-- [x] yaku-man logic 1h
-- [ ] other yakus
 
 rush red dora
 

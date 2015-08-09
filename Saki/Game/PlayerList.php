@@ -3,6 +3,7 @@ namespace Saki\Game;
 
 use Saki\Tile\Tile;
 use Saki\Util\ArrayLikeObject;
+use Saki\Game\Player;
 
 class PlayerList extends ArrayLikeObject {
 
@@ -166,7 +167,7 @@ class PlayerList extends ArrayLikeObject {
 
     /**
      * @param int $offset
-     * @return Player
+     * @return \Saki\Game\Player
      */
     function offsetGet($offset) {
         return parent::offsetGet($offset);

@@ -5,32 +5,35 @@ use Saki\Util\Enum;
 
 class WinState extends Enum {
     /**
-     * ノー聴
+     * なし
      */
-    const NOT_WIN_TILES = 1;
+    const NOT_WIN = 1;
     /**
      * 振り聴
      */
-    const DISCARDED_WIN_TILE = 2;
+    const DISCARDED_TILE_FALSE_WIN = 2;
     /**
      * 役なし
      */
-    const NO_YAKU = 3;
+    const NO_YAKU_FALSE_WIN = 3;
     /**
      * ロン・ツモ
      */
     const WIN = 4;
 
-    static function getNotWinTilesInstance() {
-        return self::getInstance(self::NOT_WIN_TILES);
+    const WIN_BY_SELF = 4;
+    const WIN_BY_OTHER = 5;
+
+    static function getNotWinInstance() {
+        return self::getInstance(self::NOT_WIN);
     }
 
-    static function getDiscardedWinTileInstance() {
-        return self::getInstance(self::DISCARDED_WIN_TILE);
+    static function getDiscardedTileFalseWinInstance() {
+        return self::getInstance(self::DISCARDED_TILE_FALSE_WIN);
     }
 
-    static function getNoYakuInstance() {
-        return self::getInstance(self::NO_YAKU);
+    static function getNoYakuFalseWinInstance() {
+        return self::getInstance(self::NO_YAKU_FALSE_WIN);
     }
 
     static function getWinInstance() {
@@ -39,9 +42,9 @@ class WinState extends Enum {
 
     static function getValue2StringMap() {
         return [
-            self::NOT_WIN_TILES => 'not win tiles',
-            self::DISCARDED_WIN_TILE => 'discarded win tile',
-            self::NO_YAKU => 'no yaku',
+            self::NOT_WIN => 'not win',
+            self::DISCARDED_TILE_FALSE_WIN => 'discarded tile false win',
+            self::NO_YAKU_FALSE_WIN => 'no yaku false win',
             self::WIN => 'win',
         ];
     }

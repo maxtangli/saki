@@ -70,13 +70,19 @@ class MeldList extends ArrayLikeObject {
         return false;
     }
 
+    /**
+     * @param Tile $tile
+     * @param $forceExposed
+     * @return Meld
+     */
     function plusKong(Tile $tile, $forceExposed) {
         foreach ($this as $k => $meld) {
             if ($meld->canPlusKong($tile)) {
                 $newMelds = $this->toArray();
-                $newMelds[$k] = $meld->getPlusKongMeld($tile, $forceExposed);
+                $newMeld = $meld->getPlusKongMeld($tile, $forceExposed);
+                $newMelds[$k] = $newMeld;
                 $this->setInnerArray($newMelds);
-                return;
+                return $newMeld;
             }
         }
         throw new \InvalidArgumentException("Invalid plusKong \$tile[$tile] for MeldList \$this[$this]");

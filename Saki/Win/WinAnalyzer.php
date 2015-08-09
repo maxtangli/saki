@@ -45,7 +45,7 @@ class WinAnalyzer {
         $meldTypes = MeldTypeAnalyzer::getDefaultCandidateMeldTypes();
         $meldCompositions = $analyzer->analyzeMeldCompositions($target->getHandTileSortedList(), $meldTypes);
         if (empty($meldCompositions)) {
-            return new WinAnalyzerResult(WinState::getNotWinTilesInstance(), new YakuList([], $target->isExposed()), 0);
+            return new WinAnalyzerResult(WinState::getNotWinInstance(), new YakuList([], $target->isExposed()), 0);
         }
         // get analyzerResult[]
         $subTargets = array_map(function (MeldList $meldList) use ($target) {
@@ -100,16 +100,16 @@ class WinAnalyzer {
             $yakuList->normalize();
 
             if ($yakuList->count() == 0) {
-                $winState = WinState::getNoYakuInstance();
+                $winState = WinState::getNoYakuFalseWinInstance();
             } else {
-                if ($this->isDiscaredWinTile($subTarget)) {
-                    $winState = WinState::getDiscardedWinTileInstance();
+                if ($this->isDiscaredTileFalseWin($subTarget)) {
+                    $winState = WinState::getDiscardedTileFalseWinInstance();
                 } else {
                     $winState = WinState::getWinInstance();
                 }
             }
         } else {
-            $winState = WinState::getNotWinTilesInstance();
+            $winState = WinState::getNotWinInstance();
         }
 
         $result = new WinAnalyzerResult($winState, $yakuList, $subTarget->getFuCount());
@@ -117,11 +117,16 @@ class WinAnalyzer {
     }
 
     protected function isWinTiles(WinAnalyzerSubTarget $subTarget) {
-        return $subTarget->is4WinSetAnd1Pair(); // todo
+        return $subTarget->is4WinSetAnd1Pair(); // todo get winTiles set from Yakus
     }
 
-    protected function isDiscaredWinTile(WinAnalyzerSubTarget $subTarget) {
+    protected function isDiscaredTileFalseWin(WinAnalyzerSubTarget $subTarget) {
         return false; // todo
+    }
+
+    function getWaitingData(WinAnalyzerTarget $target) {
+        // todo
+
     }
 
     function isWaiting(WinAnalyzerTarget $target) {

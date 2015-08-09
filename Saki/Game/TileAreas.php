@@ -9,6 +9,7 @@ class TileAreas {
     private $wall;
     private $playerList;
     private $accumulatedReachCount; // 積み棒
+    private $publicTargetTile;
 
     function __construct(Wall $wall, PlayerList $playerList) {
         $this->wall = $wall;
@@ -32,6 +33,24 @@ class TileAreas {
         $this->setAccumulatedReachCount($this->getAccumulatedReachCount() + 1);
     }
 
+    function hasLastTargetTile() {
+        return $this->publicTargetTile !== null;
+    }
+
+    function getPublicTargetTile() {
+        if (!$this->hasLastTargetTile()) {
+            throw new \InvalidArgumentException('Last target tile not existed.');
+        }
+        return $this->publicTargetTile;
+    }
+
+    function setPublicTargetTile(Tile $publicTargetTile) {
+        if ($publicTargetTile === null) {
+            throw new \InvalidArgumentException('$publicTargetTile should not be [null]');
+        }
+        $this->publicTargetTile = $publicTargetTile;
+    }
+
     function drawInit(Player $player, $drawTileCount) {
         $player->getPlayerArea()->drawInit($this->getWall()->pop($drawTileCount));
     }
@@ -46,6 +65,7 @@ class TileAreas {
 
     function discard(Player $player, Tile $selfTile) {
         $player->getPlayerArea()->discard($selfTile);
+        $this->setPublicTargetTile($selfTile);
     }
 
     function kongBySelf(Player $player, Tile $selfTile) {
@@ -54,8 +74,11 @@ class TileAreas {
     }
 
     function plusKongBySelf(Player $player, Tile $selfTile) {
-        $player->getPlayerArea()->plusKongBySelf($selfTile);
+        $meld = $player->getPlayerArea()->plusKongBySelf($selfTile);
         $this->drawReplacement($player);
+        if ($meld->isExposed()) {
+            $this->setPublicTargetTile($selfTile);
+        }
     }
 
     function chowByOther(Player $actPlayer, Tile $tile1, Tile $tile2, Player $targetPlayer) {

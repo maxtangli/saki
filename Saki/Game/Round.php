@@ -15,13 +15,11 @@ use Saki\Win\WinState;
 class Round {
     private $roundData;
     private $roundResult;
-    private $roundPhase;
     private $yakuAnalyzer;
 
     function __construct(RoundData $roundData = null) {
         $this->roundData = $roundData !== null ? $roundData : new RoundData();
         $this->roundResult = null;
-        $this->roundPhase = null;
         $this->yakuAnalyzer = new WinAnalyzer();
         $this->toInitPhase();
     }
@@ -44,11 +42,11 @@ class Round {
      * @return RoundPhase
      */
     function getRoundPhase() {
-        return $this->roundPhase;
+        return $this->getRoundData()->getRoundPhase();
     }
 
     protected function setRoundPhase(RoundPhase $roundPhase) {
-        $this->roundPhase = $roundPhase;
+        $this->getRoundData()->setRoundPhase($roundPhase);
     }
 
     function getYakuAnalyzer() {

@@ -1,6 +1,22 @@
 <?php
 
 class WinAnalyzerTest extends \PHPUnit_Framework_TestCase {
+    function testPublicPhaseTarget() {
+        $roundData = new \Saki\Game\RoundData();
+        $roundData->getTileAreas()->setPublicTargetTile(\Saki\Tile\Tile::fromString('5s'));
+        $roundData->setRoundPhase(\Saki\Game\RoundPhase::getPublicPhaseInstance());
+
+        $player = $roundData->getPlayerList()[0];
+        $playerArea = new \Saki\Game\PlayerArea();
+        $playerArea->drawInit(\Saki\Tile\TileList::fromString('123m456m789m123s5s')->toArray());
+        $playerArea->setCandidateTile(\Saki\Tile\Tile::fromString('1m'));
+        $player->setPlayerArea($playerArea);
+
+        $target = new \Saki\Win\WinAnalyzerTarget($player, $roundData);
+        $this->assertEquals(\Saki\Tile\TileSortedList::fromString('123m456m789m123s55s'), $target->getHandTileSortedList());
+        $this->assertEquals(\Saki\Tile\TileSortedList::fromString('123m456m789m123s5s'), $target->getHandTileSortedList(false));
+    }
+
     function testAllRunsYaku() {
 
         $player = new \Saki\Game\Player(1, 40000, \Saki\Tile\Tile::fromString('E'));
@@ -11,7 +27,9 @@ class WinAnalyzerTest extends \PHPUnit_Framework_TestCase {
         $player->setPlayerArea($playerArea);
 
         $meldList = \Saki\Meld\MeldList::fromString('123m,456m,789m,123s,55s');
-        $subTarget = new \Saki\Win\WinAnalyzerSubTarget($meldList, $player, new \Saki\Game\RoundData());
+        $roundData = new \Saki\Game\RoundData();
+        $roundData->setRoundPhase(\Saki\Game\RoundPhase::getPrivatePhaseInstance());
+        $subTarget = new \Saki\Win\WinAnalyzerSubTarget($meldList, $player, $roundData);
 
         $yaku = \Saki\Win\AllRunsYaku::getInstance();
         $this->assertTrue($yaku->existIn($subTarget));
