@@ -1,7 +1,6 @@
 <?php
 namespace Saki\RoundResult;
 
-use Saki\RoundResult\ScoreLvel;
 use Saki\Util\Enum;
 
 class ScoreLevel extends Enum {
@@ -80,7 +79,7 @@ class ScoreLevel extends Enum {
 
     /**
      * @param $value
-     * @return ScoreLvel
+     * @return ScoreLevel
      */
     static function getInstance($value) {
         return parent::getInstance($value);

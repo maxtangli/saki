@@ -1,8 +1,11 @@
 <?php
 
-namespace Saki\Win;
+namespace Saki\Win\Yaku;
 
 use Saki\Util\Singleton;
+use Saki\Util\Utils;
+use Saki\Win\TileSeries\TileSeries;
+use Saki\Win\WinSubTarget;
 
 abstract class Yaku extends Singleton {
     function __toString() {
@@ -26,12 +29,28 @@ abstract class Yaku extends Singleton {
         return $this->getConcealedFanCount() >= 13 || $this->getExposedFanCount() >= 13;
     }
 
-    final function existIn(WinAnalyzerSubTarget $subTarget) {
-        return (!$this->requireConcealed() || $subTarget->isConcealed())
-        && $this->existInImpl($subTarget);
+    final function existIn(WinSubTarget $subTarget) {
+        return $this->matchRequireConcealed($subTarget)
+        && $this->matchRequiredTileSeries($subTarget)
+        && $this->matchOtherConditions($subTarget);
     }
 
-    abstract protected function existInImpl(WinAnalyzerSubTarget $subTarget);
+    final protected function matchRequireConcealed(WinSubTarget $subTarget) {
+        return !$this->requireConcealed() || $subTarget->isConcealed();
+    }
+
+    final protected function matchRequiredTileSeries(WinSubTarget $subTarget) {
+        $requiredTileSeries = $this->getRequiredTileSeries();
+        $allMeldList = $subTarget->getAllMeldList();
+        return empty($requiredTileSeries) || Utils::array_any($requiredTileSeries, function (TileSeries $tileSeries) use ($allMeldList) {
+            return $tileSeries->existIn($allMeldList);
+        });
+    }
+
+    abstract protected function getRequiredTileSeries();
+
+    abstract protected function matchOtherConditions(WinSubTarget $subTarget);
+
 
     function getExcludedYakus() {
         return [];

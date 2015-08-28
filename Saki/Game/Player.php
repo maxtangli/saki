@@ -48,8 +48,12 @@ class Player {
         return $this->selfWind;
     }
 
-    function setSelfWind($selfWind) {
+    function setSelfWind(Tile $selfWind) {
         $this->selfWind = $selfWind;
+    }
+
+    function isSelfWind(Tile $tile) {
+        return $tile == $this->getSelfWind();
     }
 
     function isDealer() {

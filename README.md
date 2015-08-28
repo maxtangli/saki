@@ -16,6 +16,14 @@ A japanese-mahjong solver.
 
 ## todo
 
+time cost
+
+- rush  0- 5 34h
+- rush  6-10 23.8h
+- rush 11-15 15.8h
+- rush 16-20
+-      total 73.6h
+
 rush 0 scribble 1.5h
 
 - [x] terms in english
@@ -118,8 +126,6 @@ rush 10 first yaku impl: all runs yaku 7.8h
 - [x] is4WinSetAnd1Pair() 0.2h
 - [x] allRunsYaku 1.1h
 
-rush 1-10 57.8h
-
 rush 11 more yaku 2.2h
 
 - [x] ReachYaku 0.7h
@@ -163,8 +169,6 @@ rush 15 game over 1.8h
 - [x] finalScore 1h
 - [x] result: winner order, final score 0.4h
 
-rush 11-15 15.8h
-
 rush 16 game over fix 2.1h
 
 - [x] isLastRound() 0.6h
@@ -189,16 +193,18 @@ rush 18 refactor 5h
 - [x] refactor: accumulatedReachCount, remove unnecessary methods in Round&RoundData. 0.8h
 - [x] bug: getTopPlayer() is wrong when same score top players exist 0.2h
 
-rush 19 yaku analyzer detail
+rush 19 WinAnalyzer issues
 
 - [x] refactor: validCount, winState 0.5h
 - [x] adpat public phase 0.7h
-- [ ] waitingAnalyzer
-- [ ] sideWaiting etc
+- [x] waitingType 4h
+- [x] fu count 3h
+- [ ] isWaiting
+- [ ] isDiscaredTileFalseWin
+- [ ] bug: kang is wrongly counted for onHandMelds
 
 rush 20 all yaku
 
-- [ ] fu count
 - [ ] test design
 - [x] not-count-yaku logic
 - [x] yaku-man logic 1h
@@ -236,6 +242,12 @@ rush server logic
 
 rush replay
 rush player statistics
+
+## note: winAnalyzer
+
+FuCount：Meld，Pair，WaitingType，Exposed，isWinBySelf，specialYaku(喰い/ツモ平和，七対子)
+WinState：
+WaitingType：4+1牌型分别计算，七对子一定是单骑待，国士？用途：计算符数，役判定
 
 ## note: game over score
 

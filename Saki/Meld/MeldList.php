@@ -21,7 +21,7 @@ class MeldList extends ArrayLikeObject {
      */
     static function fromString($s) {
         if (!static::validString($s)) {
-            throw new \InvalidArgumentException();
+            throw new \InvalidArgumentException("Invalid MeldList string[$s]");
         }
         $meldStrings = !empty($s) ? explode(',', $s) : [];
         $melds = array_map(function ($s) {
@@ -50,7 +50,7 @@ class MeldList extends ArrayLikeObject {
     }
 
     function __toString() {
-        $meldStrings = array_map(function ($meld) {
+        $meldStrings = array_map(function (Meld $meld) {
             return $meld->__toString();
         }, $this->toArray());
         return implode(',', $meldStrings);

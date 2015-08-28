@@ -3,6 +3,7 @@ namespace Saki\Win;
 
 use Saki\RoundResult\ScoreLevel;
 use Saki\RoundResult\ScoreTable;
+use Saki\Win\Yaku\YakuList;
 
 class WinAnalyzerResult {
     /**

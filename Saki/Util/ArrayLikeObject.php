@@ -59,7 +59,7 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
     }
 
     /**
-     * @return ArrayIterator
+     * @return \ArrayIterator
      */
     function getIterator() {
         return new \ArrayIterator($this->innerArray);

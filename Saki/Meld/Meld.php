@@ -100,6 +100,17 @@ class Meld extends ArrayLikeObject {
         return $this->getMeldType() instanceof RunMeldType;
     }
 
+//    function isLowestSideRun() {
+//        return $this->isRun() && $this->getFirst()->getNumber()==1;
+//    }
+//
+//    function isHighestSideRun() {
+//        return $this->isRun() && $this->getFirst()->getNumber()==9;
+//    }
+//
+//    function isSideRun() {
+//        return $this->isLowestSideRun() || $this->isHighestSideRun();
+//    }
 
     function isTriple($exposedFlag = null) {
         return $this->getMeldType() instanceof TripleMeldType && ($exposedFlag === null || $this->isExposed() === $exposedFlag);

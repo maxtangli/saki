@@ -5,48 +5,43 @@ use Saki\Meld\MeldCompositionsAnalyzer;
 use Saki\Meld\MeldList;
 use Saki\Meld\MeldTypeAnalyzer;
 use Saki\Util\Utils;
+use Saki\Win\Fu\FuCountAnalyzer;
+use Saki\Win\Fu\FuCountTarget;
+use Saki\Win\TileSeries\TileSeriesAnalyzer;
+use Saki\Win\Yaku\YakuAnalyzer;
+use Saki\Win\Yaku\YakuList;
 
 class WinAnalyzer {
-    private $yakus;
+    private $yakuAnalyzer;
+    private $waitingTypeAnalyzer;
 
-    static function getDefaultYakus() {
-        return [
-            // 1 fan
-            ReachYaku::getInstance(),
-            RedValueTilesYaku::getInstance(),
-            WhiteValueTilesYaku::getInstance(),
-            GreenValueTilesYaku::getInstance(),
-            SelfWindValueTilesYaku::getInstance(),
-            RoundWindValueTilesYaku::getInstance(),
-            AllSimplesYaku::getInstance(),
-            AllRunsYaku::getInstance(),
-            // yaku man
-            FourConcealedTriplesYaku::getInstance(),
-            // w yaku man
-            FourConcealedTriplesOnePairWaitingYaku::getInstance(),
-        ];
+    function __construct() {
+        $this->yakuAnalyzer = new YakuAnalyzer();
+        $this->waitingTypeAnalyzer = new TileSeriesAnalyzer();
     }
 
-    function __construct(array $yakus = null) {
-        $this->yakus = $yakus !== null ? $yakus : static::getDefaultYakus();
+    function getYakuAnalyzer() {
+        return $this->yakuAnalyzer;
     }
 
-    function getYakus() {
-        return $this->yakus;
+    function getWaitingTypeAnalyzer() {
+        return $this->waitingTypeAnalyzer;
     }
 
     /**
-     * @param WinAnalyzerTarget $target
+     * find all possible result and return the highest yaku-count ones.
+     * @param WinTarget $target
      * @return WinAnalyzerResult
      */
-    function analyzeTarget(WinAnalyzerTarget $target) {
+    function analyzeTarget(WinTarget $target) {
         // handTiles target -> handMelds[] subTarget
         $analyzer = new MeldCompositionsAnalyzer();
         $meldTypes = MeldTypeAnalyzer::getDefaultCandidateMeldTypes();
         $meldCompositions = $analyzer->analyzeMeldCompositions($target->getHandTileSortedList(), $meldTypes);
         if (empty($meldCompositions)) {
-            return new WinAnalyzerResult(WinState::getNotWinInstance(), new YakuList([], $target->isExposed()), 0);
+            return new WinAnalyzerResult(WinState::getInstance(WinState::NOT_WIN), new YakuList([], $target->isExposed()), 0);
         }
+
         // get analyzerResult[]
         $subTargets = array_map(function (MeldList $meldList) use ($target) {
             return $target->toSubTarget($meldList);
@@ -62,7 +57,7 @@ class WinAnalyzer {
     }
 
     /**
-     * @param WinAnalyzerSubTarget[] $subTargets
+     * @param WinSubTarget[] $subTargets
      * @return WinAnalyzerResult[]
      */
     function analyzeSubTargets(array $subTargets) {
@@ -75,10 +70,10 @@ class WinAnalyzer {
     }
 
     /**
-     * @param WinAnalyzerSubTarget $subTarget
+     * @param WinSubTarget $subTarget
      * @return WinAnalyzerResult
      */
-    function analyzeSubTarget(WinAnalyzerSubTarget $subTarget) {
+    function analyzeSubTarget(WinSubTarget $subTarget) {
         /*
          * reach: isReach , 4winSetAnd1Pair or other winTiles
          * other yaku: has yaku means is wintile / clear
@@ -90,46 +85,46 @@ class WinAnalyzer {
          * - win: win tiles exist and yaku count > 0
          */
 
-        $yakuList = new YakuList([], $subTarget->isExposed());
-        if ($this->isWinTiles($subTarget)) {
-            foreach ($this->yakus as $yaku) {
-                if ($yaku->existIn($subTarget)) {
-                    $yakuList->push($yaku); // winAnalyzerResult onChange hook: remove mutually-excluded yaku. or removeExcludedMethod.
-                }
-            }
-            $yakuList->normalize();
-
+        $waitingType = $this->getWaitingTypeAnalyzer()->analyzeWaitingType($subTarget->getAllMeldList(), $subTarget->getWinTile());
+        if ($waitingType->exist()) {
+            $yakuList = $this->getYakuAnalyzer()->analyzeYakuList($subTarget);
             if ($yakuList->count() == 0) {
-                $winState = WinState::getNoYakuFalseWinInstance();
+                $winState = WinState::getInstance(WinState::NO_YAKU_FALSE_WIN);
             } else {
                 if ($this->isDiscaredTileFalseWin($subTarget)) {
-                    $winState = WinState::getDiscardedTileFalseWinInstance();
+                    $winState = WinState::getInstance(WinState::DISCARDED_TILE_FALSE_WIN);
                 } else {
-                    $winState = WinState::getWinInstance();
+                    $winStateValue = $subTarget->isSelfPhase() ? WinState::WIN_BY_SELF : WinState::WIN_BY_OTHER;
+                    $winState = WinState::getInstance($winStateValue);
                 }
             }
         } else {
-            $winState = WinState::getNotWinInstance();
+            $yakuList = new YakuList([], $subTarget->isExposed());
+            $winState = WinState::getInstance(WinState::NOT_WIN);
         }
 
-        $result = new WinAnalyzerResult($winState, $yakuList, $subTarget->getFuCount());
+        $fuCountTarget = new FuCountTarget($subTarget, $yakuList, $waitingType);
+        $fuCountResult = FuCountAnalyzer::getInstance()->getResult($fuCountTarget);
+        $fuCount = $fuCountResult->getTotalFuCount();
+
+        $result = new WinAnalyzerResult($winState, $yakuList, $fuCount);
         return $result;
     }
 
-    protected function isWinTiles(WinAnalyzerSubTarget $subTarget) {
-        return $subTarget->is4WinSetAnd1Pair(); // todo get winTiles set from Yakus
-    }
-
-    protected function isDiscaredTileFalseWin(WinAnalyzerSubTarget $subTarget) {
+    protected function isDiscaredTileFalseWin(WinSubTarget $subTarget) {
         return false; // todo
     }
 
-    function getWaitingData(WinAnalyzerTarget $target) {
-        // todo
+//    function getWaitingData(WinTarget $target) {
+//        // todox
+//    }
 
-    }
-
-    function isWaiting(WinAnalyzerTarget $target) {
-        return false; // todo
+    /**
+     * @param WinTarget $target
+     * @return bool 聴牌か
+     */
+    function isWaiting(WinTarget $target) {
+        return false; // todo remove
     }
 }
+

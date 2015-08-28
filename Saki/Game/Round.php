@@ -4,12 +4,11 @@ namespace Saki\Game;
 
 use Saki\FinalScore\FinalScoreStrategyTarget;
 use Saki\RoundResult\ExhaustiveDrawResult;
-use Saki\RoundResult\GameResult;
 use Saki\RoundResult\RoundResult;
 use Saki\RoundResult\WinBySelfRoundResult;
 use Saki\Tile\Tile;
 use Saki\Win\WinAnalyzer;
-use Saki\Win\WinAnalyzerTarget;
+use Saki\Win\WinTarget;
 use Saki\Win\WinState;
 
 class Round {
@@ -76,7 +75,7 @@ class Round {
     }
 
     protected function toInitPhase() {
-        $this->roundPhase = RoundPhase::getInitPhaseInstance();
+        $this->setRoundPhase(RoundPhase::getInitPhaseInstance());
 
         // each player draw initial tiles
         $playerCount = $this->getPlayerList()->count();
@@ -103,7 +102,7 @@ class Round {
             $analyzer = $this->getYakuAnalyzer();
             $roundData = $this->getRoundData();
             $isWaitingStates = array_map(function (Player $player) use ($analyzer, $roundData) {
-                $target = new WinAnalyzerTarget($player, $roundData);
+                $target = new WinTarget($player, $roundData);
                 return $analyzer->isWaiting($target);
             }, $players);
             $result = new ExhaustiveDrawResult($players, $isWaitingStates);
@@ -221,7 +220,7 @@ class Round {
         }
 
         $analyzer = $this->getYakuAnalyzer();
-        $target = new WinAnalyzerTarget($player, $this->getRoundData());
+        $target = new WinTarget($player, $this->getRoundData());
         $isWaiting = $analyzer->isWaiting($target);
         if (!$isWaiting) {
             throw new \InvalidArgumentException('Reach condition violated: is waiting.');
@@ -268,9 +267,9 @@ class Round {
         $this->assertPrivatePhase($player);
         // do
         $analyzer = $this->getYakuAnalyzer();
-        $target = new WinAnalyzerTarget($player, $this->getRoundData());
+        $target = new WinTarget($player, $this->getRoundData());
         $winResult = $analyzer->analyzeTarget($target);
-        if ($winResult->getWinState() != WinState::getWinInstance()) {
+        if ($winResult->getWinState() != WinState::getInstance(WinState::WIN_BY_SELF)) {
             throw new \InvalidArgumentException();
         }
         $roundResult = new WinBySelfRoundResult($this->getPlayerList()->toArray(), $player, $winResult,

@@ -17,15 +17,15 @@ class PlayerArea {
     private $candidateTile;
     private $isReach;
 
-    function __construct(TileSortedList $onHandTileSortedList = null) {
-        $this->init($onHandTileSortedList);
+    function __construct(TileSortedList $onHandTileSortedList = null, Tile $candidateTile = null, MeldList $declaredMeldList = null) {
+        $this->init($onHandTileSortedList, $candidateTile, $declaredMeldList);
     }
 
-    function init(TileSortedList $onHandTileSortedList = null) {
+    function init(TileSortedList $onHandTileSortedList = null, Tile $candidateTile = null, MeldList $declaredMeldList = null) {
         $this->handTileSortedList = $onHandTileSortedList ?: TileSortedList::fromString('');
         $this->discardedTileList = TileList::fromString('');
-        $this->declaredMeldList = new MeldList([]);
-        $this->candidateTile = null;
+        $this->declaredMeldList = $declaredMeldList ?: new MeldList([]);
+        $this->candidateTile = $candidateTile ?: null;
         $this->isReach = false;
     }
 
@@ -36,18 +36,30 @@ class PlayerArea {
         return $this->handTileSortedList;
     }
 
+    /**
+     * @return TileList
+     */
     function getDiscardedTileList() {
         return $this->discardedTileList;
     }
 
+    /**
+     * @return MeldList
+     */
     function getDeclaredMeldList() {
         return $this->declaredMeldList;
     }
 
+    /**
+     * @return bool
+     */
     function hasCandidateTile() {
         return $this->candidateTile !== null;
     }
 
+    /**
+     * @return Tile
+     */
     function getCandidateTile() {
         if (!$this->hasCandidateTile()) {
             throw new \BadMethodCallException('Candidate tile not existed.');
@@ -55,6 +67,9 @@ class PlayerArea {
         return $this->candidateTile;
     }
 
+    /**
+     * @param Tile $tile
+     */
     function setCandidateTile(Tile $tile) {
         if ($tile === null) {
             throw new \InvalidArgumentException();
@@ -62,6 +77,9 @@ class PlayerArea {
         $this->candidateTile = $tile;
     }
 
+    /**
+     * @return Tile
+     */
     function removeCandidateTile() {
         if (!$this->hasCandidateTile()) {
             throw new \BadMethodCallException();

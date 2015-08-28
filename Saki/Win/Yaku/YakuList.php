@@ -1,5 +1,5 @@
 <?php
-namespace Saki\Win;
+namespace Saki\Win\Yaku;
 
 use Saki\Util\ArrayLikeObject;
 

@@ -167,7 +167,7 @@ class PlayerList extends ArrayLikeObject {
 
     /**
      * @param int $offset
-     * @return \Saki\Game\Player
+     * @return Player
      */
     function offsetGet($offset) {
         return parent::offsetGet($offset);

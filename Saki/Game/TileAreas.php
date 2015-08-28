@@ -33,13 +33,13 @@ class TileAreas {
         $this->setAccumulatedReachCount($this->getAccumulatedReachCount() + 1);
     }
 
-    function hasLastTargetTile() {
+    function hasPublicTargetTile() {
         return $this->publicTargetTile !== null;
     }
 
     function getPublicTargetTile() {
-        if (!$this->hasLastTargetTile()) {
-            throw new \InvalidArgumentException('Last target tile not existed.');
+        if (!$this->hasPublicTargetTile()) {
+            throw new \InvalidArgumentException('$publicTargetTile not existed.');
         }
         return $this->publicTargetTile;
     }

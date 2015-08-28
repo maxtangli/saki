@@ -52,6 +52,11 @@ class EnumMockClass2 extends EnumMockClass1 {
     }
 }
 
+class EnumMockClass3 extends \Saki\Util\Enum {
+    const FILED_1 = 1;
+    const FIELD_2 = 2;
+}
+
 class EnumTest extends PHPUnit_Framework_TestCase {
     function testInheritance() {
         $s1 = EnumMockClass1::getInstance(1);
@@ -67,5 +72,11 @@ class EnumTest extends PHPUnit_Framework_TestCase {
         $s2 = EnumMockClass1::getInstance(2);
         $this->assertSame($s1, $s1Another);
         $this->assertNotSame($s1, $s2);
+    }
+
+    function testAutoConst() {
+        $e = EnumMockClass3::getInstance(EnumMockClass3::FIELD_2);
+        $this->assertInstanceOf('EnumMockClass3', $e);
+        $this->assertEquals($e->getValue(), EnumMockClass3::FIELD_2);
     }
 }

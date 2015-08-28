@@ -2,6 +2,7 @@
 namespace Saki\Command;
 
 use Saki\Game\Game;
+use Saki\Game\Player;
 
 class CommandFactory {
     private $game;
@@ -16,7 +17,7 @@ class CommandFactory {
 
     function getPlayer($playerString) {
         $game = $this->getGame();
-        $playerStrings = array_map(function ($p) {
+        $playerStrings = array_map(function (Player $p) {
             return $p->__toString();
         }, $game->getCurrentRound()->getPlayerList()->toArray());
         $player = $game->getCurrentRound()->getPlayerList()[array_search($playerString, $playerStrings)];

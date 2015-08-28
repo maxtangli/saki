@@ -76,4 +76,14 @@ abstract class Enum implements IEnum {
     function __toString() {
         return static::getValue2StringMap()[$this->getValue()];
     }
+
+    static function getValue2StringMap() {
+        $r = [];
+        $refClass = new \ReflectionClass(get_called_class());
+        foreach($refClass->getConstants() as $name => $value) {
+            $text = strtolower(str_replace('_', ' ', $name));
+            $r[$value] = $text;
+        }
+        return $r;
+    }
 }

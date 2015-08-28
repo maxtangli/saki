@@ -7,6 +7,8 @@ use Saki\FinalScore\RankingHorseFinalScoreStrategy;
 use Saki\FinalScore\RankingHorseType;
 use Saki\Tile\TileSet;
 
+
+
 class RoundData {
     private $roundWindData;
     private $playerList;

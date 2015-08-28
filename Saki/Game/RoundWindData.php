@@ -52,6 +52,18 @@ class RoundWindData {
         return $this->roundWind;
     }
 
+    function isRoundWind(Tile $tile) {
+        return $tile == $this->getRoundWind();
+    }
+
+    function isSelfWind(Player $player, Tile $tile) {
+        return $player->isSelfWind($tile);
+    }
+
+    function isDoubleWind(Player $player, Tile $tile) {
+        return $this->isRoundWind($tile) && $this->isSelfWind($player, $tile);
+    }
+
     function getRoundWindTurn() {
         return $this->roundWindTurn;
     }

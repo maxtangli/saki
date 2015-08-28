@@ -35,7 +35,8 @@ class MeldTypeAnalyzer {
 
     /**
      * @param TileList $tileList
-     * @return MeldType|false
+     * @param bool $allowNoMatch
+     * @return false|MeldType
      */
     function analyzeMeldType(TileList $tileList, $allowNoMatch = false) {
         $candidateMeldTypes = $this->getCandidateMeldTypes();
