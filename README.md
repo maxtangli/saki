@@ -203,7 +203,9 @@ rush 19 WinAnalyzer issues 8.2h
 rush 20 WaitingAnalyzer
 
 - [x] PublicPhase case: 3.6h // note: all children's constructor calls should be modified when new field added in parent
-- [ ] PrivatePhase case:
+- [x] PrivatePhase case: 1h // too slow
+- [ ] speed up of WaitingAnalyzer.analyzePublicPhase
+- [ ] adapt isWaiting
 
 rush etc
 

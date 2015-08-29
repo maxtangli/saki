@@ -9,8 +9,8 @@ use Saki\Tile\Tile;
 class WinSubTarget extends WinTarget {
     private $handMeldList;
 
-    function __construct(MeldList $handMeldList, Player $player, RoundData $roundData, Tile $stubWinTile) {
-        parent::__construct($player, $roundData, $stubWinTile);
+    function __construct(MeldList $handMeldList, Player $player, RoundData $roundData) {
+        parent::__construct($player, $roundData);
         $this->handMeldList = $handMeldList;
     }
 

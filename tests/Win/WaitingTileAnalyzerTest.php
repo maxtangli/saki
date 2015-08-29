@@ -32,15 +32,15 @@ class WaitingTileAnalyzerTest extends \PHPUnit_Framework_TestCase {
      */
     function testPublicData($onHandTileListString, $declaredMeldListString, $expected) {
         $winAnalyzer = new \Saki\Win\WinAnalyzer();
-        $waitingTileAnalyzer = new \Saki\Win\WaitingTileAnalyzer($winAnalyzer);
+        $waitingTileAnalyzer = new \Saki\Win\WaitingAnalyzer($winAnalyzer);
         $target = $this->generateWinTarget(false, $onHandTileListString, $declaredMeldListString, \Saki\Tile\Tile::fromString('P'));
-        $waitingTileList = $waitingTileAnalyzer->analyzePublicPhaseWaitingList($target);
+        $waitingTileList = $waitingTileAnalyzer->analyzePublicPhaseWaitingTileList($target);
         $waitingTileStrings = $waitingTileList->toArray(function (\Saki\Win\WaitingTile $waitingTile) {
             return $waitingTile->getWaitingTile()->__toString();
         });
         $this->assertEquals($expected, $waitingTileStrings,
             sprintf('[%s],[%s],[%s],[%s]',
-                $onHandTileListString, $declaredMeldListString, implode(',',$expected), implode(',',$waitingTileStrings)));
+                $onHandTileListString, $declaredMeldListString, implode(',', $expected), implode(',', $waitingTileStrings)));
     }
 
     function publicDataProvider() {
@@ -53,6 +53,33 @@ class WaitingTileAnalyzerTest extends \PHPUnit_Framework_TestCase {
             ['123456789m123sS', '', ['S']],
             // 4+1 triple
             ['111222333444sE', '', ['E']],
+        ];
+    }
+
+    /**
+     * @dataProvider privateDataProvider
+     */
+    function testPrivateData($onHandTileListString, $declaredMeldListString, $expected) {
+        $winAnalyzer = new \Saki\Win\WinAnalyzer();
+        $waitingTileAnalyzer = new \Saki\Win\WaitingAnalyzer($winAnalyzer);
+        $target = $this->generateWinTarget(true, $onHandTileListString, $declaredMeldListString, \Saki\Tile\Tile::fromString('P'));
+        $futureWaitingList = $waitingTileAnalyzer->analyzePrivatePhaseFutureWaitingList($target);
+        $discardedTileStrings = $futureWaitingList->toArray(function (\Saki\Win\FutureWaiting $futureWaiting) {
+            return $futureWaiting->getDiscardedTile()->__toString();
+        });
+        $this->assertEquals($expected, $discardedTileStrings,
+            sprintf('[%s],[%s],[%s],[%s]',
+                $onHandTileListString, $declaredMeldListString, implode(',', $expected), implode(',', $discardedTileStrings)));
+    }
+
+    function privateDataProvider() {
+        return [
+            // not reachable
+            ['123456789m1249sE', '', []], // 715ms
+            // 4+1
+            ['123456789m129sEE', '', ['9s']], // 683ms
+            // already win
+            ['123sWW', '123m,456m,789m', ['1s','2s','3s','W']], // 115ms
         ];
     }
 }
