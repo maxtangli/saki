@@ -13,8 +13,11 @@ class TileSeriesAnalyzer extends Singleton {
         return [
             FourConcealedTripleOrQuadAndOnePairTileSeries::getInstance(),
             FourTripleOrQuadAndOnePair::getInstance(),
+
             FourRunAndOnePairTileSeries::getInstance(),
+
             FourWinSetAnd1PairTileSeries::getInstance(),
+
             SevenPairsTileSeries::getInstance(),
         ];
     }

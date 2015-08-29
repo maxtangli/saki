@@ -52,10 +52,19 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
     }
 
     /**
-     * @return mixed[]
+     * @param callable $selector
+     * @return array
      */
-    function toArray() {
-        return $this->innerArray;
+    function toArray(callable $selector = null) {
+        if ($selector !== null) {
+            $r = [];
+            foreach($this as $v) {
+                $r[] = $selector($v);
+            }
+            return $r;
+        } else {
+            return $this->innerArray;
+        }
     }
 
     /**
@@ -122,11 +131,11 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         $this->onInnerArrayChanged();
     }
 
-    function isAll(callable $predicate) {
+    function all(callable $predicate) {
         return Utils::array_all($this->toArray(), $predicate);
     }
 
-    function isAny(callable $predicate) {
+    function any(callable $predicate) {
         return Utils::array_any($this->toArray(), $predicate);
     }
 
@@ -188,6 +197,19 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
             return false;
         }
         return true;
+    }
+
+    function getValueCount($value, $strict = false) {
+        $equals = function ($v1, $v2) use ($strict) {
+            return $strict ? $v1 === $v2 : $v1 == $v2;
+        };
+        $count = 0;
+        foreach($this->innerArray as $m) {
+            if ($equals($value, $m)) {
+                ++$count;
+            }
+        }
+        return $count;
     }
 
     /**
@@ -305,6 +327,10 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         $first = $last - $n + 1;
         $indexOrIndexes = $n == 1 ? $last : range($last, $first);
         return $this->removeByIndex($indexOrIndexes);
+    }
+
+    function merge(ArrayLikeObject $otherList) {
+        $this->push($otherList->toArray());
     }
 
     function shuffle() {

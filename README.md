@@ -21,8 +21,8 @@ time cost
 - rush  0- 5 34h
 - rush  6-10 23.8h
 - rush 11-15 15.8h
-- rush 16-20
--      total 73.6h
+- rush 16-20 ?
+-      total 73.6h + ?
 
 rush 0 scribble 1.5h
 
@@ -193,17 +193,26 @@ rush 18 refactor 5h
 - [x] refactor: accumulatedReachCount, remove unnecessary methods in Round&RoundData. 0.8h
 - [x] bug: getTopPlayer() is wrong when same score top players exist 0.2h
 
-rush 19 WinAnalyzer issues
+rush 19 WinAnalyzer issues 8.2h
 
 - [x] refactor: validCount, winState 0.5h
 - [x] adpat public phase 0.7h
 - [x] waitingType 4h
 - [x] fu count 3h
-- [ ] isWaiting
+
+rush 20 WaitingAnalyzer
+
+- [x] PublicPhase case: 3.6h // note: all children's constructor calls should be modified when new field added in parent
+- [ ] PrivatePhase case:
+
+rush etc
+
 - [ ] isDiscaredTileFalseWin
 - [ ] bug: kang is wrongly counted for onHandMelds
+- [ ] public command roller
+- [ ] refactor: publicCandidateTile and WinTile
 
-rush 20 all yaku
+rush all yaku
 
 - [ ] test design
 - [x] not-count-yaku logic
@@ -248,6 +257,9 @@ rush player statistics
 FuCount：Meld，Pair，WaitingType，Exposed，isWinBySelf，specialYaku(喰い/ツモ平和，七対子)
 WinState：
 WaitingType：4+1牌型分别计算，七对子一定是单骑待，国士？用途：计算符数，役判定
+
+18 tiles isWaiting: for any discard tile ,the 17 tiles isWaiting
+17 tiles isWaiting: for any one coming tile, the 17+1 tiles 's winState.isTrueOrFalseWin() 
 
 ## note: game over score
 

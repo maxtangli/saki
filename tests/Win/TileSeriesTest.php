@@ -30,7 +30,9 @@ class TileSeriesTest extends PHPUnit_Framework_TestCase {
     }
 
     function waitingTypeProvider() {
-        return [ // todo more tests
+        return [
+            ['123s,456s,789s,111s,EE', 'W', WaitingType::NOT_EXIST],
+
             ['123s,456s,789s,111s,11s', '9s', WaitingType::TWO_SIDE_RUN_WAITING],
             ['123s,567s,789s,111s,11s', '7s', WaitingType::TWO_SIDE_RUN_WAITING],
 
@@ -41,6 +43,9 @@ class TileSeriesTest extends PHPUnit_Framework_TestCase {
             ['123s,456s,789s,111s,11s', '8s', WaitingType::MIDDLE_RUN_WAITING],
 
             ['123s,456s,789s,111s,EE', 'E', WaitingType::SINGLE_PAIR_WAITING],
+
+            // debug
+            ['123m,456m,789m,123s,EE', '3s', WaitingType::ONE_SIDE_RUN_WAITING],
         ];
     }
 

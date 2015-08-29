@@ -25,7 +25,7 @@ class PlayerArea {
         $this->handTileSortedList = $onHandTileSortedList ?: TileSortedList::fromString('');
         $this->discardedTileList = TileList::fromString('');
         $this->declaredMeldList = $declaredMeldList ?: new MeldList([]);
-        $this->candidateTile = $candidateTile ?: null;
+        $this->candidateTile = $candidateTile;
         $this->isReach = false;
     }
 

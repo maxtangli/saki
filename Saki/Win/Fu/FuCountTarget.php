@@ -36,7 +36,7 @@ class FuCountTarget {
     }
 
     function isSelfPhase() {
-        return $this->subTarget->isSelfPhase();
+        return $this->subTarget->isPrivatePhase();
     }
 
     function isConcealed() {

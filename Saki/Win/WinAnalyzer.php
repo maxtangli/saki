@@ -4,6 +4,7 @@ namespace Saki\Win;
 use Saki\Meld\MeldCompositionsAnalyzer;
 use Saki\Meld\MeldList;
 use Saki\Meld\MeldTypeAnalyzer;
+use Saki\Util\Singleton;
 use Saki\Util\Utils;
 use Saki\Win\Fu\FuCountAnalyzer;
 use Saki\Win\Fu\FuCountTarget;
@@ -37,7 +38,8 @@ class WinAnalyzer {
         // handTiles target -> handMelds[] subTarget
         $analyzer = new MeldCompositionsAnalyzer();
         $meldTypes = MeldTypeAnalyzer::getDefaultCandidateMeldTypes();
-        $meldCompositions = $analyzer->analyzeMeldCompositions($target->getHandTileSortedList(), $meldTypes);
+        $handTileList = $target->getHandTileSortedList();
+        $meldCompositions = $analyzer->analyzeMeldCompositions($handTileList, $meldTypes);
         if (empty($meldCompositions)) {
             return new WinAnalyzerResult(WinState::getInstance(WinState::NOT_WIN), new YakuList([], $target->isExposed()), 0);
         }
@@ -94,7 +96,7 @@ class WinAnalyzer {
                 if ($this->isDiscaredTileFalseWin($subTarget)) {
                     $winState = WinState::getInstance(WinState::DISCARDED_TILE_FALSE_WIN);
                 } else {
-                    $winStateValue = $subTarget->isSelfPhase() ? WinState::WIN_BY_SELF : WinState::WIN_BY_OTHER;
+                    $winStateValue = $subTarget->isPrivatePhase() ? WinState::WIN_BY_SELF : WinState::WIN_BY_OTHER;
                     $winState = WinState::getInstance($winStateValue);
                 }
             }

@@ -30,7 +30,7 @@ class FourWinSetAnd1PairTileSeries extends TileSeries {
         });
 
         // 両面待ち?
-        $isTwoSideRunWaiting = $runList->isAny(function (Meld $runMeld) use ($winTile) {
+        $isTwoSideRunWaiting = $runList->any(function (Meld $runMeld) use ($winTile) {
             return ($runMeld->getFirst() == $winTile && $winTile->getNumber() != 7)
             || ($runMeld->getLast() == $winTile && $winTile->getNumber() != 3);
         });
@@ -39,7 +39,7 @@ class FourWinSetAnd1PairTileSeries extends TileSeries {
         }
 
         // 双碰待ち?
-        $isTwoPongWaiting = $tripleList->isAny(function (Meld $tripleMeld) use ($winTile) {
+        $isTwoPongWaiting = $tripleList->any(function (Meld $tripleMeld) use ($winTile) {
             return $tripleMeld->getFirst() == $winTile;
         });
         if ($isTwoPongWaiting) {
@@ -47,7 +47,7 @@ class FourWinSetAnd1PairTileSeries extends TileSeries {
         }
 
         // 辺張待ち?
-        $isOneSideWaiting = $runList->isAny(function (Meld $runMeld) use ($winTile) {
+        $isOneSideWaiting = $runList->any(function (Meld $runMeld) use ($winTile) {
             return ($runMeld->getFirst() == $winTile && $winTile->getNumber() == 7)
             || ($runMeld->getLast() == $winTile && $winTile->getNumber() == 3);
         });
@@ -56,7 +56,7 @@ class FourWinSetAnd1PairTileSeries extends TileSeries {
         }
 
         // 嵌張待ち?
-        $isMiddleRunWaiting = $runList->isAny(function (Meld $runMeld) use ($winTile) {
+        $isMiddleRunWaiting = $runList->any(function (Meld $runMeld) use ($winTile) {
             return $runMeld[1] == $winTile;
         });
         if ($isMiddleRunWaiting) {
@@ -69,6 +69,6 @@ class FourWinSetAnd1PairTileSeries extends TileSeries {
             return WaitingType::getInstance(WaitingType::SINGLE_PAIR_WAITING);
         }
 
-        return null;
+        return null; // error
     }
 }

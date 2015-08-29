@@ -4,6 +4,7 @@ namespace Saki\Game;
 
 // operations upon a Wall and 2-4 PlayerArea
 use Saki\Tile\Tile;
+use Saki\Tile\TileSortedList;
 
 class TileAreas {
     private $wall;
@@ -49,6 +50,21 @@ class TileAreas {
             throw new \InvalidArgumentException('$publicTargetTile should not be [null]');
         }
         $this->publicTargetTile = $publicTargetTile;
+    }
+
+    function getAllPlayersDiscardedTileList() {
+        $sortedTileList = new TileSortedList([]);
+        foreach ($this->playerList as $player) {
+            $sortedTileList->insert($player->getPlayerArea()->getDiscardedTileList()->toArray(), 0);
+        }
+        return $sortedTileList;
+    }
+
+    function getTileRemainAmount(Tile $tile) {
+        $total = $this->getWall()->getTileSet()->getValueCount($tile);
+        $discarded = $this->getAllPlayersDiscardedTileList()->getValueCount($tile);
+        $remain = $total - $discarded;
+        return $remain;
     }
 
     function drawInit(Player $player, $drawTileCount) {

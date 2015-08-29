@@ -16,7 +16,7 @@ class FourTripleOrQuadAndOnePair extends FourWinSetAnd1PairTileSeries {
         $pairList = $allMeldList->getFilteredMeldList(function (Meld $meld) {
             return $meld->isPair();
         });
-        $matchConcealed = $concealed === null || $tripleList->isAll(function (Meld $meld) use ($concealed) {
+        $matchConcealed = $concealed === null || $tripleList->all(function (Meld $meld) use ($concealed) {
                 return $meld->isConcealed() == $concealed;
             });
         return count($tripleList) == 4 && count($pairList) == 1 && $matchConcealed;

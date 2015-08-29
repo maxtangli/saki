@@ -22,7 +22,7 @@ abstract class ValueTilesYaku extends Yaku {
         $meldList = $subTarget->getAllMeldList()->getFilteredMeldList(function (Meld $meld) {
             return $meld->isTripleOrQuad();
         });
-        return $meldList->isAny(function (Meld $meld) use ($subTarget) {
+        return $meldList->any(function (Meld $meld) use ($subTarget) {
             return $this->isValueTile($meld[0], $subTarget);
         });
     }

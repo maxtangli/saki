@@ -14,4 +14,8 @@ class TileSet extends TileSortedList {
     function __construct(TileList $baseTileList) {
         parent::__construct($baseTileList->toArray());
     }
+
+    function getUniqueTiles() {
+        return array_unique($this->toArray());
+    }
 }

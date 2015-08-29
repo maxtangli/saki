@@ -279,15 +279,24 @@ class Round {
     }
 
     protected function assertPrivatePhase($player) {
-        $valid = $this->getRoundPhase() == RoundPhase::getPrivatePhaseInstance() && $player == $this->getCurrentPlayer();
-        if (!$valid) {
-            throw new \InvalidArgumentException();
+        $validPhase = $this->getRoundPhase() == RoundPhase::getPrivatePhaseInstance();
+        if (!$validPhase) {
+            throw new \InvalidArgumentException(
+                sprintf('expected [private phase] but [%s] given.', $this->getRoundPhase())
+            );
+        }
+
+        $validPlayer = $player == $this->getCurrentPlayer();
+        if (!$validPlayer) {
+            throw new \InvalidArgumentException(
+                sprintf('expected current player [%s] but player [%s] given.', $this->getCurrentPlayer(), $player)
+            );
         }
     }
 
     function passPublicPhase() {
         $this->assertPublicPhase();
-        $this->toPrivatePhase($this->getCurrentPlayer(), true);
+        $this->toPrivatePhase($this->getPlayerList()->getNextPlayer(), true);
     }
 
     function chowByOther(Player $player, Tile $tile1, Tile $tile2) {
@@ -318,14 +327,14 @@ class Round {
         $this->toPrivatePhase($player, false);
     }
 
-    function winByOther(Player $player) {
+    function winByOther(Player $player) { // todo
         $this->assertPublicPhase($player);
         // do
 
         // phase
     }
 
-    function multipleWinByOther(array $players) {
+    function multipleWinByOther(array $players) { // todo
         // do
 
         // phase

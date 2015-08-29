@@ -27,4 +27,8 @@ class WinState extends Enum {
         $targetValues = [self::DISCARDED_TILE_FALSE_WIN, self::NO_YAKU_FALSE_WIN];
         return in_array($this->getValue(), $targetValues);
     }
+
+    function isTrueOrFalseWin() {
+        return $this->isTrueWin() || $this->isFalseWin();
+    }
 }

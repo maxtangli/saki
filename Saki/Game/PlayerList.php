@@ -135,7 +135,7 @@ class PlayerList extends ArrayLikeObject {
     }
 
     function hasMinusScorePlayer() {
-        return $this->isAny(function (Player $player) {
+        return $this->any(function (Player $player) {
             return $player->getScore() < 0;
         });
     }

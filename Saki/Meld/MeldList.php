@@ -2,6 +2,7 @@
 namespace Saki\Meld;
 
 use Saki\Tile\Tile;
+use Saki\Tile\TileSortedList;
 use Saki\Util\ArrayLikeObject;
 
 class MeldList extends ArrayLikeObject {
@@ -59,6 +60,24 @@ class MeldList extends ArrayLikeObject {
     function getFilteredMeldList(callable $filter) {
         $melds = array_filter($this->toArray(), $filter);
         return new self(array_values($melds));
+    }
+
+    function toSortedTileList() {
+        $l = new TileSortedList([]);
+        foreach($this as $meld) {
+            $l->insert($meld->toArray(), 0);
+        }
+        return $l;
+    }
+
+    function full() {
+        return $this->toSortedTileList()->validPrivatePhaseCount();
+    }
+
+    function tileExist(Tile $tile) {
+        return $this->any(function (Meld $meld)use($tile) {
+            return $meld->valueExist($tile);
+        });
     }
 
     function canPlusKong(Tile $tile) {

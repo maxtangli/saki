@@ -41,4 +41,10 @@ class MeldListTest extends PHPUnit_Framework_TestCase {
         }
         $this->assertSame($s, MeldList::fromString($s)->__toString(), "\$s[$s]");
     }
+
+    function testTileExist() {
+        $meldList = MeldList::fromString('123m,123s,EE');
+        $this->assertTrue($meldList->tileExist(\Saki\Tile\Tile::fromString('2s')));
+        $this->assertFalse($meldList->tileExist(\Saki\Tile\Tile::fromString('4s')));
+    }
 }
