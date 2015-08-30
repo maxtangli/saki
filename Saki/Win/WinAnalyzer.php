@@ -4,7 +4,7 @@ namespace Saki\Win;
 use Saki\Meld\MeldCompositionsAnalyzer;
 use Saki\Meld\MeldList;
 use Saki\Meld\MeldTypeAnalyzer;
-use Saki\Util\Singleton;
+use Saki\Meld\MeldTypesFactory;
 use Saki\Util\Utils;
 use Saki\Win\Fu\FuCountAnalyzer;
 use Saki\Win\Fu\FuCountTarget;
@@ -37,9 +37,8 @@ class WinAnalyzer {
     function analyzeTarget(WinTarget $target) {
         // handTiles target -> handMelds[] subTarget
         $analyzer = new MeldCompositionsAnalyzer();
-        $meldTypes = MeldTypeAnalyzer::getDefaultCandidateMeldTypes();
         $handTileList = $target->getHandTileSortedList();
-        $meldCompositions = $analyzer->analyzeMeldCompositions($handTileList, $meldTypes);
+        $meldCompositions = $analyzer->analyzeMeldCompositions($handTileList, MeldTypesFactory::getInstance()->getHandMeldTypes());
         if (empty($meldCompositions)) {
             return new WinAnalyzerResult(WinState::getInstance(WinState::NOT_WIN), new YakuList([], $target->isExposed()), 0);
         }
@@ -115,18 +114,6 @@ class WinAnalyzer {
 
     protected function isDiscaredTileFalseWin(WinSubTarget $subTarget) {
         return false; // todo
-    }
-
-//    function getWaitingData(WinTarget $target) {
-//        // todox
-//    }
-
-    /**
-     * @param WinTarget $target
-     * @return bool 聴牌か
-     */
-    function isWaiting(WinTarget $target) {
-        return false; // todo remove
     }
 }
 

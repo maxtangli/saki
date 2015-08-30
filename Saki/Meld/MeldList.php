@@ -62,9 +62,15 @@ class MeldList extends ArrayLikeObject {
         return new self(array_values($melds));
     }
 
+    function getFilteredTypesMeldList(array $targetMeldTypes) {
+        return $this->getFilteredMeldList(function (Meld $meld) use ($targetMeldTypes) {
+            return in_array($meld->getMeldType(), $targetMeldTypes);
+        });
+    }
+
     function toSortedTileList() {
         $l = new TileSortedList([]);
-        foreach($this as $meld) {
+        foreach ($this as $meld) {
             $l->insert($meld->toArray(), 0);
         }
         return $l;
@@ -75,7 +81,7 @@ class MeldList extends ArrayLikeObject {
     }
 
     function tileExist(Tile $tile) {
-        return $this->any(function (Meld $meld)use($tile) {
+        return $this->any(function (Meld $meld) use ($tile) {
             return $meld->valueExist($tile);
         });
     }

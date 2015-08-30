@@ -7,6 +7,7 @@ use Saki\RoundResult\ExhaustiveDrawResult;
 use Saki\RoundResult\RoundResult;
 use Saki\RoundResult\WinBySelfRoundResult;
 use Saki\Tile\Tile;
+use Saki\Win\WaitingAnalyzer;
 use Saki\Win\WinAnalyzer;
 use Saki\Win\WinTarget;
 use Saki\Win\WinState;
@@ -14,12 +15,14 @@ use Saki\Win\WinState;
 class Round {
     private $roundData;
     private $roundResult;
-    private $yakuAnalyzer;
+    private $winAnalyzer;
+    private $waitingAnalyzer;
 
     function __construct(RoundData $roundData = null) {
         $this->roundData = $roundData !== null ? $roundData : new RoundData();
         $this->roundResult = null;
-        $this->yakuAnalyzer = new WinAnalyzer();
+        $this->winAnalyzer = new WinAnalyzer();
+        $this->waitingAnalyzer = new WaitingAnalyzer($this->winAnalyzer);
         $this->toInitPhase();
     }
 
@@ -48,8 +51,12 @@ class Round {
         $this->getRoundData()->setRoundPhase($roundPhase);
     }
 
-    function getYakuAnalyzer() {
-        return $this->yakuAnalyzer;
+    function getWinAnalyzer() {
+        return $this->winAnalyzer;
+    }
+
+    function getWaitingAnalyzer() {
+        return $this->waitingAnalyzer;
     }
 
     /**
@@ -99,11 +106,13 @@ class Round {
         if ($this->getRoundData()->getTileAreas()->getWall()->getRemainTileCount() == 0 && $drawTile) {
             // exhaustive draw
             $players = $this->getPlayerList()->toArray();
-            $analyzer = $this->getYakuAnalyzer();
+            $analyzer = $this->getWaitingAnalyzer();
             $roundData = $this->getRoundData();
             $isWaitingStates = array_map(function (Player $player) use ($analyzer, $roundData) {
                 $target = new WinTarget($player, $roundData);
-                return $analyzer->isWaiting($target);
+                $waitingTileList = $analyzer->analyzePublicPhaseWaitingTileList($target);
+                $isWaiting = $waitingTileList->count() > 0;
+                return $isWaiting;
             }, $players);
             $result = new ExhaustiveDrawResult($players, $isWaitingStates);
             $this->toOverPhase($result);
@@ -219,13 +228,7 @@ class Round {
             throw new \InvalidArgumentException('Reach condition violated: not reach yet.');
         }
 
-        $analyzer = $this->getYakuAnalyzer();
         $target = new WinTarget($player, $this->getRoundData());
-        $isWaiting = $analyzer->isWaiting($target);
-        if (!$isWaiting) {
-            throw new \InvalidArgumentException('Reach condition violated: is waiting.');
-        }
-
         $isConcealed = $target->isConcealed();
         if (!$isConcealed) { // PlayerArea
             throw new \InvalidArgumentException('Reach condition violated: is concealed.');
@@ -236,9 +239,23 @@ class Round {
             throw new \InvalidArgumentException('Reach condition violated: at least 1000 score.');
         }
 
-        $hasDrawTileChance = $this->getRoundData()->getTileAreas()->getWall()->getRemainTileCount() >= 4;
+        $hasDrawTileChance = $target->getWallRemainTileAmount() >= 4;
         if (!$hasDrawTileChance) { // TilesArea
             throw new \InvalidArgumentException('Reach condition violated: at least 1 draw tile chance.');
+        }
+
+        // last do since slow
+        $analyzer = $this->getWaitingAnalyzer();
+        $futureWaitingList = $analyzer->analyzePrivatePhaseFutureWaitingList($target);
+        $isWaiting = $futureWaitingList->count() > 0;
+        if (!$isWaiting) {
+            throw new \InvalidArgumentException('Reach condition violated: is waiting.');
+        }
+        $isValidTile = $futureWaitingList->isForWaitingDiscardedTile($selfTile);
+        if (!$isValidTile) {
+            throw new \InvalidArgumentException(
+                sprintf('Reach condition violated: invalid discard tile [%s].', $selfTile)
+            );
         }
 
         // todo four reach draw
@@ -266,7 +283,7 @@ class Round {
     function winBySelf(Player $player) {
         $this->assertPrivatePhase($player);
         // do
-        $analyzer = $this->getYakuAnalyzer();
+        $analyzer = $this->getWinAnalyzer();
         $target = new WinTarget($player, $this->getRoundData());
         $winResult = $analyzer->analyzeTarget($target);
         if ($winResult->getWinState() != WinState::getInstance(WinState::WIN_BY_SELF)) {

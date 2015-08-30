@@ -5,25 +5,14 @@ namespace Saki\Meld;
 use Saki\Tile\TileList;
 
 class MeldTypeAnalyzer {
-    /**
-     * @return MeldType[]
-     */
-    static function getDefaultCandidateMeldTypes() {
-        return [
-            PairMeldType::getInstance(),
-            RunMeldType::getInstance(),
-            TripleMeldType::getInstance(),
-            QuadMeldType::getInstance(),
-        ];
-    }
-
     private $candidateMeldTypes;
 
     /**
      * @param MeldType[] $candidateMeldTypes
      */
     function __construct(array $candidateMeldTypes = null) {
-        $this->candidateMeldTypes = $candidateMeldTypes !== null ? $candidateMeldTypes : self::getDefaultCandidateMeldTypes();
+        $this->candidateMeldTypes = $candidateMeldTypes !== null ?
+            $candidateMeldTypes : MeldTypesFactory::getInstance()->getAllMeldTypes();
     }
 
     /**

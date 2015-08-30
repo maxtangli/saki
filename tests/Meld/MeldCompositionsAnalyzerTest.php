@@ -16,7 +16,7 @@ class MeldCompositionsAnalyzerTest extends PHPUnit_Framework_TestCase {
     }
 
     function getMeldCompositionsProvider() {
-        $default = \Saki\Meld\MeldTypeAnalyzer::getDefaultCandidateMeldTypes();
+        $default = \Saki\Meld\MeldTypesFactory::getInstance()->getHandAndDeclaredMeldTypes();
         return [
             // empty case
             [[], '', $default],

@@ -19,7 +19,7 @@ class MeldTest extends PHPUnit_Framework_TestCase {
 
         // validString
         $this->assertTrue(Meld::validString('11m'));
-        $this->assertFalse(Meld::validString('1m'));
+        $this->assertFalse(Meld::validString('14m'));
 
         // fromString
         $meld = \Saki\Meld\Meld::fromString('11m');

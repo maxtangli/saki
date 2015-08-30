@@ -14,13 +14,10 @@ class Meld extends ArrayLikeObject {
      */
     static function getMeldTypeAnalyzer() {
         if (!isset(self::$meldTypeAnalyzer)) {
-            self::$meldTypeAnalyzer = new MeldTypeAnalyzer();
+            $meldTypes = MeldTypesFactory::getInstance()->getAllMeldTypes();
+            self::$meldTypeAnalyzer = new MeldTypeAnalyzer($meldTypes);
         }
         return self::$meldTypeAnalyzer;
-    }
-
-    static function setMeldTypeAnalyzer(MeldTypeAnalyzer $meldTypeAnalyzer) {
-        self::$meldTypeAnalyzer = $meldTypeAnalyzer;
     }
 
     static function validString($s) {

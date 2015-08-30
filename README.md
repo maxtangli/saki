@@ -204,8 +204,10 @@ rush 20 WaitingAnalyzer
 
 - [x] PublicPhase case: 3.6h // note: all children's constructor calls should be modified when new field added in parent
 - [x] PrivatePhase case: 1h // too slow
-- [ ] speed up of WaitingAnalyzer.analyzePublicPhase
-- [ ] adapt isWaiting
+- [x] speed up of WaitingAnalyzer.analyzePrivatePhase: 3.8h // 700ms -> 120ms, 6 times faster
+- [x] adapt isWaiting 0.3h
+- [ ] refactor Meld/WeakMeld
+- [ ] refactor MeldList
 
 rush etc
 

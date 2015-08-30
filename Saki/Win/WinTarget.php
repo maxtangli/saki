@@ -114,6 +114,10 @@ class WinTarget {
         return $this->roundData->getTileAreas()->getTileRemainAmount($tile);
     }
 
+    function getWallRemainTileAmount() {
+        return $this->roundData->getTileAreas()->getWall()->getRemainTileCount();
+    }
+
     function getWinTile() {
         if ($this->getStubWinTile() !== null) {
             return $this->getStubWinTile();

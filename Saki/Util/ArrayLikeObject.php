@@ -146,6 +146,10 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         // do not call onInnerArrayChanged since innerArray k-v relation not changed
     }
 
+    function unique() {
+        $this->innerArray = array_unique($this->innerArray);
+    }
+
     /**
      * @param mixed|array $valueOrValues
      * @param bool $strict
