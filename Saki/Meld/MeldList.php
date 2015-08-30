@@ -85,31 +85,4 @@ class MeldList extends ArrayLikeObject {
             return $meld->valueExist($tile);
         });
     }
-
-    function canPlusKong(Tile $tile) {
-        foreach ($this as $k => $meld) {
-            if ($meld->canPlusKong($tile)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * @param Tile $tile
-     * @param $forceExposed
-     * @return Meld
-     */
-    function plusKong(Tile $tile, $forceExposed) {
-        foreach ($this as $k => $meld) {
-            if ($meld->canPlusKong($tile)) {
-                $newMelds = $this->toArray();
-                $newMeld = $meld->getPlusKongMeld($tile, $forceExposed);
-                $newMelds[$k] = $newMeld;
-                $this->setInnerArray($newMelds);
-                return $newMeld;
-            }
-        }
-        throw new \InvalidArgumentException("Invalid plusKong \$tile[$tile] for MeldList \$this[$this]");
-    }
 }

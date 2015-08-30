@@ -16,13 +16,14 @@ A japanese-mahjong solver.
 
 ## todo
 
-time cost
+total time cost
 
 - rush  0- 5 34h
 - rush  6-10 23.8h
 - rush 11-15 15.8h
-- rush 16-20 ?
--      total 73.6h + ?
+- rush 16-20 25.6h
+- rush 21-25 ?h
+-      total 99.2h + ?h
 
 rush 0 scribble 1.5h
 
@@ -200,21 +201,25 @@ rush 19 WinAnalyzer issues 8.2h
 - [x] waitingType 4h
 - [x] fu count 3h
 
-rush 20 WaitingAnalyzer
+rush 20 WaitingAnalyzer 8.7h
 
 - [x] PublicPhase case: 3.6h // note: all children's constructor calls should be modified when new field added in parent
 - [x] PrivatePhase case: 1h // too slow
 - [x] speed up of WaitingAnalyzer.analyzePrivatePhase: 3.8h // 700ms -> 120ms, 6 times faster
 - [x] adapt isWaiting 0.3h
-- [ ] refactor Meld/WeakMeld
+
+rush 21 etc
+
+- [x] refactor Meld/WeakMeld: 2h
+- [x] add equal logic for ArrayLikeObject: 0.5h
 - [ ] refactor MeldList
-
-rush etc
-
+- [ ] bug: getMeldCompositions() won't count for 112233s like tiles
 - [ ] isDiscaredTileFalseWin
-- [ ] bug: kang is wrongly counted for onHandMelds
+- [ ] Round winByOther calls
+
 - [ ] public command roller
 - [ ] refactor: publicCandidateTile and WinTile
+- [ ] refactor: RoundResult
 
 rush all yaku
 
@@ -230,12 +235,6 @@ rush client-server style ui
 - [ ] layout design
 - [ ] image resources
 - [ ] ui
-
-rush etc: normal priority
-
-- [ ] Round winByOther calls
-- [ ] bug: getMeldCompositions() won't count for 112233s like tiles
-- [ ] refactor: RoundResult
 
 rush red dora
 

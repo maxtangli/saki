@@ -62,7 +62,7 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($actPlayer, $r->getCurrentPlayer());
         // tiles moved to created meld
         $this->assertEquals($tileCountBefore - 3, $r->getCurrentPlayer()->getPlayerArea()->getHandTileSortedList()->count());
-        $this->assertTrue($r->getCurrentPlayer()->getPlayerArea()->getDeclaredMeldList()->valueExist(Meld::fromString('(1111m)')));
+        $this->assertTrue($r->getCurrentPlayer()->getPlayerArea()->getDeclaredMeldList()->valueExist(Meld::fromString('(1111m)')), $r->getCurrentPlayer()->getPlayerArea()->getDeclaredMeldList());
     }
 
     function testPlusKongBySelf() {

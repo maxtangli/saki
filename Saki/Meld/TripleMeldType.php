@@ -3,7 +3,7 @@ namespace Saki\Meld;
 
 use Saki\Tile\TileList;
 
-class TripleMeldType extends WeakMeldType {
+class TripleMeldType extends MeldType {
     function getTileCount() {
         return 3;
     }

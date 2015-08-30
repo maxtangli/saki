@@ -43,10 +43,10 @@ class MeldTest extends PHPUnit_Framework_TestCase {
     function testAddKong() {
         // canPlusKong
         $meld = new \Saki\Meld\Meld(TileList::fromString('111m'), \Saki\Meld\TripleMeldType::getInstance());
-        $this->assertTrue($meld->canPlusKong(\Saki\Tile\Tile::fromString('1m')));
-        $this->assertFalse($meld->canPlusKong(Tile::fromString('1s')));
+        $this->assertTrue($meld->canToTargetMeld(\Saki\Tile\Tile::fromString('1m'), \Saki\Meld\QuadMeldType::getInstance()));
+        $this->assertFalse($meld->canToTargetMeld(Tile::fromString('1s'), \Saki\Meld\QuadMeldType::getInstance()));
         // plusKong get Quad
-        $meld2 = $meld->getPlusKongMeld(\Saki\Tile\Tile::fromString('1m'), false);
+        $meld2 = $meld->toTargetMeld(\Saki\Tile\Tile::fromString('1m'), \Saki\Meld\QuadMeldType::getInstance(), null);
         $this->assertSame('1111m', $meld2->__toString());
         $this->assertEquals(\Saki\Meld\QuadMeldType::getInstance(), $meld2->getMeldType());
     }
@@ -57,13 +57,15 @@ class MeldTest extends PHPUnit_Framework_TestCase {
      */
     function testAddKongIsExposed($before, $forceExposed, $after) {
         $m1 = new Meld(TileList::fromString('111m'), null, $before);
-        $m2 = $m1->getPlusKongMeld(Tile::fromString('1m'), $forceExposed);
+        $m2 = $m1->toTargetMeld(Tile::fromString('1m'), \Saki\Meld\QuadMeldType::getInstance(), $forceExposed);
         $this->assertEquals($after, $m2->isExposed());
     }
 
     function addKongIsExposedProvider() {
         return [
-            [true, false, true],
+            [true, null, true],
+            [false, null, false],
+            [true, false, false],
             [false, false, false],
             [true, true, true],
             [false, true, true],

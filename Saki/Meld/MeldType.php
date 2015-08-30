@@ -12,6 +12,8 @@ abstract class MeldType extends Singleton {
         return substr($actualClass, $lastSeparatorPos + 1);
     }
 
+    // valid
+
     abstract function getTileCount();
 
     final function valid(TileList $tileList) {
@@ -23,6 +25,30 @@ abstract class MeldType extends Singleton {
     }
 
     abstract protected function validFaces(TileList $tileList);
+
+    // target MeldType
+
+    final function hasTargetMeldType() {
+        return !empty($this->getTargetMeldType());
+    }
+
+    abstract function getTargetMeldType();
+
+    final function getWaitingTiles(TileList $tileList) {
+        if (!$this->hasTargetMeldType()) {
+            throw new \InvalidArgumentException(
+                sprintf('Invalid call on no-target-meld-type MeldType[%s]', get_called_class())
+            );
+        }
+
+        if (!$this->valid($tileList)) {
+            throw new \InvalidArgumentException();
+        }
+
+        return $this->getWaitingTilesImpl($tileList);
+    }
+
+    abstract protected function getWaitingTilesImpl(TileList $tileList);
 
     /**
      * @return MeldType

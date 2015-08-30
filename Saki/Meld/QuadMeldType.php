@@ -11,4 +11,12 @@ class QuadMeldType extends MeldType {
     protected function validFaces(TileList $tileList) {
         return $tileList[0] == $tileList[1] && $tileList[1] == $tileList[2] && $tileList[2] == $tileList[3];
     }
+
+    function getTargetMeldType() {
+        return null;
+    }
+
+    protected function getWaitingTilesImpl(TileList $tileList) {
+        throw new \InvalidArgumentException();
+    }
 }
