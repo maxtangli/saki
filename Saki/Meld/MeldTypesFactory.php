@@ -9,50 +9,17 @@ class MeldTypesFactory extends \Saki\Util\Singleton {
      */
     function getAllMeldTypes() {
         return [
-            // common
-            PairMeldType::getInstance(),
+            // hand win set
             RunMeldType::getInstance(),
             TripleMeldType::getInstance(),
+            // declare win set
             QuadMeldType::getInstance(),
+            // pair
+            PairMeldType::getInstance(),
             // weak
-            SingleMeldType::getInstance(),
+            WeakPairMeldType::getInstance(),
             WeakRunMeldType::getInstance(),
         ];
-    }
-
-    /**
-     * @param bool $includeWeak
-     * @return MeldType[]
-     */
-    function getHandMeldTypes($includeWeak = false) {
-        $r = [
-            PairMeldType::getInstance(),
-            RunMeldType::getInstance(),
-            TripleMeldType::getInstance(),
-        ];
-        if ($includeWeak) {
-            $r = array_merge($r, [
-                SingleMeldType::getInstance(),
-                WeakRunMeldType::getInstance(),
-            ]);
-        }
-        return $r;
-    }
-
-    function getHandAndDeclaredMeldTypes($includeWeak = false) {
-        $r = [
-            PairMeldType::getInstance(),
-            RunMeldType::getInstance(),
-            TripleMeldType::getInstance(),
-            QuadMeldType::getInstance(),
-        ];
-        if ($includeWeak) {
-            $r = array_merge($r, [
-                SingleMeldType::getInstance(),
-                WeakRunMeldType::getInstance(),
-            ]);
-        }
-        return $r;
     }
 
     /**

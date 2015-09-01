@@ -2,7 +2,7 @@
 
 namespace Saki\Meld;
 
-use Saki\Tile\TileList;
+use Saki\Tile\TileSortedList;
 
 class MeldTypeAnalyzer {
     private $candidateMeldTypes;
@@ -23,14 +23,14 @@ class MeldTypeAnalyzer {
     }
 
     /**
-     * @param TileList $tileList
+     * @param TileSortedList $tileSortedList
      * @param bool $allowNoMatch
      * @return false|MeldType
      */
-    function analyzeMeldType(TileList $tileList, $allowNoMatch = false) {
+    function analyzeMeldType(TileSortedList $tileSortedList, $allowNoMatch = false) {
         $candidateMeldTypes = $this->getCandidateMeldTypes();
         foreach ($candidateMeldTypes as $meldType) {
-            if ($meldType->valid($tileList)) {
+            if ($meldType->valid($tileSortedList)) {
                 return $meldType;
             }
         }
@@ -38,7 +38,7 @@ class MeldTypeAnalyzer {
             return false;
         } else {
             $candidateMeldTypesString = implode(',', $candidateMeldTypes);
-            throw new \InvalidArgumentException("No matched meldType for \$tileList[$tileList] within \$candidateMeldTypes[$candidateMeldTypesString].");
+            throw new \InvalidArgumentException("No matched meldType for \$tileList[$tileSortedList] within \$candidateMeldTypes[$candidateMeldTypesString].");
         }
     }
 }

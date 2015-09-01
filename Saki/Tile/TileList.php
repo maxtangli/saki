@@ -64,13 +64,13 @@ class TileList extends ArrayLikeObject {
 
     /**
      * @param int $firstPartLength
-     * @return TileList[] list($beginTileList, $remainTileList)
+     * @return TileSortedList[] list($beginTileList, $remainTileList)
      */
-    function getCutInTwoTileLists($firstPartLength) {
+    function getCutInTwoTileSortedLists($firstPartLength) {
         $tiles = $this->toArray();
         $tiles1 = array_slice($tiles, 0, $firstPartLength);
         $tiles2 = array_slice($tiles, $firstPartLength);
-        return [new self($tiles1), new self($tiles2)];
+        return [new TileSortedList($tiles1), new TileSortedList($tiles2)];
     }
 
     /**

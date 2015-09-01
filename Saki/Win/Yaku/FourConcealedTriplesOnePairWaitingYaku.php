@@ -1,7 +1,7 @@
 <?php
 namespace Saki\Win\Yaku;
 
-use Saki\Win\TileSeries\FourConcealedTripleOrQuadAndOnePairTileSeries;
+use Saki\Win\TileSeries;
 use Saki\Win\WaitingType;
 use Saki\Win\WinSubTarget;
 
@@ -16,13 +16,13 @@ class FourConcealedTriplesOnePairWaitingYaku extends Yaku {
 
     protected function getRequiredTileSeries() {
         return [
-            FourConcealedTripleOrQuadAndOnePairTileSeries::getInstance()
+            TileSeries::getInstance(TileSeries::FOUR_CONCEALED_TRIPLE_OR_QUAD_AND_ONE_PAIR)
         ];
     }
 
     protected function matchOtherConditions(WinSubTarget $subTarget) {
-        $waitingType = FourConcealedTripleOrQuadAndOnePairTileSeries::getInstance()->getWaitingType($subTarget->getAllMeldList(), $subTarget->getWinTile());
-        return $waitingType == WaitingType::getInstance(WaitingType::SINGLE_PAIR_WAITING);
+        $waitingType = TileSeries::getInstance(TileSeries::FOUR_CONCEALED_TRIPLE_OR_QUAD_AND_ONE_PAIR)->getWaitingType($subTarget->getAllMeldList(), $subTarget->getWinTile());
+        return $waitingType == WaitingType::getInstance(WaitingType::PAIR_WAITING);
     }
 
     function getExcludedYakus() {

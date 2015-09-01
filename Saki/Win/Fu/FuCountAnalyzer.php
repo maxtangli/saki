@@ -128,7 +128,7 @@ class FuCountAnalyzer extends Singleton {
         $targetWaitingTypes = [
             WaitingType::getInstance(WaitingType::MIDDLE_RUN_WAITING),
             WaitingType::getInstance(WaitingType::ONE_SIDE_RUN_WAITING),
-            WaitingType::getInstance(WaitingType::SINGLE_PAIR_WAITING),
+            WaitingType::getInstance(WaitingType::PAIR_WAITING),
         ];
         $waitingTypeFuCount = in_array($waitingType, $targetWaitingTypes) ? 2 : 0;
         return $waitingTypeFuCount;

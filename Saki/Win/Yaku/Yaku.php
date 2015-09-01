@@ -4,7 +4,7 @@ namespace Saki\Win\Yaku;
 
 use Saki\Util\Singleton;
 use Saki\Util\Utils;
-use Saki\Win\TileSeries\TileSeries;
+use Saki\Win\TileSeries;
 use Saki\Win\WinSubTarget;
 
 abstract class Yaku extends Singleton {
@@ -63,40 +63,3 @@ abstract class Yaku extends Singleton {
         return parent::getInstance();
     }
 }
-
-/*
-
-class StringKeyMap {
-    private $a;
-
-    function __construct() {
-        $this->a = [];
-    }
-
-    function get($key) {
-        return $this->a[$this->toNormalizedKey($key)];
-    }
-
-    function existKey($key) {
-        return isset($this->a[$this->toNormalizedKey($key)]);
-    }
-
-    function set($key, $value) {
-        $this->a[$this->toNormalizedKey($key)] = $value;
-    }
-
-    function add($key, $value) {
-        if ($this->existKey($key)) {
-            throw new \InvalidArgumentException();
-        }
-        $this->set($key, $value);
-    }
-
-    static function toNormalizedKey($key) {
-        return (string) $key;
-    }
-}
-
-
-
-*/

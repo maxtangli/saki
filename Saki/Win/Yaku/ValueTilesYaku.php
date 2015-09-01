@@ -19,7 +19,7 @@ abstract class ValueTilesYaku extends Yaku {
     }
 
     protected function matchOtherConditions(WinSubTarget $subTarget) {
-        $meldList = $subTarget->getAllMeldList()->getFilteredMeldList(function (Meld $meld) {
+        $meldList = $subTarget->getAllMeldList()->toFilteredMeldList(function (Meld $meld) {
             return $meld->isTripleOrQuad();
         });
         return $meldList->any(function (Meld $meld) use ($subTarget) {

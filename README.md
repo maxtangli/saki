@@ -208,18 +208,34 @@ rush 20 WaitingAnalyzer 8.7h
 - [x] speed up of WaitingAnalyzer.analyzePrivatePhase: 3.8h // 700ms -> 120ms, 6 times faster
 - [x] adapt isWaiting 0.3h
 
-rush 21 etc
+rush 21 refactor tons, fix bugs 8h
 
 - [x] refactor Meld/WeakMeld: 2h
 - [x] add equal logic for ArrayLikeObject: 0.5h
-- [ ] refactor MeldList
-- [ ] bug: getMeldCompositions() won't count for 112233s like tiles
-- [ ] isDiscaredTileFalseWin
+- [x] refactor WinSetType: 0.7h
+- [x] refactor MeldType, add MeldType.getWaitingType(): 1.5h
+- [x] Meld.fromWeakMeldWaitingType(): 0.6h
+- [x] refactor MeldList isFourXXXAndOneXXX(): 0.6h
+- [x] refactor TileSeriesType: 2.1h
+
+rush 22 fix getMeldCompositions() 1.5h
+
+- [x] bug: getMeldCompositions() won't count for 112233s like tiles 1.3h
+- [x] bug: MeldCompositionAnalyzer: exposed 0.2h
+
+rush 
+
+- [ ] isDiscardedTileFalseWin
 - [ ] Round winByOther calls
 
-- [ ] public command roller
+rush
+
 - [ ] refactor: publicCandidateTile and WinTile
 - [ ] refactor: RoundResult
+
+rush 
+
+- [ ] public command roller
 
 rush all yaku
 

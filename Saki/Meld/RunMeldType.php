@@ -2,32 +2,38 @@
 namespace Saki\Meld;
 
 use Saki\Tile\Tile;
-use Saki\Tile\TileList;
+use Saki\Tile\TileSortedList;
 
 class RunMeldType extends MeldType {
     function getTileCount() {
         return 3;
     }
 
-    protected function validFaces(TileList $tileList) {
-        $sameSuit = $tileList[0]->getTileType()->isSuit() &&
-            $tileList[0]->getTileType() == $tileList[1]->getTileType() && $tileList[1]->getTileType() == $tileList[2]->getTileType();
+    protected function validFaces(TileSortedList $tileSortedList) {
+        $sameSuit = $tileSortedList[0]->getTileType()->isSuit() &&
+            $tileSortedList[0]->getTileType() == $tileSortedList[1]->getTileType() && $tileSortedList[1]->getTileType() == $tileSortedList[2]->getTileType();
         if (!$sameSuit) {
             return false;
         }
 
-        $numbers = [$tileList[0]->getNumber(), $tileList[1]->getNumber(), $tileList[2]->getNumber()];
-        sort($numbers);
-        $consecutiveNumber = $numbers[0] + 1 == $numbers[1] && $numbers[1] + 1 == $numbers[2];
-        return $consecutiveNumber;
+        $numbers = [$tileSortedList[0]->getNumber(), $tileSortedList[1]->getNumber(), $tileSortedList[2]->getNumber()];
+        $isConsecutiveNumber = $numbers[0] + 1 == $numbers[1] && $numbers[1] + 1 == $numbers[2];
+        return $isConsecutiveNumber;
     }
 
-    function getTargetMeldType() {
-        return null;
+    function getPossibleTileSortedLists(Tile $firstTile) {
+        if ($firstTile->isSuit() && $firstTile->getNumber() <= 7) {
+            $nextTile = $firstTile->toNextTile();
+            $nextNextTile = $nextTile->toNextTile();
+            $tileSortedList = new TileSortedList([$firstTile, $nextTile, $nextNextTile]);
+            return [$tileSortedList];
+        } else {
+            return [];
+        }
     }
 
-    protected function getWaitingTilesImpl(TileList $tileList) {
-        throw new \InvalidArgumentException();
+    function getWinSetType() {
+        return WinSetType::getInstance(WinSetType::HAND_WIN_SET);
     }
 }
 

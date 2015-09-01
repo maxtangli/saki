@@ -31,8 +31,8 @@ class MeldTest extends PHPUnit_Framework_TestCase {
         // validString
         $this->assertTrue(Meld::validString('(111m)'));
         $this->assertTrue(Meld::validString('(1111m)'));
-        $this->assertFalse(Meld::validString('(11m)'));
-        $this->assertFalse(Meld::validString('(123m)'));
+        $this->assertTrue(Meld::validString('(11m)'));
+        $this->assertTrue(Meld::validString('(123m)'));
         // fromString
         $meld = Meld::fromString('(111m)');
         $this->assertTrue($meld->isConcealed());
@@ -71,4 +71,8 @@ class MeldTest extends PHPUnit_Framework_TestCase {
             [false, true, true],
         ];
     }
+
+    // --- weak ---
+
+
 }

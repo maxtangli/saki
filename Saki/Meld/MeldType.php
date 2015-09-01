@@ -1,7 +1,9 @@
 <?php
 namespace Saki\Meld;
 
+use Saki\Tile\Tile;
 use Saki\Tile\TileList;
+use Saki\Tile\TileSortedList;
 use Saki\Util\Singleton;
 
 abstract class MeldType extends Singleton {
@@ -16,39 +18,41 @@ abstract class MeldType extends Singleton {
 
     abstract function getTileCount();
 
-    final function valid(TileList $tileList) {
-        return $this->validCount($tileList) && $this->validFaces($tileList);
+    final function valid(TileSortedList $tileSortedList) {
+        return $this->validCount($tileSortedList) && $this->validFaces($tileSortedList);
     }
 
-    final protected function validCount(TileList $tileList) {
-        return count($tileList) == $this->getTileCount();
+    final protected function validCount(TileSortedList $tileSortedList) {
+        return count($tileSortedList) == $this->getTileCount();
     }
 
-    abstract protected function validFaces(TileList $tileList);
+    abstract protected function validFaces(TileSortedList $tileSortedList);
 
-    // target MeldType
+    /**
+     * @param Tile $firstTile
+     * @return TileSortedList[]
+     */
+    abstract function getPossibleTileSortedLists(Tile $firstTile);
 
-    final function hasTargetMeldType() {
-        return !empty($this->getTargetMeldType());
+    final protected function getPossibleTileSortedListImplByRepeat(Tile $firstTile) {
+        $tiles = array_fill(0, $this->getTileCount(), $firstTile);
+        $tileSortedList = new TileSortedList($tiles);
+        return [$tileSortedList];
     }
 
-    abstract function getTargetMeldType();
-
-    final function getWaitingTiles(TileList $tileList) {
-        if (!$this->hasTargetMeldType()) {
-            throw new \InvalidArgumentException(
-                sprintf('Invalid call on no-target-meld-type MeldType[%s]', get_called_class())
-            );
-        }
-
-        if (!$this->valid($tileList)) {
-            throw new \InvalidArgumentException();
-        }
-
-        return $this->getWaitingTilesImpl($tileList);
+    /**
+     * note: convenient call for $meldType instanceof WeakMeldType
+     * @return bool
+     */
+    function hasTargetMeldType() {
+        return false;
     }
 
-    abstract protected function getWaitingTilesImpl(TileList $tileList);
+    /**
+     * note: A持有B，B的某些信息方法，A也需要直接暴露-》将这些信息打包为单个类以便于共享。
+     * @return WinSetType
+     */
+    abstract function getWinSetType();
 
     /**
      * @return MeldType
@@ -57,3 +61,4 @@ abstract class MeldType extends Singleton {
         return parent::getInstance();
     }
 }
+

@@ -6,6 +6,10 @@ use Saki\Tile\TileList;
 use Saki\Tile\TileSortedList;
 use Saki\Util\ArrayLikeObject;
 
+/**
+ * ValueObject
+ * @package Saki\Meld
+ */
 class Meld extends ArrayLikeObject {
     private static $meldTypeAnalyzer;
 
@@ -44,7 +48,7 @@ class Meld extends ArrayLikeObject {
         return new static($tileList, null, $exposed);
     }
 
-    private $tileReadonlyOrderedList;
+    private $tileSortedList;
     private $meldType;
     private $exposed;
 
@@ -54,29 +58,34 @@ class Meld extends ArrayLikeObject {
      * @param bool $exposed
      */
     function __construct(TileList $tileList, MeldType $meldType = null, $exposed = true) {
-        if ($meldType !== null && !$meldType->valid($tileList)) {
+        $tileSortedList = new TileSortedList($tileList->toArray());
+        if ($meldType !== null && !$meldType->valid($tileSortedList)) {
             throw new \InvalidArgumentException();
         }
-        $actualMeldType = $meldType !== null ? $meldType : self::getMeldTypeAnalyzer()->analyzeMeldType($tileList);
-        $validConcealed = $exposed || ($actualMeldType instanceof TripleMeldType || $actualMeldType instanceof QuadMeldType);
-        if (!$validConcealed) {
-            throw new \InvalidArgumentException(sprintf('Invalid argument $exposed[%s] for $actualMeldType[%s].', $exposed, $actualMeldType));
-        }
 
-        $tileOrderedList = new TileSortedList($tileList->toArray());
-        parent::__construct($tileOrderedList->toArray());
-        $this->tileReadonlyOrderedList = $tileOrderedList;
+        $actualMeldType = $meldType !== null ? $meldType : self::getMeldTypeAnalyzer()->analyzeMeldType($tileSortedList);
+//        $validConcealed = $exposed || ($actualMeldType instanceof TripleMeldType || $actualMeldType instanceof QuadMeldType);
+//        if (!$validConcealed) {
+//            throw new \InvalidArgumentException(sprintf('Invalid argument $exposed[%s] for $actualMeldType[%s].', $exposed, $actualMeldType));
+//        }
+
+        parent::__construct($tileSortedList->toArray());
+        $this->tileSortedList = $tileSortedList;
         $this->meldType = $actualMeldType;
         $this->exposed = $exposed;
     }
 
     function __toString() {
-        $s = $this->tileReadonlyOrderedList->__toString();
+        $s = $this->tileSortedList->__toString();
         return $this->isConcealed() ? "($s)" : $s;
     }
 
+    function toTileSortedList() {
+        return new TileSortedList($this->tileSortedList->toArray());
+    }
+
     function equals(Meld $other, $compareExposed = true) {
-        return $this->tileReadonlyOrderedList == $other->tileReadonlyOrderedList
+        return $this->tileSortedList == $other->tileSortedList
         && ($compareExposed || $this->exposed == $other->exposed);
     }
 
@@ -94,7 +103,7 @@ class Meld extends ArrayLikeObject {
 
     function toExposed($exposedFlag = null) {
         return $this->matchExposed($exposedFlag) ? $this :
-            new Meld($this->tileReadonlyOrderedList, $this->getMeldType(), $exposedFlag);
+            new Meld($this->tileSortedList, $this->getMeldType(), $exposedFlag);
     }
 
     protected function matchExposed($exposedFlag = null) {
@@ -111,17 +120,17 @@ class Meld extends ArrayLikeObject {
         return $this->getMeldType() instanceof RunMeldType && $this->matchExposed($exposedFlag);
     }
 
-    function isLowestSideRun($exposedFlag = null) {
-        return $this->isRun($exposedFlag) && $this->getFirst()->getNumber() == 1;
-    }
-
-    function isHighestSideRun($exposedFlag = null) {
-        return $this->isRun($exposedFlag) && $this->getFirst()->getNumber() == 9;
-    }
-
-    function isLowestOrHighestSideRun($exposedFlag = null) {
-        return $this->isLowestSideRun($exposedFlag) || $this->isHighestSideRun($exposedFlag);
-    }
+//    function isLowestSideRun($exposedFlag = null) {
+//        return $this->isRun($exposedFlag) && $this->getFirst()->getNumber() == 1;
+//    }
+//
+//    function isHighestSideRun($exposedFlag = null) {
+//        return $this->isRun($exposedFlag) && $this->getFirst()->getNumber() == 9;
+//    }
+//
+//    function isLowestOrHighestSideRun($exposedFlag = null) {
+//        return $this->isLowestSideRun($exposedFlag) || $this->isHighestSideRun($exposedFlag);
+//    }
 
     function isTriple($exposedFlag = null) {
         return $this->getMeldType() instanceof TripleMeldType && $this->matchExposed($exposedFlag);
@@ -135,26 +144,52 @@ class Meld extends ArrayLikeObject {
         return $this->isTriple($exposedFlag) || $this->isQuad($exposedFlag);
     }
 
-    function isHandWinSet() {
-        return $this->isRun() || $this->isTriple();
+    function getWinSetType() {
+        return $this->getMeldType()->getWinSetType();
     }
 
-    function isWinSet() {
-        return $this->isRun() || $this->isTriple() || $this->isQuad();
+    // target of a weak MeldType
+
+    function canToWeakMeld(Tile $waitingTile) {
+        if (!$this->valueExist($waitingTile)) {
+            return false;
+        }
+
+        $weakMeldTileSortedList = $this->toTileSortedList();
+        $weakMeldTileSortedList->removeByValue($waitingTile);
+        $weakMeldType = $this->getMeldTypeAnalyzer()->analyzeMeldType($weakMeldTileSortedList, true);
+        if (!$weakMeldType) {
+            return false;
+        }
+
+        $weakMeld = new Meld($weakMeldTileSortedList, $weakMeldType, $this->isExposed());
+        return $weakMeld->getMeldType()->hasTargetMeldType()
+            && $weakMeld->canToTargetMeld($waitingTile, $this->getMeldType());
+    }
+
+    function toWeakMeld(Tile $waitingTile) {
+        if (!$this->canToWeakMeld($waitingTile)) {
+            throw new \InvalidArgumentException();
+        }
+
+        $weakMeldTileSortedList = $this->toTileSortedList();
+        $weakMeldTileSortedList->removeByValue($waitingTile);
+        $weakMeld = new Meld($weakMeldTileSortedList, null, $this->isExposed());
+        return $weakMeld;
+    }
+
+    function getFromWeakMeldWaitingType(Tile $waitingTile) {
+        return $this->toWeakMeld($waitingTile)->getWaitingType();
     }
 
     // weak MeldType
 
-    function isSingle() {
-        return $this->getMeldType() instanceof SingleMeldType;
+    function isWeakPair() {
+        return $this->getMeldType() instanceof WeakPairMeldType;
     }
 
     function isWeakRun() {
         return $this->getMeldType() instanceof WeakRunMeldType;
-    }
-
-    function isSingleOrWeakRun() {
-        return $this->isSingle() || $this->isWeakRun();
     }
 
     protected function getActualTargetMeldType(MeldType $targetMeldType = null) {
@@ -175,7 +210,7 @@ class Meld extends ArrayLikeObject {
             return false;
         }
 
-        $waitingTiles = $this->getMeldType()->getWaitingTiles($this->tileReadonlyOrderedList);
+        $waitingTiles = $this->getMeldType()->getWaitingTiles($this->tileSortedList);
         return in_array($tile, $waitingTiles);
     }
 
@@ -184,10 +219,18 @@ class Meld extends ArrayLikeObject {
             throw new \InvalidArgumentException();
         }
 
-        $targetTileList = new TileSortedList(array_merge($this->tileReadonlyOrderedList->toArray(), [$tile]));
+        $targetTileList = new TileSortedList(array_merge($this->tileSortedList->toArray(), [$tile]));
         $actualTargetMeldType = $this->getActualTargetMeldType($targetMeldType);
         $targetExposed = $exposedFlag !== null ? $exposedFlag : $this->isExposed();
         return new Meld($targetTileList, $actualTargetMeldType, $targetExposed);
+    }
+
+    function getWaitingTiles() {
+        return $this->getMeldType()->getWaitingTiles($this->tileSortedList);
+    }
+
+    function getWaitingType() {
+        return $this->getMeldType()->getWaitingType($this->tileSortedList);
     }
 
     // ArrayLikeObject issues

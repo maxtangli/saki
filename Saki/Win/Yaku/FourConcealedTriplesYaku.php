@@ -1,7 +1,7 @@
 <?php
 namespace Saki\Win\Yaku;
 
-use Saki\Win\TileSeries\FourConcealedTripleOrQuadAndOnePairTileSeries;
+use Saki\Win\TileSeries;
 use Saki\Win\WinSubTarget;
 
 class FourConcealedTriplesYaku extends Yaku {
@@ -15,7 +15,7 @@ class FourConcealedTriplesYaku extends Yaku {
 
     protected function getRequiredTileSeries() {
         return [
-            FourConcealedTripleOrQuadAndOnePairTileSeries::getInstance()
+            TileSeries::getInstance(TileSeries::FOUR_CONCEALED_TRIPLE_OR_QUAD_AND_ONE_PAIR)
         ];
     }
 

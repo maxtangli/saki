@@ -16,6 +16,22 @@ class Utils {
         return $trimmedToken;
     }
 
+    static function getBestOne(array $bestOnes, array $candidates) {
+        if (empty($candidates)) {
+            throw new \InvalidArgumentException();
+        }
+
+        foreach($bestOnes as $bestOne) {
+            foreach($candidates as $candidate) {
+                if ($candidate == $bestOne) {
+                    return $candidate;
+                }
+            }
+        }
+
+        throw new \InvalidArgumentException();
+    }
+
     /**
      * @param array $arr
      * @param callable $key_selector
@@ -50,14 +66,14 @@ class Utils {
 
     static function array_max(array $a, callable $selector) {
         return array_reduce($a, function ($maxItem, $currentItem) use ($selector) {
-            $greater = $maxItem === null || $selector($currentItem) > $maxItem;
+            $greater = $maxItem === null || $selector($currentItem) > $selector($maxItem);
             return $greater ? $currentItem : $maxItem;
         }, null);
     }
 
     static function array_min(array $a, callable $selector) {
         return array_reduce($a, function ($minItem, $currentItem) use ($selector) {
-            $smaller = $minItem === null || $selector($currentItem) < $minItem;
+            $smaller = $minItem === null || $selector($currentItem) < $selector($minItem);
             return $smaller ? $currentItem : $minItem;
         }, null);
     }

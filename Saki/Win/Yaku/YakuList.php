@@ -43,9 +43,9 @@ class YakuList extends ArrayLikeObject {
         $excludedYakus = array_reduce($this->toArray(), function (array $carry, Yaku $yaku) {
             return array_merge($carry, $yaku->getExcludedYakus());
         }, []);
-        $remainYakus = array_filter($this->toArray(), function (Yaku $yaku) use ($excludedYakus) {
+        $remainYakus = array_values(array_filter($this->toArray(), function (Yaku $yaku) use ($excludedYakus) {
             return !in_array($yaku, $excludedYakus);
-        });
+        }));
         $this->setInnerArray($remainYakus);
     }
 }

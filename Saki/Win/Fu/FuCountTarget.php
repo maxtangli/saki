@@ -30,7 +30,7 @@ class FuCountTarget {
     }
 
     function getPairMeld() {
-        return $this->getAllMeldList()->getFilteredMeldList(function (Meld $meld) {
+        return $this->getAllMeldList()->toFilteredMeldList(function (Meld $meld) {
             return $meld->isPair();
         })->getFirst();
     }

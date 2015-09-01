@@ -3,30 +3,30 @@ namespace Saki\Win;
 
 use Saki\Meld\MeldCompositionsAnalyzer;
 use Saki\Meld\MeldList;
-use Saki\Meld\MeldTypeAnalyzer;
-use Saki\Meld\MeldTypesFactory;
+use Saki\Meld\PairMeldType;
+use Saki\Meld\RunMeldType;
+use Saki\Meld\TripleMeldType;
 use Saki\Util\Utils;
 use Saki\Win\Fu\FuCountAnalyzer;
 use Saki\Win\Fu\FuCountTarget;
-use Saki\Win\TileSeries\TileSeriesAnalyzer;
 use Saki\Win\Yaku\YakuAnalyzer;
 use Saki\Win\Yaku\YakuList;
 
 class WinAnalyzer {
     private $yakuAnalyzer;
-    private $waitingTypeAnalyzer;
+    private $tileSeriesAnalyzer;
 
     function __construct() {
         $this->yakuAnalyzer = new YakuAnalyzer();
-        $this->waitingTypeAnalyzer = new TileSeriesAnalyzer();
+        $this->tileSeriesAnalyzer = new TileSeriesAnalyzer();
     }
 
     function getYakuAnalyzer() {
         return $this->yakuAnalyzer;
     }
 
-    function getWaitingTypeAnalyzer() {
-        return $this->waitingTypeAnalyzer;
+    function getTileSeriesAnalyzer() {
+        return $this->tileSeriesAnalyzer;
     }
 
     /**
@@ -38,7 +38,12 @@ class WinAnalyzer {
         // handTiles target -> handMelds[] subTarget
         $analyzer = new MeldCompositionsAnalyzer();
         $handTileList = $target->getHandTileSortedList();
-        $meldCompositions = $analyzer->analyzeMeldCompositions($handTileList, MeldTypesFactory::getInstance()->getHandMeldTypes());
+        $handMeldTypes = [
+            RunMeldType::getInstance(),
+            TripleMeldType::getInstance(),
+            PairMeldType::getInstance(),
+        ];
+        $meldCompositions = $analyzer->analyzeMeldCompositions($handTileList, $handMeldTypes);
         if (empty($meldCompositions)) {
             return new WinAnalyzerResult(WinState::getInstance(WinState::NOT_WIN), new YakuList([], $target->isExposed()), 0);
         }
@@ -86,7 +91,7 @@ class WinAnalyzer {
          * - win: win tiles exist and yaku count > 0
          */
 
-        $waitingType = $this->getWaitingTypeAnalyzer()->analyzeWaitingType($subTarget->getAllMeldList(), $subTarget->getWinTile());
+        $waitingType = $this->getTileSeriesAnalyzer()->analyzeWaitingType($subTarget->getAllMeldList(), $subTarget->getWinTile());
         if ($waitingType->exist()) {
             $yakuList = $this->getYakuAnalyzer()->analyzeYakuList($subTarget);
             if ($yakuList->count() == 0) {

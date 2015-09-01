@@ -1,7 +1,7 @@
 <?php
 namespace Saki\Win\Yaku;
 
-use Saki\Win\TileSeries\SevenPairsTileSeries;
+use Saki\Win\TileSeries;
 use Saki\Win\WinSubTarget;
 
 class SevenPairsYaku extends Yaku {
@@ -15,7 +15,7 @@ class SevenPairsYaku extends Yaku {
 
     protected function getRequiredTileSeries() {
         return [
-            SevenPairsTileSeries::getInstance()
+            TileSeries::getInstance(TileSeries::SEVEN_PAIRS)
         ];
     }
 

@@ -36,13 +36,6 @@ class MeldList extends ArrayLikeObject {
     }
 
     /**
-     * @return Meld[]
-     */
-    function toArray() {
-        return parent::toArray();
-    }
-
-    /**
      * @param int $offset
      * @return Meld
      */
@@ -57,23 +50,23 @@ class MeldList extends ArrayLikeObject {
         return implode(',', $meldStrings);
     }
 
-    function getFilteredMeldList(callable $filter) {
-        $melds = array_filter($this->toArray(), $filter);
-        return new self(array_values($melds));
-    }
-
-    function getFilteredTypesMeldList(array $targetMeldTypes) {
-        return $this->getFilteredMeldList(function (Meld $meld) use ($targetMeldTypes) {
-            return in_array($meld->getMeldType(), $targetMeldTypes);
-        });
-    }
-
     function toSortedTileList() {
         $l = new TileSortedList([]);
         foreach ($this as $meld) {
             $l->insert($meld->toArray(), 0);
         }
         return $l;
+    }
+
+    function toFilteredMeldList(callable $filter) {
+        $melds = array_filter($this->toArray(), $filter);
+        return new self(array_values($melds));
+    }
+
+    function toFilteredTypesMeldList(array $targetMeldTypes) {
+        return $this->toFilteredMeldList(function (Meld $meld) use ($targetMeldTypes) {
+            return in_array($meld->getMeldType(), $targetMeldTypes);
+        });
     }
 
     function full() {
@@ -84,5 +77,34 @@ class MeldList extends ArrayLikeObject {
         return $this->any(function (Meld $meld) use ($tile) {
             return $meld->valueExist($tile);
         });
+    }
+
+    function isSevenUniquePairs() {
+        $pairs = $this->toFilteredTypesMeldList([PairMeldType::getInstance()])->toArray();
+        $isUnique = array_unique($pairs) == $pairs;
+        return count($pairs) == 7 && $isUnique;
+    }
+
+    function isFourWinSetAndOnePair() {
+        $winSetList = $this->toFilteredMeldList(function(Meld $meld) {
+            return $meld->getWinSetType()->isWinSet();
+        });
+        $pairList = $this->toFilteredTypesMeldList([PairMeldType::getInstance()]);
+        return $winSetList->count() == 4 && $pairList->count() == 1;
+    }
+
+    function isFourRunAndOnePair() {
+        $runList = $this->toFilteredTypesMeldList([RunMeldType::getInstance()]);
+        $pairList = $this->toFilteredTypesMeldList([PairMeldType::getInstance()]);
+        return $runList->count() == 4 && $pairList->count() == 1;
+    }
+
+    function isFourTripleOrQuadAndOnePair($requireConcealedTripleOrQuad = false) {
+        $tripleOrQuadList = $this->toFilteredTypesMeldList([TripleMeldType::getInstance(), QuadMeldType::getInstance()]);
+        $pairList = $this->toFilteredTypesMeldList([PairMeldType::getInstance()]);
+        $matchConcealed = !$requireConcealedTripleOrQuad || $tripleOrQuadList->all(function (Meld $meld) {
+                return $meld->isConcealed();
+            });
+        return $tripleOrQuadList->count() == 4 && $pairList->count() == 1 && $matchConcealed;
     }
 }

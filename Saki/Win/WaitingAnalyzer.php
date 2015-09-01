@@ -5,7 +5,9 @@ use Saki\Game\RoundPhase;
 use Saki\Meld\MeldCompositionsAnalyzer;
 use Saki\Meld\MeldTypesFactory;
 use Saki\Meld\PairMeldType;
-use Saki\Meld\SingleMeldType;
+use Saki\Meld\RunMeldType;
+use Saki\Meld\TripleMeldType;
+use Saki\Meld\WeakPairMeldType;
 use Saki\Meld\WeakRunMeldType;
 use Saki\Tile\TileList;
 use Saki\Tile\TileSortedList;
@@ -92,32 +94,37 @@ class WaitingAnalyzer {
     }
 
     function getFutureTiles(WinTarget $target) {
-//        return $this->getFutureTilesByTileSet($target);
-        return $this->getFutureTilesByWeakMelds($target);
+        return $this->getFutureTilesImplByWeakMelds($target);
     }
 
-    function getFutureTilesByTileSet(WinTarget $target) { // old slow ver: analyzePrivate() 700ms
+    function getFutureTilesImplByTileSet(WinTarget $target) { // old slow ver: analyzePrivate() 700ms
         return $target->getTileSet()->getUniqueTiles();
     }
 
-    function getFutureTilesByWeakMelds(WinTarget $target) { // fast ver1: analyzePrivate() 120ms, about 6 times faster
+    function getFutureTilesImplByWeakMelds(WinTarget $target) { // fast ver1: analyzePrivate() 120ms, about 6 times faster
         $handTileList = $target->getHandTileSortedList(false);
         if (!$handTileList->validPublicPhaseCount()) {
             throw new \InvalidArgumentException();
         }
 
         $meldCompositionAnalyzer = $this->meldCompositionsAnalyzer;
-        $meldTypes = MeldTypesFactory::getInstance()->getHandMeldTypes(true);
+        $meldTypes = [
+            RunMeldType::getInstance(),
+            TripleMeldType::getInstance(),
+            PairMeldType::getInstance(),
+            WeakRunMeldType::getInstance(),
+            WeakPairMeldType::getInstance(),
+        ];
         $meldLists = $meldCompositionAnalyzer->analyzeMeldCompositions($handTileList, $meldTypes, 1);
 
         $waitingTileList = new TileSortedList([]);
         foreach ($meldLists as $meldList) {
-            $pairMeldList = $meldList->getFilteredTypesMeldList([PairMeldType::getInstance()]);
-            $singleOrWeakRunMeldList = $meldList->getFilteredTypesMeldList([SingleMeldType::getInstance(), WeakRunMeldType::getInstance()]);
-            if (count($pairMeldList) == 2) {
-                $targetMeldList = $pairMeldList;
-            } elseif (count($singleOrWeakRunMeldList) == 1) {
-                $targetMeldList = $singleOrWeakRunMeldList;
+            $pairList = $meldList->toFilteredTypesMeldList([PairMeldType::getInstance()]);
+            $weakList = $meldList->toFilteredTypesMeldList([WeakPairMeldType::getInstance(), WeakRunMeldType::getInstance()]);
+            if (count($pairList) == 2) {
+                $targetMeldList = $pairList;
+            } elseif (count($weakList) == 1) {
+                $targetMeldList = $weakList;
             } else {
                 throw new \LogicException(
                     sprintf('Invalid implementation. $meldList[%s]', $meldList)
@@ -125,8 +132,7 @@ class WaitingAnalyzer {
             }
 
             foreach ($targetMeldList as $meld) {
-                $waitingTiles = $meld->getMeldType()->getWaitingTiles(new TileList($meld->toArray())); // todo simplify
-                $waitingTileList->push($waitingTiles);
+                $waitingTileList->push($meld->getWaitingTiles());
             }
         }
         $waitingTileList->unique();

@@ -28,7 +28,7 @@ class Wall {
         if ($shuffle) {
             $baseTileList->shuffle();
         }
-        list($deadWallTileLists, $currentTileList) = $baseTileList->getCutInTwoTileLists(14);
+        list($deadWallTileLists, $currentTileList) = $baseTileList->getCutInTwoTileSortedLists(14);
         $this->deadWall = new DeadWall($deadWallTileLists);
         $this->remainTileList = $currentTileList;
     }

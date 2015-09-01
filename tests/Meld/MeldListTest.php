@@ -47,4 +47,8 @@ class MeldListTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($meldList->tileExist(\Saki\Tile\Tile::fromString('2s')));
         $this->assertFalse($meldList->tileExist(\Saki\Tile\Tile::fromString('4s')));
     }
+
+    function testTileSeries() {
+        $this->assertTrue(MeldList::fromString('123s,456s,789s,111s,11s')->isFourWinSetAndOnePair());
+    }
 }
