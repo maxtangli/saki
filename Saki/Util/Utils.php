@@ -16,72 +16,26 @@ class Utils {
         return $trimmedToken;
     }
 
-    static function getBestOne(array $bestOnes, array $candidates) {
-        if (empty($candidates)) {
-            throw new \InvalidArgumentException();
-        }
-
-        foreach($bestOnes as $bestOne) {
-            foreach($candidates as $candidate) {
-                if ($candidate == $bestOne) {
-                    return $candidate;
-                }
+    static function getComparatorByBestArray(array $descBestOnes) {
+        $comparator = function($a, $b)use($descBestOnes) {
+            $ia = array_search($a, $descBestOnes);
+            $ib = array_search($b, $descBestOnes);
+            if ($ia === false || $ib === false) {
+                throw new \InvalidArgumentException(
+                    sprintf('Invalid compare targets [%s] and [%s] for $descBestOnes[%s]', $a, $b, implode(',', $descBestOnes))
+                );
             }
-        }
-
-        throw new \InvalidArgumentException();
-    }
-
-    /**
-     * @param array $arr
-     * @param callable $key_selector
-     * @return array
-     */
-    static function array_group_by(array $arr, callable $key_selector) {
-        $result = [];
-        foreach ($arr as $i) {
-            $key = call_user_func($key_selector, $i);
-            $result[$key][] = $i;
-        }
-        return $result;
-    }
-
-    static function array_all(array $a, callable $predicate) {
-        foreach ($a as $v) {
-            if ($predicate($v) == false) {
-                return false;
+            if ($ia == $ib) {
+                return 0;
+            } else {
+                return $ia < $ib ? 1 : -1;
             }
-        }
-        return true;
+        };
+        return $comparator;
     }
 
-    static function array_any(array $a, callable $predicate) {
-        foreach ($a as $v) {
-            if ($predicate($v) == true) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    static function array_max(array $a, callable $selector) {
-        return array_reduce($a, function ($maxItem, $currentItem) use ($selector) {
-            $greater = $maxItem === null || $selector($currentItem) > $selector($maxItem);
-            return $greater ? $currentItem : $maxItem;
-        }, null);
-    }
-
-    static function array_min(array $a, callable $selector) {
-        return array_reduce($a, function ($minItem, $currentItem) use ($selector) {
-            $smaller = $minItem === null || $selector($currentItem) < $selector($minItem);
-            return $smaller ? $currentItem : $minItem;
-        }, null);
-    }
-
-    static function array_filter_count(array $a, callable $predicate) {
-        return array_reduce($a, function ($carry, $currentItem) use ($predicate) {
-            return $predicate($currentItem) ? $carry + 1 : $carry;
-        }, 0);
+    static function sgn($n) {
+        return $n == 0 ? 0 : ($n > 0 ? 1 : -1);
     }
 
     private function __construct() {

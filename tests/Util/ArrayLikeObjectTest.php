@@ -17,6 +17,17 @@ class ArrayLikeObjectTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(count($a), count($obj));
     }
 
+    function testMaxMin() {
+        $a = [0, 1, 2, 3, 4];
+        $obj = new ArrayLikeObject($a);
+        $this->assertEquals(0, $obj->getMin());
+        $this->assertEquals(4, $obj->getMax());
+
+        $descBestOnes = [2,3,4,0,1];
+        $this->assertEquals(1, $obj->getMin($descBestOnes));
+        $this->assertEquals(2, $obj->getMax($descBestOnes));
+    }
+
     function testRetrieveValue() {
         $a = [0, 1, 2, 3, 4, 0];
         $obj = new ArrayLikeObject($a);

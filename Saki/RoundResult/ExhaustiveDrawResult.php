@@ -2,6 +2,7 @@
 namespace Saki\RoundResult;
 
 use Saki\Game\Player;
+use Saki\Util\ArrayLikeObject;
 use Saki\Util\Utils;
 
 class ExhaustiveDrawResult extends RoundResult {
@@ -61,9 +62,8 @@ class ExhaustiveDrawResult extends RoundResult {
     }
 
     function getIsWaitingCount() {
-        return Utils::array_filter_count($this->isWaitings, function ($v) {
-            return $v == true;
-        });
+        $isWaitingList = new ArrayLikeObject($this->isWaitings);
+        return $isWaitingList->getValueCount(true);
     }
 
     function getNotWaitingCount() {

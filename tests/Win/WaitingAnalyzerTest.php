@@ -1,6 +1,6 @@
 <?php
 
-class WaitingTileAnalyzerTest extends \PHPUnit_Framework_TestCase {
+class WaitingAnalyzerTest extends \PHPUnit_Framework_TestCase {
 
     function generateRoundData($isPrivate, $onHandTileListString, $declaredMeldListString, \Saki\Tile\Tile $winTile) {
         $round = new \Saki\Game\Round();
@@ -31,10 +31,12 @@ class WaitingTileAnalyzerTest extends \PHPUnit_Framework_TestCase {
      * @dataProvider publicDataProvider
      */
     function testPublicData($onHandTileListString, $declaredMeldListString, $expected) {
-        $winAnalyzer = new \Saki\Win\WinAnalyzer();
-        $waitingTileAnalyzer = new \Saki\Win\WaitingAnalyzer($winAnalyzer);
-        $target = $this->generateWinTarget(false, $onHandTileListString, $declaredMeldListString, \Saki\Tile\Tile::fromString('P'));
-        $waitingTileList = $waitingTileAnalyzer->analyzePublicPhaseWaitingTileList($target);
+        $waitingTileAnalyzer = new \Saki\Win\WaitingAnalyzer();
+
+        $handTileList = \Saki\Tile\TileSortedList::fromString($onHandTileListString);
+        $declaredMeldList = \Saki\Meld\MeldList::fromString($declaredMeldListString);
+
+        $waitingTileList = $waitingTileAnalyzer->analyzePublicPhaseHandWaitingTileList($handTileList, $declaredMeldList);
         $waitingTileStrings = $waitingTileList->toArray(function (\Saki\Win\WaitingTile $waitingTile) {
             return $waitingTile->getWaitingTile()->__toString();
         });
@@ -62,8 +64,10 @@ class WaitingTileAnalyzerTest extends \PHPUnit_Framework_TestCase {
     function testPrivateData($onHandTileListString, $declaredMeldListString, $expected) {
         $winAnalyzer = new \Saki\Win\WinAnalyzer();
         $waitingTileAnalyzer = new \Saki\Win\WaitingAnalyzer($winAnalyzer);
-        $target = $this->generateWinTarget(true, $onHandTileListString, $declaredMeldListString, \Saki\Tile\Tile::fromString('P'));
-        $futureWaitingList = $waitingTileAnalyzer->analyzePrivatePhaseFutureWaitingList($target);
+        $handTileList = \Saki\Tile\TileSortedList::fromString($onHandTileListString);
+        $declaredMeldList = \Saki\Meld\MeldList::fromString($declaredMeldListString);
+
+        $futureWaitingList = $waitingTileAnalyzer->analyzePrivatePhaseFutureWaitingList($handTileList, $declaredMeldList);
         $discardedTileStrings = $futureWaitingList->toArray(function (\Saki\Win\FutureWaiting $futureWaiting) {
             return $futureWaiting->getDiscardedTile()->__toString();
         });

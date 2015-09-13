@@ -6,22 +6,22 @@ namespace Saki\Util;
  * @package Saki\Util
  */
 class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
-    final static function is0BeginAscendingIntKeyArray(array $a) {
+    protected static function is0BeginAscendingIntKeyArray(array $a) {
         return empty($a) || array_keys($a) === range(0, count($a) - 1);
     }
 
-    final protected static function boxing($valueOrValues) {
+    protected static function boxing($valueOrValues) {
         return is_array($valueOrValues) ? array_values($valueOrValues) : [$valueOrValues];
     }
 
-    final protected static function unboxing(array $values, $originIsArray) {
+    protected static function unboxing(array $values, $originIsArray) {
         if (!$originIsArray && count($values) != 1) {
             throw new \InvalidArgumentException();
         }
         return $originIsArray ? $values : $values[0];
     }
 
-    final protected static function isUniqueArray(array $a) {
+    protected static function isUniqueArray(array $a) {
         return array_unique($a) == $a;
     }
 
@@ -46,6 +46,29 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         } else {
             throw new \InvalidArgumentException();
         }
+    }
+
+    /**
+     * @param callable|null|array $comparator
+     * @param bool $isAsc
+     * @return \Closure with signature: -1|0|1 function($a, $b)
+     */
+    protected static function toComparator($comparator = null, $isAsc = true) {
+        if (is_array($comparator)) {
+            $s = Utils::getComparatorByBestArray($comparator);
+        } else {
+            $s = $comparator ?: function ($a, $b) {
+                if ($a == $b) {
+                    return 0;
+                } else {
+                    return $a > $b ? 1 : -1;
+                }
+            };
+        }
+
+        return function ($a, $b) use ($s, $isAsc) {
+            return $isAsc ? $s($a, $b) : -$s($a, $b);
+        };
     }
 
     private $innerArray;
@@ -114,11 +137,41 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
     }
 
     function all(callable $predicate) {
-        return Utils::array_all($this->toArray(), $predicate);
+        foreach ($this->innerArray as $v) {
+            if ($predicate($v) == false) {
+                return false;
+            }
+        }
+        return true;
     }
 
     function any(callable $predicate) {
-        return Utils::array_any($this->toArray(), $predicate);
+        foreach ($this->innerArray as $v) {
+            if ($predicate($v) == true) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function getMax($comparator = null) {
+        if ($this->count() == 0) {
+            throw new \InvalidArgumentException();
+        }
+
+        $actualComparator = $this->toComparator($comparator);
+        $result = $this->innerArray[0];
+        foreach ($this->innerArray as $v) {
+            if ($actualComparator($v, $result) > 0) {
+                $result = $v;
+            }
+        }
+        return $result;
+    }
+
+    function getMin($comparator = null) {
+        $maxComparator = $this->toComparator($comparator, false);
+        return $this->getMax($maxComparator);
     }
 
     function walk(callable $callback) {
@@ -134,6 +187,11 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         }
         $this->innerArray = array_unique($this->innerArray);
     }
+
+    function toReducedValue(callable $reduceCallback, $initial) {
+        return array_reduce($this->toArray(), $reduceCallback, $initial);
+    }
+
 
     /**
      * @param mixed|array $valueOrValues
@@ -182,9 +240,7 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
     }
 
     function getValueCount($value, $equals = null) {
-        $actualEquals = function ($v1, $v2) use ($equals) {
-            return $equals ? $v1 === $v2 : $v1 == $v2;
-        };
+        $actualEquals = $this->toEquals($equals);
         $count = 0;
         foreach ($this->innerArray as $m) {
             if ($actualEquals($value, $m)) {
@@ -216,10 +272,16 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         return true;
     }
 
+    /**
+     * @return mixed
+     */
     function getFirst() {
         return $this->indexToValue(0);
     }
 
+    /**
+     * @return mixed
+     */
     function getLast() {
         return $this->indexToValue($this->count() - 1);
     }
@@ -260,8 +322,9 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
     }
 
     function removeByIndex($indexOrIndexes) {
-        $valid = !is_array($indexOrIndexes) || array_unique($indexOrIndexes) == $indexOrIndexes;
-        $valid = $valid && isset($this->innerArray[is_array($indexOrIndexes) ? max($indexOrIndexes) : $indexOrIndexes]);
+        $valid = !is_array($indexOrIndexes) || empty($indexOrIndexes) ||
+            (array_unique($indexOrIndexes) == $indexOrIndexes
+                && isset($this->innerArray[is_array($indexOrIndexes) ? max($indexOrIndexes) : $indexOrIndexes]));
         if (!$valid) {
             throw new \InvalidArgumentException();
         }

@@ -109,8 +109,9 @@ class Round {
             $analyzer = $this->getWaitingAnalyzer();
             $roundData = $this->getRoundData();
             $isWaitingStates = array_map(function (Player $player) use ($analyzer, $roundData) {
-                $target = new WinTarget($player, $roundData);
-                $waitingTileList = $analyzer->analyzePublicPhaseWaitingTileList($target);
+                $handTileList = $player->getPlayerArea()->getHandTileSortedList();
+                $declaredMeldList = $player->getPlayerArea()->getDeclaredMeldList();
+                $waitingTileList = $analyzer->analyzePublicPhaseHandWaitingTileList($handTileList, $declaredMeldList);
                 $isWaiting = $waitingTileList->count() > 0;
                 return $isWaiting;
             }, $players);
@@ -246,7 +247,8 @@ class Round {
 
         // last do since slow
         $analyzer = $this->getWaitingAnalyzer();
-        $futureWaitingList = $analyzer->analyzePrivatePhaseFutureWaitingList($target);
+        $handList = $player->getPlayerArea()->getHandTileSortedList();
+        $futureWaitingList = $analyzer->analyzePrivatePhaseFutureWaitingList($handList);
         $isWaiting = $futureWaitingList->count() > 0;
         if (!$isWaiting) {
             throw new \InvalidArgumentException('Reach condition violated: is waiting.');

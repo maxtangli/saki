@@ -5,8 +5,8 @@ use Saki\Util\Enum;
 use Saki\Util\Utils;
 
 class WaitingType extends Enum {
-    static function getBestWaitingType(array $waitingTypes) {
-        $bestWaitingTypes = [ // todo adjust orders
+    static function getComparator() {
+        $descBestOnes = [ // todo adjust orders
             WaitingType::getInstance(self::TWO_SIDE_RUN_WAITING),
             WaitingType::getInstance(self::ONE_SIDE_RUN_WAITING),
             WaitingType::getInstance(self::MIDDLE_RUN_WAITING),
@@ -14,7 +14,12 @@ class WaitingType extends Enum {
             WaitingType::getInstance(self::TRIPLE_WAITING),
             WaitingType::getInstance(self::NOT_WAITING),
         ];
-        return Utils::getBestOne($bestWaitingTypes, $waitingTypes);
+        return Utils::getComparatorByBestArray($descBestOnes);
+    }
+
+    function compareTo(WaitingType $other) {
+        $f = $this->getComparator();
+        return $f($this, $other);
     }
 
     const NOT_WAITING = 0; // ノー聴

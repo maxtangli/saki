@@ -1,142 +1,115 @@
 <?php
 namespace Saki\Win;
 
-use Saki\Game\RoundPhase;
 use Saki\Meld\MeldCompositionsAnalyzer;
-use Saki\Meld\MeldTypesFactory;
+use Saki\Meld\MeldList;
 use Saki\Meld\PairMeldType;
 use Saki\Meld\RunMeldType;
 use Saki\Meld\TripleMeldType;
 use Saki\Meld\WeakPairMeldType;
 use Saki\Meld\WeakRunMeldType;
-use Saki\Tile\TileList;
 use Saki\Tile\TileSortedList;
 
 class WaitingAnalyzer {
-    private $winAnalyzer;
     private $meldCompositionsAnalyzer;
 
-    function __construct(WinAnalyzer $winAnalyzer) {
-        $this->winAnalyzer = $winAnalyzer;
+    function __construct() {
         $this->meldCompositionsAnalyzer = new MeldCompositionsAnalyzer();
+        $this->tileSeriesAnalyzer = new TileSeriesAnalyzer(); // todo
     }
 
     /**
-     * 18-tiles-style target
-     * @param WinTarget $target
+     * usage: ableReach.
+     * @param TileSortedList $handTileList 18-tiles-style target.
+     * @param MeldList $declaredMeldList
      * @return FutureWaitingList
      */
-    function analyzePrivatePhaseFutureWaitingList(WinTarget $target) {
-        if ($target->getStubHandTileList() !== null || $target->getStubRoundPhase() !== null) {
-            throw new \InvalidArgumentException('not implemented');
-        }
-
-        if (!$target->isPrivatePhase()) {
-            throw new \InvalidArgumentException('should be private phase');
+    function analyzePrivatePhaseFutureWaitingList(TileSortedList $handTileList, MeldList $declaredMeldList) {
+        if (!$handTileList->validPrivatePhaseCount()) {
+            throw new \InvalidArgumentException();
         }
 
         $futureWaitingList = new FutureWaitingList([]);
 
-        $originHandTileList = $target->getHandTileSortedList(false);
-        $uniqueHandTiles = array_unique($originHandTileList->toArray());
+        // discard each tile and test if left-handTiles has publicPhaseWaitingTiles
+        $uniqueHandTiles = array_unique($handTileList->toArray());
         $handTileListAfterDiscard = new TileSortedList([]);
         foreach ($uniqueHandTiles as $discardedTile) { // 0.06s a loop
-            $handTileListAfterDiscard->setInnerArray($originHandTileList->toArray());
+            $handTileListAfterDiscard->setInnerArray($handTileList->toArray());
             $handTileListAfterDiscard->removeByValue($discardedTile);
 
-            $target->setStubHandTileList($handTileListAfterDiscard);
-            $target->setStubRoundPhase(RoundPhase::getPublicPhaseInstance());
-
-            $waitingTileList = $this->analyzePublicPhaseWaitingTileList($target);
+            $waitingTileList = $this->analyzePublicPhaseHandWaitingTileList($handTileListAfterDiscard, $declaredMeldList);
             if ($waitingTileList->count() > 0) {
                 $futureWaitingList->push(new FutureWaiting($discardedTile, $waitingTileList));
             }
         }
-        $target->setStubHandTileList(null);
-        $target->setStubRoundPhase(null);
 
         return $futureWaitingList;
     }
 
     /**
-     * 17-tiles-style target
-     * @param WinTarget $target
-     * @return WaitingTileList
+     * usage: exhaustiveDraw, furiten.
+     * @param TileSortedList $handTileList 17-like tile list
+     * @param MeldList $declaredMeldList
+     * @return TileSortedList unique waiting tile list
      */
-    function analyzePublicPhaseWaitingTileList(WinTarget $target) {
-        if ($target->getStubWinTile() !== null) {
-            throw new \InvalidArgumentException("not implemented");
-        }
-
-        if (!$target->isPubicPhase()) {
-            throw new \InvalidArgumentException("should be public phase");
-        }
-
-        $waitingList = new WaitingTileList([]);
-
-        $winAnalyzer = $this->winAnalyzer;
-        $futureTiles = $this->getFutureTiles($target);
-        foreach ($futureTiles as $futureTile) {
-            $target->setStubWinTile($futureTile);
-            $futureWinResult = $winAnalyzer->analyzeTarget($target);
-            $winState = $futureWinResult->getWinState();
-
-            // echo $futureTile.' '.$winState. ' '.$target->getAllTileSortedList(). ' '. $target->getWinTile(). "\n"; // debug
-
-            if ($winState->isTrueOrFalseWin()) {
-                $remainAmount = $target->getTileRemainAmount($futureTile);
-                $waitingList->push(new WaitingTile($futureTile, $winState, $remainAmount));
-            }
-        }
-        $target->setStubWinTile(null);
-
-        return $waitingList;
-    }
-
-    function getFutureTiles(WinTarget $target) {
-        return $this->getFutureTilesImplByWeakMelds($target);
-    }
-
-    function getFutureTilesImplByTileSet(WinTarget $target) { // old slow ver: analyzePrivate() 700ms
-        return $target->getTileSet()->getUniqueTiles();
-    }
-
-    function getFutureTilesImplByWeakMelds(WinTarget $target) { // fast ver1: analyzePrivate() 120ms, about 6 times faster
-        $handTileList = $target->getHandTileSortedList(false);
+    function analyzePublicPhaseHandWaitingTileList(TileSortedList $handTileList, MeldList $declaredMeldList) {
         if (!$handTileList->validPublicPhaseCount()) {
-            throw new \InvalidArgumentException();
+            throw new \InvalidArgumentException(
+                sprintf('Invalid handTileList[%s] with count[%s] for WaitingAnalyzer public phase analyze.', $handTileList, $handTileList->count())
+            );
         }
 
+        // step1. break 17-like tiles into MeldList include at most 1 WeakType
+        $tileSeriesAnalyzer = $this->tileSeriesAnalyzer;
         $meldCompositionAnalyzer = $this->meldCompositionsAnalyzer;
         $meldTypes = [
-            RunMeldType::getInstance(),
-            TripleMeldType::getInstance(),
+            RunMeldType::getInstance(), TripleMeldType::getInstance(),
             PairMeldType::getInstance(),
-            WeakRunMeldType::getInstance(),
-            WeakPairMeldType::getInstance(),
+            WeakRunMeldType::getInstance(), WeakPairMeldType::getInstance(),
         ];
-        $meldLists = $meldCompositionAnalyzer->analyzeMeldCompositions($handTileList, $meldTypes, 1);
+        $handMeldLists = $meldCompositionAnalyzer->analyzeMeldCompositions($handTileList, $meldTypes, 1);
 
         $waitingTileList = new TileSortedList([]);
-        foreach ($meldLists as $meldList) {
-            $pairList = $meldList->toFilteredTypesMeldList([PairMeldType::getInstance()]);
-            $weakList = $meldList->toFilteredTypesMeldList([WeakPairMeldType::getInstance(), WeakRunMeldType::getInstance()]);
-            if (count($pairList) == 2) {
-                $targetMeldList = $pairList;
-            } elseif (count($weakList) == 1) {
-                $targetMeldList = $weakList;
+        foreach ($handMeldLists as $handMeldList) {
+            // step2. given a handMeldList, if waitingTiles exist, they must come from melds that matches:
+            //  case1. two pairs' waitingTiles
+            //  case2. one weakPair or weakRun' waitingTiles
+            // we name these melds as handSourceMeld
+            $handPairList = $handMeldList->toFilteredTypesMeldList([PairMeldType::getInstance()]);
+            $handWeakPairOrWeakRunList = $handMeldList->toFilteredTypesMeldList([WeakPairMeldType::getInstance(), WeakRunMeldType::getInstance()]);
+            if (count($handPairList) == 2) {
+                $handSourceMeldList = $handPairList;
+            } elseif (count($handWeakPairOrWeakRunList) == 1) {
+                $handSourceMeldList = $handWeakPairOrWeakRunList;
             } else {
                 throw new \LogicException(
-                    sprintf('Invalid implementation. $meldList[%s]', $meldList)
+                    sprintf('Invalid implementation. $meldList[%s]', $handMeldList)
                 );
             }
 
-            foreach ($targetMeldList as $meld) {
-                $waitingTileList->push($meld->getWaitingTiles());
+            foreach ($handSourceMeldList as $handSourceMeld) {
+                // step3. given a handSourceMeld, get its waitingTiles, test each waitingTile if with it any TileSeries exist.
+                //        Take passed ones as finalWaitingTiles.
+                $potentialWaitingTiles = $handSourceMeld->getWaitingTiles();
+                foreach ($potentialWaitingTiles as $potentialWaitingTile) {
+                    if ($waitingTileList->valueExist($potentialWaitingTile)) { // ignore duplicate items to speedup
+                        continue;
+                    }
+
+                    $futureHandMeld = $handSourceMeld->toTargetMeld($potentialWaitingTile);
+                    $futureAllMeldList = new MeldList($handMeldList->toArray());
+                    $futureAllMeldList->replaceByValue($handSourceMeld, $futureHandMeld);
+                    $futureAllMeldList->merge($declaredMeldList);
+
+                    $tileSeries = $tileSeriesAnalyzer->analyzeTileSeries($futureAllMeldList);
+                    if ($tileSeries->exist()) {
+                        $waitingTileList->push($potentialWaitingTile);
+                    }
+                }
             }
         }
-        $waitingTileList->unique();
 
-        return $waitingTileList->toArray();
+        return $waitingTileList;
     }
 }

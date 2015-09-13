@@ -54,7 +54,7 @@ class Meld extends ArrayLikeObject {
 
     /**
      * @param TileList $tileList
-     * @param $meldType
+     * @param MeldType $meldType
      * @param bool $exposed
      */
     function __construct(TileList $tileList, MeldType $meldType = null, $exposed = true) {

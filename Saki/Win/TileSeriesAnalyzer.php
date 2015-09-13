@@ -4,6 +4,7 @@ namespace Saki\Win;
 
 use Saki\Meld\MeldList;
 use Saki\Tile\Tile;
+use Saki\Util\ArrayLikeObject;
 use Saki\Util\Singleton;
 
 class TileSeriesAnalyzer extends Singleton {
@@ -54,23 +55,10 @@ class TileSeriesAnalyzer extends Singleton {
             }
         }
         if (!empty($candidates)) {
-            return TileSeries::getBestTileSeries($candidates);
+            $l = new ArrayLikeObject($candidates);
+            return $l->getMax(TileSeries::getComparator());
         } else {
             return TileSeries::getInstance(TileSeries::NOT_TILE_SERIES);
-        }
-    }
-
-    /**
-     * @param MeldList $allMeldList
-     * @param Tile $winTile
-     * @return WaitingType
-     */
-    function analyzeWaitingType(MeldList $allMeldList, Tile $winTile) {
-        $tileSeries = $this->analyzeTileSeries($allMeldList);
-        if ($tileSeries->getValue() != TileSeries::NOT_TILE_SERIES) {
-            return $tileSeries->getWaitingType($allMeldList, $winTile);
-        } else {
-            return WaitingType::getInstance(WaitingType::NOT_WAITING);
         }
     }
 }

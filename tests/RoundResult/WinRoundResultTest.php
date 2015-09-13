@@ -9,7 +9,7 @@ class WinRoundResultTest extends PHPUnit_Framework_TestCase {
                 \Saki\Win\Yaku\RedValueTilesYaku::getInstance(),
                 \Saki\Win\Yaku\GreenValueTilesYaku::getInstance()],
             false);
-        $winResult = new \Saki\Win\WinAnalyzerResult(\Saki\Win\WinState::getInstance(\Saki\Win\WinState::WIN_BY_SELF), $yakuList, 40);
+        $winResult = new \Saki\Win\WinResult(\Saki\Win\WinState::getInstance(\Saki\Win\WinState::WIN_BY_SELF), $yakuList, 40);
 
         $this->assertEquals(3, $winResult->getFanCount());
         $this->assertEquals(40, $winResult->getFuCount());
@@ -47,7 +47,7 @@ class WinRoundResultTest extends PHPUnit_Framework_TestCase {
                 \Saki\Win\Yaku\RedValueTilesYaku::getInstance(),
                 \Saki\Win\Yaku\GreenValueTilesYaku::getInstance()],
             false);
-        $winResult = new \Saki\Win\WinAnalyzerResult(\Saki\Win\WinState::getInstance(\Saki\Win\WinState::WIN_BY_OTHER), $yakuList, 40);
+        $winResult = new \Saki\Win\WinResult(\Saki\Win\WinState::getInstance(\Saki\Win\WinState::WIN_BY_OTHER), $yakuList, 40);
 
         $this->assertEquals(3, $winResult->getFanCount());
         $this->assertEquals(40, $winResult->getFuCount());

@@ -34,10 +34,10 @@ class AllRunsYaku extends Yaku {
          * - 符のつかない待ち、すなわち辺張待ち・嵌張待ち・単騎待ちではなく、両面待ちであること。
          */
 
-        $isTwoSideRunWaiting = TileSeries::getInstance(TileSeries::FOUR_RUN_AND_ONE_PAIR)->getWaitingType(
-                $subTarget->getAllMeldList(), $subTarget->getWinTile()
-            ) == WaitingType::getInstance(WaitingType::TWO_SIDE_RUN_WAITING);
-        return $subTarget->isAllSuit() && $isTwoSideRunWaiting;
+        $waitingType = TileSeries::getInstance(TileSeries::FOUR_RUN_AND_ONE_PAIR)->getWaitingType(
+            $subTarget->getAllMeldList(), $subTarget->getWinTile(), $subTarget->getDeclaredMeldList()
+        );
+        return $subTarget->isAllSuit() && ($waitingType == WaitingType::getInstance(WaitingType::TWO_SIDE_RUN_WAITING));
     }
 }
 

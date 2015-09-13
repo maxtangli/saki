@@ -2,8 +2,8 @@
 namespace Saki\RoundResult;
 
 use Saki\Game\Player;
-use Saki\Util\Utils;
-use Saki\Win\WinAnalyzerResult;
+use Saki\Util\ArrayLikeObject;
+use Saki\Win\WinResult;
 
 class WinRoundResult extends RoundResult {
     private $players;
@@ -16,7 +16,7 @@ class WinRoundResult extends RoundResult {
     /**
      * @param Player[] $players
      * @param Player[] $winPlayers
-     * @param WinAnalyzerResult[] $winAnalyzerResults
+     * @param WinResult[] $winAnalyzerResults
      * @param Player[] $losePlayers
      * @param int $accumulatedReachCount
      * @param int $selfWindTurn
@@ -138,7 +138,8 @@ class WinRoundResult extends RoundResult {
      * @return Player
      */
     function isKeepDealer() {
-        return Utils::array_any($this->getWinPlayers(), function (Player $player) {
+        $winPlayers = new ArrayLikeObject($this->getWinPlayers());
+        return $winPlayers->any(function (Player $player) {
             return $player->isDealer();
         });
     }

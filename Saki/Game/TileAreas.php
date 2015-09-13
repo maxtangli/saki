@@ -90,11 +90,8 @@ class TileAreas {
     }
 
     function plusKongBySelf(Player $player, Tile $selfTile) {
-        $meld = $player->getPlayerArea()->plusKongBySelf($selfTile);
+        $player->getPlayerArea()->plusKongBySelf($selfTile);
         $this->drawReplacement($player);
-        if ($meld->isExposed()) {
-            $this->setPublicTargetTile($selfTile);
-        }
     }
 
     function chowByOther(Player $actPlayer, Tile $tile1, Tile $tile2, Player $targetPlayer) {

@@ -2,6 +2,7 @@
 
 namespace Saki\Win\Yaku;
 
+use Saki\Util\ArrayLikeObject;
 use Saki\Util\Singleton;
 use Saki\Util\Utils;
 use Saki\Win\TileSeries;
@@ -41,8 +42,13 @@ abstract class Yaku extends Singleton {
 
     final protected function matchRequiredTileSeries(WinSubTarget $subTarget) {
         $requiredTileSeries = $this->getRequiredTileSeries();
+        if (empty($requiredTileSeries)) {
+            return true;
+        }
+
         $allMeldList = $subTarget->getAllMeldList();
-        return empty($requiredTileSeries) || Utils::array_any($requiredTileSeries, function (TileSeries $tileSeries) use ($allMeldList) {
+        $l = new ArrayLikeObject($requiredTileSeries);
+        return $l->any(function (TileSeries $tileSeries) use ($allMeldList) {
             return $tileSeries->existIn($allMeldList);
         });
     }

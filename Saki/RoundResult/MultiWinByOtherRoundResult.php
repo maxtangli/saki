@@ -2,13 +2,13 @@
 namespace Saki\RoundResult;
 
 use Saki\Game\Player;
-use Saki\Win\WinAnalyzerResult;
+use Saki\Win\WinResult;
 
 class MultiWinByOtherRoundResult extends WinRoundResult {
     /**
      * @param array $players
      * @param Player[] $winPlayers
-     * @param WinAnalyzerResult[] $winAnalyzerResults
+     * @param WinResult[] $winAnalyzerResults
      * @param Player $losePlayer
      * @param int $accumulatedReachCount
      * @param int $selfWindTurn
