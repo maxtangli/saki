@@ -1,39 +1,40 @@
 <?php
 namespace Saki\Command;
 
-use Saki\Game\Player;
 use Saki\Game\Round;
 use Saki\Util\Utils;
 
-/**
- * A Command is meaningful only when bing with a Round
- * @package Saki\Game
- */
+abstract class CommandParam {
+
+}
+
+abstract class CommandPlayerParam {
+
+}
+
 abstract class Command {
-    private $round;
-    private $player;
-
-    static function fromString(Round $round, Player $player, $stringTokens) {
-        return static::fromString($round, $player, $stringTokens);
-    }
-
-    function __construct(Round $round, Player $player) {
-        $this->round = $round;
-        $this->player = $player;
-    }
+    /**
+     * @return CommandParam[] CommandParam instances in order of constructor declarations
+     */
+    abstract static function getParamTypes();
 
     function __toString() {
         $commandToken = Utils::str_class_last_part(get_called_class(), 'Command');
-        return lcfirst($commandToken) . ' ' . $this->getPlayer();
-    }
-
-    function getRound() {
-        return $this->round;
-    }
-
-    function getPlayer() {
-        return $this->player;
+        return lcfirst($commandToken);
     }
 
     abstract function execute();
+}
+
+class DiscardCommand extends Command {
+    private $tile;
+
+    function __construct(Round $round, Player $player, Tile $tile) {
+        parent::__construct($round, $player);
+        $this->tile = $tile;
+    }
+
+    function __toString() {
+        return parent::__toString() . " {$this->getTile()}";
+    }
 }

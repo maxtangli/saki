@@ -45,21 +45,21 @@ class WinAnalyzer {
     function analyzeTarget(WinTarget $target) {
         // handTiles target -> handMelds[] subTarget
         $analyzer = new MeldCompositionsAnalyzer();
-        $handTileList = $target->getHandTileSortedList();
+        $handTileList = $target->getHandTileSortedList(true);
         $handMeldTypes = [
             RunMeldType::getInstance(),
             TripleMeldType::getInstance(),
             PairMeldType::getInstance(),
         ];
-        $meldCompositions = $analyzer->analyzeMeldCompositions($handTileList, $handMeldTypes);
-        if (empty($meldCompositions)) {
+        $handMeldCompositions = $analyzer->analyzeMeldCompositions($handTileList, $handMeldTypes);
+        if (empty($handMeldCompositions)) {
             return new WinResult(WinState::getInstance(WinState::NOT_WIN), new YakuList([], $target->isExposed()), 0, new TileSortedList([]));
         }
 
         // get winResult[] of each subTarget
-        $subTargets = array_map(function (MeldList $meldList) use ($target) {
-            return $target->toSubTarget($meldList);
-        }, $meldCompositions);
+        $subTargets = array_map(function (MeldList $handMeldList) use ($target) {
+            return $target->toSubTarget($handMeldList);
+        }, $handMeldCompositions);
         $subResults = $this->analyzeSubTargets($subTargets);
 
         /*
@@ -78,11 +78,7 @@ class WinAnalyzer {
 
         // handle furiten
         if ($targetSubResult->getWinState()->isTrueWin()) {
-            // todo bug
             $publicHandTileList = $target->getHandTileSortedList(false);
-            if ($target->isPrivatePhase()) {
-                $publicHandTileList->removeByValue($target->getWinTile());
-            }
             $waitingTileList = $this->getWaitingAnalyzer()->analyzePublicPhaseHandWaitingTileList(
                 $publicHandTileList, $target->getDeclaredMeldList()
             );
@@ -132,7 +128,7 @@ class WinAnalyzer {
         $winStateValue = $subTarget->isPrivatePhase() ? WinState::WIN_BY_SELF : WinState::WIN_BY_OTHER;
         $winState = WinState::getInstance($winStateValue);
 
-        $waitingType = $tileSeries->getWaitingType($subTarget->getAllMeldList(), $subTarget->getWinTile(), $subTarget->getDeclaredMeldList());
+        $waitingType = $tileSeries->getWaitingType($subTarget->getAllMeldList(), $subTarget->getTargetTile(), $subTarget->getDeclaredMeldList());
         $fuCountTarget = new FuCountTarget($subTarget, $yakuList, $waitingType);
         $fuCountResult = FuCountAnalyzer::getInstance()->getResult($fuCountTarget);
         $fuCount = $fuCountResult->getTotalFuCount();
@@ -144,6 +140,13 @@ class WinAnalyzer {
         if ($target->isPrivatePhase()) {
             return false;
         }
+
+        /**
+         * public phase furiten judge algorithm
+         * ngTiles = merge(selfDiscardedTileList, otherThisTurnDiscardedTileList, otherDiscardedTileListAfterSelfReach)
+         *  where otherThisTurnDiscardTileList means:
+         * isFuriten = waitingTiles any waitingTile in ngTiles
+         */
 
         $waitingTiles = []; // todo
 

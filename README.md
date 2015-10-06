@@ -225,13 +225,13 @@ rush 22 fix getMeldCompositions() 1.5h
 
 rush 23 isDiscardedTileFalseWin
 
-- [x] learn rule
-- [ ] analyze 2h
+- [x] analyze waiting and furiten 2.2h
 - [x] TileSeries.getWaitingTiles 1.3h // unnecessary?
-- [x] refactor analyzeWaitingTiles 2.1h
+- [x] refactor: analyzeWaitingTiles 2.1h
 - [x] refactor: move Utils.ArrayXXX into ArrayLikeObject 0.5h
 - [x] refactor: compareTo 1.3h
 - [x] analyzeWinTarget.mergeSubTargets 1.2h // finally all tests passed again >_<
+- [x] refactor: getHandList(includeTarget?) 0.2h
 - [ ] isDiscardedTileFalseWin
 - [ ] other discarded tiles in recent turn
 - [ ] refactor getWaitingTiles to return TileSortedList 
@@ -242,8 +242,9 @@ rush
 - [ ] refactor: publicCandidateTile and WinTile
 - [ ] refactor: RoundResult
 
-rush 
+rush command system
 
+- [ ] command 0.2h
 - [ ] public command roller
 
 rush all yaku
@@ -253,13 +254,8 @@ rush all yaku
 - [x] yaku-man logic 1h
 - [ ] other yakus
 
+rush client-server logic
 rush client-server style ui
-
-- [ ] analyze
-- [ ] c/s
-- [ ] layout design
-- [ ] image resources
-- [ ] ui
 
 rush red dora
 
@@ -271,6 +267,16 @@ rush etc: low priority
 - [ ] over phase: four kong drawn
 - [ ] over phase: four reach drawn
 - [ ] over phase: 9-kind 9-tile drawn
+
+## note: command system
+
+
+
+## note: turn count
+
+1巡目東・親→南→西→北
+2巡目東・親→南（捨てた牌を親がポン）した時、2巡目西家・北家は、飛ばして、
+3巡目東・親→南→西→北・・・・・・となるのでしょうか？
 
 ## note: discarded false waiting
 

@@ -15,18 +15,18 @@ class PlayerArea {
     private $handTileSortedList;
     private $discardedTileList;
     private $declaredMeldList;
-    private $candidateTile;
+    private $privateTargetTile;
     private $isReach;
 
     function __construct(TileSortedList $onHandTileSortedList = null, Tile $candidateTile = null, MeldList $declaredMeldList = null) {
         $this->init($onHandTileSortedList, $candidateTile, $declaredMeldList);
     }
 
-    function init(TileSortedList $onHandTileSortedList = null, Tile $candidateTile = null, MeldList $declaredMeldList = null) {
+    function init(TileSortedList $onHandTileSortedList = null, Tile $privateTargetTile = null, MeldList $declaredMeldList = null) {
         $this->handTileSortedList = $onHandTileSortedList ?: TileSortedList::fromString('');
         $this->discardedTileList = TileList::fromString('');
         $this->declaredMeldList = $declaredMeldList ?: new MeldList([]);
-        $this->candidateTile = $candidateTile;
+        $this->privateTargetTile = $privateTargetTile;
         $this->isReach = false;
     }
 
@@ -54,39 +54,39 @@ class PlayerArea {
     /**
      * @return bool
      */
-    function hasCandidateTile() {
-        return $this->candidateTile !== null;
+    function hasPrivateTargetTile() {
+        return $this->privateTargetTile !== null;
     }
 
     /**
      * @return Tile
      */
-    function getCandidateTile() {
-        if (!$this->hasCandidateTile()) {
+    function getPrivateTargetTile() {
+        if (!$this->hasPrivateTargetTile()) {
             throw new \BadMethodCallException('Candidate tile not existed.');
         }
-        return $this->candidateTile;
+        return $this->privateTargetTile;
     }
 
     /**
      * @param Tile $tile
      */
-    function setCandidateTile(Tile $tile) {
+    function setPrivateTargetTile(Tile $tile) {
         if ($tile === null) {
             throw new \InvalidArgumentException();
         }
-        $this->candidateTile = $tile;
+        $this->privateTargetTile = $tile;
     }
 
     /**
      * @return Tile
      */
     function removeCandidateTile() {
-        if (!$this->hasCandidateTile()) {
+        if (!$this->hasPrivateTargetTile()) {
             throw new \BadMethodCallException();
         }
-        $ret = $this->candidateTile;
-        $this->candidateTile = null;
+        $ret = $this->privateTargetTile;
+        $this->privateTargetTile = null;
         return $ret;
     }
 
@@ -117,13 +117,13 @@ class PlayerArea {
     function draw(Tile $newTile) {
         // always valid
         $this->getHandTileSortedList()->push($newTile);
-        $this->setCandidateTile($newTile);
+        $this->setPrivateTargetTile($newTile);
     }
 
     function drawReplacement(Tile $newTile) {
         // always valid
         $this->getHandTileSortedList()->push($newTile);
-        $this->setCandidateTile($newTile);
+        $this->setPrivateTargetTile($newTile);
     }
 
     function canDiscard(Tile $selfTile) {
@@ -133,7 +133,7 @@ class PlayerArea {
     function discard(Tile $selfTile) {
         $this->getHandTileSortedList()->removeByValue($selfTile); // valid test
         $this->getDiscardedTileList()->push($selfTile);
-        if ($this->hasCandidateTile()) {
+        if ($this->hasPrivateTargetTile()) {
             $this->removeCandidateTile();
         }
     }
@@ -187,7 +187,7 @@ class PlayerArea {
         // remove origin tiles and meld
         if ($handTiles) {
             $this->getHandTileSortedList()->removeByValue($handTiles);
-            if ($this->hasCandidateTile() && in_array($this->getCandidateTile(), $handTiles)) {
+            if ($this->hasPrivateTargetTile() && in_array($this->getPrivateTargetTile(), $handTiles)) {
                 $this->removeCandidateTile();
             }
         }

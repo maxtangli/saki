@@ -428,7 +428,7 @@ class Round {
 //                    $candidateCommands[] = new DiscardCommand($this, $currentPlayer, $onHandTile);
 //                }
 //                if ($currentPlayerArea->hasCandidateTile()) {
-//                    $candidateCommands[] = new DiscardCommand($this, $currentPlayer, $currentPlayerArea->getCandidateTile());
+//                    $candidateCommands[] = new DiscardCommand($this, $currentPlayer, $currentPlayerArea->getPrivateTargetTile());
 //                }
 //                $candidateCommands = array_unique($candidateCommands);
 //                break;

@@ -9,11 +9,11 @@ class WinAnalyzerTest extends \PHPUnit_Framework_TestCase {
         $player = $roundData->getPlayerList()[0];
         $playerArea = new \Saki\Game\PlayerArea();
         $playerArea->drawInit(\Saki\Tile\TileList::fromString('123m456m789m123s5s')->toArray());
-        $playerArea->setCandidateTile(\Saki\Tile\Tile::fromString('1m'));
+        $playerArea->setPrivateTargetTile(\Saki\Tile\Tile::fromString('1m'));
         $player->setPlayerArea($playerArea);
 
         $target = new \Saki\Win\WinTarget($player, $roundData);
-        $this->assertEquals(\Saki\Tile\TileSortedList::fromString('123m456m789m123s55s'), $target->getHandTileSortedList());
+        $this->assertEquals(\Saki\Tile\TileSortedList::fromString('123m456m789m123s55s'), $target->getHandTileSortedList(true));
         $this->assertEquals(\Saki\Tile\TileSortedList::fromString('123m456m789m123s5s'), $target->getHandTileSortedList(false));
     }
 
@@ -23,7 +23,7 @@ class WinAnalyzerTest extends \PHPUnit_Framework_TestCase {
 
         $playerArea = new \Saki\Game\PlayerArea();
         $playerArea->drawInit(\Saki\Tile\TileList::fromString('123m456m789m123s55s')->toArray());
-        $playerArea->setCandidateTile(\Saki\Tile\Tile::fromString('1m'));
+        $playerArea->setPrivateTargetTile(\Saki\Tile\Tile::fromString('1m'));
         $player->setPlayerArea($playerArea);
 
         $meldList = \Saki\Meld\MeldList::fromString('123m,456m,789m,123s,55s');

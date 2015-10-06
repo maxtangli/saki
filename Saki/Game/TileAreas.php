@@ -52,7 +52,34 @@ class TileAreas {
         $this->publicTargetTile = $publicTargetTile;
     }
 
-    function getAllPlayersDiscardedTileList() {
+    /**
+     * @param Player $player
+     * @param $includeTargetTile
+     * @return TileSortedList
+     */
+    function toPlayerHandTileList(Player $player, $includeTargetTile) {
+        $handTileList = new TileSortedList($player->getPlayerArea()->getHandTileSortedList()->toArray());
+        if ($includeTargetTile) {
+            if (!$handTileList->validPrivatePhaseCount()) {
+                $handTileList->push($this->getPublicTargetTile());
+            }
+        } else {
+            if (!$handTileList->validPublicPhaseCount()) {
+                $handTileList->removeByValue($player->getPlayerArea()->getPrivateTargetTile());
+            }
+        }
+        return $handTileList;
+    }
+
+    function toPlayerAllTileList(Player $player, $includeTargetTile) {
+        $handTileList = $this->toPlayerHandTileList($player, $includeTargetTile);
+        $declaredMeldTileList = $player->getPlayerArea()->getDeclaredMeldList()->toSortedTileList();
+        $allTileList = $handTileList;
+        $allTileList->merge($declaredMeldTileList);
+        return $allTileList;
+    }
+
+    function toAllPlayersDiscardedTileList() {
         $sortedTileList = new TileSortedList([]);
         foreach ($this->playerList as $player) {
             $sortedTileList->insert($player->getPlayerArea()->getDiscardedTileList()->toArray(), 0);
@@ -62,7 +89,7 @@ class TileAreas {
 
     function getTileRemainAmount(Tile $tile) {
         $total = $this->getWall()->getTileSet()->getValueCount($tile);
-        $discarded = $this->getAllPlayersDiscardedTileList()->getValueCount($tile);
+        $discarded = $this->toAllPlayersDiscardedTileList()->getValueCount($tile);
         $remain = $total - $discarded;
         return $remain;
     }

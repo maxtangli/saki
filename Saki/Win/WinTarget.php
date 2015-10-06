@@ -12,26 +12,12 @@ class WinTarget {
     private $player;
     private $roundData;
 
-    // note: better to turn WinTarget into ValueObject
-    /**
-     * @var Tile
-     */
-    private $stubWinTile = null;
-    /**
-     * @var TileSortedList
-     */
-    private $stubHandTileList = null;
-    /**
-     * @var RoundPhase
-     */
-    private $stubRoundPhase = null;
-
     function __construct(Player $player, RoundData $roundData) {
         $this->player = $player;
         $this->roundData = $roundData;
 
         $roundPhase = $roundData->getRoundPhase();
-        $handTileList = $this->getHandTileSortedList(false);
+        $handTileList = $player->getPlayerArea()->getHandTileSortedList();
         $valid = ($roundPhase == RoundPhase::getPrivatePhaseInstance() && $handTileList->validPrivatePhaseCount())
             || ($roundPhase == RoundPhase::getPublicPhaseInstance() && $handTileList->validPublicPhaseCount());
         if (!$valid) {
@@ -41,73 +27,32 @@ class WinTarget {
         }
     }
 
-    function getStubWinTile() {
-        return $this->stubWinTile;
-    }
-
-    function setStubWinTile(Tile $stubWinTile = null) {
-        $this->stubWinTile = $stubWinTile;
-    }
-
-    function getStubHandTileList() {
-        return $this->stubHandTileList;
-    }
-
-    function setStubHandTileList(TileSortedList $stubHandTileList = null) {
-        $this->stubHandTileList = $stubHandTileList;
-    }
-
-    function getStubRoundPhase() {
-        return $this->stubRoundPhase;
-    }
-
-    function setStubRoundPhase(RoundPhase $stubRoundPhase = null) {
-        $this->stubRoundPhase = $stubRoundPhase;
-    }
-
     function toSubTarget(MeldList $handMeldList) {
-        $subTarget =  new WinSubTarget($handMeldList, $this->player, $this->roundData);
-        $subTarget->setStubWinTile($this->getStubWinTile());
-        $subTarget->setStubHandTileList($this->getStubHandTileList());
-        $subTarget->setStubRoundPhase($this->getStubRoundPhase());
-        return $subTarget;
-    }
-
-    function getRoundPhase() {
-        $stubRoundPhase = $this->getStubRoundPhase();
-        return $stubRoundPhase ? : $this->roundData->getRoundPhase();
+        return new WinSubTarget($handMeldList, $this->player, $this->roundData);
     }
 
     function isPrivatePhase() {
-        return $this->getRoundPhase() == RoundPhase::getPrivatePhaseInstance();
+        return $this->roundData->getRoundPhase() == RoundPhase::getPrivatePhaseInstance();
     }
 
     function isPubicPhase() {
-        return $this->getRoundPhase() == RoundPhase::getPublicPhaseInstance();
+        return $this->roundData->getRoundPhase() == RoundPhase::getPublicPhaseInstance();
     }
 
-    function getHandTileSortedList($includePublicTargetTile = true) {
-        $handTileSortedList = $this->getStubHandTileList() ? :
-            $this->player->getPlayerArea()->getHandTileSortedList();
-        if ($includePublicTargetTile && $this->getRoundPhase() == RoundPhase::getPublicPhaseInstance()) {
-            $handTileSortedList = new TileSortedList($handTileSortedList->toArray());
-            $handTileSortedList->push($this->getWinTile());
-        }
-        return $handTileSortedList;
-    }
-
-    function getDiscardedTileList() {
-        return $this->player->getPlayerArea()->getDiscardedTileList();
+    function getHandTileSortedList($includePublicTargetTile) {
+        return $this->roundData->getTileAreas()->toPlayerHandTileList($this->player, $includePublicTargetTile);
     }
 
     function getDeclaredMeldList() {
         return $this->player->getPlayerArea()->getDeclaredMeldList();
     }
 
-    function getAllTileSortedList($includePublicTargetTile = true) {
-        $sortedList = new TileSortedList($this->getHandTileSortedList($includePublicTargetTile)->toArray());
-        $sortedList->merge($this->getDeclaredMeldList()->toSortedTileList());
-        return $sortedList;
+    function getAllTileSortedList($includePublicTargetTile) {
+        return $this->roundData->getTileAreas()->toPlayerAllTileList($this->player, $includePublicTargetTile);
+    }
+
+    function getDiscardedTileList() {
+        return $this->player->getPlayerArea()->getDiscardedTileList();
     }
 
     function getTileRemainAmount(Tile $tile) {
@@ -118,18 +63,14 @@ class WinTarget {
         return $this->roundData->getTileAreas()->getWall()->getRemainTileCount();
     }
 
-    function getWinTile() {
-        if ($this->getStubWinTile() !== null) {
-            return $this->getStubWinTile();
+    function getTargetTile() {
+        $roundPhase = $this->roundData->getRoundPhase();
+        if ($roundPhase == RoundPhase::getPrivatePhaseInstance()) {
+            return $this->player->getPlayerArea()->getPrivateTargetTile();
+        } elseif ($roundPhase == RoundPhase::getPublicPhaseInstance()) {
+            return $this->roundData->getTileAreas()->getPublicTargetTile();
         } else {
-            $roundPhase = $this->roundData->getRoundPhase();
-            if ($roundPhase == RoundPhase::getPrivatePhaseInstance()) {
-                return $this->player->getPlayerArea()->getCandidateTile();
-            } elseif ($roundPhase == RoundPhase::getPublicPhaseInstance()) {
-                return $this->roundData->getTileAreas()->getPublicTargetTile();
-            } else {
-                throw new \LogicException();
-            }
+            throw new \LogicException();
         }
     }
 
@@ -164,7 +105,7 @@ class WinTarget {
     }
 
     function isAllSuit() {
-        return $this->getHandTileSortedList()->all(function (Tile $tile) {
+        return $this->getHandTileSortedList(true)->all(function (Tile $tile) {
             return $tile->isSuit();
         });
     }

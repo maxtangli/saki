@@ -18,7 +18,7 @@ class AllSimplesYaku extends Yaku {
     }
 
     protected function matchOtherConditions(WinSubTarget $subTarget) {
-        return $subTarget->getAllTileSortedList()->all(function (Tile $tile) {
+        return $subTarget->getAllTileSortedList(true)->all(function (Tile $tile) {
             return $tile->isSimple();
         });
     }

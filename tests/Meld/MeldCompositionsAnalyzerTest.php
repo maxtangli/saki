@@ -52,7 +52,7 @@ class MeldCompositionsAnalyzerTest extends PHPUnit_Framework_TestCase {
         $actual = $r->analyzeMeldCompositions($tileSortedList, $meldTypes, 0, true);
         $cost = microtime(true) - $time;
         $costMs = round($cost * 1000);
-         echo sprintf('time cost: %s ms.', $costMs);
+        //echo sprintf('analyzeMeldCompositions time cost: %s ms.', $costMs);
 
         $expected = ['11s,22s,33s', '123s,123s'];
         $this->assertEquals($expected, $actual, sprintf('[%s],[%s]',implode(' or ',$expected), implode(' or ',$actual)));

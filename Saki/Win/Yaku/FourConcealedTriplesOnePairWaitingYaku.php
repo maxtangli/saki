@@ -21,7 +21,7 @@ class FourConcealedTriplesOnePairWaitingYaku extends Yaku {
     }
 
     protected function matchOtherConditions(WinSubTarget $subTarget) {
-        $waitingType = TileSeries::getInstance(TileSeries::FOUR_CONCEALED_TRIPLE_OR_QUAD_AND_ONE_PAIR)->getWaitingType($subTarget->getAllMeldList(), $subTarget->getWinTile());
+        $waitingType = TileSeries::getInstance(TileSeries::FOUR_CONCEALED_TRIPLE_OR_QUAD_AND_ONE_PAIR)->getWaitingType($subTarget->getAllMeldList(), $subTarget->getTargetTile());
         return $waitingType == WaitingType::getInstance(WaitingType::PAIR_WAITING);
     }
 
