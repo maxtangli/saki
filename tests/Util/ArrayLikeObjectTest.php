@@ -23,7 +23,7 @@ class ArrayLikeObjectTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(0, $obj->getMin());
         $this->assertEquals(4, $obj->getMax());
 
-        $descBestOnes = [2,3,4,0,1];
+        $descBestOnes = [2, 3, 4, 0, 1];
         $this->assertEquals(1, $obj->getMin($descBestOnes));
         $this->assertEquals(2, $obj->getMax($descBestOnes));
     }
@@ -73,6 +73,26 @@ class ArrayLikeObjectTest extends \PHPUnit_Framework_TestCase {
             [[0, 1, 2, 0], 3],
             [[0, 1, 2, 0], [3]],
             [[0, 1, 2, 0], [0, 0, 0]],
+        ];
+    }
+
+    /**
+     * @dataProvider getNextProvider
+     */
+    function testGetNext(array $a, $originValue, $offset, $expected) {
+        $obj = new ArrayLikeObject($a);
+        $result = $obj->getNext($originValue, $offset);
+        $this->assertEquals($expected, $result,
+            sprintf('ArrayLikeObject([%s])->getNext(%s, %s) expected %s but actual %s.', implode(',', $a), $originValue, $offset, $expected, $result));
+    }
+
+    function getNextProvider() {
+        return [
+            [[1, 2, 3, 4], 1, -5, 4],
+            [[1, 2, 3, 4], 1, -4, 1], [[1, 2, 3, 4], 1, -3, 2], [[1, 2, 3, 4], 1, -2, 3], [[1, 2, 3, 4], 1, -1, 4],
+            [[1, 2, 3, 4], 1, 0, 1], [[1, 2, 3, 4], 1, 1, 2], [[1, 2, 3, 4], 1, 2, 3], [[1, 2, 3, 4], 1, 3, 4],
+            [[1, 2, 3, 4], 1, 4, 1], [[1, 2, 3, 4], 1, 5, 2], [[1, 2, 3, 4], 1, 6, 3], [[1, 2, 3, 4], 1, 7, 4],
+            [[1, 2, 3, 4], 1, 8, 1],
         ];
     }
 

@@ -16,7 +16,7 @@ class PlayerArea {
     private $discardedTileList;
     private $declaredMeldList;
     private $privateTargetTile;
-    private $isReach;
+    private $reachTurn;
 
     function __construct(TileSortedList $onHandTileSortedList = null, Tile $candidateTile = null, MeldList $declaredMeldList = null) {
         $this->init($onHandTileSortedList, $candidateTile, $declaredMeldList);
@@ -27,7 +27,7 @@ class PlayerArea {
         $this->discardedTileList = TileList::fromString('');
         $this->declaredMeldList = $declaredMeldList ?: new MeldList([]);
         $this->privateTargetTile = $privateTargetTile;
-        $this->isReach = false;
+        $this->reachTurn = false;
     }
 
     /**
@@ -91,19 +91,22 @@ class PlayerArea {
     }
 
     function isReach() {
-        return $this->isReach;
+        return $this->reachTurn !== false;
     }
 
-    function setIsReach($isReach) {
-        $this->isReach = $isReach;
+    function getReachTurn() {
+        if (!$this->isReach()) {
+            throw new \LogicException();
+        }
+        return $this->reachTurn;
     }
 
-    function reach(Tile $selfTile) {
-        if ($this->isReach) {
+    function reach(Tile $selfTile, $reachTurn) {
+        if ($this->isReach()) {
             throw new \InvalidArgumentException();
         }
         $this->discard($selfTile);
-        $this->isReach = true;
+        $this->reachTurn = $reachTurn;
     }
 
     /**

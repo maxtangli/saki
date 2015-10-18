@@ -9,8 +9,8 @@ use Saki\RoundResult\WinBySelfRoundResult;
 use Saki\Tile\Tile;
 use Saki\Win\WaitingAnalyzer;
 use Saki\Win\WinAnalyzer;
-use Saki\Win\WinTarget;
 use Saki\Win\WinState;
+use Saki\Win\WinTarget;
 
 class Round {
     private $roundData;
@@ -19,7 +19,7 @@ class Round {
     private $waitingAnalyzer;
 
     function __construct(RoundData $roundData = null) {
-        $this->roundData = $roundData !== null ? $roundData : new RoundData();
+        $this->roundData = $roundData ?: new RoundData();
         $this->roundResult = null;
         $this->winAnalyzer = new WinAnalyzer();
         $this->waitingAnalyzer = new WaitingAnalyzer($this->winAnalyzer);
@@ -55,6 +55,11 @@ class Round {
         return $this->winAnalyzer;
     }
 
+    function getWinResult(Player $player) {
+        // WinTarget will assert valid player
+        return $this->getWinAnalyzer()->analyzeTarget(new WinTarget($player, $this->getRoundData()));
+    }
+
     function getWaitingAnalyzer() {
         return $this->waitingAnalyzer;
     }
@@ -73,26 +78,11 @@ class Round {
         return $this->getRoundData()->getPlayerList()->getCurrentPlayer();
     }
 
-    /**
-     * @param Player $player
-     * @param bool $addTurn
-     */
-    protected function setCurrentPlayer(Player $player, $addTurn) {
-        $this->getPlayerList()->toPlayer($player, $addTurn);
-    }
-
     protected function toInitPhase() {
         $this->setRoundPhase(RoundPhase::getInitPhaseInstance());
 
         // each player draw initial tiles
-        $playerCount = $this->getPlayerList()->count();
-        $drawTileCounts = [4, 4, 4, 1];
-        foreach ($drawTileCounts as $drawTileCount) {
-            for ($cnt = 0; $cnt < $playerCount; ++$cnt) {
-                $this->getRoundData()->getTileAreas()->drawInit($this->getCurrentPlayer(), $drawTileCount);
-                $this->setCurrentPlayer($this->getRoundData()->getPlayerList()->getNextPlayer(), false);
-            }
-        }
+        $this->getRoundData()->getTileAreas()->drawInitForAll();
 
         // go to dealer player's private phase
         $this->toPrivatePhase($this->getRoundData()->getPlayerList()->getDealerPlayer(), true);
@@ -119,7 +109,7 @@ class Round {
             $this->toOverPhase($result);
         } else {
             $this->setRoundPhase(RoundPhase::getPrivatePhaseInstance());
-            $this->setCurrentPlayer($player, true);
+            $this->getPlayerList()->toPlayer($player);
             if ($drawTile) {
                 $this->getRoundData()->getTileAreas()->draw($player);
             }
@@ -213,46 +203,16 @@ class Round {
 
     function reach(Player $player, Tile $selfTile) {
         $this->assertPrivatePhase($player);
-        // valid: reach condition
-        /**
-         * https://ja.wikipedia.org/wiki/%E7%AB%8B%E7%9B%B4
-         * 条件
-         * - 立直していないこと。
-         * - 聴牌していること。
-         * - 門前であること。すなわち、チー、ポン、明槓をしていないこと。
-         * - トビ有りのルールならば、点棒を最低でも1000点持っていること。つまり立直棒として1000点を供託したときにハコを割ってしまうような場合、立直はできない。供託時にちょうど0点になる場合、認められる場合と認められない場合がある。トビ無しの場合にハコを割っていた場合も、点棒を借りてリーチをかけることを認める場合と認めない場合がある。
-         * - 壁牌（山）の残りが王牌を除いて4枚（三人麻雀では3枚）以上あること。すなわち立直を宣言した後で少なくとも1回の自摸が残されているということ。ただし、鳴きや暗槓が入って結果的に自摸の機会なく流局したとしてもペナルティはない。
-         * - 4人全員が立直をかけた場合、四家立直として流局となる（四家立直による途中流局を認めないルールもあり、その場合は続行される）。
-         */
-        $notReachYet = !$player->getPlayerArea()->isReach();
-        if (!$notReachYet) { // PlayerArea
-            throw new \InvalidArgumentException('Reach condition violated: not reach yet.');
-        }
 
-        $target = new WinTarget($player, $this->getRoundData());
-        $isConcealed = $target->isConcealed();
-        if (!$isConcealed) { // PlayerArea
-            throw new \InvalidArgumentException('Reach condition violated: is concealed.');
-        }
-
-        $enoughScore = $player->getScore() >= 1000;
-        if (!$enoughScore) { // PlayerArea
-            throw new \InvalidArgumentException('Reach condition violated: at least 1000 score.');
-        }
-
-        $hasDrawTileChance = $target->getWallRemainTileAmount() >= 4;
-        if (!$hasDrawTileChance) { // TilesArea
-            throw new \InvalidArgumentException('Reach condition violated: at least 1 draw tile chance.');
-        }
-
-        // last do since slow
+        // assert waiting after discard
         $analyzer = $this->getWaitingAnalyzer();
         $handList = $player->getPlayerArea()->getHandTileSortedList();
-        $futureWaitingList = $analyzer->analyzePrivatePhaseFutureWaitingList($handList);
+        $futureWaitingList = $analyzer->analyzePrivatePhaseFutureWaitingList($handList, $player->getPlayerArea()->getDeclaredMeldList());
         $isWaiting = $futureWaitingList->count() > 0;
         if (!$isWaiting) {
             throw new \InvalidArgumentException('Reach condition violated: is waiting.');
         }
+
         $isValidTile = $futureWaitingList->isForWaitingDiscardedTile($selfTile);
         if (!$isValidTile) {
             throw new \InvalidArgumentException(
@@ -260,14 +220,13 @@ class Round {
             );
         }
 
-        // todo four reach draw
-
         // do
-        $player->getPlayerArea()->reach($selfTile);
-        $player->setScore($player->getScore() - 1000);
-        $this->getRoundData()->getTileAreas()->addAccumulatedReachCount();
+        $this->getRoundData()->getTileAreas()->reach($player, $selfTile);
+
         // switch phase
         $this->toPublicPhase();
+
+        // todo four reach draw
     }
 
     function kongBySelf(Player $player, Tile $selfTile) {
@@ -285,9 +244,7 @@ class Round {
     function winBySelf(Player $player) {
         $this->assertPrivatePhase($player);
         // do
-        $analyzer = $this->getWinAnalyzer();
-        $target = new WinTarget($player, $this->getRoundData());
-        $winResult = $analyzer->analyzeTarget($target);
+        $winResult = $this->getWinResult($player);
         if ($winResult->getWinState() != WinState::getInstance(WinState::WIN_BY_SELF)) {
             throw new \InvalidArgumentException();
         }

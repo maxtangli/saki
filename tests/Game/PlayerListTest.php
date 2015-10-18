@@ -26,7 +26,7 @@ class PlayerListTest extends PHPUnit_Framework_TestCase {
         $expectedPlayer = [$p3, $p4, $p1, $p2];
         for ($i = 0; $i < count($expectedPlayer); ++$i) {
             $this->assertSame($expectedPlayer[$i], $m->getCurrentPlayer(), sprintf('[%s] vs [%s]', $expectedPlayer[$i], $m->getCurrentPlayer()));
-            $this->assertSame(1, $m->getCurrentPlayer()->getTurn());
+            // removed: $this->assertSame(1, $m->getCurrentPlayer()->getLocalTurn());
             $m->toNextPlayer();
         }
 
@@ -38,5 +38,19 @@ class PlayerListTest extends PHPUnit_Framework_TestCase {
             $this->assertEquals($expectedPlayer[$i], $m->getCurrentOffsetPlayer($i), $i);
             $this->assertEquals($expectedPlayer[$i], $m->getDealerOffsetPlayer($i), $i);
         }
+    }
+
+    function testGlobalTurn() {
+        $m = new PlayerList(4, 10000);
+        $this->assertEquals(1, $m->getGlobalTurn());
+
+        foreach($m as $p) {
+            $m->toPlayer($p);
+            $this->assertEquals(1, $m->getGlobalTurn());
+        }
+
+        list($p1, $p2, $p3, $p4) = $m->toArray();
+        $m->toPlayer($p1);
+        $this->assertEquals(2, $m->getGlobalTurn());
     }
 }

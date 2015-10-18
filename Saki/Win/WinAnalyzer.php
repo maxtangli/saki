@@ -6,9 +6,11 @@ use Saki\Meld\MeldList;
 use Saki\Meld\PairMeldType;
 use Saki\Meld\RunMeldType;
 use Saki\Meld\TripleMeldType;
+use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 use Saki\Tile\TileSortedList;
 use Saki\Util\ArrayLikeObject;
+use Saki\Util\Utils;
 use Saki\Win\Fu\FuCountAnalyzer;
 use Saki\Win\Fu\FuCountTarget;
 use Saki\Win\Yaku\YakuAnalyzer;
@@ -83,8 +85,7 @@ class WinAnalyzer {
                 $publicHandTileList, $target->getDeclaredMeldList()
             );
 
-            // todo more detailed
-            $isFuriten = false;
+            $isFuriten = $this->isFuritenFalseWin($target, $waitingTileList);
             if ($isFuriten) {
                 $finalWinState = WinState::getInstance(WinState::FURITEN_FALSE_WIN);
             }
@@ -136,7 +137,7 @@ class WinAnalyzer {
         return new WinSubResult($winState, $yakuList, $fuCount);
     }
 
-    protected function isFuritenFalseWin(WinTarget $target) {
+    protected function isFuritenFalseWin(WinTarget $target, TileList $waitingTileList) {
         if ($target->isPrivatePhase()) {
             return false;
         }
@@ -148,19 +149,32 @@ class WinAnalyzer {
          * isFuriten = waitingTiles any waitingTile in ngTiles
          */
 
-        $waitingTiles = []; // todo
+        // ng: self discarded tiles
+        $ngTileList = new TileList($target->getDiscardedTileList()->toArray());
 
-        $selfDiscardedTiles = $target->getDiscardedTileList()->toArray();
-        if ($target->isReach()) {
-            $otherTiles = []; // todo all other player's discarded tiles since reach
-        } else {
-            $otherTiles = []; // todo other player's tiles except in recent turn
+        $discardHistory = $target->getDiscardHistory();
+        if ($target->isReach()) { // ng: all other player's discarded tiles since self reach
+            $fromTurn = $target->getReachTurn();
+        } else { // ng: all other player's discarded tiles since last turn self discarded
+            // https://ja.wikipedia.org/wiki/%E6%8C%AF%E8%81%B4#.E5.90.8C.E5.B7.A1.E5.86.85.E3.83.95.E3.83.AA.E3.83.86.E3.83.B3
+            // 同巡内の定義は、「次の自分の摸打を経るまで」とするのが一般的である。
+            // 自分が副露した場合も解消
+            $globalTurn = $target->getGlobalTurn();
+            if ($globalTurn == 1) {
+                $fromTurn = 1;
+            } else {
+                $selfWindComparator = Utils::getComparatorByBestArray(Tile::getWindTiles());
+                $selfTurnPassed = $selfWindComparator($target->getSelfWind(), $target->getCurrentPlayer()->getSelfWind()) >= 0;
+                $fromTurn = $selfTurnPassed ? $globalTurn : $globalTurn - 1;
+            }
         }
 
-        $ngTiles = array_merge($selfDiscardedTiles, $otherTiles);
-        $ngTileList = new TileList($ngTiles);
-        $isDiscardedTileFalseWin = $ngTileList->any(function (Tile $ngTile) use ($waitingTiles) {
-            return in_array($ngTile, $waitingTiles);
+        // remember to exclude current turn discarded tile
+        $otherDiscardedNGTileList = $discardHistory->getOtherDiscardTileList($target->getSelfWind(), $fromTurn, $target->getSelfWind(), true);
+        $ngTileList->merge($otherDiscardedNGTileList);
+
+        $isDiscardedTileFalseWin = $ngTileList->any(function (Tile $ngTile) use ($waitingTileList) {
+            return $waitingTileList->valueExist($ngTile);
         });
         return $isDiscardedTileFalseWin;
     }

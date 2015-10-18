@@ -24,6 +24,9 @@ Meld Sequence / (Exposed / Concealed) Triplet / (Exposed / Concealed) Kong
 
  */
 
+use Saki\Util\ArrayLikeObject;
+use Saki\Util\Utils;
+
 class Tile {
     const REGEX_SUIT_NUMBER = '[1-9]';
     const REGEX_SUIT_TILE = '(' . self::REGEX_SUIT_NUMBER . TileType::REGEX_SUIT_TYPE . ')';
@@ -53,6 +56,21 @@ class Tile {
         } else {
             return new self(TileType::fromString($s[1]), intval($s[0]));
         }
+    }
+
+    static function getNumberTiles(TileType $tileType) {
+        $a = new ArrayLikeObject(range(1, 9));
+        return $a->toArray(function ($v)use($tileType) {
+            return new Tile($tileType, $v);
+        });
+    }
+
+    static function getWindTiles() {
+        return [Tile::fromString('E'), Tile::fromString('S'), Tile::fromString('W'), Tile::fromString('N')];
+    }
+
+    static function getDragonTiles() {
+        return [Tile::fromString('C'), Tile::fromString('P'), Tile::fromString('F')];
     }
 
     private $tileType;
@@ -110,24 +128,20 @@ class Tile {
         return $this->isTerminal() || $this->isHonor();
     }
 
-    function toNextTile() {
+    function toNextTile($offset = 1) {
         $currentType = $this->getTileType();
         if ($currentType->isSuit()) {
-            $currentNumber = $this->getNumber();
-            $nextNumber = $currentNumber != 9 ? $currentNumber + 1 : 1;
-            return new Tile($currentType, $nextNumber);
+            $a = self::getNumberTiles($currentType);
+        } elseif ($currentType->isWind()) {
+            $a = self::getWindTiles();
+        } elseif ($currentType->isDragon()) {
+            $a = self::getDragonTiles();
         } else {
-            $map = [
-                TileType::EAST => TileType::SOUTH,
-                TileType::SOUTH => TileType::WEST,
-                TileType::WEST => TileType::NORTH,
-                TileType::NORTH => TileType::EAST,
-                TileType::RED => TileType::WHITE,
-                TileType::WHITE => TileType::GREEN,
-                TileType::GREEN => TileType::RED,
-            ];
-            $nextType = TileType::getInstance($map[$currentType->getValue()]);
-            return new Tile($nextType);
+            throw new \LogicException();
         }
+
+        $a = new ArrayLikeObject($a);
+        $next = $a->getNext($this, $offset);
+        return $next;
     }
 }

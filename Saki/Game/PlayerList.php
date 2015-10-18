@@ -11,8 +11,13 @@ class PlayerList extends ArrayLikeObject {
         return new self(4, 25000);
     }
 
+    /**
+     * @var Player[]
+     */
+    private $players;
     private $currentIndex;
-    private $items;
+
+    private $globalTurn;
 
     /**
      * @param int $n
@@ -33,22 +38,29 @@ class PlayerList extends ArrayLikeObject {
         }, array_slice($data, 0, $n));
 
         parent::__construct($players);
+
+        $this->players = $players;
         $this->currentIndex = 0;
-        $this->items = $players;
+        $this->globalTurn = 1;
     }
 
     function reset(Player $dealerPlayer) {
-        if (!$this->valueExist($dealerPlayer)) {
-            throw new \InvalidArgumentException();
+        $dealerIndex = $this->valueToIndex($dealerPlayer); // assert valid
+
+        // roll each player's selfWind by its offset to dealerPlayer
+        $dealerSelfWind = Tile::fromString('E');
+        foreach($this->players as $index => $player) {
+            $offsetToDealer = $index - $dealerIndex;
+            $playerSelfWind = $dealerSelfWind->toNextTile($offsetToDealer);
+            $player->reset($playerSelfWind);
         }
-        $selfWinds = [
-            Tile::fromString('E'), Tile::fromString('S'), Tile::fromString('W'), Tile::fromString('N'),
-        ];
-        $count = $this->count();
-        for ($offset = 0; $offset < $count; ++$offset) {
-            $this->getOffsetPlayer($offset, $dealerPlayer)->reset($selfWinds[$offset]);
-        }
-        $this->toPlayer($dealerPlayer, false);
+
+        $this->currentIndex = $dealerIndex;
+        $this->globalTurn = 1;
+    }
+
+    function getGlobalTurn() {
+        return $this->globalTurn;
     }
 
     /**
@@ -81,7 +93,7 @@ class PlayerList extends ArrayLikeObject {
      * @return Player
      */
     function getCurrentPlayer() {
-        return $this->items[$this->currentIndex];
+        return $this->players[$this->currentIndex];
     }
 
     /**
@@ -142,20 +154,18 @@ class PlayerList extends ArrayLikeObject {
 
     /**
      * @param Player $player
-     * @param bool $addTurn
      */
-    function toPlayer(Player $player, $addTurn = true) {
-        $this->currentIndex = $this->valueToIndex($player); // valid check
+    function toPlayer(Player $player) {
+        $targetIndex = $this->valueToIndex($player); // valid check
+        $addTurn = ($targetIndex < $this->currentIndex);
+        $this->currentIndex = $targetIndex;
         if ($addTurn) {
-            $player->addTurn();
+            ++$this->globalTurn;
         }
     }
 
-    /**
-     * @param bool $addTurn
-     */
-    function toNextPlayer($addTurn = true) {
-        $this->toPlayer($this->getNextPlayer(), $addTurn);
+    function toNextPlayer() {
+        $this->toPlayer($this->getNextPlayer());
     }
 
     /**

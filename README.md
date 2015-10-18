@@ -1,18 +1,10 @@
 # saki
-A japanese-mahjong solver.
+
+A japanese-mahjong server.
 
 ## good practice
 
 - Agile, TDD, KISS, bad-design WINs over-design
-
-## bad smell
-
-- [ ] ==,===,array_search => custom equalsTo() ?
-- [ ] ugly const REGEX_XXX =>  class TileRegex ?
-- [ ] static factory method such as fromString($s) force subclasses keep constructor signature => move to factory class?
-- [x] ArrayObjectLike modify methods => protected methods in ArrayObjectLike
-- [x] ArrayObjectLike protected methods override is buggy => refactor to public
-- [ ] PlayerList pass as argument
 
 ## todo
 
@@ -223,7 +215,7 @@ rush 22 fix getMeldCompositions() 1.5h
 - [x] bug: getMeldCompositions() won't count for 112233s like tiles 1.3h
 - [x] bug: MeldCompositionAnalyzer: exposed 0.2h
 
-rush 23 isDiscardedTileFalseWin
+rush 23 WinAnalyzer: furiten 14.7h
 
 - [x] analyze waiting and furiten 2.2h
 - [x] TileSeries.getWaitingTiles 1.3h // unnecessary?
@@ -232,15 +224,23 @@ rush 23 isDiscardedTileFalseWin
 - [x] refactor: compareTo 1.3h
 - [x] analyzeWinTarget.mergeSubTargets 1.2h // finally all tests passed again >_<
 - [x] refactor: getHandList(includeTarget?) 0.2h
-- [ ] isDiscardedTileFalseWin
-- [ ] other discarded tiles in recent turn
-- [ ] refactor getWaitingTiles to return TileSortedList 
+
+- [x] replace local turn with global turn 0.7h
+- [x] Tile.toNext(offset) 0.8h
+
+- [x] DiscardHistory 1.5h
+- [x] DiscardHistoryTest 0.9h 
+
+- [x] adapt DiscardHistory to finish isDiscardedTileFalseWin 0.2h
+- [x] add reach turn 0.5h
+- [x] furiten final test 1.3h // finally this long long rush finished !
 
 rush
 
 - [ ] Round winByOther calls
 - [ ] refactor: publicCandidateTile and WinTile
 - [ ] refactor: RoundResult
+- [ ] refactor: getWaitingTiles to return TileSortedList 
 
 rush command system
 
@@ -268,9 +268,24 @@ rush etc: low priority
 - [ ] over phase: four reach drawn
 - [ ] over phase: 9-kind 9-tile drawn
 
-## note: command system
+# command system
 
+client send command string
+parse string into a command bind with a Game
+command.execute()
 
+publicCommandRoller
+save commands as list
+
+replay
+initialState, command strings(notice NO random allowed)
+
+# furiten, turn
+
+furiten/one-turn-win: all other player's discarded tiles after self player xx's turn xx (reach turn or one ago turn)
+furiten/display: all self's discarded tiles after turn xx
+
+PlayerArea:  discardTileList -> array(turn->discardedTiles)
 
 ## note: turn count
 

@@ -1,6 +1,7 @@
 <?php
 namespace Saki\Win;
 
+use Saki\Tile\Tile;
 use Saki\Util\ArrayLikeObject;
 
 class FutureWaitingList extends ArrayLikeObject {

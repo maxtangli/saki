@@ -38,7 +38,7 @@ class RoundData {
         $this->getRoundWindData()->reset($keepDealer);
         $nextDealer = $keepDealer ? $this->getPlayerList()->getDealerPlayer() : $this->getPlayerList()->getDealerOffsetPlayer(1);
         $this->getPlayerList()->reset($nextDealer);
-        $this->getTileAreas()->getWall()->reset(true);
+        $this->getTileAreas()->reset();
         $this->setRoundPhase(RoundPhase::getInitPhaseInstance());
     }
 

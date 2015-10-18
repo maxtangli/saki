@@ -74,12 +74,28 @@ class WinTarget {
         }
     }
 
+    function getCurrentPlayer() {
+        return $this->roundData->getPlayerList()->getCurrentPlayer();
+    }
+
+    function getDiscardHistory() {
+        return $this->roundData->getTileAreas()->getDiscardHistory();
+    }
+
     function isReach() {
         return $this->player->getPlayerArea()->isReach();
     }
 
+    function getReachTurn() {
+        return $this->player->getPlayerArea()->getReachTurn();
+    }
+
     function getSelfWind() {
         return $this->player->getSelfWind();
+    }
+
+    function getGlobalTurn() {
+        return $this->roundData->getPlayerList()->getGlobalTurn();
     }
 
     function getRoundWind() {

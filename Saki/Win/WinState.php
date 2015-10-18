@@ -24,10 +24,10 @@ class WinState extends Enum {
 
     const NOT_WIN = 1; // なし
     const WAITING_BUY_NOT_WIN = 2; // 聴牌
-    const FURITEN_FALSE_WIN = 2; // 振り聴
-    const NO_YAKU_FALSE_WIN = 3; // 役なし
-    const WIN_BY_SELF = 4; // ツモ
-    const WIN_BY_OTHER = 5; // ロン
+    const FURITEN_FALSE_WIN = 3; // 振り聴
+    const NO_YAKU_FALSE_WIN = 4; // 役なし
+    const WIN_BY_SELF = 5; // ツモ
+    const WIN_BY_OTHER = 6; // ロン
 
     /**
      * @param $value

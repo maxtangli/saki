@@ -2,7 +2,7 @@
 namespace Saki\Util;
 
 /**
- * convenient base class for 0-begin-ascending-int-key-array like object.
+ * convenient base class for 0-begin-continuous-ascending-int-key-array like object.
  * @package Saki\Util
  */
 class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
@@ -77,8 +77,16 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         $this->setInnerArray($innerArray);
     }
 
+    function init() {
+        $this->innerArray = [];
+    }
+
     function __toString() {
-        return implode(',', $this->innerArray);
+        return $this->toString(',');
+    }
+
+    function toString($glue) {
+        return implode($glue, $this->innerArray);
     }
 
     function toArray(callable $selector = null) {
@@ -192,7 +200,6 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         return array_reduce($this->toArray(), $reduceCallback, $initial);
     }
 
-
     /**
      * @param mixed|array $valueOrValues
      * @param null|bool|callable $equals
@@ -270,6 +277,17 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
             }
         }
         return true;
+    }
+
+    function getNext($originValue, $offset = 1) {
+        $originIndex = $this->valueToIndex($originValue);
+        $targetIndex = $this->util_getNormalizedModValue($originIndex + $offset, $this->count());
+        $targetValue = $this->indexToValue($targetIndex);
+        return $targetValue;
+    }
+
+    private function util_getNormalizedModValue($v, $n) {
+        return (($v) % $n + $n) % $n;
     }
 
     /**

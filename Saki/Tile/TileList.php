@@ -66,11 +66,19 @@ class TileList extends ArrayLikeObject {
      * @param int $firstPartLength
      * @return TileSortedList[] list($beginTileList, $remainTileList)
      */
-    function getCutInTwoTileSortedLists($firstPartLength) {
+    function toCutInTwoTileSortedLists($firstPartLength) {
         $tiles = $this->toArray();
         $tiles1 = array_slice($tiles, 0, $firstPartLength);
         $tiles2 = array_slice($tiles, $firstPartLength);
         return [new TileSortedList($tiles1), new TileSortedList($tiles2)];
+    }
+
+    function validPrivatePhaseCount() {
+        return $this->count() % 3 == 2;
+    }
+
+    function validPublicPhaseCount() {
+        return $this->count() % 3 == 1;
     }
 
     /**
@@ -86,14 +94,6 @@ class TileList extends ArrayLikeObject {
      */
     function offsetGet($offset) {
         return parent::offsetGet($offset);
-    }
-
-    function validPrivatePhaseCount() {
-        return $this->count() % 3 == 2;
-    }
-
-    function validPublicPhaseCount() {
-        return $this->count() % 3 == 1;
     }
 }
 

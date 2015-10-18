@@ -28,7 +28,7 @@ class Wall {
         if ($shuffle) {
             $baseTileList->shuffle();
         }
-        list($deadWallTileLists, $currentTileList) = $baseTileList->getCutInTwoTileSortedLists(14);
+        list($deadWallTileLists, $currentTileList) = $baseTileList->toCutInTwoTileSortedLists(14);
         $this->deadWall = new DeadWall($deadWallTileLists);
         $this->remainTileList = $currentTileList;
     }
@@ -69,14 +69,14 @@ class Wall {
      * @param int $n
      * @return \Saki\Tile\Tile|\Saki\Tile\Tile[]
      */
-    function pop($n = 1) {
+    function remainTileListPop($n = 1) {
         return $this->getRemainTileList()->pop($n);
     }
 
     /**
      * @return \Saki\Tile\Tile
      */
-    function shift() {
+    function deadWallShift() {
         return $this->getDeadWall()->shift();
     }
 }

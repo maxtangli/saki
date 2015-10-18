@@ -34,4 +34,24 @@ class TileTest extends PHPUnit_Framework_TestCase {
         $m4 = Tile::fromString('E');
         $this->assertEquals($m3, $m4);
     }
+
+    /**
+     * @dataProvider nextTileProvider
+     */
+    function testNextTile($tileString, $offset, $nextTileString) {
+        $tile = Tile::fromString($tileString);
+        $nextTile = Tile::fromString($nextTileString);
+        $result = $tile->toNextTile($offset);
+        $this->assertEquals($nextTile, $result, sprintf('%s->toNextTile(%s) expected %s but actual %s', $tile, $offset, $nextTile, $result));
+    }
+
+    function nextTileProvider() {
+        return [
+            ['1s', 8, '9s'],
+            ['1s', 9, '1s'],['1s', 10, '2s'],['1s', 17, '9s'],['1s', 18, '1s'],['1s', 19, '2s'],
+
+            ['E', 1, 'S'],
+            ['E', 3, 'N'],['E', 4, 'E'],['E', 5, 'S'],['E', 6, 'W'],['E', 7, 'N'],['E', 8, 'E'],
+        ];
+    }
 }

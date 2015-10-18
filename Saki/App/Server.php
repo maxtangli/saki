@@ -26,8 +26,7 @@ class Server {
         if (isset($_GET['command'])) {
             $commandString = $_GET['command'];
             $game = $this->getData();
-            $command = $game->getCommandFactory()->createCommand($commandString);
-            $game->getCurrentRound()->acceptCommand($command);
+
         } elseif (isset($_GET['reset'])) {
             $this->reset();
         }
