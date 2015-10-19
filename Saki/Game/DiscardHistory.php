@@ -21,8 +21,8 @@ class DiscardHistory {
         return $this->a->__toString("\n");
     }
 
-    function init() {
-        $this->a->init();
+    function reset() {
+        $this->a->reset();
     }
 
     function getOtherDiscardTileList(Tile $mySelfWind, $fromTurn = 1, $fromSelfWind = null, $excludedLastTile = false) {
@@ -31,6 +31,13 @@ class DiscardHistory {
 
     function getSelfDiscardTileList(Tile $mySelfWind, $fromTurn = 1) {
         return $this->getDiscardTileListImpl(true, $mySelfWind, $fromTurn);
+    }
+
+    function getAllDiscardTileList() {
+        $tiles = $this->a->toArray(function(DiscardHistoryItem $item) {
+            return $item->getDiscardedTile();
+        });
+        return new TileList($tiles);
     }
 
     private function getDiscardTileListImpl($isSelf, Tile $mySelfWind, $fromTurn = 1, $fromSelfWind = null, $excludedLastTile = false) {

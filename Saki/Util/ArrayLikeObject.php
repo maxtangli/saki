@@ -77,7 +77,7 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         $this->setInnerArray($innerArray);
     }
 
-    function init() {
+    function reset() {
         $this->innerArray = [];
     }
 
@@ -99,6 +99,10 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         } else {
             return $this->innerArray;
         }
+    }
+
+    function toFilteredArray(callable $predicate) {
+        return array_values(array_filter($this->innerArray, $predicate));
     }
 
     function getIterator() {
@@ -255,6 +259,10 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
             }
         }
         return $count;
+    }
+
+    function getMatchedValueCount(callable $predicate) {
+        return count($this->toFilteredArray($predicate));
     }
 
     function indexToValue($indexOrIndexes) {

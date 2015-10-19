@@ -1,9 +1,11 @@
 <?php
 
+use Saki\Game\MockRound;
 use Saki\Game\Round;
 use Saki\Game\RoundPhase;
 use Saki\Meld\Meld;
 use Saki\Tile\Tile;
+use Saki\Tile\TileList;
 
 class RoundTest extends PHPUnit_Framework_TestCase {
 
@@ -237,6 +239,23 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($r->isGameOver());
     }
 
+    function testWinRoundResult() {
+        // winByOther
+        $r = new MockRound();
+        $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('4s'));
+        $r->debugSetHandTileList($r->getPlayerList()[1], TileList::fromString('123m456m789m23s55s'));
+        $r->winByOther($r->getPlayerList()[1]);
+        $this->assertTrue($r->getRoundResult()->getRoundResultType()->isWin());
+
+        // multiWinByOther
+        $r = new MockRound();
+        $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('4s'));
+        $r->debugSetHandTileList($r->getPlayerList()[1], TileList::fromString('123m456m789m23s55s'));
+        $r->debugSetHandTileList($r->getPlayerList()[2], TileList::fromString('123m456m789m23s55s'));
+        $r->multiWinByOther([$r->getPlayerList()[1], $r->getPlayerList()[2]]);
+        $this->assertTrue($r->getRoundResult()->getRoundResultType()->isWin());
+    }
+
     function testExhaustiveDraw() {
         $r = $this->initialRound;
         for ($phase = $r->getRoundPhase(); $phase != RoundPhase::getOverPhaseInstance(); $phase = $r->getRoundPhase()) {
@@ -249,7 +268,7 @@ class RoundTest extends PHPUnit_Framework_TestCase {
             }
         }
 
-        $cls = get_class(new \Saki\RoundResult\ExhaustiveDrawResult(\Saki\Game\PlayerList::createStandard()->toArray(), [false, false, false, false]));
+        $cls = get_class(new \Saki\RoundResult\ExhaustiveDrawRoundResult(\Saki\Game\PlayerList::createStandard()->toArray(), [false, false, false, false]));
         $this->assertInstanceOf($cls, $r->getRoundResult());
     }
 

@@ -62,6 +62,26 @@ class TileList extends ArrayLikeObject {
         return $s;
     }
 
+    function validPrivatePhaseCount() {
+        return $this->count() % 3 == 2;
+    }
+
+    function validPublicPhaseCount() {
+        return $this->count() % 3 == 1;
+    }
+
+    function isNineKindsOfTerminalOrHonor() {
+        if (!$this->validPrivatePhaseCount()) {
+            throw new \LogicException();
+        }
+
+        $targetTileList = $this->toFilteredTileList(function (Tile $tile) {
+            return $tile->isTerminalOrHonor();
+        });
+        $targetTileList->unique();
+        return $targetTileList->count() >= 9;
+    }
+
     /**
      * @param int $firstPartLength
      * @return TileSortedList[] list($beginTileList, $remainTileList)
@@ -73,12 +93,8 @@ class TileList extends ArrayLikeObject {
         return [new TileSortedList($tiles1), new TileSortedList($tiles2)];
     }
 
-    function validPrivatePhaseCount() {
-        return $this->count() % 3 == 2;
-    }
-
-    function validPublicPhaseCount() {
-        return $this->count() % 3 == 1;
+    function toFilteredTileList(callable $filter) {
+        return new TileList($this->toFilteredArray($filter));
     }
 
     /**

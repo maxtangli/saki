@@ -35,4 +35,9 @@ class MockRound extends Round {
             $player->getPlayerArea()->getHandTileSortedList()->replaceByIndex(0, $selfTile);
         }
     }
+
+    function debugKongBySelfByReplace(Player $player, Tile $selfTile) {
+        $player->getPlayerArea()->getHandTileSortedList()->replaceByIndex([0, 1, 2, 3], [$selfTile, $selfTile, $selfTile, $selfTile]);
+        $this->kongBySelf($player, $selfTile);
+    }
 }

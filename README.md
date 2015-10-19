@@ -14,8 +14,9 @@ total time cost
 - rush  6-10 23.8h
 - rush 11-15 15.8h
 - rush 16-20 25.6h
-- rush 21-25 ?h
--      total 99.2h + ?h
+- rush 21-25 26.7h
+- rush 26-30 ?h
+-      total 125.9h + ?h
 
 rush 0 scribble 1.5h
 
@@ -24,9 +25,9 @@ rush 0 scribble 1.5h
 - [x] Tile.toString()
 - [x] new a Hand
 
-rush 1 init pj 1h
+rush 1 reset pj 1h
 
-- [x] init pj
+- [x] reset pj
 - [x] refactor&test
 - [x] Hand.toString()
 
@@ -235,12 +236,20 @@ rush 23 WinAnalyzer: furiten 14.7h
 - [x] add reach turn 0.5h
 - [x] furiten final test 1.3h // finally this long long rush finished !
 
-rush
+rush 24 WinByOther, MultipleWinByOther 1h
 
-- [ ] Round winByOther calls
-- [ ] refactor: publicCandidateTile and WinTile
-- [ ] refactor: RoundResult
-- [ ] refactor: getWaitingTiles to return TileSortedList 
+- [x] round.winByOther 0.2h
+- [x] test MultipleWinByOther 0.3h
+- [x] refactor: remove WinRoundResult subclasses 0.3h
+- [x] test Round.winByXXX 0.2h
+
+rush 25 OnTheWayDrawRoundResult 1.5h
+
+- [x] add RoundResultType 0.4h
+- [x] 9-kind 9-tile drawn, keep dealer 0.2h
+- [x] four wind drawn, keep dealer 0.3h
+- [x] four kong drawn, keep dealer 0.4h
+- [x] four reach drawn, keep dealer 0.2h
 
 rush command system
 
@@ -262,11 +271,13 @@ rush red dora
 - [ ] discard/createMeld logic
 - [ ] impl
 
-rush etc: low priority
+rush refactor
+
+- [ ] refactor: publicCandidateTile and WinTile
+- [ ] refactor: RoundResult
+- [ ] refactor: getWaitingTiles to return TileSortedList 
 - [ ] refactor: move DrawScore logic into separate class
-- [ ] over phase: four kong drawn
-- [ ] over phase: four reach drawn
-- [ ] over phase: 9-kind 9-tile drawn
+
 
 # command system
 
@@ -514,7 +525,7 @@ new phase
 - decide dealer player
 - decide each player's wind
 
-init phase
+reset phase
 
 - each player draw 4 tiles
 - goto dealer player's private phase

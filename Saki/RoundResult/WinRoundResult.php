@@ -4,8 +4,74 @@ namespace Saki\RoundResult;
 use Saki\Game\Player;
 use Saki\Util\ArrayLikeObject;
 use Saki\Win\WinResult;
+use Saki\Win\WinState;
 
 class WinRoundResult extends RoundResult {
+    // note: createXXX()'s param check is not fully strict since it seems no harm
+
+    /**
+     * @param Player[] $players
+     * @param Player $winPlayer
+     * @param WinResult $winResult
+     * @param int $accumulatedReachCount
+     * @param int $selfWindTurn
+     * @return WinRoundResult
+     */
+    static function createWinBySelf(array $players, Player $winPlayer, WinResult $winResult, $accumulatedReachCount, $selfWindTurn) {
+        if ($winResult->getWinState() != WinState::getInstance(WinState::WIN_BY_SELF)) {
+            throw new \InvalidArgumentException();
+        }
+        $losePlayers = array_values(array_filter($players, function (Player $player) use ($winPlayer) {
+            return $player != $winPlayer;
+        }));
+        return new self($players, [$winPlayer], [$winResult], $losePlayers, $accumulatedReachCount, $selfWindTurn,
+            RoundResultType::getInstance(RoundResultType::WIN_BY_SELF));
+    }
+
+    /**
+     * @param Player[] $players
+     * @param Player $winPlayer
+     * @param WinResult $winResult
+     * @param Player $losePlayer
+     * @param int $accumulatedReachCount
+     * @param int $selfWindTurn
+     * @return WinRoundResult
+     */
+    static function createWinByOther(array $players, Player $winPlayer, WinResult $winResult, Player $losePlayer, $accumulatedReachCount, $selfWindTurn) {
+        if ($winResult->getWinState() != WinState::getInstance(WinState::WIN_BY_OTHER)) {
+            throw new \InvalidArgumentException();
+        }
+        return new self($players, [$winPlayer], [$winResult], [$losePlayer], $accumulatedReachCount, $selfWindTurn,
+            RoundResultType::getInstance(RoundResultType::WIN_BY_OTHER));
+    }
+
+    /**
+     * @param Player[] $players
+     * @param Player[] $winPlayers
+     * @param WinResult[] $winResults
+     * @param Player $losePlayer
+     * @param int $accumulatedReachCount
+     * @param int $selfWindTurn
+     * @return WinRoundResult
+     */
+    static function createMultiWinByOther(array $players, array $winPlayers, array $winResults, Player $losePlayer, $accumulatedReachCount, $selfWindTurn) {
+        foreach($winResults as $winResult) {
+            if ($winResult->getWinState() != WinState::getInstance(WinState::WIN_BY_OTHER)) {
+                throw new \InvalidArgumentException();
+            }
+        }
+
+        $winPlayerCount = count($winPlayers);
+        if (!in_array($winPlayerCount, [2,3])) {
+            throw new \InvalidArgumentException();
+        }
+
+        $winTypeValue = $winPlayerCount == 2 ? RoundResultType::DOUBLE_WIN_BY_OTHER : RoundResultType::TRIPLE_WIN_BY_OTHER;
+        $winType = RoundResultType::getInstance($winTypeValue);
+
+        return new self($players, $winPlayers, $winResults, [$losePlayer], $accumulatedReachCount, $selfWindTurn, $winType);
+    }
+
     private $players;
     private $winPlayers;
     private $winAnalyzerResults;
@@ -16,16 +82,21 @@ class WinRoundResult extends RoundResult {
     /**
      * @param Player[] $players
      * @param Player[] $winPlayers
-     * @param WinResult[] $winAnalyzerResults
+     * @param WinResult[] $winResults
      * @param Player[] $losePlayers
      * @param int $accumulatedReachCount
      * @param int $selfWindTurn
+     * @param RoundResultType $winType
      */
-    function __construct(array $players, array $winPlayers, array $winAnalyzerResults, array $losePlayers, $accumulatedReachCount, $selfWindTurn) {
-        parent::__construct($players, true);
+    function __construct(array $players, array $winPlayers, array $winResults, array $losePlayers, $accumulatedReachCount, $selfWindTurn, RoundResultType $winType) {
+        if (!$winType->isWin()) {
+            throw new \InvalidArgumentException();
+        }
+
+        parent::__construct($players, $winType);
         $this->players = $players;
         $this->winPlayers = $winPlayers;
-        $this->winAnalyzerResults = $winAnalyzerResults;
+        $this->winAnalyzerResults = $winResults;
         $this->losePlayers = $losePlayers;
         $this->accumulatedReachCount = $accumulatedReachCount;
         $this->selfWindTurn = $selfWindTurn;
@@ -88,34 +159,31 @@ class WinRoundResult extends RoundResult {
         }
     }
 
-    function isWinBySelf() {
-        return $this->getWinPlayerCount() == 1 && $this->getLosePlayerCount() == $this->getPlayerCount() - 1;
-    }
-
     function getSelfWindTurnDeltaInt(Player $player) {
+        // each winPlayer get totalScore, which was undertaken by each lostPlayer.
         $totalScore = $this->getSelfWindTurn() * 300;
         if ($this->isWinPlayer($player)) {
-            return $totalScore / $this->getWinPlayerCount();
+            return $totalScore;
         } elseif ($this->isLosePlayer($player)) {
-            return -$totalScore / $this->getLosePlayerCount(); // todo all or divide?
+            return -$totalScore * $this->getWinPlayerCount() / $this->getLosePlayerCount();
         } else {
             return 0;
         }
     }
 
     function getTableItemDeltaInt(Player $player) {
-        $winBySelf = $this->isWinBySelf();
+        $isWinBySelf = $this->getRoundResultType()->getValue() == RoundResultType::WIN_BY_SELF;
         if ($this->isWinPlayer($player)) {
             $scoreItem = $this->getWinAnalyzerResult($player)->getScoreItem();
             $receiverIsDealer = $player->isDealer();
-            return $scoreItem->getReceiveScore($receiverIsDealer, $winBySelf);
+            return $scoreItem->getReceiveScore($receiverIsDealer, $isWinBySelf);
         } elseif ($this->isLosePlayer($player)) {
             $totalPayScore = 0;
             foreach ($this->getWinPlayers() as $winPlayer) {
                 $scoreItem = $this->getWinAnalyzerResult($winPlayer)->getScoreItem();
                 $receiverIsDealer = $winPlayer->isDealer();
                 $payerIsDealer = $player->isDealer();
-                $payScore = -$scoreItem->getPayScore($receiverIsDealer, $winBySelf, $payerIsDealer);
+                $payScore = -$scoreItem->getPayScore($receiverIsDealer, $isWinBySelf, $payerIsDealer);
                 $totalPayScore += $payScore;
             }
             return $totalPayScore;

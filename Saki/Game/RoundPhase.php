@@ -11,7 +11,7 @@ class RoundPhase extends Enum {
 
     static function getValue2StringMap() {
         return [
-            self::INIT_PHASE => 'init phase',
+            self::INIT_PHASE => 'reset phase',
             self::PRIVATE_PHASE => 'private phase',
             self::PUBLIC_PHASE => 'public phase',
             self::OVER_PHASE => 'over phase',

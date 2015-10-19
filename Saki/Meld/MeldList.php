@@ -59,8 +59,7 @@ class MeldList extends ArrayLikeObject {
     }
 
     function toFilteredMeldList(callable $filter) {
-        $melds = array_filter($this->toArray(), $filter);
-        return new self(array_values($melds));
+        return new self($this->toFilteredArray($filter));
     }
 
     function toFilteredTypesMeldList(array $targetMeldTypes) {

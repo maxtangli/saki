@@ -3,9 +3,8 @@ namespace Saki\RoundResult;
 
 use Saki\Game\Player;
 use Saki\Util\ArrayLikeObject;
-use Saki\Util\Utils;
 
-class ExhaustiveDrawResult extends RoundResult {
+class ExhaustiveDrawRoundResult extends RoundResult {
     private $players;
     private $isWaitings;
 
@@ -14,7 +13,7 @@ class ExhaustiveDrawResult extends RoundResult {
      * @param bool[] $isWaitings
      */
     function __construct(array $players, array $isWaitings) {
-        parent::__construct($players, false);
+        parent::__construct($players, RoundResultType::getInstance(RoundResultType::EXHAUSTIVE_DRAW));
         $valid = count($players) == count($isWaitings);
         if (!$valid) {
             throw new \InvalidArgumentException();

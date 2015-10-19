@@ -169,10 +169,11 @@ class PlayerList extends ArrayLikeObject {
     }
 
     /**
+     * @param callable $selector
      * @return Player[]
      */
-    function toArray() {
-        return parent::toArray();
+    function toArray(callable $selector = null) {
+        return parent::toArray($selector);
     }
 
     /**

@@ -11,7 +11,7 @@ class WallTest extends PHPUnit_Framework_TestCase {
         $w = new Wall(TileSet::getStandardTileSet());
         $this->assertCount($standardCnt, $w->getTileSet());
 
-        // init and shuffle
+        // reset and shuffle
         $w->reset(true);
 
         // pop

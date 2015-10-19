@@ -70,6 +70,7 @@ abstract class Enum implements IEnum {
     private function __clone() {
     }
 
+//    // __wakeup() is required to support object reconstruction from $_SESSION.
 //    private function __wakeup() {
 //    }
 
@@ -85,5 +86,9 @@ abstract class Enum implements IEnum {
             $r[$value] = $text;
         }
         return $r;
+    }
+
+    protected function isTargetValue(array $targetValues) {
+        return in_array($this->getValue(), $targetValues);
     }
 }

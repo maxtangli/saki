@@ -9,14 +9,14 @@ abstract class RoundResult {
      */
     private $players;
     private $originScores;
-    private $isWin;
+    private $roundResultType;
 
-    function __construct(array $players, $isWin) {
-        if (count($players) != 4 || !is_bool($isWin)) {
+    function __construct(array $players, RoundResultType $roundResultType) {
+        if (count($players) != 4) {
             throw new \InvalidArgumentException();
         }
         $this->players = $players;
-        $this->isWin = $isWin;
+        $this->roundResultType = $roundResultType;
         $this->originScores = array_map(function (Player $player) {
             return $player->getScore();
         }, $players);
@@ -26,12 +26,8 @@ abstract class RoundResult {
         return $this->players;
     }
 
-    function isWin() {
-        return $this->isWin;
-    }
-
-    function isDraw() {
-        return !$this->isWin();
+    function getRoundResultType() {
+        return $this->roundResultType;
     }
 
     private function getOriginScore(Player $player) {

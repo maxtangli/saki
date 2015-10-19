@@ -3,10 +3,14 @@
 namespace Saki\Game;
 
 use Saki\FinalScore\FinalScoreStrategyTarget;
-use Saki\RoundResult\ExhaustiveDrawResult;
+use Saki\Meld\QuadMeldType;
+use Saki\RoundResult\ExhaustiveDrawRoundResult;
+use Saki\RoundResult\OnTheWayDrawRoundResult;
+use Saki\RoundResult\RoundResultType;
 use Saki\RoundResult\RoundResult;
-use Saki\RoundResult\WinBySelfRoundResult;
+use Saki\RoundResult\WinRoundResult;
 use Saki\Tile\Tile;
+use Saki\Util\ArrayLikeObject;
 use Saki\Win\WaitingAnalyzer;
 use Saki\Win\WinAnalyzer;
 use Saki\Win\WinState;
@@ -93,26 +97,10 @@ class Round {
      * @param bool $drawTile
      */
     protected function toPrivatePhase(Player $player, $drawTile) {
-        if ($this->getRoundData()->getTileAreas()->getWall()->getRemainTileCount() == 0 && $drawTile) {
-            // exhaustive draw
-            $players = $this->getPlayerList()->toArray();
-            $analyzer = $this->getWaitingAnalyzer();
-            $roundData = $this->getRoundData();
-            $isWaitingStates = array_map(function (Player $player) use ($analyzer, $roundData) {
-                $handTileList = $player->getPlayerArea()->getHandTileSortedList();
-                $declaredMeldList = $player->getPlayerArea()->getDeclaredMeldList();
-                $waitingTileList = $analyzer->analyzePublicPhaseHandWaitingTileList($handTileList, $declaredMeldList);
-                $isWaiting = $waitingTileList->count() > 0;
-                return $isWaiting;
-            }, $players);
-            $result = new ExhaustiveDrawResult($players, $isWaitingStates);
-            $this->toOverPhase($result);
-        } else {
-            $this->setRoundPhase(RoundPhase::getPrivatePhaseInstance());
-            $this->getPlayerList()->toPlayer($player);
-            if ($drawTile) {
-                $this->getRoundData()->getTileAreas()->draw($player);
-            }
+        $this->setRoundPhase(RoundPhase::getPrivatePhaseInstance());
+        $this->getPlayerList()->toPlayer($player);
+        if ($drawTile) {
+            $this->getRoundData()->getTileAreas()->draw($player);
         }
     }
 
@@ -130,7 +118,7 @@ class Round {
             $player->setScore($afterScore);
         }
         // clear accumulatedReachCount if isWin
-        if ($result->isWin()) {
+        if ($result->getRoundResultType()->isWin()) {
             $this->getRoundData()->getTileAreas()->setAccumulatedReachCount(0);
         }
     }
@@ -232,24 +220,44 @@ class Round {
     function kongBySelf(Player $player, Tile $selfTile) {
         $this->assertPrivatePhase($player);
         $this->getRoundData()->getTileAreas()->kongBySelf($player, $selfTile);
-        // stay in private phase
+        if (!$this->handleFourKongDraw()) {
+            // stay in private phase
+        }
     }
 
     function plusKongBySelf(Player $player, Tile $selfTile) {
         $this->assertPrivatePhase($player);
         $this->getRoundData()->getTileAreas()->plusKongBySelf($player, $selfTile);
-        // stay in private phase
+        if (!$this->handleFourKongDraw()) {
+            // stay in private phase
+        }
     }
 
     function winBySelf(Player $player) {
         $this->assertPrivatePhase($player);
         // do
-        $winResult = $this->getWinResult($player);
-        if ($winResult->getWinState() != WinState::getInstance(WinState::WIN_BY_SELF)) {
+        $roundResult = WinRoundResult::createWinBySelf($this->getPlayerList()->toArray(), $player, $this->getWinResult($player),
+            $this->getRoundData()->getTileAreas()->getAccumulatedReachCount(), $this->getRoundData()->getRoundWindData()->getSelfWindTurn());
+        // phase
+        $this->toOverPhase($roundResult);
+    }
+
+    function nineKindsOfTerminalOrHonorDraw(Player $player) {
+        // check
+        $this->assertPrivatePhase($player);
+
+        $currentTurn = $this->getRoundData()->getPlayerList()->getGlobalTurn();
+        $isFirstTurn = $currentTurn == 1;
+        $noDeclaredActions = !$this->getRoundData()->getTileAreas()->getDeclareHistory()->hasDeclare($currentTurn);
+        $validTileList = $player->getPlayerArea()->getHandTileSortedList()->isNineKindsOfTerminalOrHonor();
+
+        $valid = $isFirstTurn && $noDeclaredActions && $validTileList;
+        if (!$valid) {
             throw new \InvalidArgumentException();
         }
-        $roundResult = new WinBySelfRoundResult($this->getPlayerList()->toArray(), $player, $winResult,
-            $this->getRoundData()->getTileAreas()->getAccumulatedReachCount(), $this->getRoundData()->getRoundWindData()->getSelfWindTurn());
+        // do
+        $roundResult = new OnTheWayDrawRoundResult($this->getPlayerList()->toArray(),
+            RoundResultType::getInstance(RoundResultType::NINE_KINDS_OF_TERMINAL_OR_HONOR_DRAW));
         // phase
         $this->toOverPhase($roundResult);
     }
@@ -272,7 +280,74 @@ class Round {
 
     function passPublicPhase() {
         $this->assertPublicPhase();
+
+        $isExhaustiveDraw = $this->getRoundData()->getTileAreas()->getWall()->getRemainTileCount() == 0;
+        if ($isExhaustiveDraw) {
+            $players = $this->getPlayerList()->toArray();
+            $analyzer = $this->getWaitingAnalyzer();
+            $roundData = $this->getRoundData();
+            $isWaitingStates = array_map(function (Player $player) use ($analyzer, $roundData) {
+                $handTileList = $player->getPlayerArea()->getHandTileSortedList();
+                $declaredMeldList = $player->getPlayerArea()->getDeclaredMeldList();
+                $waitingTileList = $analyzer->analyzePublicPhaseHandWaitingTileList($handTileList, $declaredMeldList);
+                $isWaiting = $waitingTileList->count() > 0;
+                return $isWaiting;
+            }, $players);
+            $result = new ExhaustiveDrawRoundResult($players, $isWaitingStates);
+            $this->toOverPhase($result);
+            return;
+        }
+
+        // fourWindDraw
+        $isFirstRound = $this->getRoundData()->getPlayerList()->getGlobalTurn() == 1;
+        if ($isFirstRound) {
+            $allDiscardTileList = $this->getRoundData()->getTileAreas()->getDiscardHistory()->getAllDiscardTileList();
+            if ($allDiscardTileList->count() == 4) {
+                $allDiscardTileList->unique();
+                $isFourSameWindDiscard = $allDiscardTileList->count() == 1 && $allDiscardTileList[0]->isWind();
+                if ($isFourSameWindDiscard) {
+                    $result = new OnTheWayDrawRoundResult($this->getPlayerList()->toArray(),
+                        RoundResultType::getInstance(RoundResultType::FOUR_WIND_DRAW));
+                    $this->toOverPhase($result);
+                    return;
+                }
+            }
+        }
+
+        // fourReachDraw
+        $isFourReachDraw = $this->getPlayerList()->all(function(Player $player) {
+            return $player->getPlayerArea()->isReach();
+        });
+        if ($isFourReachDraw) {
+            $result = new OnTheWayDrawRoundResult($this->getPlayerList()->toArray(),
+                RoundResultType::getInstance(RoundResultType::FOUR_REACH_DRAW));
+            $this->toOverPhase($result);
+            return;
+        }
+
         $this->toPrivatePhase($this->getPlayerList()->getNextPlayer(), true);
+    }
+
+    protected function handleFourKongDraw() {
+        // more than 4 declared-kong-meld by at least 2 players
+        $declaredKongCounts = $this->getPlayerList()->toArray(function(Player $player) {
+            return $player->getPlayerArea()->getDeclaredMeldList()->toFilteredTypesMeldList([QuadMeldType::getInstance()])->count();
+        });
+        $kongCount = array_sum($declaredKongCounts);
+        $declaredKongCountArray = new ArrayLikeObject($declaredKongCounts);
+        $kongPlayerCount = $declaredKongCountArray->getMatchedValueCount(function($n) {
+            return $n > 0;
+        });
+
+        $isFourKongDraw = $kongCount >= 4 && $kongPlayerCount >= 2;
+        if ($isFourKongDraw) {
+            $result = new OnTheWayDrawRoundResult($this->getPlayerList()->toArray(),
+                RoundResultType::getInstance(RoundResultType::FOUR_KONG_DRAW));
+            $this->toOverPhase($result);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     function chowByOther(Player $player, Tile $tile1, Tile $tile2) {
@@ -292,28 +367,45 @@ class Round {
     function kongByOther(Player $player) {
         $this->assertPublicPhase($player);
         $this->getRoundData()->getTileAreas()->kongByOther($player, $this->getCurrentPlayer());
-        // switch phase
-        $this->toPrivatePhase($player, false);
+
+        if (!$this->handleFourKongDraw()) {
+            // switch phase
+            $this->toPrivatePhase($player, false);
+        }
     }
 
     function plusKongByOther(Player $player) {
         $this->assertPublicPhase($player);
         $this->getRoundData()->getTileAreas()->plusKongByOther($player, $this->getCurrentPlayer());
-        // switch phase
-        $this->toPrivatePhase($player, false);
+
+        if (!$this->handleFourKongDraw()) {
+            // switch phase
+            $this->toPrivatePhase($player, false);
+        }
     }
 
-    function winByOther(Player $player) { // todo
+    function winByOther(Player $player) {
         $this->assertPublicPhase($player);
         // do
-
+        $roundResult = WinRoundResult::createWinByOther($this->getPlayerList()->toArray(), $player, $this->getWinResult($player), $this->getCurrentPlayer(),
+            $this->getRoundData()->getTileAreas()->getAccumulatedReachCount(), $this->getRoundData()->getRoundWindData()->getSelfWindTurn());
         // phase
+        $this->toOverPhase($roundResult);
     }
 
-    function multipleWinByOther(array $players) { // todo
+    function multiWinByOther(array $players) {
+        $playerArray = new ArrayLikeObject($players);
+        $playerArray->walk(function (Player $player) {
+            $this->assertPublicPhase($player);
+        });
         // do
-
+        $winResults = $playerArray->toArray(function (Player $player) {
+            return $this->getWinResult($player);
+        });
+        $roundResult = WinRoundResult::createMultiWinByOther($this->getPlayerList()->toArray(), $players, $winResults, $this->getCurrentPlayer(),
+            $this->getRoundData()->getTileAreas()->getAccumulatedReachCount(), $this->getRoundData()->getRoundWindData()->getSelfWindTurn());
         // phase
+        $this->toOverPhase($roundResult);
     }
 
     protected function assertPublicPhase($player = null) {
@@ -330,7 +422,7 @@ class Round {
 //    private $publicPhaseCommandPoller;
 //
 //    function toPublicPhase() {
-//        $this->getPublicPhaseCommandPoller()->init($this->getCandidateCommands());
+//        $this->getPublicPhaseCommandPoller()->reset($this->getCandidateCommands());
 //        $this->wonderIfPollerDecided();
 //    }
 //

@@ -12,18 +12,21 @@ class TileAreas {
     private $accumulatedReachCount; // 積み棒
     private $publicTargetTile;
     private $discardHistory;
+    private $declareHistory;
 
     function __construct(Wall $wall, PlayerList $playerList) {
         $this->wall = $wall;
         $this->playerList = $playerList;
         $this->accumulatedReachCount = 0;
         $this->discardHistory = new DiscardHistory();
+        $this->declareHistory = new DeclareHistory();
     }
 
     function reset() {
         $this->wall->reset(true);
         $this->publicTargetTile = null;
-        $this->discardHistory->init();
+        $this->discardHistory->reset();
+        $this->declareHistory->reset();
     }
 
     function getWall() {
@@ -58,6 +61,14 @@ class TileAreas {
 
     function getDiscardHistory() {
         return $this->discardHistory;
+    }
+
+    function getDeclareHistory() {
+        return $this->declareHistory;
+    }
+
+    protected function recordDeclare() {
+        $this->declareHistory->recordDeclare($this->playerList->getGlobalTurn());
     }
 
     /**
@@ -173,16 +184,22 @@ class TileAreas {
         $player->getPlayerArea()->reach($selfTile, $this->playerList->getGlobalTurn());
         $player->setScore($player->getScore() - 1000);
         $this->setAccumulatedReachCount($this->getAccumulatedReachCount() + 1);
+
+        $this->discardHistory->recordDiscardTile($this->playerList->getGlobalTurn(), $player->getSelfWind(), $selfTile); // todo reach flag
     }
 
     function kongBySelf(Player $player, Tile $selfTile) {
         $player->getPlayerArea()->kongBySelf($selfTile);
         $this->drawReplacement($player);
+
+        $this->recordDeclare();
     }
 
     function plusKongBySelf(Player $player, Tile $selfTile) {
         $player->getPlayerArea()->plusKongBySelf($selfTile);
         $this->drawReplacement($player);
+
+        $this->recordDeclare();
     }
 
     function chowByOther(Player $actPlayer, Tile $tile1, Tile $tile2, Player $targetPlayer) {
@@ -193,6 +210,8 @@ class TileAreas {
         $targetTile = $targetPlayerArea->getDiscardedTileList()->getLast(); // test valid
         $actPlayerArea->chowByOther($targetTile, $tile1, $tile2); // test valid
         $targetPlayerArea->getDiscardedTileList()->pop();
+
+        $this->recordDeclare();
     }
 
     function pongByOther(Player $actPlayer, Player $targetPlayer) {
@@ -203,6 +222,8 @@ class TileAreas {
         $targetTile = $targetPlayerArea->getDiscardedTileList()->getLast(); // test valid
         $actPlayerArea->pongByOther($targetTile); // test valid
         $targetPlayerArea->getDiscardedTileList()->pop();
+
+        $this->recordDeclare();
     }
 
     function kongByOther(Player $actPlayer, Player $targetPlayer) {
@@ -214,6 +235,8 @@ class TileAreas {
         $actPlayerArea->kongByOther($targetTile); // test valid
         $this->drawReplacement($actPlayer);
         $targetPlayerArea->getDiscardedTileList()->pop();
+
+        $this->recordDeclare();
     }
 
     function plusKongByOther(Player $actPlayer, Player $targetPlayer) {
@@ -225,6 +248,8 @@ class TileAreas {
         $playerArea->plusKongByOther($targetTile);
         $this->drawReplacement($actPlayer);
         $currentPlayerArea->getDiscardedTileList()->pop();
+
+        $this->recordDeclare();
     }
 
     protected function assertNextPlayer(Player $nextPlayer, Player $prePlayer) {

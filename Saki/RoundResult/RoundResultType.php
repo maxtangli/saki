@@ -4,33 +4,45 @@ namespace Saki\RoundResult;
 use Saki\Util\Enum;
 
 class RoundResultType extends Enum {
-    const WIN_BY_SELF = 1;
-    const SINGLE_WIN_BY_OTHER = 1;
-    const MULTIPLE_WIN_BY_OTHER = 1;
+    const WIN_BY_SELF = 0;
+    const WIN_BY_OTHER = 1;
+    const DOUBLE_WIN_BY_OTHER = 2;
+    const TRIPLE_WIN_BY_OTHER = 3;
+
     const EXHAUSTIVE_DRAW = 4;
 
-    static function getValue2StringMap() {
-        return [
-            self::WIN_BY_SELF => 'win by self',
-            self::SINGLE_WIN_BY_OTHER => 'single win by other',
-            self::MULTIPLE_WIN_BY_OTHER => 'multiple win by other',
-            self::EXHAUSTIVE_DRAW => 'exhaustive draw',
-        ];
+    const NINE_KINDS_OF_TERMINAL_OR_HONOR_DRAW = 5;
+    const FOUR_WIND_DRAW = 6;
+    const FOUR_KONG_DRAW = 7;
+    const FOUR_REACH_DRAW = 8;
+
+    function isWin() {
+        return $this->isTargetValue([
+            self::WIN_BY_SELF, self::WIN_BY_OTHER, self::DOUBLE_WIN_BY_OTHER, self::TRIPLE_WIN_BY_OTHER]);
     }
 
-    static function getWinBySelfInstance() {
-        return self::getInstance(self::WIN_BY_SELF);
+    function isWinByOther() {
+        return $this->isTargetValue([self::WIN_BY_OTHER, self::DOUBLE_WIN_BY_OTHER, self::TRIPLE_WIN_BY_OTHER]);
     }
 
-    static function getSingleWinByOtherInstance() {
-        return self::getInstance(self::SINGLE_WIN_BY_OTHER);
+    function isMultiWinByOther() {
+        return $this->isTargetValue([self::DOUBLE_WIN_BY_OTHER, self::TRIPLE_WIN_BY_OTHER]);
     }
 
-    static function getMultipleWinByOtherInstance() {
-        return self::getInstance(self::MULTIPLE_WIN_BY_OTHER);
+    function isDraw() {
+        return !$this->isWin();
     }
 
-    static function getExhaustiveDrawInstance() {
-        return self::getInstance(self::EXHAUSTIVE_DRAW);
+    function isOnTheWayDraw() {
+        return $this->isTargetValue([
+            self::NINE_KINDS_OF_TERMINAL_OR_HONOR_DRAW, self::FOUR_WIND_DRAW, self::FOUR_KONG_DRAW, self::FOUR_REACH_DRAW]);
+    }
+
+    /**
+     * @param $value
+     * @return RoundResultType
+     */
+    static function getInstance($value) {
+        return parent::getInstance($value);
     }
 }
