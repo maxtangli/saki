@@ -62,24 +62,123 @@ class TileList extends ArrayLikeObject {
         return $s;
     }
 
-    function validPrivatePhaseCount() {
+    function isCompleteCount() {
+        return $this->count() == 14;
+    }
+
+    function isPrivatePhaseCount() {
         return $this->count() % 3 == 2;
     }
 
-    function validPublicPhaseCount() {
+    function isPublicPhaseCount() {
         return $this->count() % 3 == 1;
     }
 
-    function isNineKindsOfTerminalOrHonor() {
-        if (!$this->validPrivatePhaseCount()) {
+    protected function assertCompleteCount() {
+        if (!$this->isCompleteCount()) {
             throw new \LogicException();
         }
+    }
 
-        $targetTileList = $this->toFilteredTileList(function (Tile $tile) {
+    function isAllSuit() {
+        return $this->all(function (Tile $tile) {
+            return $tile->isSuit();
+        });
+    }
+
+    function isAllSimple() {
+        return $this->all(function (Tile $tile) {
+            return $tile->isSimple();
+        });
+    }
+
+    function isNineKindsOfTerminalOrHonor() {
+        $this->assertCompleteCount();
+
+        $uniqueTerminalOrHonorList = $this->toFilteredTileList(function (Tile $tile) {
             return $tile->isTerminalOrHonor();
         });
-        $targetTileList->unique();
-        return $targetTileList->count() >= 9;
+        $uniqueTerminalOrHonorList->unique();
+        return $uniqueTerminalOrHonorList->count() >= 9;
+    }
+
+    function isThirteenOrphan($isPairWaiting, Tile $targetTileForIsPairWaitingCase = null) {
+        $valid = $isPairWaiting || $targetTileForIsPairWaitingCase;
+        if (!$valid) {
+            throw new \InvalidArgumentException();
+        }
+
+        $this->assertCompleteCount();
+
+        $terminalOrHonorList = $this->toFilteredTileList(function (Tile $tile) {
+            return $tile->isTerminalOrHonor();
+        });
+        $isAllTerminalOrHonor = $terminalOrHonorList->isPrivatePhaseCount();
+        if (!$isAllTerminalOrHonor) {
+            return false;
+        }
+
+        $requiredPartTileList = TileList::fromString('19m19p19sESWNCFP');
+        // this works because for a full terminalOrHonor hand, the remain one tile will be terminalOrHonor.
+        if (!$isPairWaiting) {
+            return $this->valueExist($requiredPartTileList->toArray());
+        } else {
+            $publicPhaseTileList = new TileList($this->toArray());
+            $publicPhaseTileList->removeByValue($targetTileForIsPairWaitingCase);
+            return $publicPhaseTileList->valueExist($requiredPartTileList);
+        }
+    }
+
+    function isFlush($isFull) {
+        $this->assertCompleteCount();
+
+        $suitList = $this->toFilteredTileList(function (Tile $tile) {
+            return $tile->isSuit();
+        });
+        if ($suitList->count() == 0) {
+            return false;
+        }
+
+        $uniqueSuitColorList = new ArrayLikeObject($suitList->toArray(function (Tile $tile) {
+            return $tile->getTileType();
+        }));
+        $uniqueSuitColorList->unique();
+        $isSuitSameColor = $suitList->count() == $uniqueSuitColorList->count();
+
+        return $isFull ? $isSuitSameColor && $this->isAllSuit() : $isSuitSameColor;
+    }
+
+    function isNineGates($isPure, Tile $targetTileForIsPureCase = null) {
+        $valid = !$isPure || $targetTileForIsPureCase;
+        if (!$valid) {
+            throw new \InvalidArgumentException();
+        }
+
+        $this->assertCompleteCount();
+
+        if (!$this->isFlush(true)) {
+            return false;
+        }
+
+        $tileTypeString = $this[0]->getTileType()->__toString();
+        $requiredPartTileList = TileList::fromString('1112345678999' . $tileTypeString);
+        // this works because for a full flush hand, the remain one tile will be same color.
+        if (!$isPure) {
+            return $this->valueExist($requiredPartTileList->toArray());
+        } else {
+            $publicPhaseTileList = new TileList($this->toArray());
+            $publicPhaseTileList->removeByValue($targetTileForIsPureCase);
+            return $publicPhaseTileList->valueExist($requiredPartTileList);
+        }
+    }
+
+    function isAllGreen() {
+        $this->assertCompleteCount();
+
+        $greenTileList = TileList::fromString('23468sF');
+        return $this->all(function (Tile $tile) use ($greenTileList) {
+            $greenTileList->valueExist($tile);
+        });
     }
 
     /**
@@ -98,10 +197,11 @@ class TileList extends ArrayLikeObject {
     }
 
     /**
+     * @param callable|null $selector
      * @return Tile[]
      */
-    function toArray() {
-        return parent::toArray();
+    function toArray(callable $selector = null) {
+        return parent::toArray($selector);
     }
 
     /**

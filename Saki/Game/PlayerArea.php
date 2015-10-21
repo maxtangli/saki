@@ -101,6 +101,10 @@ class PlayerArea {
         return $this->reachTurn;
     }
 
+    function isDoubleReach() {
+        return $this->isReach() && $this->getReachTurn() == 1;
+    }
+
     function reach(Tile $selfTile, $reachTurn) {
         if ($this->isReach()) {
             throw new \InvalidArgumentException();

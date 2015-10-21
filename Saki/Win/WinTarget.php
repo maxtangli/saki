@@ -18,11 +18,11 @@ class WinTarget {
 
         $roundPhase = $roundData->getRoundPhase();
         $handTileList = $player->getPlayerArea()->getHandTileSortedList();
-        $valid = ($roundPhase == RoundPhase::getPrivatePhaseInstance() && $handTileList->validPrivatePhaseCount())
-            || ($roundPhase == RoundPhase::getPublicPhaseInstance() && $handTileList->validPublicPhaseCount());
+        $valid = ($roundPhase == RoundPhase::getPrivatePhaseInstance() && $handTileList->isPrivatePhaseCount())
+            || ($roundPhase == RoundPhase::getPublicPhaseInstance() && $handTileList->isPublicPhaseCount());
         if (!$valid) {
             throw new \InvalidArgumentException(
-                sprintf('Invalid $allTileList count[%s] for $roundPhase[%s].', count($handTileList), $roundPhase)
+                sprintf('Invalid $handTileList[%s] count[%s] of for $roundPhase[%s].', $handTileList, count($handTileList), $roundPhase)
             );
         }
     }
@@ -86,6 +86,10 @@ class WinTarget {
         return $this->player->getPlayerArea()->isReach();
     }
 
+    function isDoubleReach() {
+        return $this->player->getPlayerArea()->isDoubleReach();
+    }
+
     function getReachTurn() {
         return $this->player->getPlayerArea()->getReachTurn();
     }
@@ -118,11 +122,5 @@ class WinTarget {
      */
     function isExposed() {
         return !$this->isConcealed();
-    }
-
-    function isAllSuit() {
-        return $this->getHandTileSortedList(true)->all(function (Tile $tile) {
-            return $tile->isSuit();
-        });
     }
 }

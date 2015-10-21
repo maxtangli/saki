@@ -7,9 +7,9 @@ class WinRoundResultTest extends PHPUnit_Framework_TestCase {
         $playerList = \Saki\Game\PlayerList::createStandard();
         $players = $playerList->toArray();
         $yakuList = new \Saki\Win\Yaku\YakuList(
-            [\Saki\Win\Yaku\AllRunsYaku::getInstance(),
-                \Saki\Win\Yaku\RedValueTilesYaku::getInstance(),
-                \Saki\Win\Yaku\GreenValueTilesYaku::getInstance()],
+            [\Saki\Win\Yaku\Fan1\AllRunsYaku::getInstance(),
+                \Saki\Win\Yaku\Fan1\RedValueTilesYaku::getInstance(),
+                \Saki\Win\Yaku\Fan1\GreenValueTilesYaku::getInstance()],
             false);
         $winResult = new \Saki\Win\WinResult(\Saki\Win\WinState::getInstance(\Saki\Win\WinState::WIN_BY_SELF), $yakuList, 40);
 
@@ -57,9 +57,9 @@ class WinRoundResultTest extends PHPUnit_Framework_TestCase {
         $playerList = \Saki\Game\PlayerList::createStandard();
         $players = $playerList->toArray();
         $yakuList = new \Saki\Win\Yaku\YakuList(
-            [\Saki\Win\Yaku\AllRunsYaku::getInstance(),
-                \Saki\Win\Yaku\RedValueTilesYaku::getInstance(),
-                \Saki\Win\Yaku\GreenValueTilesYaku::getInstance()],
+            [\Saki\Win\Yaku\Fan1\AllRunsYaku::getInstance(),
+                \Saki\Win\Yaku\Fan1\RedValueTilesYaku::getInstance(),
+                \Saki\Win\Yaku\Fan1\GreenValueTilesYaku::getInstance()],
             false);
         $winResult = new \Saki\Win\WinResult(\Saki\Win\WinState::getInstance(\Saki\Win\WinState::WIN_BY_OTHER), $yakuList, 40);
 
@@ -107,9 +107,9 @@ class WinRoundResultTest extends PHPUnit_Framework_TestCase {
         $playerList = \Saki\Game\PlayerList::createStandard();
         $players = $playerList->toArray();
         $yakuList = new \Saki\Win\Yaku\YakuList(
-            [\Saki\Win\Yaku\AllRunsYaku::getInstance(),
-                \Saki\Win\Yaku\RedValueTilesYaku::getInstance(),
-                \Saki\Win\Yaku\GreenValueTilesYaku::getInstance()],
+            [\Saki\Win\Yaku\Fan1\AllRunsYaku::getInstance(),
+                \Saki\Win\Yaku\Fan1\RedValueTilesYaku::getInstance(),
+                \Saki\Win\Yaku\Fan1\GreenValueTilesYaku::getInstance()],
             false);
         $winResult = new \Saki\Win\WinResult(\Saki\Win\WinState::getInstance(\Saki\Win\WinState::WIN_BY_OTHER), $yakuList, 40);
 

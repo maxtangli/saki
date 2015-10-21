@@ -5,7 +5,7 @@ use Saki\Meld\Meld;
 use Saki\Tile\Tile;
 use Saki\Win\WinSubTarget;
 
-abstract class ValueTilesYaku extends Yaku {
+abstract class AbstractValueTilesYaku extends Yaku {
     protected function getConcealedFanCount() {
         return 1;
     }

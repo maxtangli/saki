@@ -251,17 +251,26 @@ rush 25 OnTheWayDrawRoundResult 1.5h
 - [x] four kong drawn, keep dealer 0.4h
 - [x] four reach drawn, keep dealer 0.2h
 
+rush 26 all yaku: simple ones
+
+- [x] not-count-yaku logic
+- [x] yaku-man logic 1h
+- [x] other simple yakus day1 1.8h
+- [x] other simple yakus day2 3h
+- [x] test design 1h
+- [ ] test simple yakus
+
+rush 27 all yaku: complicated ones
+
+- [ ] FirstTurnWinYaku
+- [ ] 
+- [ ] refactor: TileSeries <-> MeldList.xxx
+- [ ] refactor: SubTurn
+
 rush command system
 
 - [ ] command 0.2h
 - [ ] public command roller
-
-rush all yaku
-
-- [ ] test design
-- [x] not-count-yaku logic
-- [x] yaku-man logic 1h
-- [ ] other yakus
 
 rush client-server logic
 rush client-server style ui

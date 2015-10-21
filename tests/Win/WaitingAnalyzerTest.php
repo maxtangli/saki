@@ -1,5 +1,7 @@
 <?php
 
+use Saki\Tile\Tile;
+
 class WaitingAnalyzerTest extends \PHPUnit_Framework_TestCase {
 
     function generateRoundData($isPrivate, $onHandTileListString, $declaredMeldListString, \Saki\Tile\Tile $winTile) {
@@ -8,10 +10,10 @@ class WaitingAnalyzerTest extends \PHPUnit_Framework_TestCase {
         $declaredMeldList = \Saki\Meld\MeldList::fromString($declaredMeldListString);
         $playerArea = $round->getPlayerList()->offsetGet(0)->getPlayerArea();
         if ($isPrivate) {
-            $this->assertTrue($onHandTileList->validPrivatePhaseCount());
+            $this->assertTrue($onHandTileList->isPrivatePhaseCount());
             $playerArea->init($onHandTileList, $winTile, $declaredMeldList); // onHandTileList contains winTile
         } else {
-            $this->assertTrue($onHandTileList->validPublicPhaseCount());
+            $this->assertTrue($onHandTileList->isPublicPhaseCount());
             $round->discard($round->getPlayerList()[0], $playerArea->getHandTileSortedList()[0]);
             $round->passPublicPhase();
             $playerArea->init($onHandTileList, null, $declaredMeldList); // onHandTileList do not contains winTile
@@ -37,8 +39,8 @@ class WaitingAnalyzerTest extends \PHPUnit_Framework_TestCase {
         $declaredMeldList = \Saki\Meld\MeldList::fromString($declaredMeldListString);
 
         $waitingTileList = $waitingTileAnalyzer->analyzePublicPhaseHandWaitingTileList($handTileList, $declaredMeldList);
-        $waitingTileStrings = $waitingTileList->toArray(function (\Saki\Win\WaitingTile $waitingTile) {
-            return $waitingTile->getWaitingTile()->__toString();
+        $waitingTileStrings = $waitingTileList->toArray(function (Tile $waitingTile) {
+            return $waitingTile->__toString();
         });
         $this->assertEquals($expected, $waitingTileStrings,
             sprintf('[%s],[%s],[%s],[%s]',

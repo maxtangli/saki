@@ -33,6 +33,12 @@ class TileType extends Enum {
         ];
     }
 
+    static function getSuitTypes() {
+        return [
+            self::getInstance(self::BAMBOO), self::getInstance(self::CHARACTER), self::getInstance(self::DOT),
+        ];
+    }
+
     /**
      * @param $value
      * @return TileType

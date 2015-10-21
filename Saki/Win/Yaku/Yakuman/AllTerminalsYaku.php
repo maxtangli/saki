@@ -1,26 +1,25 @@
 <?php
-namespace Saki\Win\Yaku;
+namespace Saki\Win\Yaku\Yakuman;
 
 use Saki\Win\TileSeries;
 use Saki\Win\WinSubTarget;
+use Saki\Win\Yaku\Yaku;
 
-class SevenPairsYaku extends Yaku {
+class AllTerminalsYaku extends Yaku {
     protected function getConcealedFanCount() {
-        return 2;
+        return 13;
     }
 
     protected function getExposedFanCount() {
-        return 0;
+        return 13;
     }
 
     protected function getRequiredTileSeries() {
-        return [
-            TileSeries::getInstance(TileSeries::SEVEN_PAIRS)
-        ];
+        return [TileSeries::getInstance(TileSeries::FOUR_WIN_SET_AND_ONE_PAIR)];
     }
 
     protected function matchOtherConditions(WinSubTarget $subTarget) {
-        return true;
+        return $subTarget->getAllMeldList()->isAllTerminals();
     }
 }
 

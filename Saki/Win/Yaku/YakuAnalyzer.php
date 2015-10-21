@@ -3,6 +3,16 @@
 namespace Saki\Win\Yaku;
 
 use Saki\Win\WinSubTarget;
+use Saki\Win\Yaku\Fan1\AllRunsYaku;
+use Saki\Win\Yaku\Fan1\AllSimplesYaku;
+use Saki\Win\Yaku\Fan1\GreenValueTilesYaku;
+use Saki\Win\Yaku\Fan1\ReachYaku;
+use Saki\Win\Yaku\Fan1\RedValueTilesYaku;
+use Saki\Win\Yaku\Fan1\RoundWindValueTilesYaku;
+use Saki\Win\Yaku\Fan1\SelfWindValueTilesYaku;
+use Saki\Win\Yaku\Fan1\WhiteValueTilesYaku;
+use Saki\Win\Yaku\Yakuman2\FourConcealedTriplesOnePairWaitingYaku;
+use Saki\Win\Yaku\Yakuman\FourConcealedTriplesYaku;
 
 class YakuAnalyzer {
     private $yakus;

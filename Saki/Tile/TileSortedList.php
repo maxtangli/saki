@@ -3,7 +3,7 @@ namespace Saki\Tile;
 
 class TileSortedList extends TileList {
 
-    static function sort(array $tiles) {
+    static function toSortedTiles(array $tiles) {
         $tmp = $tiles;
         usort($tmp, function (Tile $a, Tile $b) {
             return self::getDisplayPriority($a) - self::getDisplayPriority($b);
@@ -38,11 +38,11 @@ class TileSortedList extends TileList {
     }
 
     function __construct(array $tiles) {
-        parent::__construct($this->sort($tiles));
+        parent::__construct($this->toSortedTiles($tiles));
     }
 
     protected function innerArrayChangedHook() {
-        parent::setInnerArray(self::sort($this->toArray()), false);
+        parent::setInnerArray(self::toSortedTiles($this->toArray()), false);
     }
 }
 

@@ -25,7 +25,7 @@ class WaitingAnalyzer {
      * @return FutureWaitingList
      */
     function analyzePrivatePhaseFutureWaitingList(TileSortedList $handTileList, MeldList $declaredMeldList) {
-        if (!$handTileList->validPrivatePhaseCount()) {
+        if (!$handTileList->isPrivatePhaseCount()) {
             throw new \InvalidArgumentException();
         }
 
@@ -54,7 +54,7 @@ class WaitingAnalyzer {
      * @return TileSortedList unique waiting tile list
      */
     function analyzePublicPhaseHandWaitingTileList(TileSortedList $handTileList, MeldList $declaredMeldList) {
-        if (!$handTileList->validPublicPhaseCount()) {
+        if (!$handTileList->isPublicPhaseCount()) {
             throw new \InvalidArgumentException(
                 sprintf('Invalid handTileList[%s] with count[%s] for WaitingAnalyzer public phase analyze.', $handTileList, $handTileList->count())
             );

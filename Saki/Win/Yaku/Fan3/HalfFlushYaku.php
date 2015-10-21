@@ -1,16 +1,17 @@
 <?php
-namespace Saki\Win\Yaku;
+namespace Saki\Win\Yaku\Fan3;
 
-use Saki\Tile\Tile;
+use Saki\Win\TileSeries;
 use Saki\Win\WinSubTarget;
+use Saki\Win\Yaku\Yaku;
 
-class AllSimplesYaku extends Yaku {
+class HalfFlushYaku extends Yaku {
     protected function getConcealedFanCount() {
-        return 1;
+        return 3;
     }
 
     protected function getExposedFanCount() {
-        return 1;
+        return 2;
     }
 
     protected function getRequiredTileSeries() {
@@ -18,8 +19,8 @@ class AllSimplesYaku extends Yaku {
     }
 
     protected function matchOtherConditions(WinSubTarget $subTarget) {
-        return $subTarget->getAllTileSortedList(true)->all(function (Tile $tile) {
-            return $tile->isSimple();
-        });
+        return $subTarget->getAllTileSortedList(true)->isFlush(false);
     }
 }
+
+

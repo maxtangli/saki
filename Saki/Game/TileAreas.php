@@ -79,11 +79,11 @@ class TileAreas {
     function toPlayerHandTileList(Player $player, $includeTargetTile) {
         $handTileList = new TileSortedList($player->getPlayerArea()->getHandTileSortedList()->toArray());
         if ($includeTargetTile) {
-            if (!$handTileList->validPrivatePhaseCount()) {
+            if (!$handTileList->isPrivatePhaseCount()) {
                 $handTileList->push($this->getPublicTargetTile());
             }
         } else {
-            if (!$handTileList->validPublicPhaseCount()) {
+            if (!$handTileList->isPublicPhaseCount()) {
                 $handTileList->removeByValue($player->getPlayerArea()->getPrivateTargetTile());
             }
         }

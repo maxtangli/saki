@@ -1,26 +1,25 @@
 <?php
-namespace Saki\Win\Yaku;
+namespace Saki\Win\Yaku\Fan2;
 
 use Saki\Win\TileSeries;
 use Saki\Win\WinSubTarget;
+use Saki\Win\Yaku\Yaku;
 
-class FourConcealedTriplesYaku extends Yaku {
+class MixedOutsideHandYaku extends Yaku {
     protected function getConcealedFanCount() {
-        return 13;
+        return 2;
     }
 
     protected function getExposedFanCount() {
-        return 13;
+        return 1;
     }
 
     protected function getRequiredTileSeries() {
-        return [
-            TileSeries::getInstance(TileSeries::FOUR_CONCEALED_TRIPLE_OR_QUAD_AND_ONE_PAIR)
-        ];
+        return [TileSeries::getInstance(TileSeries::FOUR_WIN_SET_AND_ONE_PAIR)];
     }
 
     protected function matchOtherConditions(WinSubTarget $subTarget) {
-        return true;
+        return $subTarget->getAllMeldList()->isOutsideHand(false);
     }
 }
 

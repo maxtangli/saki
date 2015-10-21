@@ -4,6 +4,7 @@ namespace Saki\Meld;
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 use Saki\Tile\TileSortedList;
+use Saki\Tile\TileType;
 use Saki\Util\ArrayLikeObject;
 
 /**
@@ -120,18 +121,6 @@ class Meld extends ArrayLikeObject {
         return $this->getMeldType() instanceof RunMeldType && $this->matchExposed($exposedFlag);
     }
 
-//    function isLowestSideRun($exposedFlag = null) {
-//        return $this->isRun($exposedFlag) && $this->getFirst()->getNumber() == 1;
-//    }
-//
-//    function isHighestSideRun($exposedFlag = null) {
-//        return $this->isRun($exposedFlag) && $this->getFirst()->getNumber() == 9;
-//    }
-//
-//    function isLowestOrHighestSideRun($exposedFlag = null) {
-//        return $this->isLowestSideRun($exposedFlag) || $this->isHighestSideRun($exposedFlag);
-//    }
-
     function isTriple($exposedFlag = null) {
         return $this->getMeldType() instanceof TripleMeldType && $this->matchExposed($exposedFlag);
     }
@@ -146,6 +135,57 @@ class Meld extends ArrayLikeObject {
 
     function getWinSetType() {
         return $this->getMeldType()->getWinSetType();
+    }
+
+    // yaku concerned
+    function isOutsideHandRun($isPure) {
+        return $this->isRun() && $this->any(function (Tile $tile) use($isPure) {
+            return $isPure ? $tile->isTerminalOrHonor() : $tile->isTerminal();
+        });
+    }
+
+    function isSuitWinSet() {
+        return $this->getWinSetType()->isWinSet() &&  $this->all(function (Tile $tile) {
+            return $tile->isSuit();
+        });
+    }
+
+    function isTerminalWinSet() {
+        return $this->getWinSetType()->isWinSet() && $this->all(function (Tile $tile) {
+            return $tile->isTerminal();
+        });
+    }
+
+    function isHonorWinSet() {
+        return $this->getWinSetType()->isWinSet() &&  $this->all(function (Tile $tile) {
+            return $tile->isHonor();
+        });
+    }
+
+    function isTerminalOrHonorWinSet() {
+        return $this->getWinSetType()->isWinSet() &&  $this->all(function (Tile $tile) {
+            return $tile->isTerminalOrHonor();
+        });
+    }
+
+    function toOtherSuitTypeWinSet(TileType $suitType) {
+        $valid = $this->isSuitWinSet() && $suitType->isSuit();
+        if (!$valid) {
+            throw new \InvalidArgumentException();
+        }
+
+        $currentTileTypeString = $this[0]->getTileType()->__toString();
+        $targetTileTypeString = $suitType->__toString();
+        $currentMeldString = $this->__toString();
+        $targetMeldString = str_replace($currentTileTypeString, $targetTileTypeString, $currentMeldString);
+        return Meld::fromString($targetMeldString);
+    }
+
+    function toAllSuitTypeWinSets() {
+        $suitTypeArray = new ArrayLikeObject(TileType::getSuitTypes());
+        return $suitTypeArray->toArray(function (TileType $suitType){
+            return $this->toOtherSuitTypeWinSet($suitType);
+        });
     }
 
     // target of a weak MeldType
@@ -234,12 +274,12 @@ class Meld extends ArrayLikeObject {
     }
 
     // ArrayLikeObject issues
-
     /**
-     * @return \Saki\Tile\Tile[]
+     * @param callable|null $selector
+     * @return Tile[]
      */
-    public function toArray() {
-        return parent::toArray();
+    function toArray(callable $selector = null) {
+        return parent::toArray($selector);
     }
 
     /**

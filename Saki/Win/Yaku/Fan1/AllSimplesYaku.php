@@ -1,15 +1,21 @@
 <?php
-namespace Saki\Win\Yaku;
+namespace Saki\Win\Yaku\Fan1;
 
+use Saki\Tile\Tile;
 use Saki\Win\WinSubTarget;
+use Saki\Win\Yaku\Yaku;
 
-class ReachYaku extends Yaku {
+/**
+ * 断么九
+ * @package Saki\Win\Yaku
+ */
+class AllSimplesYaku extends Yaku {
     protected function getConcealedFanCount() {
         return 1;
     }
 
     protected function getExposedFanCount() {
-        return 0;
+        return 1;
     }
 
     protected function getRequiredTileSeries() {
@@ -17,6 +23,8 @@ class ReachYaku extends Yaku {
     }
 
     protected function matchOtherConditions(WinSubTarget $subTarget) {
-        return $subTarget->isReach();
+        return $subTarget->getAllTileSortedList(true)->all(function (Tile $tile) {
+            return $tile->isSimple();
+        });
     }
 }

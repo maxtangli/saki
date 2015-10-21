@@ -1,9 +1,10 @@
 <?php
-namespace Saki\Win\Yaku;
+namespace Saki\Win\Yaku\Fan1;
 
 use Saki\Win\TileSeries;
 use Saki\Win\WaitingType;
 use Saki\Win\WinSubTarget;
+use Saki\Win\Yaku\Yaku;
 
 /**
  * 平和
@@ -37,7 +38,7 @@ class AllRunsYaku extends Yaku {
         $waitingType = TileSeries::getInstance(TileSeries::FOUR_RUN_AND_ONE_PAIR)->getWaitingType(
             $subTarget->getAllMeldList(), $subTarget->getTargetTile(), $subTarget->getDeclaredMeldList()
         );
-        return $subTarget->isAllSuit() && ($waitingType == WaitingType::getInstance(WaitingType::TWO_SIDE_RUN_WAITING));
+        return $subTarget->getAllTileSortedList(true)->isAllSuit() && ($waitingType == WaitingType::getInstance(WaitingType::TWO_SIDE_RUN_WAITING));
     }
 }
 

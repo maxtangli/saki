@@ -1,9 +1,11 @@
 <?php
-namespace Saki\Win\Yaku;
+namespace Saki\Win\Yaku\Yakuman2;
 
 use Saki\Win\TileSeries;
 use Saki\Win\WaitingType;
 use Saki\Win\WinSubTarget;
+use Saki\Win\Yaku\Yaku;
+use Saki\Win\Yaku\Yakuman\FourConcealedTriplesYaku;
 
 class FourConcealedTriplesOnePairWaitingYaku extends Yaku {
     protected function getConcealedFanCount() {

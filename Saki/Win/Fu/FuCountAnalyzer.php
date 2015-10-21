@@ -6,8 +6,8 @@ use Saki\Meld\MeldList;
 use Saki\Tile\Tile;
 use Saki\Util\Singleton;
 use Saki\Win\WaitingType;
-use Saki\Win\Yaku\AllRunsYaku;
-use Saki\Win\Yaku\SevenPairsYaku;
+use Saki\Win\Yaku\Fan1\AllRunsYaku;
+use Saki\Win\Yaku\Fan2\SevenPairsYaku;
 use Saki\Win\Yaku\YakuList;
 
 /**
