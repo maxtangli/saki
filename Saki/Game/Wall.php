@@ -1,8 +1,10 @@
 <?php
 namespace Saki\Game;
 
+use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 use Saki\Tile\TileSet;
+use Saki\Util\ArrayLikeObject;
 
 class Wall {
     private $tileSet;
@@ -28,7 +30,7 @@ class Wall {
         if ($shuffle) {
             $baseTileList->shuffle();
         }
-        list($deadWallTileLists, $currentTileList) = $baseTileList->toCutInTwoTileSortedLists(14);
+        list($deadWallTileLists, $currentTileList) = $baseTileList->toTwoPart(14);
         $this->deadWall = new DeadWall($deadWallTileLists);
         $this->remainTileList = $currentTileList;
     }
@@ -66,17 +68,25 @@ class Wall {
     }
 
     /**
-     * @param int $n
-     * @return \Saki\Tile\Tile|\Saki\Tile\Tile[]
+     * @param $n
+     * @return Tile[]
      */
-    function remainTileListPop($n = 1) {
-        return $this->getRemainTileList()->pop($n);
+    function drawInit($n) {
+        $tiles = $this->getRemainTileList()->pop($n);
+        return ArrayLikeObject::boxing($tiles);
     }
 
     /**
-     * @return \Saki\Tile\Tile
+     * @return Tile
      */
-    function deadWallShift() {
+    function draw() {
+        return $this->getRemainTileList()->pop();
+    }
+
+    /**
+     * @return Tile
+     */
+    function drawReplacement() {
         return $this->getDeadWall()->shift();
     }
 }

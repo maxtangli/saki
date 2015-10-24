@@ -52,6 +52,10 @@ class RoundWindData {
         return $this->roundWind;
     }
 
+    function setRoundWind(Tile $roundWind) {
+        $this->roundWind = $roundWind;
+    }
+
     function isRoundWind(Tile $tile) {
         return $tile == $this->getRoundWind();
     }
@@ -68,8 +72,16 @@ class RoundWindData {
         return $this->roundWindTurn;
     }
 
+    function setRoundWindTurn($roundWindTurn) {
+        $this->roundWindTurn = $roundWindTurn;
+    }
+
     function getSelfWindTurn() {
         return $this->selfWindTurn;
+    }
+
+    function setSelfWindTurn($selfWindTurn) {
+        $this->selfWindTurn = $selfWindTurn;
     }
 
     function isCurrentRoundWindLastTurn() {

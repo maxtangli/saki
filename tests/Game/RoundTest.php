@@ -40,7 +40,7 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         $this->assertSame($dealerPlayer, $r->getCurrentPlayer());
         // initial candidate tile
         $this->assertCount(14, $dealerPlayer->getPlayerArea()->getHandTileSortedList());
-        $this->assertTrue($dealerPlayer->getPlayerArea()->hasPrivateTargetTile());
+        $this->assertTrue($r->getRoundData()->getTileAreas()->hasTargetTile()); // $this->assertTrue($dealerPlayer->getPlayerArea()->hasPrivateTargetTile());
 
         // initial on-hand tile count
         foreach ($r->getPlayerList() as $player) {
@@ -168,7 +168,7 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         // score changed
         $dealerPlayer = $r->getRoundData()->getPlayerList()->getDealerPlayer();
         foreach ($r->getPlayerList() as $player) {
-            $scoreDelta = $r->getRoundResult()->getScoreDelta($player);
+            $scoreDelta = $r->getRoundData()->getRoundResult()->getScoreDelta($player);
             $deltaInt = $scoreDelta->getDeltaInt();
             if ($player == $dealerPlayer) {
                 $this->assertGreaterThan(0, $deltaInt);
@@ -189,7 +189,7 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         $r->getCurrentPlayer()->getPlayerArea()->getHandTileSortedList()->setInnerArray(
             \Saki\Tile\TileList::fromString('123m456m789m123s55s')->toArray()
         );
-        $r->getCurrentPlayer()->getPlayerArea()->setPrivateTargetTile(Tile::fromString('1m'));
+        $r->getRoundData()->getTileAreas()->setTargetTile(Tile::fromString('1m')); // $r->getCurrentPlayer()->getPlayerArea()->setPrivateTargetTile();
         return $r;
     }
 
@@ -228,7 +228,7 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         $r->getCurrentPlayer()->getPlayerArea()->getHandTileSortedList()->setInnerArray(
             \Saki\Tile\TileList::fromString('123m456m789m123s55s')->toArray()
         );
-        $r->getCurrentPlayer()->getPlayerArea()->setPrivateTargetTile(Tile::fromString('1m'));
+        $r->getRoundData()->getTileAreas()->setTargetTile(Tile::fromString('1m'));//$r->getCurrentPlayer()->getPlayerArea()->setPrivateTargetTile(Tile::fromString('1m'));
         $r->winBySelf($r->getCurrentPlayer());
 
         $this->assertFalse($r->isGameOver());
@@ -245,7 +245,7 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('4s'));
         $r->debugSetHandTileList($r->getPlayerList()[1], TileList::fromString('123m456m789m23s55s'));
         $r->winByOther($r->getPlayerList()[1]);
-        $this->assertTrue($r->getRoundResult()->getRoundResultType()->isWin());
+        $this->assertTrue($r->getRoundData()->getRoundResult()->getRoundResultType()->isWin());
 
         // multiWinByOther
         $r = new MockRound();
@@ -253,7 +253,7 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         $r->debugSetHandTileList($r->getPlayerList()[1], TileList::fromString('123m456m789m23s55s'));
         $r->debugSetHandTileList($r->getPlayerList()[2], TileList::fromString('123m456m789m23s55s'));
         $r->multiWinByOther([$r->getPlayerList()[1], $r->getPlayerList()[2]]);
-        $this->assertTrue($r->getRoundResult()->getRoundResultType()->isWin());
+        $this->assertTrue($r->getRoundData()->getRoundResult()->getRoundResultType()->isWin());
     }
 
     function testExhaustiveDraw() {
@@ -269,7 +269,7 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         }
 
         $cls = get_class(new \Saki\RoundResult\ExhaustiveDrawRoundResult(\Saki\Game\PlayerList::createStandard()->toArray(), [false, false, false, false]));
-        $this->assertInstanceOf($cls, $r->getRoundResult());
+        $this->assertInstanceOf($cls, $r->getRoundData()->getRoundResult());
     }
 
     function testGetFinalScoreItems() {

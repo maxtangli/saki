@@ -6,7 +6,6 @@ use Saki\Game\RoundData;
 use Saki\Game\RoundPhase;
 use Saki\Meld\MeldList;
 use Saki\Tile\Tile;
-use Saki\Tile\TileSortedList;
 
 class WinTarget {
     private $player;
@@ -18,11 +17,17 @@ class WinTarget {
 
         $roundPhase = $roundData->getRoundPhase();
         $handTileList = $player->getPlayerArea()->getHandTileSortedList();
-        $valid = ($roundPhase == RoundPhase::getPrivatePhaseInstance() && $handTileList->isPrivatePhaseCount())
-            || ($roundPhase == RoundPhase::getPublicPhaseInstance() && $handTileList->isPublicPhaseCount());
-        if (!$valid) {
+
+        if (!$roundPhase->isPrivateOrPublic()) {
+            throw new \InvalidArgumentException();
+        }
+
+        $isPrivate = $roundPhase->getValue() == RoundPhase::PRIVATE_PHASE;
+        $validHandTileCount = $handTileList->isPrivateOrPublicPhaseCount($isPrivate);
+        if (!$validHandTileCount) {
             throw new \InvalidArgumentException(
-                sprintf('Invalid $handTileList[%s] count[%s] of for $roundPhase[%s].', $handTileList, count($handTileList), $roundPhase)
+                sprintf('Invalid $handTileList[%s] count[%s] of for $roundPhase[%s].',
+                    $handTileList, $handTileList->count(), $roundPhase)
             );
         }
     }
@@ -31,13 +36,50 @@ class WinTarget {
         return new WinSubTarget($handMeldList, $this->player, $this->roundData);
     }
 
+    // about round/global
+
+    function getRoundWind() {
+        return $this->roundData->getRoundWindData()->getRoundWind();
+    }
+
+    function getTileSet() {
+        return $this->roundData->getTileAreas()->getWall()->getTileSet();
+    }
+
+    // about round/current
+    function getGlobalTurn() {
+        return $this->roundData->getPlayerList()->getGlobalTurn();
+    }
+
     function isPrivatePhase() {
-        return $this->roundData->getRoundPhase() == RoundPhase::getPrivatePhaseInstance();
+        return $this->roundData->getRoundPhase()->getValue() == RoundPhase::PRIVATE_PHASE;
     }
 
     function isPubicPhase() {
-        return $this->roundData->getRoundPhase() == RoundPhase::getPublicPhaseInstance();
+        return $this->roundData->getRoundPhase()->getValue() == RoundPhase::PUBLIC_PHASE;
     }
+
+    function getCurrentPlayer() {
+        return $this->roundData->getPlayerList()->getCurrentPlayer();
+    }
+
+    function getTargetTile() {
+        return $this->roundData->getTileAreas()->getTargetTile();
+    }
+
+    function getDiscardHistory() {
+        return $this->roundData->getTileAreas()->getDiscardHistory();
+    }
+
+    function getOutsideRemainTileAmount(Tile $tile) {
+        return $this->roundData->getTileAreas()->getOutsideRemainTileAmount($tile);
+    }
+
+    function getWallRemainTileAmount() {
+        return $this->roundData->getTileAreas()->getWall()->getRemainTileCount();
+    }
+
+    // about target player
 
     function getHandTileSortedList($includePublicTargetTile) {
         return $this->roundData->getTileAreas()->toPlayerHandTileList($this->player, $includePublicTargetTile);
@@ -55,31 +97,12 @@ class WinTarget {
         return $this->player->getPlayerArea()->getDiscardedTileList();
     }
 
-    function getTileRemainAmount(Tile $tile) {
-        return $this->roundData->getTileAreas()->getTileRemainAmount($tile);
+    function isConcealed() {
+        return $this->player->getPlayerArea()->isConcealed();
     }
 
-    function getWallRemainTileAmount() {
-        return $this->roundData->getTileAreas()->getWall()->getRemainTileCount();
-    }
-
-    function getTargetTile() {
-        $roundPhase = $this->roundData->getRoundPhase();
-        if ($roundPhase == RoundPhase::getPrivatePhaseInstance()) {
-            return $this->player->getPlayerArea()->getPrivateTargetTile();
-        } elseif ($roundPhase == RoundPhase::getPublicPhaseInstance()) {
-            return $this->roundData->getTileAreas()->getPublicTargetTile();
-        } else {
-            throw new \LogicException();
-        }
-    }
-
-    function getCurrentPlayer() {
-        return $this->roundData->getPlayerList()->getCurrentPlayer();
-    }
-
-    function getDiscardHistory() {
-        return $this->roundData->getTileAreas()->getDiscardHistory();
+    function isExposed() {
+        return $this->player->getPlayerArea()->isExposed();
     }
 
     function isReach() {
@@ -96,31 +119,5 @@ class WinTarget {
 
     function getSelfWind() {
         return $this->player->getSelfWind();
-    }
-
-    function getGlobalTurn() {
-        return $this->roundData->getPlayerList()->getGlobalTurn();
-    }
-
-    function getRoundWind() {
-        return $this->roundData->getRoundWindData()->getRoundWind();
-    }
-
-    function getTileSet() {
-        return $this->roundData->getTileAreas()->getWall()->getTileSet();
-    }
-
-    /**
-     * @return bool 門前清?
-     */
-    function isConcealed() {
-        return count($this->getDeclaredMeldList()) == 0;
-    }
-
-    /**
-     * @return bool 鳴き牌あり
-     */
-    function isExposed() {
-        return !$this->isConcealed();
     }
 }

@@ -2,8 +2,9 @@
 
 use Saki\Meld\MeldList;
 use Saki\Tile\Tile;
-use Saki\Win\TileSeries;
 use Saki\Win\WaitingType;
+use Saki\Tile\TileSortedList;
+use Saki\Game\TileArea;
 
 class FuCountAnalyzerTest extends PHPUnit_Framework_TestCase {
 
@@ -12,11 +13,13 @@ class FuCountAnalyzerTest extends PHPUnit_Framework_TestCase {
         $roundData->setRoundPhase(\Saki\Game\RoundPhase::getInstance(\Saki\Game\RoundPhase::PRIVATE_PHASE));
 
         $player = $roundData->getPlayerList()->getCurrentPlayer();
-        $playerArea = new \Saki\Game\PlayerArea(
-            \Saki\Tile\TileSortedList::fromString('123pCCFFF'),
-            Tile::fromString('3p'),
-            MeldList::fromString('8888p,999m')
-        );
+        $playerArea = new TileArea();
+        $playerArea->getHandTileSortedList()->setInnerArray(TileSortedList::fromString('123pCCFFF')->toArray());
+        $playerArea->getDeclaredMeldList()->setInnerArray(MeldList::fromString('8888p,999m')->toArray());
+
+        $roundData->getTileAreas()->setTargetTile(Tile::fromString('3p'));
+
+
         $player->setPlayerArea($playerArea);
         $handMeldList = MeldList::fromString('123p,CC,(FFF)');
 

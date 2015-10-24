@@ -11,12 +11,13 @@ class WaitingAnalyzerTest extends \PHPUnit_Framework_TestCase {
         $playerArea = $round->getPlayerList()->offsetGet(0)->getPlayerArea();
         if ($isPrivate) {
             $this->assertTrue($onHandTileList->isPrivatePhaseCount());
-            $playerArea->init($onHandTileList, $winTile, $declaredMeldList); // onHandTileList contains winTile
+            $round->getRoundData()->getTileAreas()->setTargetTile($winTile);
+            $playerArea->reset($onHandTileList, $declaredMeldList); // onHandTileList contains winTile
         } else {
             $this->assertTrue($onHandTileList->isPublicPhaseCount());
             $round->discard($round->getPlayerList()[0], $playerArea->getHandTileSortedList()[0]);
             $round->passPublicPhase();
-            $playerArea->init($onHandTileList, null, $declaredMeldList); // onHandTileList do not contains winTile
+            $playerArea->reset($onHandTileList, $declaredMeldList); // onHandTileList do not contains winTile
 
             $round->getPlayerList()->offsetGet(1)->getPlayerArea()->getHandTileSortedList()->replaceByIndex(0, $winTile);
             $round->discard($round->getPlayerList()->offsetGet(1), $winTile);

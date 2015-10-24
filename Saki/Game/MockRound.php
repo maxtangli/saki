@@ -6,6 +6,21 @@ use Saki\Tile\TileList;
 
 class MockRound extends Round {
 
+    function debugSetTurn(Player $currentPlayer, $isPublicPhase, $globalTurn) {
+        $this->getPlayerList()->toPlayer($currentPlayer);
+        $roundPhase = RoundPhase::getInstance($isPublicPhase ? RoundPhase::PUBLIC_PHASE : RoundPhase::PRIVATE_PHASE);
+        $this->getRoundData()->setRoundPhase($roundPhase);
+        $this->getPlayerList()->setGlobalTurn($globalTurn);
+    }
+
+    function debugSetRoundWindData(Tile $roundWind) {
+        $this->getRoundData()->getRoundWindData()->setRoundWind($roundWind);
+    }
+
+    function debugSetTargetTile(Tile $targetTile) {
+        $this->getRoundData()->getTileAreas()->setTargetTile($targetTile);
+    }
+
     function debugSetWallPopTile(Tile $tile) {
         $wallRemainTileList = $this->getRoundData()->getTileAreas()->getWall()->getRemainTileList();
         $wallRemainTileList->replaceByIndex($wallRemainTileList->count() - 1, $tile);

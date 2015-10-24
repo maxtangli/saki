@@ -2,35 +2,36 @@
 
 namespace Saki\Game;
 
-// operations upon a Wall and 2-4 PlayerArea
+// operations upon a Wall and 2-4 TileArea
 use Saki\Tile\Tile;
 use Saki\Tile\TileSortedList;
 
 class TileAreas {
+    private $accumulatedReachCount; // 積み棒
+
     private $wall;
     private $playerList;
-    private $accumulatedReachCount; // 積み棒
-    private $publicTargetTile;
+
+    private $targetTile;
     private $discardHistory;
     private $declareHistory;
 
     function __construct(Wall $wall, PlayerList $playerList) {
+        $this->accumulatedReachCount = 0;
+
         $this->wall = $wall;
         $this->playerList = $playerList;
-        $this->accumulatedReachCount = 0;
+
         $this->discardHistory = new DiscardHistory();
         $this->declareHistory = new DeclareHistory();
     }
 
     function reset() {
         $this->wall->reset(true);
-        $this->publicTargetTile = null;
+
+        $this->targetTile = null;
         $this->discardHistory->reset();
         $this->declareHistory->reset();
-    }
-
-    function getWall() {
-        return $this->wall;
     }
 
     function getAccumulatedReachCount() {
@@ -41,26 +42,34 @@ class TileAreas {
         $this->accumulatedReachCount = $accumulatedReachCount;
     }
 
-    function hasPublicTargetTile() {
-        return $this->publicTargetTile !== null;
+    function getWall() {
+        return $this->wall;
     }
 
-    function getPublicTargetTile() {
-        if (!$this->hasPublicTargetTile()) {
+    function hasTargetTile() {
+        return $this->targetTile !== null;
+    }
+
+    function getTargetTile() {
+        if (!$this->hasTargetTile()) {
             throw new \InvalidArgumentException('$publicTargetTile not existed.');
         }
-        return $this->publicTargetTile;
+        return $this->targetTile;
     }
 
-    function setPublicTargetTile(Tile $publicTargetTile) {
-        if ($publicTargetTile === null) {
+    function setTargetTile(Tile $targetTile) {
+        if ($targetTile === null) {
             throw new \InvalidArgumentException('$publicTargetTile should not be [null]');
         }
-        $this->publicTargetTile = $publicTargetTile;
+        $this->targetTile = $targetTile;
     }
 
     function getDiscardHistory() {
         return $this->discardHistory;
+    }
+
+    protected function recordDiscard($currentTurn, Tile $mySelfWind, Tile $tile) {
+        $this->discardHistory->recordDiscardTile($currentTurn, $mySelfWind, $tile);
     }
 
     function getDeclareHistory() {
@@ -77,17 +86,9 @@ class TileAreas {
      * @return TileSortedList
      */
     function toPlayerHandTileList(Player $player, $includeTargetTile) {
-        $handTileList = new TileSortedList($player->getPlayerArea()->getHandTileSortedList()->toArray());
-        if ($includeTargetTile) {
-            if (!$handTileList->isPrivatePhaseCount()) {
-                $handTileList->push($this->getPublicTargetTile());
-            }
-        } else {
-            if (!$handTileList->isPublicPhaseCount()) {
-                $handTileList->removeByValue($player->getPlayerArea()->getPrivateTargetTile());
-            }
-        }
-        return $handTileList;
+        $originHandTileList = $player->getPlayerArea()->getHandTileSortedList();
+        $targetTile = $this->getTargetTile();
+        return $originHandTileList->toPrivateOrPublicPhaseTileSortedList($includeTargetTile, $targetTile);
     }
 
     function toPlayerAllTileList(Player $player, $includeTargetTile) {
@@ -106,7 +107,7 @@ class TileAreas {
         return $sortedTileList;
     }
 
-    function getTileRemainAmount(Tile $tile) {
+    function getOutsideRemainTileAmount(Tile $tile) {
         $total = $this->getWall()->getTileSet()->getValueCount($tile);
         $discarded = $this->toAllPlayersDiscardedTileList()->getValueCount($tile);
         $remain = $total - $discarded;
@@ -116,31 +117,31 @@ class TileAreas {
     function drawInitForAll() {
         // each player draw initial tiles, notice NOT to trigger turn changes by avoid calling PlayerList->toPlayer()
         $drawTileCounts = [4, 4, 4, 1];
-        $players = $this->playerList->toArray();
         foreach ($drawTileCounts as $drawTileCount) {
-            foreach($players as $player) {
-                $this->drawInit($player, $drawTileCount);
+            foreach ($this->playerList as $player) {
+                $newTiles = $this->getWall()->drawInit($drawTileCount);
+                $player->getPlayerArea()->drawInit($newTiles);
             }
         }
     }
 
-    protected function drawInit(Player $player, $drawTileCount) {
-        $player->getPlayerArea()->drawInit($this->getWall()->remainTileListPop($drawTileCount));
-    }
-
     function draw(Player $player) {
-        $player->getPlayerArea()->draw($this->getWall()->remainTileListPop());
+        $newTile = $this->getWall()->draw();
+        $player->getPlayerArea()->draw($newTile);
+        $this->setTargetTile($newTile);
     }
 
     function drawReplacement(Player $player) {
-        $player->getPlayerArea()->draw($this->getWall()->deadWallShift());
+        $newTile = $this->getWall()->drawReplacement();
+        $player->getPlayerArea()->draw($newTile);
+        $this->setTargetTile($newTile);
     }
 
     function discard(Player $player, Tile $selfTile) {
         $player->getPlayerArea()->discard($selfTile);
-        $this->setPublicTargetTile($selfTile);
+        $this->setTargetTile($selfTile);
 
-        $this->discardHistory->recordDiscardTile($this->playerList->getGlobalTurn(), $player->getSelfWind(), $selfTile);
+        $this->recordDiscard($this->playerList->getGlobalTurn(), $player->getSelfWind(), $selfTile);
     }
 
     /**
@@ -162,17 +163,17 @@ class TileAreas {
          */
 
         $notReachYet = !$player->getPlayerArea()->isReach();
-        if (!$notReachYet) { // PlayerArea
+        if (!$notReachYet) { // TileArea
             throw new \InvalidArgumentException('Reach condition violated: not reach yet.');
         }
 
         $isConcealed = $player->getPlayerArea()->getDeclaredMeldList()->count() == 0;
-        if (!$isConcealed) { // PlayerArea
+        if (!$isConcealed) { // TileArea
             throw new \InvalidArgumentException('Reach condition violated: is concealed.');
         }
 
         $enoughScore = $player->getScore() >= 1000;
-        if (!$enoughScore) { // PlayerArea
+        if (!$enoughScore) { // TileArea
             throw new \InvalidArgumentException('Reach condition violated: at least 1000 score.');
         }
 
@@ -185,7 +186,7 @@ class TileAreas {
         $player->setScore($player->getScore() - 1000);
         $this->setAccumulatedReachCount($this->getAccumulatedReachCount() + 1);
 
-        $this->discardHistory->recordDiscardTile($this->playerList->getGlobalTurn(), $player->getSelfWind(), $selfTile); // todo reach flag
+        $this->recordDiscard($this->playerList->getGlobalTurn(), $player->getSelfWind(), $selfTile); // todo reach flag
     }
 
     function kongBySelf(Player $player, Tile $selfTile) {

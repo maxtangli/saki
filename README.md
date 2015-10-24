@@ -257,10 +257,31 @@ rush 26 all yaku: simple ones
 - [x] yaku-man logic 1h
 - [x] other simple yakus day1 1.8h
 - [x] other simple yakus day2 3h
-- [x] test design 1h
-- [ ] test simple yakus
+- [x] test design 1.5h
+- [x] refactor: merge private/publicTargetTile 1.1h
+- [x] test fan1 yakus 1h
+- [ ] test fan2 yakus
+- [ ] test fan3 yakus
+- [ ] test fan1 yakus
+- [ ] test yakuman
+- [ ] test yakuman2 yakus
 
-rush 27 all yaku: complicated ones
+rush refactor for beauty
+
+- [x] refactor: move Round.roundResult into RoundData 0.2h
+- [x] refactor: organize WinTarget 0.2h
+- [x] refactor: organize TileAreas, PlayerArea 0.2h
+- [ ] refactor: turnRoller
+
+rush speed up slow tests
+
+- [x] optimize: new Round().drawInit 1.8h // ArrayLikeObject.pop() 5ms -> 1ms by simplify, Wall().draw 66ms -> 3ms by fix wrongly use of TileSortedList
+- [ ] optimize: new RoundData() 0.5h // TileSet extends TileSortedList -> extends TileList
+- [ ] refactor: speed up slow tests
+- [ ] bug: Timer not accurate since echo()'s timecost
+- [ ] refactor: organize test sets
+
+rush all yaku: complicated ones
 
 - [ ] FirstTurnWinYaku
 - [ ] 
@@ -282,11 +303,15 @@ rush red dora
 
 rush refactor
 
-- [ ] refactor: publicCandidateTile and WinTile
 - [ ] refactor: RoundResult
 - [ ] refactor: getWaitingTiles to return TileSortedList 
 - [ ] refactor: move DrawScore logic into separate class
 
+# refactor turn
+
+global turn
+selfWind
+roundPhase
 
 # command system
 

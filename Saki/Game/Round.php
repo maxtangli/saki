@@ -11,6 +11,7 @@ use Saki\RoundResult\RoundResult;
 use Saki\RoundResult\WinRoundResult;
 use Saki\Tile\Tile;
 use Saki\Util\ArrayLikeObject;
+use Saki\Util\Timer;
 use Saki\Win\WaitingAnalyzer;
 use Saki\Win\WinAnalyzer;
 use Saki\Win\WinState;
@@ -18,23 +19,19 @@ use Saki\Win\WinTarget;
 
 class Round {
     private $roundData;
-    private $roundResult;
     private $winAnalyzer;
     private $waitingAnalyzer;
 
     function __construct(RoundData $roundData = null) {
-        $this->roundData = $roundData ?: new RoundData();
-        $this->roundResult = null;
-        $this->winAnalyzer = new WinAnalyzer();
-        $this->waitingAnalyzer = new WaitingAnalyzer($this->winAnalyzer);
-        $this->toInitPhase();
-    }
+        // 37ms
+        Timer::getInstance()->reset();
+        $this->roundData = $roundData ?: new RoundData(); // 37ms
+//        Timer::getInstance()->showAndReset();
+        // 11ms
 
-    /**
-     * @return RoundResult
-     */
-    function getRoundResult() {
-        return $this->roundResult;
+        $this->winAnalyzer = new WinAnalyzer(); // 10ms
+        $this->waitingAnalyzer = new WaitingAnalyzer(); // 0ms
+        $this->toInitPhase(); // 66ms -> 3ms
     }
 
     /**
@@ -51,8 +48,18 @@ class Round {
         return $this->getRoundData()->getRoundPhase();
     }
 
-    protected function setRoundPhase(RoundPhase $roundPhase) {
-        $this->getRoundData()->setRoundPhase($roundPhase);
+    /**
+     * @return PlayerList
+     */
+    function getPlayerList() {
+        return $this->getRoundData()->getPlayerList();
+    }
+
+    /**
+     * @return Player
+     */
+    function getCurrentPlayer() {
+        return $this->getRoundData()->getPlayerList()->getCurrentPlayer();
     }
 
     function getWinAnalyzer() {
@@ -68,27 +75,11 @@ class Round {
         return $this->waitingAnalyzer;
     }
 
-    /**
-     * @return PlayerList
-     */
-    function getPlayerList() {
-        return $this->getRoundData()->getPlayerList();
-    }
-
-    /**
-     * @return Player
-     */
-    function getCurrentPlayer() {
-        return $this->getRoundData()->getPlayerList()->getCurrentPlayer();
-    }
-
     protected function toInitPhase() {
-        $this->setRoundPhase(RoundPhase::getInitPhaseInstance());
-
-        // each player draw initial tiles
+        $this->getRoundData()->setRoundPhase(RoundPhase::getInitPhaseInstance());
+        // each player draw initial tiles 64 ms
         $this->getRoundData()->getTileAreas()->drawInitForAll();
-
-        // go to dealer player's private phase
+        // go to dealer player's private phase 3 ms
         $this->toPrivatePhase($this->getRoundData()->getPlayerList()->getDealerPlayer(), true);
     }
 
@@ -97,7 +88,7 @@ class Round {
      * @param bool $drawTile
      */
     protected function toPrivatePhase(Player $player, $drawTile) {
-        $this->setRoundPhase(RoundPhase::getPrivatePhaseInstance());
+        $this->getRoundData()->setRoundPhase(RoundPhase::getPrivatePhaseInstance());
         $this->getPlayerList()->toPlayer($player);
         if ($drawTile) {
             $this->getRoundData()->getTileAreas()->draw($player);
@@ -105,13 +96,13 @@ class Round {
     }
 
     protected function toPublicPhase() {
-        $this->setRoundPhase(RoundPhase::getPublicPhaseInstance());
+        $this->getRoundData()->setRoundPhase(RoundPhase::getPublicPhaseInstance());
     }
 
     protected function toOverPhase(RoundResult $result) {
-        $this->setRoundPhase(RoundPhase::getOverPhaseInstance());
+        $this->getRoundData()->setRoundPhase(RoundPhase::getOverPhaseInstance());
         // save result
-        $this->roundResult = $result;
+        $this->getRoundData()->setRoundResult($result);
         // modify scores
         foreach ($this->getPlayerList() as $player) {
             $afterScore = $result->getScoreDelta($player)->getAfter();
@@ -147,7 +138,7 @@ class Round {
             if (!$isTopPlayerEnoughScore) { // 若首位点数未达原点，游戏未结束
                 return false;
             } else { // 首位点数达到原点，非连庄 或 连庄者达首位，游戏结束
-                $keepDealer = $this->getRoundResult()->isKeepDealer();
+                $keepDealer = $this->getRoundData()->getRoundResult()->isKeepDealer();
                 $dealerIsTopPlayer = $this->getRoundData()->getPlayerList()->getDealerPlayer() == $topPlayer;
                 return (!$keepDealer || $dealerIsTopPlayer);
             }
@@ -163,7 +154,7 @@ class Round {
             throw new \InvalidArgumentException('Game is not over.');
         }
         $target = new FinalScoreStrategyTarget($this->getPlayerList());
-        return $this->getRoundData()->getFinalScoreStrategy()->getFinalScoreItems($target);
+        return $this->getRoundData()->getGameData()->getFinalScoreStrategy()->getFinalScoreItems($target);
     }
 
     function toNextRound() {
@@ -175,9 +166,8 @@ class Round {
             throw new \InvalidArgumentException('Game is over.');
         }
 
-        $keepDealer = $this->getRoundResult()->isKeepDealer();
+        $keepDealer = $this->getRoundData()->getRoundResult()->isKeepDealer();
         $this->getRoundData()->reset($keepDealer);
-        $this->roundResult = null;
 
         $this->toInitPhase();
     }
@@ -315,7 +305,7 @@ class Round {
         }
 
         // fourReachDraw
-        $isFourReachDraw = $this->getPlayerList()->all(function(Player $player) {
+        $isFourReachDraw = $this->getPlayerList()->all(function (Player $player) {
             return $player->getPlayerArea()->isReach();
         });
         if ($isFourReachDraw) {
@@ -330,12 +320,12 @@ class Round {
 
     protected function handleFourKongDraw() {
         // more than 4 declared-kong-meld by at least 2 players
-        $declaredKongCounts = $this->getPlayerList()->toArray(function(Player $player) {
+        $declaredKongCounts = $this->getPlayerList()->toArray(function (Player $player) {
             return $player->getPlayerArea()->getDeclaredMeldList()->toFilteredTypesMeldList([QuadMeldType::getInstance()])->count();
         });
         $kongCount = array_sum($declaredKongCounts);
         $declaredKongCountArray = new ArrayLikeObject($declaredKongCounts);
-        $kongPlayerCount = $declaredKongCountArray->getMatchedValueCount(function($n) {
+        $kongPlayerCount = $declaredKongCountArray->getMatchedValueCount(function ($n) {
             return $n > 0;
         });
 

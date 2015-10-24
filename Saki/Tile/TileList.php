@@ -74,6 +74,10 @@ class TileList extends ArrayLikeObject {
         return $this->count() % 3 == 1;
     }
 
+    function isPrivateOrPublicPhaseCount($isPrivate) {
+        return $isPrivate ? $this->isPrivatePhaseCount() : $this->isPublicPhaseCount();
+    }
+
     protected function assertCompleteCount() {
         if (!$this->isCompleteCount()) {
             throw new \LogicException();
@@ -183,13 +187,13 @@ class TileList extends ArrayLikeObject {
 
     /**
      * @param int $firstPartLength
-     * @return TileSortedList[] list($beginTileList, $remainTileList)
+     * @return TileList[] list($beginTileList, $remainTileList)
      */
-    function toCutInTwoTileSortedLists($firstPartLength) {
+    function toTwoPart($firstPartLength) {
         $tiles = $this->toArray();
         $tiles1 = array_slice($tiles, 0, $firstPartLength);
         $tiles2 = array_slice($tiles, $firstPartLength);
-        return [new TileSortedList($tiles1), new TileSortedList($tiles2)];
+        return [new TileList($tiles1), new TileList($tiles2)];
     }
 
     function toFilteredTileList(callable $filter) {

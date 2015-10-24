@@ -22,19 +22,11 @@ class WallTest extends PHPUnit_Framework_TestCase {
         $tileList = \Saki\Tile\TileList::fromString($s);
         $tileSet = new TileSet($tileList);
         $w = new Wall($tileSet);
-        $t = $w->remainTileListPop();
+        $t = $w->draw();
         $this->assertEquals(\Saki\Tile\Tile::fromString('F'), $t);
 
-        // pop many
-        $ts = $w->remainTileListPop(4);
-        $this->assertCount(4, $ts);
-        $this->assertEquals(\Saki\Tile\Tile::fromString('F'), $ts[0]);
-        $this->assertEquals(\Saki\Tile\Tile::fromString('F'), $ts[1]);
-        $this->assertEquals(\Saki\Tile\Tile::fromString('F'), $ts[2]);
-        $this->assertEquals(\Saki\Tile\Tile::fromString('P'), $ts[3]);
-
         // shift
-        $t = $w->deadWallShift();
+        $t = $w->drawReplacement();
         $this->assertEquals(\Saki\Tile\Tile::fromString('1m'), $t);
     }
 }

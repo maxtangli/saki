@@ -63,6 +63,10 @@ class PlayerList extends ArrayLikeObject {
         return $this->globalTurn;
     }
 
+    function setGlobalTurn($globalTurn) {
+        $this->globalTurn = $globalTurn;
+    }
+
     /**
      * @return Player[]
      */
@@ -134,9 +138,17 @@ class PlayerList extends ArrayLikeObject {
      * @return Player
      */
     function getDealerPlayer() {
+       return $this->getSelfWindPlayer(Tile::fromString('E'));
+    }
+
+    /**
+     * @param Tile $selfWind
+     * @return Player
+     */
+    function getSelfWindPlayer(Tile $selfWind) {
         $result = [];
         foreach ($this as $player) {
-            if ($player->isDealer()) {
+            if ($player->getSelfWind() == $selfWind) {
                 $result[] = $player;
             }
         }

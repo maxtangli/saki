@@ -15,12 +15,12 @@ class Player {
         $this->no = $no;
         $this->score = $score;
         $this->selfWind = $selfWind;
-        $this->playerArea = new PlayerArea();
+        $this->playerArea = new TileArea();
     }
 
     function reset(Tile $selfWind) {
         $this->selfWind = $selfWind;
-        $this->playerArea->init();
+        $this->playerArea->reset();
     }
 
     function __toString() {

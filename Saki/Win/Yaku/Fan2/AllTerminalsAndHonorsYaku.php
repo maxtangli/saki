@@ -5,6 +5,10 @@ use Saki\Win\TileSeries;
 use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\Yaku;
 
+/**
+ * 混一色
+ * @package Saki\Win\Yaku\Fan2
+ */
 class AllTerminalsAndHonorsYaku extends Yaku {
     protected function getConcealedFanCount() {
         return 2;

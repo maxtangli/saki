@@ -1,6 +1,11 @@
 <?php
 namespace Saki\Tile;
 
+/**
+ * WARNING: only used for handTileList.
+ * TileSortedList(14).pop(4)=1ms TileSortedList(140).pop(4)=15ms
+ * @package Saki\Tile
+ */
 class TileSortedList extends TileList {
 
     static function toSortedTiles(array $tiles) {
@@ -43,6 +48,20 @@ class TileSortedList extends TileList {
 
     protected function innerArrayChangedHook() {
         parent::setInnerArray(self::toSortedTiles($this->toArray()), false);
+    }
+
+    function toPrivateOrPublicPhaseTileSortedList($isPrivate,Tile $targetTile) {
+        $tileSortedList = new TileSortedList($this->toArray());
+        if ($isPrivate) {
+            if (!$tileSortedList->isPrivatePhaseCount()) {
+                $tileSortedList->push($targetTile);
+            }
+        } else {
+            if (!$tileSortedList->isPublicPhaseCount()) {
+                $tileSortedList->removeByValue($targetTile);
+            }
+        }
+        return $tileSortedList;
     }
 }
 

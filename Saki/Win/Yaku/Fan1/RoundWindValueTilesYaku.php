@@ -5,8 +5,14 @@ use Saki\Tile\Tile;
 use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\AbstractValueTilesYaku;
 
-class RoundWindValueTilesYaku extends AbstractValueTilesYaku {
-    function isValueTile(Tile $tile, WinSubTarget $subTarget) {
+/**
+ * 役牌　場風
+ * @package Saki\Win\Yaku\Fan1
+ */
+class RoundWindValueTilesYaku extends AbstractValueTilesYaku
+{
+    function isValueTile(Tile $tile, WinSubTarget $subTarget)
+    {
         return $tile == $subTarget->getRoundWind();
     }
 }

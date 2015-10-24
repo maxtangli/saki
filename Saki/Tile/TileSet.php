@@ -1,7 +1,11 @@
 <?php
 namespace Saki\Tile;
 
-class TileSet extends TileSortedList {
+/**
+ * note: not good to extends TileList since modify not allowed.
+ * @package Saki\Tile
+ */
+class TileSet extends TileList {
     static function getStandardTileSet() {
         $s = '111122223333444455556666777788889999m' .
             '111122223333444455556666777788889999p' .

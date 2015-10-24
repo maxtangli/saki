@@ -11,22 +11,23 @@ use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 use Saki\Tile\TileSortedList;
 
-class PlayerArea {
+class TileArea {
     private $handTileSortedList;
     private $discardedTileList;
     private $declaredMeldList;
-    private $privateTargetTile;
     private $reachTurn;
 
-    function __construct(TileSortedList $onHandTileSortedList = null, Tile $candidateTile = null, MeldList $declaredMeldList = null) {
-        $this->init($onHandTileSortedList, $candidateTile, $declaredMeldList);
+    function __construct() {
+        $this->handTileSortedList = TileSortedList::fromString('');
+        $this->discardedTileList = TileList::fromString('');
+        $this->declaredMeldList = MeldList::fromString('');
+        $this->reachTurn = false;
     }
 
-    function init(TileSortedList $onHandTileSortedList = null, Tile $privateTargetTile = null, MeldList $declaredMeldList = null) {
-        $this->handTileSortedList = $onHandTileSortedList ?: TileSortedList::fromString('');
-        $this->discardedTileList = TileList::fromString('');
-        $this->declaredMeldList = $declaredMeldList ?: new MeldList([]);
-        $this->privateTargetTile = $privateTargetTile;
+    function reset(TileList $onHandTileSortedList = null, MeldList $declaredMeldList = null) {
+        $this->handTileSortedList->setInnerArray($onHandTileSortedList ? $onHandTileSortedList->toArray() : []);
+        $this->discardedTileList->reset();
+        $this->declaredMeldList->setInnerArray($declaredMeldList ? $declaredMeldList->toArray() : []);
         $this->reachTurn = false;
     }
 
@@ -52,42 +53,17 @@ class PlayerArea {
     }
 
     /**
-     * @return bool
+     * @return bool 門前清
      */
-    function hasPrivateTargetTile() {
-        return $this->privateTargetTile !== null;
+    function isConcealed() {
+        return $this->getDeclaredMeldList()->isEmpty();
     }
 
     /**
-     * @return Tile
+     * @return bool 鳴き牌あり
      */
-    function getPrivateTargetTile() {
-        if (!$this->hasPrivateTargetTile()) {
-            throw new \BadMethodCallException('Candidate tile not existed.');
-        }
-        return $this->privateTargetTile;
-    }
-
-    /**
-     * @param Tile $tile
-     */
-    function setPrivateTargetTile(Tile $tile) {
-        if ($tile === null) {
-            throw new \InvalidArgumentException();
-        }
-        $this->privateTargetTile = $tile;
-    }
-
-    /**
-     * @return Tile
-     */
-    function removeCandidateTile() {
-        if (!$this->hasPrivateTargetTile()) {
-            throw new \BadMethodCallException();
-        }
-        $ret = $this->privateTargetTile;
-        $this->privateTargetTile = null;
-        return $ret;
+    function isExposed() {
+        return $this->getDeclaredMeldList()->isNotEmpty();
     }
 
     function isReach() {
@@ -114,23 +90,21 @@ class PlayerArea {
     }
 
     /**
-     * @param \Saki\Tile\Tile|Tile[] $otherTileOrTiles
+     * @param Tile[] $otherTiles
      */
-    function drawInit($otherTileOrTiles) {
+    function drawInit($otherTiles) {
         // always valid
-        $this->getHandTileSortedList()->push($otherTileOrTiles);
+        $this->getHandTileSortedList()->push($otherTiles);
     }
 
     function draw(Tile $newTile) {
         // always valid
         $this->getHandTileSortedList()->push($newTile);
-        $this->setPrivateTargetTile($newTile);
     }
 
     function drawReplacement(Tile $newTile) {
         // always valid
         $this->getHandTileSortedList()->push($newTile);
-        $this->setPrivateTargetTile($newTile);
     }
 
     function canDiscard(Tile $selfTile) {
@@ -140,9 +114,6 @@ class PlayerArea {
     function discard(Tile $selfTile) {
         $this->getHandTileSortedList()->removeByValue($selfTile); // valid test
         $this->getDiscardedTileList()->push($selfTile);
-        if ($this->hasPrivateTargetTile()) {
-            $this->removeCandidateTile();
-        }
     }
 
     /*
@@ -194,10 +165,8 @@ class PlayerArea {
         // remove origin tiles and meld
         if ($handTiles) {
             $this->getHandTileSortedList()->removeByValue($handTiles);
-            if ($this->hasPrivateTargetTile() && in_array($this->getPrivateTargetTile(), $handTiles)) {
-                $this->removeCandidateTile();
-            }
         }
+
         if ($declaredMeld) {
             $this->getDeclaredMeldList()->removeByValue($declaredMeld, function (Meld $a, Meld $b) {
                 return $a->equals($b, false);

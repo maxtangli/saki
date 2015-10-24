@@ -2,7 +2,8 @@
 namespace Saki\Util;
 
 /**
- * convenient base class for 0-begin-continuous-ascending-int-key-array like object.
+ * Convenient base class for 0-begin-continuous-ascending-int-key-array like object.
+ * Only optimized for less-than-200 elements case.
  * @package Saki\Util
  */
 class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
@@ -10,13 +11,31 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         return empty($a) || array_keys($a) === range(0, count($a) - 1);
     }
 
-    protected static function boxing($valueOrValues) {
+    /**
+     * @param $valueOrValues
+     * @return array
+     */
+    static function boxing($valueOrValues) {
         return is_array($valueOrValues) ? array_values($valueOrValues) : [$valueOrValues];
     }
 
-    protected static function unboxing(array $values, $originIsArray) {
-        if (!$originIsArray && count($values) != 1) {
-            throw new \InvalidArgumentException();
+    /**
+     * @param $valueOrValues
+     * @return object|array
+     */
+    static function unboxing($valueOrValues) {
+        if (is_array($valueOrValues)) {
+            return count($valueOrValues) > 1 ? $valueOrValues : $valueOrValues[0];
+        } else {
+            return $valueOrValues;
+        }
+    }
+
+    // todo bad smell. originIsArray means count()>1 array?
+    protected static function unboxingByOrigin(array $values, $originIsArray) {
+        $valid = !$originIsArray && count($values) != 1;
+        if ($valid) {
+            throw new \InvalidArgumentException('');
         }
         return $originIsArray ? $values : $values[0];
     }
@@ -139,6 +158,14 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         return count($this->innerArray);
     }
 
+    function isEmpty() {
+        return $this->count() == 0;
+    }
+
+    function isNotEmpty() {
+        return $this->count() > 0;
+    }
+
     function setInnerArray(array $innerArray) {
         if (!static::is0BeginAscendingIntKeyArray($innerArray)) {
             $innerArrayString = implode(',', $innerArray);
@@ -193,11 +220,19 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         // do not call onInnerArrayChanged since innerArray k-v relation not changed
     }
 
-    function unique($equals = null) {
+    function unique(callable $equals = null) {
         if ($equals !== null) {
-            throw new \InvalidArgumentException('to be implemented.');
+            $result = new ArrayLikeObject([]);
+            foreach($this as $target) {
+                if (!$result->valueExist($target, $equals)) {
+                    $result->push($target);
+                }
+            }
+            $this->innerArray = $result->toArray();
+        } else {
+            $this->innerArray = array_unique($this->innerArray);
         }
-        $this->innerArray = array_unique($this->innerArray);
+        $this->onInnerArrayChanged();
     }
 
     function toReducedValue(callable $reduceCallback, $initial) {
@@ -234,10 +269,12 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         $allFound = $tobeFoundCount == 0;
         if (!$allFound) {
             $valueOrValuesString = is_array($valueOrValues) ? implode(',', $valueOrValues) : $valueOrValues;
-            throw new \InvalidArgumentException("Invalid \$valueOrValues[$valueOrValuesString] for " . __CLASS__ . " \$this[$this] by \$equals[$equals].");
+            throw new \InvalidArgumentException(
+                "Invalid \$valueOrValues[$valueOrValuesString] for " . __CLASS__ . " \$this[$this]."
+            );
         }
 
-        $foundIndexOrIndexes = static::unboxing($foundIndexes, is_array($valueOrValues));
+        $foundIndexOrIndexes = static::unboxingByOrigin($foundIndexes, is_array($valueOrValues));
         return $foundIndexOrIndexes;
     }
 
@@ -273,7 +310,7 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         $values = array_map(function ($i) {
             return $this[$i];
         }, $indexes);
-        $valueOrValues = static::unboxing($values, is_array($indexOrIndexes));
+        $valueOrValues = static::unboxingByOrigin($values, is_array($indexOrIndexes));
         return $valueOrValues;
     }
 
@@ -352,7 +389,7 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
             (array_unique($indexOrIndexes) == $indexOrIndexes
                 && isset($this->innerArray[is_array($indexOrIndexes) ? max($indexOrIndexes) : $indexOrIndexes]));
         if (!$valid) {
-            throw new \InvalidArgumentException();
+            throw new \InvalidArgumentException($this);
         }
 
         $removedValues = $this->indexToValue($indexOrIndexes);
@@ -381,10 +418,17 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
 
     function pop($n = 1) {
         $count = $this->count();
-        $last = $count - 1;
-        $first = $last - $n + 1;
-        $indexOrIndexes = $n == 1 ? $last : range($last, $first);
-        return $this->removeByIndex($indexOrIndexes);
+        if (!(0 < $n && $n <= $count)) {
+            throw new \InvalidArgumentException(
+                sprintf('pop count $n[%s] should less than total count[%s].', $n, $count)
+            );
+        }
+
+        $reversedResult = array_splice($this->innerArray, $count - $n, $n);
+        $this->onInnerArrayChanged();
+
+        $result = array_reverse($reversedResult, false);
+        return self::unboxingByOrigin($result, $n > 1);
     }
 
     function merge(ArrayLikeObject $otherList) {

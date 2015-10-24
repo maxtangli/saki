@@ -1,28 +1,32 @@
 <?php
 
 use Saki\Game\MockRound;
-use Saki\Meld\MeldList;
+use Saki\Game\TileArea;
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
+use Saki\Tile\TileSortedList;
 use Saki\Win\WinState;
-use Saki\Win\WinSubTarget;
-use Saki\Win\Yaku\Fan1\AllRunsYaku;
-
+use Saki\Game\Player;
 class WinAnalyzerTest extends \PHPUnit_Framework_TestCase {
     function testPublicPhaseTarget() {
         $roundData = new \Saki\Game\RoundData();
-        $roundData->getTileAreas()->setPublicTargetTile(\Saki\Tile\Tile::fromString('5s'));
-        $roundData->setRoundPhase(\Saki\Game\RoundPhase::getPublicPhaseInstance());
 
+        $roundData->setRoundPhase(\Saki\Game\RoundPhase::getPublicPhaseInstance());
+        $roundData->getTileAreas()->setTargetTile(\Saki\Tile\Tile::fromString('5s'));
+
+        /** @var Player $player */
         $player = $roundData->getPlayerList()[0];
-        $playerArea = new \Saki\Game\PlayerArea();
-        $playerArea->drawInit(\Saki\Tile\TileList::fromString('123m456m789m123s5s')->toArray());
-        $playerArea->setPrivateTargetTile(\Saki\Tile\Tile::fromString('1m'));
-        $player->setPlayerArea($playerArea);
+        $player->getPlayerArea()->reset(TileSortedList::fromString('123m456m789m123s5s'));
 
         $target = new \Saki\Win\WinTarget($player, $roundData);
-        $this->assertEquals(\Saki\Tile\TileSortedList::fromString('123m456m789m123s55s'), $target->getHandTileSortedList(true));
-        $this->assertEquals(\Saki\Tile\TileSortedList::fromString('123m456m789m123s5s'), $target->getHandTileSortedList(false));
+
+        $dataProvider = [
+            [TileSortedList::fromString('123m456m789m123s55s'), $target->getHandTileSortedList(true)],
+            [TileSortedList::fromString('123m456m789m123s5s'), $target->getHandTileSortedList(false)],
+        ];
+        foreach($dataProvider as list($expected, $actual)) {
+            $this->assertEquals($expected, $actual, sprintf('expected[%s] but actual[%s]', $expected, $actual));
+        }
     }
 
     function testFuritenSelfDiscardedCase() {
@@ -102,46 +106,5 @@ class WinAnalyzerTest extends \PHPUnit_Framework_TestCase {
         $r->passPublicPhase();
         $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('1s'));
         $this->assertEquals(WinState::getInstance(WinState::WIN_BY_OTHER), $r->getWinResult($p2)->getWinState()); // passed
-    }
-
-    function testAllRunsYaku() {
-        $player = new \Saki\Game\Player(1, 40000, \Saki\Tile\Tile::fromString('E'));
-
-        $playerArea = new \Saki\Game\PlayerArea();
-        $playerArea->drawInit(\Saki\Tile\TileList::fromString('123m456m789m123s55s')->toArray());
-        $playerArea->setPrivateTargetTile(\Saki\Tile\Tile::fromString('1m'));
-        $player->setPlayerArea($playerArea);
-
-        $meldList = \Saki\Meld\MeldList::fromString('123m,456m,789m,123s,55s');
-        $roundData = new \Saki\Game\RoundData();
-        $roundData->setRoundPhase(\Saki\Game\RoundPhase::getPrivatePhaseInstance());
-        $subTarget = new \Saki\Win\WinSubTarget($meldList, $player, $roundData);
-
-        $yaku = \Saki\Win\Yaku\Fan1\AllRunsYaku::getInstance();
-        $this->assertTrue($yaku->existIn($subTarget));
-
-        // testAnalyzer
-        $analyzer = new \Saki\Win\WinAnalyzer();
-        $result = $analyzer->analyzeSubTarget($subTarget);
-        $this->assertCount(1, $result->getYakuList(), $result->getYakuList());
-        $cls = get_class(\Saki\Win\Yaku\Fan1\AllRunsYaku::getInstance());
-        $this->assertInstanceOf($cls, $result->getYakuList()[0]);
-
-        // testValueTiles
-        $this->assertFalse(\Saki\Win\Yaku\Fan1\RedValueTilesYaku::getInstance()->existIn($subTarget));
-        $this->assertFalse(\Saki\Win\Yaku\Fan1\WhiteValueTilesYaku::getInstance()->existIn($subTarget));
-        $this->assertFalse(\Saki\Win\Yaku\Fan1\GreenValueTilesYaku::getInstance()->existIn($subTarget));
-        $this->assertFalse(\Saki\Win\Yaku\Fan1\SelfWindValueTilesYaku::getInstance()->existIn($subTarget));
-        $playerArea->getDeclaredMeldList()->setInnerArray(
-            [\Saki\Meld\Meld::fromString('CCC'),
-                \Saki\Meld\Meld::fromString('FFF'),
-                \Saki\Meld\Meld::fromString('PPP'),
-                \Saki\Meld\Meld::fromString('EEE'),
-            ]
-        );
-        $this->assertTrue(\Saki\Win\Yaku\Fan1\RedValueTilesYaku::getInstance()->existIn($subTarget));
-        $this->assertTrue(\Saki\Win\Yaku\Fan1\WhiteValueTilesYaku::getInstance()->existIn($subTarget));
-        $this->assertTrue(\Saki\Win\Yaku\Fan1\GreenValueTilesYaku::getInstance()->existIn($subTarget));
-        $this->assertTrue(\Saki\Win\Yaku\Fan1\SelfWindValueTilesYaku::getInstance()->existIn($subTarget));
     }
 }
