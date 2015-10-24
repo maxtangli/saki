@@ -25,7 +25,6 @@ Meld Sequence / (Exposed / Concealed) Triplet / (Exposed / Concealed) Kong
  */
 
 use Saki\Util\ArrayLikeObject;
-use Saki\Util\Utils;
 
 class Tile {
     const REGEX_SUIT_NUMBER = '[1-9]';
@@ -60,13 +59,18 @@ class Tile {
 
     static function getNumberTiles(TileType $tileType) {
         $a = new ArrayLikeObject(range(1, 9));
-        return $a->toArray(function ($v)use($tileType) {
+        return $a->toArray(function ($v) use ($tileType) {
             return new Tile($tileType, $v);
         });
     }
 
-    static function getWindTiles() {
-        return [Tile::fromString('E'), Tile::fromString('S'), Tile::fromString('W'), Tile::fromString('N')];
+    static function getWindTiles($n = 4) {
+        $valid = in_array(4, range(1, 4));
+        if (!$valid) {
+            throw new \InvalidArgumentException();
+        }
+        $a = [Tile::fromString('E'), Tile::fromString('S'), Tile::fromString('W'), Tile::fromString('N')];
+        return array_slice($a, 0, $n);
     }
 
     static function getDragonTiles() {

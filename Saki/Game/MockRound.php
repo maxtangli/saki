@@ -9,7 +9,7 @@ class MockRound extends Round {
     function debugSetTurn(Player $currentPlayer, $isPublicPhase, $globalTurn) {
         $this->getPlayerList()->toPlayer($currentPlayer);
         $roundPhase = RoundPhase::getInstance($isPublicPhase ? RoundPhase::PUBLIC_PHASE : RoundPhase::PRIVATE_PHASE);
-        $this->getRoundData()->setRoundPhase($roundPhase);
+        $this->getRoundData()->getTurnManager()->debugSetRoundPhase($roundPhase);
         $this->getPlayerList()->setGlobalTurn($globalTurn);
     }
 

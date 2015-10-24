@@ -3,7 +3,6 @@ namespace Saki\Game;
 
 use Saki\Tile\Tile;
 use Saki\Util\ArrayLikeObject;
-use Saki\Game\Player;
 
 class PlayerList extends ArrayLikeObject {
 
@@ -49,7 +48,7 @@ class PlayerList extends ArrayLikeObject {
 
         // roll each player's selfWind by its offset to dealerPlayer
         $dealerSelfWind = Tile::fromString('E');
-        foreach($this->players as $index => $player) {
+        foreach ($this->players as $index => $player) {
             $offsetToDealer = $index - $dealerIndex;
             $playerSelfWind = $dealerSelfWind->toNextTile($offsetToDealer);
             $player->reset($playerSelfWind);
@@ -138,7 +137,7 @@ class PlayerList extends ArrayLikeObject {
      * @return Player
      */
     function getDealerPlayer() {
-       return $this->getSelfWindPlayer(Tile::fromString('E'));
+        return $this->getSelfWindPlayer(Tile::fromString('E'));
     }
 
     /**

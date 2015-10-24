@@ -97,6 +97,26 @@ class ArrayLikeObjectTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @dataProvider leftShiftProvider
+     */
+    function testLeftShift(array $a, $n, $expected) {
+        $obj = new ArrayLikeObject($a);
+        $obj->leftShift($n);
+        $this->assertEquals($expected, $obj->toArray());
+    }
+
+    function leftShiftProvider() {
+        return [
+            [[1, 2, 3, 4], 1, [2, 3, 4, 1]], [[1, 2, 3, 4], 5, [2, 3, 4, 1]], [[1, 2, 3, 4], -3, [2, 3, 4, 1]],
+            [[1, 2, 3, 4], 2, [3, 4, 1, 2]], [[1, 2, 3, 4], 6, [3, 4, 1, 2]], [[1, 2, 3, 4], -2, [3, 4, 1, 2]],
+            [[1, 2, 3, 4], 3, [4, 1, 2, 3]], [[1, 2, 3, 4], 7, [4, 1, 2, 3]], [[1, 2, 3, 4], -1, [4, 1, 2, 3]],
+            [[1, 2, 3, 4], 0, [1, 2, 3, 4]], [[1, 2, 3, 4], 4, [1, 2, 3, 4]], [[1, 2, 3, 4], 8, [1, 2, 3, 4]], [[1, 2, 3, 4], -4, [1, 2, 3, 4]], [[1, 2, 3, 4], -8, [1, 2, 3, 4]],
+            // empty array
+            [[], 0, []], [[], 1, []], [[], -1, []],
+        ];
+    }
+
+    /**
      * @dataProvider replaceByIndexProvider
      */
     function testReplaceByIndex(array $expected, array $a, $index, $value) {

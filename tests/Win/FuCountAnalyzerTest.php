@@ -1,5 +1,6 @@
 <?php
 
+use Saki\Game\RoundPhase;
 use Saki\Meld\MeldList;
 use Saki\Tile\Tile;
 use Saki\Win\WaitingType;
@@ -10,7 +11,7 @@ class FuCountAnalyzerTest extends PHPUnit_Framework_TestCase {
 
     function testFuCount() {
         $roundData = new \Saki\Game\RoundData();
-        $roundData->setRoundPhase(\Saki\Game\RoundPhase::getInstance(\Saki\Game\RoundPhase::PRIVATE_PHASE));
+        $roundData->getTurnManager()->debugSetRoundPhase(RoundPhase::getInstance(RoundPhase::PRIVATE_PHASE));
 
         $player = $roundData->getPlayerList()->getCurrentPlayer();
         $playerArea = new TileArea();

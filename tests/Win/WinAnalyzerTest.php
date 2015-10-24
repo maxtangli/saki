@@ -1,6 +1,7 @@
 <?php
 
 use Saki\Game\MockRound;
+use Saki\Game\RoundPhase;
 use Saki\Game\TileArea;
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
@@ -11,7 +12,7 @@ class WinAnalyzerTest extends \PHPUnit_Framework_TestCase {
     function testPublicPhaseTarget() {
         $roundData = new \Saki\Game\RoundData();
 
-        $roundData->setRoundPhase(\Saki\Game\RoundPhase::getPublicPhaseInstance());
+        $roundData->getTurnManager()->debugSetRoundPhase(RoundPhase::getInstance(RoundPhase::PUBLIC_PHASE));
         $roundData->getTileAreas()->setTargetTile(\Saki\Tile\Tile::fromString('5s'));
 
         /** @var Player $player */

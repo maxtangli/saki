@@ -13,7 +13,7 @@ class RoundDrawTest extends PHPUnit_Framework_TestCase {
         $r = new MockRound();
         $r->debugSetHandTileList($r->getCurrentPlayer(), $validTileList);
         $r->nineKindsOfTerminalOrHonorDraw($r->getCurrentPlayer());
-        $this->assertEquals(RoundResultType::NINE_KINDS_OF_TERMINAL_OR_HONOR_DRAW, $r->getRoundData()->getRoundResult()->getRoundResultType()->getValue());
+        $this->assertEquals(RoundResultType::NINE_KINDS_OF_TERMINAL_OR_HONOR_DRAW, $r->getRoundData()->getTurnManager()->getRoundResult()->getRoundResultType()->getValue());
     }
 
     // nine, exception case
@@ -32,7 +32,7 @@ class RoundDrawTest extends PHPUnit_Framework_TestCase {
 
         $r->debugDiscardByReplace($r->getCurrentPlayer(), $tileE);
         $r->passPublicPhase();
-        $this->assertEquals(RoundResultType::FOUR_WIND_DRAW, $r->getRoundData()->getRoundResult()->getRoundResultType()->getValue());
+        $this->assertEquals(RoundResultType::FOUR_WIND_DRAW, $r->getRoundData()->getTurnManager()->getRoundResult()->getRoundResultType()->getValue());
     }
 
     function testFourReachDraw() {
@@ -51,7 +51,7 @@ class RoundDrawTest extends PHPUnit_Framework_TestCase {
 
         $r->debugReachByReplace($r->getCurrentPlayer(), $tile, $tileList);
         $r->passPublicPhase();
-        $this->assertEquals(RoundResultType::FOUR_REACH_DRAW, $r->getRoundData()->getRoundResult()->getRoundResultType()->getValue());
+        $this->assertEquals(RoundResultType::FOUR_REACH_DRAW, $r->getRoundData()->getTurnManager()->getRoundResult()->getRoundResultType()->getValue());
     }
 
     function testFourKongDraw() { // todo handle kongPublicPhase
@@ -71,6 +71,6 @@ class RoundDrawTest extends PHPUnit_Framework_TestCase {
         $r->passPublicPhase();
 
         $r->debugKongBySelfByReplace($r->getCurrentPlayer(), $tile);
-        $this->assertEquals(RoundResultType::FOUR_KONG_DRAW, $r->getRoundData()->getRoundResult()->getRoundResultType()->getValue());
+        $this->assertEquals(RoundResultType::FOUR_KONG_DRAW, $r->getRoundData()->getTurnManager()->getRoundResult()->getRoundResultType()->getValue());
     }
 }

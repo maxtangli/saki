@@ -22,7 +22,7 @@ class Utils {
             $ib = array_search($b, $descBestOnes);
             if ($ia === false || $ib === false) {
                 throw new \InvalidArgumentException(
-                    sprintf('Invalid compare targets [%s] and [%s] for $descBestOnes[%s]', $a, $b, implode(',', $descBestOnes))
+                    sprintf('Invalid compare targetList [%s] and [%s] for $descBestOnes[%s]', $a, $b, implode(',', $descBestOnes))
                 );
             }
             if ($ia == $ib) {
@@ -36,6 +36,10 @@ class Utils {
 
     static function sgn($n) {
         return $n == 0 ? 0 : ($n > 0 ? 1 : -1);
+    }
+
+    static function getNormalizedModValue($v, $n) {
+        return (($v) % $n + $n) % $n;
     }
 
     private function __construct() {

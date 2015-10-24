@@ -15,7 +15,7 @@ class WinTarget {
         $this->player = $player;
         $this->roundData = $roundData;
 
-        $roundPhase = $roundData->getRoundPhase();
+        $roundPhase = $roundData->getTurnManager()->getRoundPhase();
         $handTileList = $player->getPlayerArea()->getHandTileSortedList();
 
         if (!$roundPhase->isPrivateOrPublic()) {
@@ -52,11 +52,11 @@ class WinTarget {
     }
 
     function isPrivatePhase() {
-        return $this->roundData->getRoundPhase()->getValue() == RoundPhase::PRIVATE_PHASE;
+        return $this->roundData->getTurnManager()->getRoundPhase()->getValue() == RoundPhase::PRIVATE_PHASE;
     }
 
     function isPubicPhase() {
-        return $this->roundData->getRoundPhase()->getValue() == RoundPhase::PUBLIC_PHASE;
+        return $this->roundData->getTurnManager()->getRoundPhase()->getValue() == RoundPhase::PUBLIC_PHASE;
     }
 
     function getCurrentPlayer() {

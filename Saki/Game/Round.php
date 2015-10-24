@@ -6,15 +6,14 @@ use Saki\FinalScore\FinalScoreStrategyTarget;
 use Saki\Meld\QuadMeldType;
 use Saki\RoundResult\ExhaustiveDrawRoundResult;
 use Saki\RoundResult\OnTheWayDrawRoundResult;
-use Saki\RoundResult\RoundResultType;
 use Saki\RoundResult\RoundResult;
+use Saki\RoundResult\RoundResultType;
 use Saki\RoundResult\WinRoundResult;
 use Saki\Tile\Tile;
 use Saki\Util\ArrayLikeObject;
 use Saki\Util\Timer;
 use Saki\Win\WaitingAnalyzer;
 use Saki\Win\WinAnalyzer;
-use Saki\Win\WinState;
 use Saki\Win\WinTarget;
 
 class Round {
@@ -45,7 +44,7 @@ class Round {
      * @return RoundPhase
      */
     function getRoundPhase() {
-        return $this->getRoundData()->getRoundPhase();
+        return $this->getRoundData()->getTurnManager()->getRoundPhase();
     }
 
     /**
@@ -76,19 +75,18 @@ class Round {
     }
 
     protected function toInitPhase() {
-        $this->getRoundData()->setRoundPhase(RoundPhase::getInitPhaseInstance());
-        // each player draw initial tiles 64 ms
+        // each player draw initial tiles
         $this->getRoundData()->getTileAreas()->drawInitForAll();
-        // go to dealer player's private phase 3 ms
-        $this->toPrivatePhase($this->getRoundData()->getPlayerList()->getDealerPlayer(), true);
+        // go to dealer player's private phase
+        $this->getRoundData()->getTurnManager()->start();
+        $this->toPrivatePhase($this->getRoundData()->getPlayerList()->getDealerPlayer(), true, true);
     }
 
-    /**
-     * @param Player $player
-     * @param bool $drawTile
-     */
-    protected function toPrivatePhase(Player $player, $drawTile) {
-        $this->getRoundData()->setRoundPhase(RoundPhase::getPrivatePhaseInstance());
+    protected function toPrivatePhase(Player $player, $drawTile, $isFromInit = false) {
+        if (!$isFromInit) {
+            $this->getRoundData()->getTurnManager()->toPrivatePhase($player->getSelfWind());
+        }
+
         $this->getPlayerList()->toPlayer($player);
         if ($drawTile) {
             $this->getRoundData()->getTileAreas()->draw($player);
@@ -96,13 +94,12 @@ class Round {
     }
 
     protected function toPublicPhase() {
-        $this->getRoundData()->setRoundPhase(RoundPhase::getPublicPhaseInstance());
+        $this->getRoundData()->getTurnManager()->toPublicPhase();
     }
 
     protected function toOverPhase(RoundResult $result) {
-        $this->getRoundData()->setRoundPhase(RoundPhase::getOverPhaseInstance());
-        // save result
-        $this->getRoundData()->setRoundResult($result);
+        // change phase and save result
+        $this->getRoundData()->getTurnManager()->over($result);
         // modify scores
         foreach ($this->getPlayerList() as $player) {
             $afterScore = $result->getScoreDelta($player)->getAfter();
@@ -138,7 +135,7 @@ class Round {
             if (!$isTopPlayerEnoughScore) { // 若首位点数未达原点，游戏未结束
                 return false;
             } else { // 首位点数达到原点，非连庄 或 连庄者达首位，游戏结束
-                $keepDealer = $this->getRoundData()->getRoundResult()->isKeepDealer();
+                $keepDealer = $this->getRoundData()->getTurnManager()->getRoundResult()->isKeepDealer();
                 $dealerIsTopPlayer = $this->getRoundData()->getPlayerList()->getDealerPlayer() == $topPlayer;
                 return (!$keepDealer || $dealerIsTopPlayer);
             }
@@ -166,7 +163,7 @@ class Round {
             throw new \InvalidArgumentException('Game is over.');
         }
 
-        $keepDealer = $this->getRoundData()->getRoundResult()->isKeepDealer();
+        $keepDealer = $this->getRoundData()->getTurnManager()->getRoundResult()->isKeepDealer();
         $this->getRoundData()->reset($keepDealer);
 
         $this->toInitPhase();
@@ -319,7 +316,7 @@ class Round {
     }
 
     protected function handleFourKongDraw() {
-        // more than 4 declared-kong-meld by at least 2 players
+        // more than 4 declared-kong-meld by at least 2 targetList
         $declaredKongCounts = $this->getPlayerList()->toArray(function (Player $player) {
             return $player->getPlayerArea()->getDeclaredMeldList()->toFilteredTypesMeldList([QuadMeldType::getInstance()])->count();
         });

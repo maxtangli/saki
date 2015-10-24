@@ -271,7 +271,13 @@ rush refactor for beauty
 - [x] refactor: move Round.roundResult into RoundData 0.2h
 - [x] refactor: organize WinTarget 0.2h
 - [x] refactor: organize TileAreas, PlayerArea 0.2h
-- [ ] refactor: turnRoller
+
+- [ ] refactor: TurnManager 0.7h
+- [x] Roller 1.4h
+- [x] refactor: move RoundData.$roundResult into $turnManager 0.1h
+- [x] refactor: move RoundData.$roundPhase into $turnManager 0.2h
+- [ ] refactor: move RoundData.$playerList's rolling role into $turnManager
+
 
 rush speed up slow tests
 
@@ -309,9 +315,9 @@ rush refactor
 
 # refactor turn
 
-global turn
-selfWind
-roundPhase
+global turn, selfWind, roundPhase
+
+TileAreas: recordXXX() requires globalTurn, reach() requires player.score
 
 # command system
 

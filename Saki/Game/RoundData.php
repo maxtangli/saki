@@ -5,9 +5,12 @@ use Saki\FinalScore\CompositeFinalScoreStrategy;
 use Saki\FinalScore\MoundFinalScoreStrategy;
 use Saki\FinalScore\RankingHorseFinalScoreStrategy;
 use Saki\FinalScore\RankingHorseType;
-use Saki\RoundResult\RoundResult;
 use Saki\Tile\TileSet;
 
+/**
+ * Holds immutable data during a game.
+ * @package Saki\Game
+ */
 class GameData {
     private $playerCount;
     private $totalRoundType;
@@ -38,21 +41,18 @@ class GameData {
     }
 }
 
+
 class RoundData {
     // immutable during game
     private $gameData;
 
-    // immutable during game
+    // immutable during round
     private $roundWindData;
 
-    // variable
+    // variable during round
     private $playerList;
-
     private $tileAreas;
-
-    private $roundPhase;
-
-    private $roundResult;
+    private $turnManager;
 
     function __construct() {
         $gameData = new GameData();
@@ -61,11 +61,11 @@ class RoundData {
         $this->roundWindData = new RoundWindData($gameData->getPlayerCount(), $gameData->getTotalRoundType());
 
         $this->playerList = PlayerList::createStandard();
+
         $wall = new Wall(TileSet::getStandardTileSet()); // 14ms
         $this->tileAreas = new TileAreas($wall, $this->playerList);
 
-        $this->roundPhase = RoundPhase::getInitPhaseInstance();
-        $this->roundResult = null;
+        $this->turnManager = new TurnManager($gameData->getPlayerCount());
     }
 
     function reset($keepDealer) {
@@ -79,8 +79,7 @@ class RoundData {
         $this->getPlayerList()->reset($nextDealer);
         $this->getTileAreas()->reset();
 
-        $this->setRoundPhase(RoundPhase::getInitPhaseInstance());
-        $this->setRoundResult(null);
+        $this->getTurnManager()->reset();
     }
 
     function getGameData() {
@@ -99,22 +98,7 @@ class RoundData {
         return $this->tileAreas;
     }
 
-    function getRoundPhase() {
-        return $this->roundPhase;
-    }
-
-    function setRoundPhase(RoundPhase $roundPhase) {
-        $this->roundPhase = $roundPhase;
-    }
-
-    function getRoundResult() {
-        if (!$this->roundResult) {
-            throw new \LogicException();
-        }
-        return $this->roundResult;
-    }
-
-    function setRoundResult(RoundResult $roundResult = null) {
-        $this->roundResult = $roundResult;
+    function getTurnManager() {
+        return $this->turnManager;
     }
 }
