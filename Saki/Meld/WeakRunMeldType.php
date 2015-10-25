@@ -57,7 +57,7 @@ class WeakRunMeldType extends WeakMeldType {
         }
 
         $tiles = array_map(function ($number) use ($type) {
-            return new Tile($type, $number);
+            return Tile::getInstance($type, $number);
         }, $waitingNumbers);
         return $tiles;
     }

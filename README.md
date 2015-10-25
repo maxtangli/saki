@@ -260,9 +260,8 @@ rush 26 all yaku: simple ones
 - [x] test design 1.5h
 - [x] refactor: merge private/publicTargetTile 1.1h
 - [x] test fan1 yakus 1h
-- [ ] test fan2 yakus
-- [ ] test fan3 yakus
-- [ ] test fan1 yakus
+- [ ] test fan2 yakus 1h
+- [x] test fan3,fan6 yakus 0.2h
 - [ ] test yakuman
 - [ ] test yakuman2 yakus
 
@@ -290,6 +289,12 @@ rush optimize to speed up tests
 - [ ] bug: Timer not accurate since echo()'s timecost
 - [ ] refactor: organize test sets
 
+rush red dora
+
+- [x] Tile.getInstance() 0.3h
+- [x] Tile.isRed() 0.2h
+- [ ] discard/createMeld logic
+
 rush all yaku: complicated ones
 
 - [ ] FirstTurnWinYaku
@@ -304,11 +309,6 @@ rush command system
 
 rush client-server logic
 rush client-server style ui
-
-rush red dora
-
-- [ ] discard/createMeld logic
-- [ ] impl
 
 rush refactor
 

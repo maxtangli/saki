@@ -53,11 +53,11 @@ class TileSortedList extends TileList {
     function toPrivateOrPublicPhaseTileSortedList($isPrivate,Tile $targetTile) {
         $tileSortedList = new TileSortedList($this->toArray());
         if ($isPrivate) {
-            if (!$tileSortedList->isPrivatePhaseCount()) {
+            if (!$tileSortedList->isPrivateHandCount()) {
                 $tileSortedList->push($targetTile);
             }
         } else {
-            if (!$tileSortedList->isPublicPhaseCount()) {
+            if (!$tileSortedList->isPublicHandCount()) {
                 $tileSortedList->removeByValue($targetTile);
             }
         }

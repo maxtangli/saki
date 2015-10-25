@@ -3,10 +3,11 @@ namespace Saki\Win\Yaku\Fan2;
 
 use Saki\Win\TileSeries;
 use Saki\Win\WinSubTarget;
+use Saki\Win\Yaku\Fan3\PureOutsideHandYaku;
 use Saki\Win\Yaku\Yaku;
 
 /**
- * 混一色
+ * 混老頭（ホンロウトウ）
  * @package Saki\Win\Yaku\Fan2
  */
 class AllTerminalsAndHonorsYaku extends Yaku {

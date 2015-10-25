@@ -3,6 +3,7 @@ namespace Saki\Win\Yaku\Fan3;
 
 use Saki\Win\TileSeries;
 use Saki\Win\WinSubTarget;
+use Saki\Win\Yaku\Fan2\MixedOutsideHandYaku;
 use Saki\Win\Yaku\Yaku;
 
 class PureOutsideHandYaku extends Yaku {
@@ -20,5 +21,9 @@ class PureOutsideHandYaku extends Yaku {
 
     protected function matchOtherConditions(WinSubTarget $subTarget) {
         return $subTarget->getAllMeldList()->isOutsideHand(true);
+    }
+
+    function getExcludedYakus() {
+        return [MixedOutsideHandYaku::getInstance()];
     }
 }

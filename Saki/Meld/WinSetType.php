@@ -25,6 +25,10 @@ class WinSetType extends Enum {
         return $this->getValue() == self::PAIR;
     }
 
+    function isWinSetOrPair() {
+        return $this->isWinSet() || $this->isPair();
+    }
+
     function isPureWeak() {
         return $this->getValue() == self::PURE_WEAK;
     }

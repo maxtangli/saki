@@ -138,9 +138,9 @@ class Meld extends ArrayLikeObject {
     }
 
     // yaku concerned
-    function isOutsideHandRun($isPure) {
-        return $this->isRun() && $this->any(function (Tile $tile) use($isPure) {
-            return $isPure ? $tile->isTerminalOrHonor() : $tile->isTerminal();
+    function isOutsideWinSetOrPair($isPure) {
+        return $this->getWinSetType()->isWinSetOrPair() && $this->any(function (Tile $tile) use($isPure) {
+            return $isPure ? $tile->isTerminal() : $tile->isTerminalOrHonor();
         });
     }
 
@@ -162,8 +162,8 @@ class Meld extends ArrayLikeObject {
         });
     }
 
-    function isTerminalOrHonorWinSet() {
-        return $this->getWinSetType()->isWinSet() &&  $this->all(function (Tile $tile) {
+    function isTerminalOrHonorWinSetOrPair() {
+        return $this->getWinSetType()->isWinSetOrPair() &&  $this->all(function (Tile $tile) {
             return $tile->isTerminalOrHonor();
         });
     }

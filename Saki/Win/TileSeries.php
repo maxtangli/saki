@@ -128,7 +128,7 @@ class TileSeries extends Enum {
     }
 
     protected function assertValidAllMeldList(MeldList $allMeldList) {
-        $valid = $allMeldList->toSortedTileList()->isPrivatePhaseCount();
+        $valid = $allMeldList->isCompleteCount();
         if (!$valid) {
             throw new \InvalidArgumentException(
                 sprintf('Invalid $allMeldList[%s].', $allMeldList)

@@ -1,10 +1,13 @@
 <?php
 namespace Saki\Win\Yaku\Fan3;
 
-use Saki\Win\TileSeries;
 use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\Yaku;
 
+/**
+ * 混一色（ホン​イーソー）
+ * @package Saki\Win\Yaku\Fan3
+ */
 class HalfFlushYaku extends Yaku {
     protected function getConcealedFanCount() {
         return 3;

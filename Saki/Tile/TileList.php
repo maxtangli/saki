@@ -29,11 +29,11 @@ class TileList extends ArrayLikeObject {
         for ($i = strlen($s) - 1; $i >= 0; --$i) {
             $c = $s[$i];
             if (is_numeric($c)) {
-                array_unshift($tiles, new Tile($tileType, intval($c)));
+                array_unshift($tiles, Tile::getInstance($tileType, intval($c)));
             } else {
                 $tileType = TileType::fromString($c);
                 if ($tileType->isHonor()) {
-                    array_unshift($tiles, new Tile($tileType));
+                    array_unshift($tiles, Tile::getInstance($tileType));
                 }
             }
         }
@@ -62,24 +62,24 @@ class TileList extends ArrayLikeObject {
         return $s;
     }
 
-    function isCompleteCount() {
+    function isCompleteHandCount() {
         return $this->count() == 14;
     }
 
-    function isPrivatePhaseCount() {
+    function isPrivateHandCount() {
         return $this->count() % 3 == 2;
     }
 
-    function isPublicPhaseCount() {
+    function isPublicHandCount() {
         return $this->count() % 3 == 1;
     }
 
-    function isPrivateOrPublicPhaseCount($isPrivate) {
-        return $isPrivate ? $this->isPrivatePhaseCount() : $this->isPublicPhaseCount();
+    function isPrivateOrPublicHandCount($isPrivate) {
+        return $isPrivate ? $this->isPrivateHandCount() : $this->isPublicHandCount();
     }
 
-    protected function assertCompleteCount() {
-        if (!$this->isCompleteCount()) {
+    protected function assertCompleteHandCount() {
+        if (!$this->isCompleteHandCount()) {
             throw new \LogicException();
         }
     }
@@ -97,7 +97,7 @@ class TileList extends ArrayLikeObject {
     }
 
     function isNineKindsOfTerminalOrHonor() {
-        $this->assertCompleteCount();
+        $this->assertCompleteHandCount();
 
         $uniqueTerminalOrHonorList = $this->toFilteredTileList(function (Tile $tile) {
             return $tile->isTerminalOrHonor();
@@ -112,12 +112,12 @@ class TileList extends ArrayLikeObject {
             throw new \InvalidArgumentException();
         }
 
-        $this->assertCompleteCount();
+        $this->assertCompleteHandCount();
 
         $terminalOrHonorList = $this->toFilteredTileList(function (Tile $tile) {
             return $tile->isTerminalOrHonor();
         });
-        $isAllTerminalOrHonor = $terminalOrHonorList->isPrivatePhaseCount();
+        $isAllTerminalOrHonor = $terminalOrHonorList->isPrivateHandCount();
         if (!$isAllTerminalOrHonor) {
             return false;
         }
@@ -134,7 +134,7 @@ class TileList extends ArrayLikeObject {
     }
 
     function isFlush($isFull) {
-        $this->assertCompleteCount();
+        $this->assertCompleteHandCount();
 
         $suitList = $this->toFilteredTileList(function (Tile $tile) {
             return $tile->isSuit();
@@ -147,7 +147,7 @@ class TileList extends ArrayLikeObject {
             return $tile->getTileType();
         }));
         $uniqueSuitColorList->unique();
-        $isSuitSameColor = $suitList->count() == $uniqueSuitColorList->count();
+        $isSuitSameColor = $uniqueSuitColorList->count() == 1;
 
         return $isFull ? $isSuitSameColor && $this->isAllSuit() : $isSuitSameColor;
     }
@@ -158,7 +158,7 @@ class TileList extends ArrayLikeObject {
             throw new \InvalidArgumentException();
         }
 
-        $this->assertCompleteCount();
+        $this->assertCompleteHandCount();
 
         if (!$this->isFlush(true)) {
             return false;
@@ -177,7 +177,7 @@ class TileList extends ArrayLikeObject {
     }
 
     function isAllGreen() {
-        $this->assertCompleteCount();
+        $this->assertCompleteHandCount();
 
         $greenTileList = TileList::fromString('23468sF');
         return $this->all(function (Tile $tile) use ($greenTileList) {

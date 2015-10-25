@@ -6,31 +6,31 @@ use Saki\Tile\TileType;
 class TileTest extends PHPUnit_Framework_TestCase {
 
     function testOverall() {
-        $m = new Tile(TileType::fromString('m'), 1);
+        $m = Tile::getInstance(TileType::fromString('m'), 1);
         $this->assertEquals(1, $m->getNumber());
         $this->assertEquals(TileType::CHARACTER, $m->getTileType()->getValue());
         $this->assertEquals('1m', $m->__toString());
 
-        $m = new Tile(TileType::fromString('E'));
+        $m = Tile::getInstance(TileType::fromString('E'));
         $this->assertEquals(TileType::EAST, $m->getTileType()->getValue());
         $this->assertEquals('E', $m->__toString());
     }
 
     function testIdentity() {
-        $m1 = new Tile(TileType::fromString('m'), 1);
-        $m2 = new Tile(TileType::fromString('m'), 1);
+        $m1 = Tile::getInstance(TileType::fromString('m'), 1);
+        $m2 = Tile::getInstance(TileType::fromString('m'), 1);
         $this->assertEquals($m1, $m2);
-        $this->assertNotSame($m1, $m2);
-        $m3 = new Tile(TileType::fromString('m'), 2);
+        $this->assertSame($m1, $m2);
+        $m3 = Tile::getInstance(TileType::fromString('m'), 2);
         $this->assertNotEquals($m1, $m3);
     }
 
     function testFromString() {
-        $m1 = new Tile(TileType::fromString('m'), 1);
+        $m1 = Tile::getInstance(TileType::fromString('m'), 1);
         $m2 = Tile::fromString('1m');
         $this->assertEquals($m1, $m2);
 
-        $m3 = new Tile(TileType::fromString('E'));
+        $m3 = Tile::getInstance(TileType::fromString('E'));
         $m4 = Tile::fromString('E');
         $this->assertEquals($m3, $m4);
     }
@@ -53,5 +53,21 @@ class TileTest extends PHPUnit_Framework_TestCase {
             ['E', 1, 'S'],
             ['E', 3, 'N'],['E', 4, 'E'],['E', 5, 'S'],['E', 6, 'W'],['E', 7, 'N'],['E', 8, 'E'],
         ];
+    }
+
+    function testRedDora() {
+        $normal5m = Tile::getInstance(TileType::getInstance(TileType::CHARACTER), 5, false);
+        $this->assertFalse($normal5m->isRedDora());
+
+        $red5m = Tile::getInstance(TileType::getInstance(TileType::CHARACTER), 5, true);
+        $this->assertTrue($red5m->isRedDora());
+
+        $this->assertEquals($normal5m, $red5m);
+        $this->assertNotSame($normal5m, $red5m);
+
+        $red5p = Tile::getInstance(TileType::getInstance(TileType::DOT), 5, true);
+        $this->assertTrue($red5p->isRedDora());
+        $this->assertNotEquals($red5p, $red5m);
+        $this->assertNotSame($red5p, $red5m);
     }
 }

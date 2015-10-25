@@ -23,7 +23,7 @@ class WinTarget {
         }
 
         $isPrivate = $roundPhase->getValue() == RoundPhase::PRIVATE_PHASE;
-        $validHandTileCount = $handTileList->isPrivateOrPublicPhaseCount($isPrivate);
+        $validHandTileCount = $handTileList->isPrivateOrPublicHandCount($isPrivate);
         if (!$validHandTileCount) {
             throw new \InvalidArgumentException(
                 sprintf('Invalid $handTileList[%s] count[%s] of for $roundPhase[%s].',

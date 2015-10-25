@@ -73,7 +73,9 @@ class MeldList extends ArrayLikeObject {
     }
 
     function isCompleteCount() {
-        return $this->toSortedTileList()->isCompleteCount();
+        $quadMeldCount = $this->toFilteredTypesMeldList([QuadMeldType::getInstance()])->count();
+        $n = $this->toSortedTileList()->count() - $quadMeldCount;
+        return $n == 14;
     }
 
     function assertCompleteCount() {
@@ -202,12 +204,16 @@ class MeldList extends ArrayLikeObject {
     }
 
     // yaku: tile concerned
-
     function isOutsideHand($isPure) {
         $this->assertCompleteCount();
 
+        $runMeldList = $this->toFilteredTypesMeldList([RunMeldType::getInstance()]);
+        if ($runMeldList->isEmpty()) {
+            return false;
+        }
+
         return $this->all(function (Meld $meld) use ($isPure) {
-            return $meld->isOutsideHandRun($isPure);
+            return $meld->isOutsideWinSetOrPair($isPure);
         });
     }
 
@@ -231,7 +237,7 @@ class MeldList extends ArrayLikeObject {
         $this->assertCompleteCount();
 
         return $this->all(function (Meld $meld) {
-            return $meld->isTerminalOrHonorWinSet();
+            return $meld->isTerminalOrHonorWinSetOrPair();
         });
     }
 

@@ -2,28 +2,6 @@
 
 namespace Saki\Tile;
 
-/*
- Suit Dot / Bamboo / Character
- Rank 1-9
-Honor
- Wind East / South / West / North Wind
- Dragon Red / Green / White Dragon
-
-Tile
-Eyes
-Meld Sequence / (Exposed / Concealed) Triplet / (Exposed / Concealed) Kong
-
-## task
-
-- [x] new a tile
-- []
-
-## note
-
-- Agile saves tons of time.
-
- */
-
 use Saki\Util\ArrayLikeObject;
 
 class Tile {
@@ -51,16 +29,16 @@ class Tile {
             throw new \InvalidArgumentException();
         }
         if (strlen($s) == 1) {
-            return new self(TileType::fromString($s));
+            return Tile::getInstance(TileType::fromString($s));
         } else {
-            return new self(TileType::fromString($s[1]), intval($s[0]));
+            return Tile::getInstance(TileType::fromString($s[1]), intval($s[0]));
         }
     }
 
     static function getNumberTiles(TileType $tileType) {
         $a = new ArrayLikeObject(range(1, 9));
         return $a->toArray(function ($v) use ($tileType) {
-            return new Tile($tileType, $v);
+            return Tile::getInstance($tileType, $v);
         });
     }
 
@@ -77,13 +55,47 @@ class Tile {
         return [Tile::fromString('C'), Tile::fromString('P'), Tile::fromString('F')];
     }
 
-    private $tileType;
-    private $number;
+    private static $instances = []; // todo weakMap?
+    private static $redDoraInstances = []; // todo weakMap?
+    private static function isRedDoraTile(Tile $tile) {
+        return in_array($tile, self::$redDoraInstances, true);
+    }
 
-    function __construct(TileType $tileType, $number = null) {
+    private static function toTileID(TileType $tileType, $number = null, $isRedDora = false) {
+        $tileTypeID = ($tileType->getValue() + 1) * 100;
+        $numberID = ($number ?: 10) * 10;
+        $isRedID = $isRedDora ? 1 : 0;
+        return $tileTypeID + $numberID + $isRedID;
+    }
+
+    /**
+     * @param TileType $tileType
+     * @param null|int $number
+     * @param bool $isRedDora
+     * @return Tile
+     */
+    static function getInstance(TileType $tileType, $number = null, $isRedDora = false) {
         if (!self::valid($tileType, $number)) {
             throw new \InvalidArgumentException("Invalid argument \$tileType[$tileType], \$number[$number].Remind that \$number should be a int.");
         }
+
+        $key = self::toTileID($tileType, $number, $isRedDora);
+        if (!isset(self::$instances[$key])) {
+            $obj = new Tile($tileType, $number, $isRedDora);
+            self::$instances[$key] = $obj;
+
+            if ($isRedDora) {
+                self::$redDoraInstances[] = $obj;
+            }
+        }
+        return self::$instances[$key];
+    }
+
+    private $tileType;
+    private $number;
+
+    private function __construct(TileType $tileType, $number = null, $isRedDora = false) {
+        // valid checked by getInstance()
         $this->tileType = $tileType;
         $this->number = $number;
     }
@@ -102,6 +114,10 @@ class Tile {
             throw new \BadMethodCallException('getNumber() is not supported on non-suit tile.');
         }
         return $this->number;
+    }
+
+    function isRedDora() {
+        return $this->isRedDoraTile($this);
     }
 
     function isSuit() {

@@ -43,9 +43,9 @@ class TileAreas {
 
     function debugSet(Player $player, TileList $tileList, MeldList $declareMeldList = null, Tile $targetTile = null) {
         $actualDeclareMeldList = $declareMeldList ? : MeldList::fromString('');
-        if ($tileList->isPrivatePhaseCount()) {
+        if ($tileList->isPrivateHandCount()) {
             $actualTargetTile = $targetTile ? : $tileList[0];
-        } elseif ($tileList->isPublicPhaseCount() && $targetTile) {
+        } elseif ($tileList->isPublicHandCount() && $targetTile) {
             $actualTargetTile = $targetTile;
         } else {
             throw new \InvalidArgumentException();
