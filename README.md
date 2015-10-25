@@ -272,14 +272,17 @@ rush refactor for beauty
 - [x] refactor: organize WinTarget 0.2h
 - [x] refactor: organize TileAreas, PlayerArea 0.2h
 
-- [ ] refactor: TurnManager 0.7h
+- [x] TurnManager 0.7h
 - [x] Roller 1.4h
 - [x] refactor: move RoundData.$roundResult into $turnManager 0.1h
 - [x] refactor: move RoundData.$roundPhase into $turnManager 0.2h
-- [ ] refactor: move RoundData.$playerList's rolling role into $turnManager
+- [x] refactor: move RoundData.$playerList's rolling role into $turnManager 1.2h
 
+- [x] refactor: move TileArea.init() into TileAreas 0.3h
+- [ ] refactor: move MockRound/YakuTestData methods into RoundData members
+- [ ] test ArrayLikeObject more 0.2h
 
-rush speed up slow tests
+rush optimize to speed up tests
 
 - [x] optimize: new Round().drawInit 1.8h // ArrayLikeObject.pop() 5ms -> 1ms by simplify, Wall().draw 66ms -> 3ms by fix wrongly use of TileSortedList
 - [ ] optimize: new RoundData() 0.5h // TileSet extends TileSortedList -> extends TileList

@@ -3,35 +3,76 @@
 namespace Saki\Game;
 
 // operations upon a Wall and 2-4 TileArea
+use Saki\Meld\MeldList;
 use Saki\Tile\Tile;
+use Saki\Tile\TileList;
 use Saki\Tile\TileSortedList;
 
 class TileAreas {
+    // immutable
+    private $playerList;
+    private $globalTurnProvider;
+
+    // immutable for each round, except for client setter calls
     private $accumulatedReachCount; // 積み棒
 
+    // variable for each round
     private $wall;
-    private $playerList;
-
     private $targetTile;
     private $discardHistory;
     private $declareHistory;
 
-    function __construct(Wall $wall, PlayerList $playerList) {
+    function __construct(Wall $wall, PlayerList $playerList, callable $globalTurnProvider) {
+        $this->playerList = $playerList;
+        $this->globalTurnProvider = $globalTurnProvider;
+
         $this->accumulatedReachCount = 0;
 
         $this->wall = $wall;
-        $this->playerList = $playerList;
-
+        $this->targetTile = null;
         $this->discardHistory = new DiscardHistory();
         $this->declareHistory = new DeclareHistory();
     }
 
     function reset() {
         $this->wall->reset(true);
-
         $this->targetTile = null;
         $this->discardHistory->reset();
         $this->declareHistory->reset();
+    }
+
+    function debugSet(Player $player, TileList $tileList, MeldList $declareMeldList = null, Tile $targetTile = null) {
+        $actualDeclareMeldList = $declareMeldList ? : MeldList::fromString('');
+        if ($tileList->isPrivatePhaseCount()) {
+            $actualTargetTile = $targetTile ? : $tileList[0];
+        } elseif ($tileList->isPublicPhaseCount() && $targetTile) {
+            $actualTargetTile = $targetTile;
+        } else {
+            throw new \InvalidArgumentException();
+        }
+
+        $tileArea = $player->getTileArea();
+        $tileArea->getHandTileSortedList()->setInnerArray($tileList->toArray());
+        $tileArea->getDeclaredMeldList()->setInnerArray($actualDeclareMeldList->toArray());
+        $this->setTargetTile($actualTargetTile);
+    }
+
+    function toPlayerHandTileList(Player $player, $isPrivate) {
+        $originHandTileList = $player->getTileArea()->getHandTileSortedList();
+        $targetTile = $this->getTargetTile();
+        return $originHandTileList->toPrivateOrPublicPhaseTileSortedList($isPrivate, $targetTile);
+    }
+
+    function toPlayerAllTileList(Player $player, $isPrivate) {
+        $allTileList = $this->toPlayerHandTileList($player, $isPrivate);
+        $declaredMeldTileList = $player->getTileArea()->getDeclaredMeldList()->toSortedTileList();
+        $allTileList->merge($declaredMeldTileList);
+        return $allTileList;
+    }
+
+    protected function getGlobalTurn() {
+        $f = $this->globalTurnProvider;
+        return $f();
     }
 
     function getAccumulatedReachCount() {
@@ -77,39 +118,20 @@ class TileAreas {
     }
 
     protected function recordDeclare() {
-        $this->declareHistory->recordDeclare($this->playerList->getGlobalTurn());
-    }
-
-    /**
-     * @param Player $player
-     * @param $includeTargetTile
-     * @return TileSortedList
-     */
-    function toPlayerHandTileList(Player $player, $includeTargetTile) {
-        $originHandTileList = $player->getPlayerArea()->getHandTileSortedList();
-        $targetTile = $this->getTargetTile();
-        return $originHandTileList->toPrivateOrPublicPhaseTileSortedList($includeTargetTile, $targetTile);
-    }
-
-    function toPlayerAllTileList(Player $player, $includeTargetTile) {
-        $handTileList = $this->toPlayerHandTileList($player, $includeTargetTile);
-        $declaredMeldTileList = $player->getPlayerArea()->getDeclaredMeldList()->toSortedTileList();
-        $allTileList = $handTileList;
-        $allTileList->merge($declaredMeldTileList);
-        return $allTileList;
+        $this->declareHistory->recordDeclare($this->getGlobalTurn());
     }
 
     function toAllPlayersDiscardedTileList() {
         $sortedTileList = new TileSortedList([]);
         foreach ($this->playerList as $player) {
-            $sortedTileList->insert($player->getPlayerArea()->getDiscardedTileList()->toArray(), 0);
+            $sortedTileList->insert($player->getTileArea()->getDiscardedTileList()->toArray(), 0);
         }
         return $sortedTileList;
     }
 
     function getOutsideRemainTileAmount(Tile $tile) {
-        $total = $this->getWall()->getTileSet()->getValueCount($tile);
-        $discarded = $this->toAllPlayersDiscardedTileList()->getValueCount($tile);
+        $total = $this->getWall()->getTileSet()->getEqualValueCount($tile);
+        $discarded = $this->toAllPlayersDiscardedTileList()->getEqualValueCount($tile);
         $remain = $total - $discarded;
         return $remain;
     }
@@ -120,28 +142,28 @@ class TileAreas {
         foreach ($drawTileCounts as $drawTileCount) {
             foreach ($this->playerList as $player) {
                 $newTiles = $this->getWall()->drawInit($drawTileCount);
-                $player->getPlayerArea()->drawInit($newTiles);
+                $player->getTileArea()->drawInit($newTiles);
             }
         }
     }
 
     function draw(Player $player) {
         $newTile = $this->getWall()->draw();
-        $player->getPlayerArea()->draw($newTile);
+        $player->getTileArea()->draw($newTile);
         $this->setTargetTile($newTile);
     }
 
     function drawReplacement(Player $player) {
         $newTile = $this->getWall()->drawReplacement();
-        $player->getPlayerArea()->draw($newTile);
+        $player->getTileArea()->draw($newTile);
         $this->setTargetTile($newTile);
     }
 
     function discard(Player $player, Tile $selfTile) {
-        $player->getPlayerArea()->discard($selfTile);
+        $player->getTileArea()->discard($selfTile);
         $this->setTargetTile($selfTile);
 
-        $this->recordDiscard($this->playerList->getGlobalTurn(), $player->getSelfWind(), $selfTile);
+        $this->recordDiscard($this->getGlobalTurn(), $player->getSelfWind(), $selfTile);
     }
 
     /**
@@ -162,12 +184,12 @@ class TileAreas {
          * - * 4人全員が立直をかけた場合、四家立直として流局となる（四家立直による途中流局を認めないルールもあり、その場合は続行される）。
          */
 
-        $notReachYet = !$player->getPlayerArea()->isReach();
+        $notReachYet = !$player->getTileArea()->isReach();
         if (!$notReachYet) { // TileArea
             throw new \InvalidArgumentException('Reach condition violated: not reach yet.');
         }
 
-        $isConcealed = $player->getPlayerArea()->getDeclaredMeldList()->count() == 0;
+        $isConcealed = $player->getTileArea()->getDeclaredMeldList()->count() == 0;
         if (!$isConcealed) { // TileArea
             throw new \InvalidArgumentException('Reach condition violated: is concealed.');
         }
@@ -182,22 +204,22 @@ class TileAreas {
             throw new \InvalidArgumentException('Reach condition violated: at least 1 draw tile chance.');
         }
 
-        $player->getPlayerArea()->reach($selfTile, $this->playerList->getGlobalTurn());
+        $player->getTileArea()->reach($selfTile, $this->getGlobalTurn());
         $player->setScore($player->getScore() - 1000);
         $this->setAccumulatedReachCount($this->getAccumulatedReachCount() + 1);
 
-        $this->recordDiscard($this->playerList->getGlobalTurn(), $player->getSelfWind(), $selfTile); // todo reach flag
+        $this->recordDiscard($this->getGlobalTurn(), $player->getSelfWind(), $selfTile); // todo reach flag
     }
 
     function kongBySelf(Player $player, Tile $selfTile) {
-        $player->getPlayerArea()->kongBySelf($selfTile);
+        $player->getTileArea()->kongBySelf($selfTile);
         $this->drawReplacement($player);
 
         $this->recordDeclare();
     }
 
     function plusKongBySelf(Player $player, Tile $selfTile) {
-        $player->getPlayerArea()->plusKongBySelf($selfTile);
+        $player->getTileArea()->plusKongBySelf($selfTile);
         $this->drawReplacement($player);
 
         $this->recordDeclare();
@@ -205,8 +227,8 @@ class TileAreas {
 
     function chowByOther(Player $actPlayer, Tile $tile1, Tile $tile2, Player $targetPlayer) {
         $this->assertNextPlayer($actPlayer, $targetPlayer);
-        $targetPlayerArea = $targetPlayer->getPlayerArea();
-        $actPlayerArea = $actPlayer->getPlayerArea();
+        $targetPlayerArea = $targetPlayer->getTileArea();
+        $actPlayerArea = $actPlayer->getTileArea();
 
         $targetTile = $targetPlayerArea->getDiscardedTileList()->getLast(); // test valid
         $actPlayerArea->chowByOther($targetTile, $tile1, $tile2); // test valid
@@ -217,8 +239,8 @@ class TileAreas {
 
     function pongByOther(Player $actPlayer, Player $targetPlayer) {
         $this->assertDifferentPlayer($actPlayer, $targetPlayer);
-        $targetPlayerArea = $targetPlayer->getPlayerArea();
-        $actPlayerArea = $actPlayer->getPlayerArea();
+        $targetPlayerArea = $targetPlayer->getTileArea();
+        $actPlayerArea = $actPlayer->getTileArea();
 
         $targetTile = $targetPlayerArea->getDiscardedTileList()->getLast(); // test valid
         $actPlayerArea->pongByOther($targetTile); // test valid
@@ -229,8 +251,8 @@ class TileAreas {
 
     function kongByOther(Player $actPlayer, Player $targetPlayer) {
         $this->assertDifferentPlayer($actPlayer, $targetPlayer);
-        $targetPlayerArea = $targetPlayer->getPlayerArea();
-        $actPlayerArea = $actPlayer->getPlayerArea();
+        $targetPlayerArea = $targetPlayer->getTileArea();
+        $actPlayerArea = $actPlayer->getTileArea();
 
         $targetTile = $targetPlayerArea->getDiscardedTileList()->getLast(); // test valid
         $actPlayerArea->kongByOther($targetTile); // test valid
@@ -242,8 +264,8 @@ class TileAreas {
 
     function plusKongByOther(Player $actPlayer, Player $targetPlayer) {
         $this->assertDifferentPlayer($actPlayer, $targetPlayer);
-        $currentPlayerArea = $targetPlayer->getPlayerArea();
-        $playerArea = $actPlayer->getPlayerArea();
+        $currentPlayerArea = $targetPlayer->getTileArea();
+        $playerArea = $actPlayer->getTileArea();
 
         $targetTile = $currentPlayerArea->getDiscardedTileList()->getLast(); // test valid
         $playerArea->plusKongByOther($targetTile);

@@ -29,7 +29,18 @@ class Roller {
         $this->targetList->leftShift($initialIndex);
         $this->currentIndex = 0;
         $this->globalTurn = 1;
-        $this->localTurns = $this->targetList->toArray(function() {
+        $this->localTurns = $this->targetList->toArray(function () {
+            return 0;
+        });
+        $this->localTurns[0] = 1; // todo simplify
+    }
+
+    function debugSet($currentTarget, $globalTurn) {
+        $currentIndex = $this->targetList->valueToIndex($currentTarget);
+
+        $this->currentIndex = $currentIndex;
+        $this->globalTurn = $globalTurn;
+        $this->localTurns = $this->targetList->toArray(function () {
             return 0;
         });
         $this->localTurns[0] = 1;
@@ -47,8 +58,9 @@ class Roller {
         return $this->targetList[$this->currentIndex];
     }
 
-    function getOffsetTarget($offset, $baseTarget) {
-        $baseIndex = $this->targetList->valueToIndex($baseTarget);  // valid check
+    function getOffsetTarget($offset, $baseTarget = null) {
+        $baseIndex = $baseTarget !== null ? $this->targetList->valueToIndex($baseTarget) // valid check
+            : $this->currentIndex;
 
         $targetIndex = Utils::getNormalizedModValue($baseIndex + $offset, $this->getTargetsCount());
         return $this->targetList[$targetIndex];
@@ -79,12 +91,4 @@ class Roller {
     }
 
     // convenient methods
-
-    function getCurrentOffsetTarget($offset) {
-        return $this->getOffsetTarget($offset, $this->getCurrentTarget());
-    }
-
-    function toNextTarget() {
-        return $this->toTarget($this->getCurrentOffsetTarget(1));
-    }
 }

@@ -132,6 +132,10 @@ class Tile {
         return $this->isTerminal() || $this->isHonor();
     }
 
+    /**
+     * @param int $offset
+     * @return Tile
+     */
     function toNextTile($offset = 1) {
         $currentType = $this->getTileType();
         if ($currentType->isSuit()) {

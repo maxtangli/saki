@@ -14,7 +14,9 @@ use Saki\Tile\TileSet;
 class GameData {
     private $playerCount;
     private $totalRoundType;
+    private $initialScore;
     private $finalScoreStrategy;
+    private $tileSet;
 
     /**
      * default: 4 player, east game, 25000-30000 initial score,
@@ -22,10 +24,12 @@ class GameData {
     function __construct() {
         $this->playerCount = 4;
         $this->totalRoundType = TotalRoundType::getInstance(TotalRoundType::EAST);
+        $this->initialScore = 25000;
         $this->finalScoreStrategy = new CompositeFinalScoreStrategy([
             RankingHorseFinalScoreStrategy::fromType(RankingHorseType::getInstance(RankingHorseType::UMA_10_20)),
             new MoundFinalScoreStrategy(25000, 30000),
         ]);
+        $this->tileSet = TileSet::getStandardTileSet();
     }
 
     function getPlayerCount() {
@@ -36,11 +40,18 @@ class GameData {
         return $this->totalRoundType;
     }
 
+    function getInitialScore() {
+        return $this->initialScore;
+    }
+
     function getFinalScoreStrategy() {
         return $this->finalScoreStrategy;
     }
-}
 
+    function getTileSet() {
+        return $this->tileSet;
+    }
+}
 
 class RoundData {
     // immutable during game
@@ -51,8 +62,8 @@ class RoundData {
 
     // variable during round
     private $playerList;
-    private $tileAreas;
     private $turnManager;
+    private $tileAreas;
 
     function __construct() {
         $gameData = new GameData();
@@ -60,12 +71,12 @@ class RoundData {
 
         $this->roundWindData = new RoundWindData($gameData->getPlayerCount(), $gameData->getTotalRoundType());
 
-        $this->playerList = PlayerList::createStandard();
-
-        $wall = new Wall(TileSet::getStandardTileSet()); // 14ms
-        $this->tileAreas = new TileAreas($wall, $this->playerList);
-
-        $this->turnManager = new TurnManager($gameData->getPlayerCount());
+        $this->playerList = new PlayerList($gameData->getPlayerCount(), $gameData->getInitialScore());
+        $this->turnManager = new TurnManager($this->playerList);
+        $wall = new Wall($gameData->getTileSet());
+        $this->tileAreas = new TileAreas($wall, $this->playerList, function () {
+            return $this->turnManager->getGlobalTurn();
+        });
     }
 
     function reset($keepDealer) {
@@ -75,11 +86,11 @@ class RoundData {
 
         $this->getRoundWindData()->reset($keepDealer);
 
-        $nextDealer = $keepDealer ? $this->getPlayerList()->getDealerPlayer() : $this->getPlayerList()->getDealerOffsetPlayer(1);
+        $currentDealer = $this->getPlayerList()->getDealerPlayer();
+        $nextDealer = $keepDealer ? $currentDealer : $this->getTurnManager()->getOffsetPlayer(1, $currentDealer);
         $this->getPlayerList()->reset($nextDealer);
-        $this->getTileAreas()->reset();
-
         $this->getTurnManager()->reset();
+        $this->getTileAreas()->reset();
     }
 
     function getGameData() {

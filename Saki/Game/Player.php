@@ -4,27 +4,30 @@ namespace Saki\Game;
 use Saki\Tile\Tile;
 
 class Player {
+    // immutable
     private $no;
 
+    // change via setter
     private $score;
-    private $selfWind;
 
-    private $playerArea;
+    // reset for each round
+    private $selfWind;
+    private $tileArea;
 
     function __construct($no, $score, Tile $selfWind) {
         $this->no = $no;
         $this->score = $score;
         $this->selfWind = $selfWind;
-        $this->playerArea = new TileArea();
+        $this->tileArea = new TileArea();
     }
 
     function reset(Tile $selfWind) {
         $this->selfWind = $selfWind;
-        $this->playerArea->reset();
+        $this->tileArea->reset();
     }
 
     function __toString() {
-        return sprintf('p%s %s score %s', $this->getNo(), $this->getSelfWind(), $this->getScore());
+        return sprintf('player[%s] wind[%s] score[%s]', $this->getNo(), $this->getSelfWind(), $this->getScore());
     }
 
     function getNo() {
@@ -55,14 +58,7 @@ class Player {
         return $this->getSelfWind() == Tile::fromString('E');
     }
 
-    function getPlayerArea() {
-        return $this->playerArea;
-    }
-
-    function setPlayerArea($playerArea) {
-        if ($playerArea === null) {
-            throw new \InvalidArgumentException();
-        }
-        $this->playerArea = $playerArea;
+    function getTileArea() {
+        return $this->tileArea;
     }
 }

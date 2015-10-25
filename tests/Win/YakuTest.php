@@ -189,8 +189,7 @@ class YakuTestData
         $targetTile = $this->targetTile;
         $handTileList = $handMeldList->toSortedTileList()->toPrivateOrPublicPhaseTileSortedList($isPrivatePhase, $targetTile);
 
-        $targetPlayer->getPlayerArea()->reset($handTileList, $this->declareMeldList);
-        $mockRound->debugSetTargetTile($targetTile);
+        $mockRound->getRoundData()->getTileAreas()->debugSet($targetPlayer, $handTileList, $this->declareMeldList, $targetTile);
 
         return new WinSubTarget($this->handMeldList, $targetPlayer, $mockRound->getRoundData());
     }

@@ -16,7 +16,7 @@ class WinTarget {
         $this->roundData = $roundData;
 
         $roundPhase = $roundData->getTurnManager()->getRoundPhase();
-        $handTileList = $player->getPlayerArea()->getHandTileSortedList();
+        $handTileList = $player->getTileArea()->getHandTileSortedList();
 
         if (!$roundPhase->isPrivateOrPublic()) {
             throw new \InvalidArgumentException();
@@ -48,7 +48,7 @@ class WinTarget {
 
     // about round/current
     function getGlobalTurn() {
-        return $this->roundData->getPlayerList()->getGlobalTurn();
+        return $this->roundData->getTurnManager()->getGlobalTurn();
     }
 
     function isPrivatePhase() {
@@ -60,7 +60,7 @@ class WinTarget {
     }
 
     function getCurrentPlayer() {
-        return $this->roundData->getPlayerList()->getCurrentPlayer();
+        return $this->roundData->getTurnManager()->getCurrentPlayer();
     }
 
     function getTargetTile() {
@@ -86,7 +86,7 @@ class WinTarget {
     }
 
     function getDeclaredMeldList() {
-        return $this->player->getPlayerArea()->getDeclaredMeldList();
+        return $this->player->getTileArea()->getDeclaredMeldList();
     }
 
     function getAllTileSortedList($includePublicTargetTile) {
@@ -94,27 +94,27 @@ class WinTarget {
     }
 
     function getDiscardedTileList() {
-        return $this->player->getPlayerArea()->getDiscardedTileList();
+        return $this->player->getTileArea()->getDiscardedTileList();
     }
 
     function isConcealed() {
-        return $this->player->getPlayerArea()->isConcealed();
+        return $this->player->getTileArea()->isConcealed();
     }
 
     function isExposed() {
-        return $this->player->getPlayerArea()->isExposed();
+        return $this->player->getTileArea()->isExposed();
     }
 
     function isReach() {
-        return $this->player->getPlayerArea()->isReach();
+        return $this->player->getTileArea()->isReach();
     }
 
     function isDoubleReach() {
-        return $this->player->getPlayerArea()->isDoubleReach();
+        return $this->player->getTileArea()->isDoubleReach();
     }
 
     function getReachTurn() {
-        return $this->player->getPlayerArea()->getReachTurn();
+        return $this->player->getTileArea()->getReachTurn();
     }
 
     function getSelfWind() {

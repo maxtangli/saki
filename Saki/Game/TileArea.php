@@ -24,10 +24,10 @@ class TileArea {
         $this->reachTurn = false;
     }
 
-    function reset(TileList $onHandTileSortedList = null, MeldList $declaredMeldList = null) {
-        $this->handTileSortedList->setInnerArray($onHandTileSortedList ? $onHandTileSortedList->toArray() : []);
+    function reset() {
+        $this->handTileSortedList->setInnerArray([]);
         $this->discardedTileList->reset();
-        $this->declaredMeldList->setInnerArray($declaredMeldList ? $declaredMeldList->toArray() : []);
+        $this->declaredMeldList->setInnerArray([]);
         $this->reachTurn = false;
     }
 
@@ -63,7 +63,7 @@ class TileArea {
      * @return bool 鳴き牌あり
      */
     function isExposed() {
-        return $this->getDeclaredMeldList()->isNotEmpty();
+        return !$this->isConcealed();
     }
 
     function isReach() {
@@ -148,7 +148,7 @@ class TileArea {
         // fromMeld can to target meld
         $hasWaitingTile = !($handTiles && !$otherTile && !$declaredMeld);
         if ($hasWaitingTile) {
-            $waitingTile = $otherTile ? : $handTiles[0];
+            $waitingTile = $otherTile ?: $handTiles[0];
             return $fromMeld->canToTargetMeld($waitingTile, $targetMeldType);
         } else {
             return $fromMeld->getMeldType() == $targetMeldType;
@@ -158,7 +158,7 @@ class TileArea {
     protected function declareMeld(MeldType $targetMeldType, $targetExposed = null, array $handTiles = null, Tile $otherTile = null, Meld $declaredMeld = null) {
         if (!$this->canDeclareMeld($targetMeldType, $handTiles, $otherTile, $declaredMeld)) {
             throw new \InvalidArgumentException(
-                sprintf('can not declared meld for [%s],[%s],[%s],[%s],[%s],[%s]', $targetMeldType, $targetExposed, implode(',',$handTiles), $otherTile, $declaredMeld, $this->getHandTileSortedList())
+                sprintf('can not declared meld for [%s],[%s],[%s],[%s],[%s],[%s]', $targetMeldType, $targetExposed, implode(',', $handTiles), $otherTile, $declaredMeld, $this->getHandTileSortedList())
             );
         }
 
@@ -177,7 +177,7 @@ class TileArea {
         $fromMeld = $declaredMeld ?: new Meld(new TileList($handTiles));
         $hasWaitingTile = !($handTiles && !$otherTile && !$declaredMeld);
         if ($hasWaitingTile) {
-            $waitingTile = $otherTile ? : $handTiles[0];
+            $waitingTile = $otherTile ?: $handTiles[0];
             $targetMeld = $fromMeld->toTargetMeld($waitingTile, $targetMeldType, $targetExposed);
         } else {
             $targetMeld = $fromMeld->toExposed($targetExposed);

@@ -7,6 +7,11 @@ use Saki\Util\Roller;
 
 class TurnManager {
     /**
+     * @var PlayerList immutable
+     */
+    private $playerList;
+
+    /**
      * @var Roller
      */
     private $playerWindRoller;
@@ -19,8 +24,10 @@ class TurnManager {
      */
     private $roundResult;
 
-    function __construct($playerCount) {
-        $windTiles = Tile::getWindTiles($playerCount); // valid check
+    function __construct(PlayerList $playerList) {
+        $windTiles = Tile::getWindTiles($playerList->count()); // valid check
+
+        $this->playerList = $playerList;
 
         $this->playerWindRoller = new Roller($windTiles);
         $this->roundPhase = RoundPhase::getInstance(RoundPhase::INIT_PHASE);
@@ -31,6 +38,15 @@ class TurnManager {
         $this->playerWindRoller->reset(Tile::fromString('E'));
         $this->roundPhase = RoundPhase::getInstance(RoundPhase::INIT_PHASE);
         $this->roundResult = null;
+    }
+
+    function debugSet(Player $currentPlayer, RoundPhase $roundPhase, $globalTurn) {
+        if ($this->roundResult !== null) {
+            throw new \InvalidArgumentException('Not implemented.');
+        }
+
+        $this->playerWindRoller->debugSet($currentPlayer->getSelfWind(), $globalTurn);
+        $this->roundPhase = $roundPhase;
     }
 
     function getRoundPhase() {
@@ -90,11 +106,32 @@ class TurnManager {
         return $this->getRoundPhase()->isPrivateOrPublic();
     }
 
-    function debugSetRoundPhase(RoundPhase $roundPhase) {
-        $this->roundPhase = $roundPhase;
-    }
-
     // delegate methods of Roller
 
+    function getGlobalTurn() {
+        return $this->playerWindRoller->getGlobalTurn();
+    }
 
+    /**
+     * @return Player
+     */
+    function getCurrentPlayer() {
+        $wind = $this->playerWindRoller->getCurrentTarget();
+        return $this->selfWindToPlayer($wind);
+    }
+
+    /**
+     * @param $offset
+     * @param Player $basePlayer
+     * @return Player
+     */
+    function getOffsetPlayer($offset, Player $basePlayer = null) {
+        $basePlayerWind = $basePlayer ? $basePlayer->getSelfWind(): null;
+        $wind = $this->playerWindRoller->getOffsetTarget($offset, $basePlayerWind);
+        return $this->selfWindToPlayer($wind);
+    }
+
+    protected function selfWindToPlayer(Tile $selfWind) {
+        return $this->playerList->getSelfWindPlayer($selfWind);
+    }
 }

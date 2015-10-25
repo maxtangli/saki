@@ -11,17 +11,14 @@ class FuCountAnalyzerTest extends PHPUnit_Framework_TestCase {
 
     function testFuCount() {
         $roundData = new \Saki\Game\RoundData();
-        $roundData->getTurnManager()->debugSetRoundPhase(RoundPhase::getInstance(RoundPhase::PRIVATE_PHASE));
 
-        $player = $roundData->getPlayerList()->getCurrentPlayer();
-        $playerArea = new TileArea();
-        $playerArea->getHandTileSortedList()->setInnerArray(TileSortedList::fromString('123pCCFFF')->toArray());
-        $playerArea->getDeclaredMeldList()->setInnerArray(MeldList::fromString('8888p,999m')->toArray());
+        $player = $roundData->getTurnManager()->getCurrentPlayer();
+        $roundData->getTurnManager()->debugSet($player, RoundPhase::getInstance(RoundPhase::PRIVATE_PHASE), 1);
 
         $roundData->getTileAreas()->setTargetTile(Tile::fromString('3p'));
+        $player->getTileArea()->getHandTileSortedList()->setInnerArray(TileSortedList::fromString('123pCCFFF')->toArray());
+        $player->getTileArea()->getDeclaredMeldList()->setInnerArray(MeldList::fromString('8888p,999m')->toArray());
 
-
-        $player->setPlayerArea($playerArea);
         $handMeldList = MeldList::fromString('123p,CC,(FFF)');
 
         $subTarget = new \Saki\Win\WinSubTarget($handMeldList, $player, $roundData);

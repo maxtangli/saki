@@ -29,7 +29,7 @@ class RollerTest extends PHPUnit_Framework_TestCase {
             [1, 3], [5, 3], [9, 3], [-3, 3], [-7, 3],
         ];
         foreach ($data as list($offset, $expected)) {
-            $this->assertEquals($expected, $r->getCurrentOffsetTarget($offset));
+            $this->assertEquals($expected, $r->getOffsetTarget($offset));
         }
     }
 }

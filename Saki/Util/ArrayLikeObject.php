@@ -171,48 +171,39 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         return $this->count() == 0;
     }
 
-    function isNotEmpty() {
-        return $this->count() > 0;
-    }
+    // read operations: index
 
-    // read operations
-
-    function all(callable $predicate) {
-        foreach ($this->innerArray as $v) {
-            if ($predicate($v) == false) {
+    function indexExist($indexOrIndexes) {
+        $indexes = static::boxing($indexOrIndexes);
+        foreach ($indexes as $i) {
+            if (!$this->offsetExists($i)) {
                 return false;
             }
         }
         return true;
     }
 
-    function any(callable $predicate) {
-        foreach ($this->innerArray as $v) {
-            if ($predicate($v) == true) {
-                return true;
-            }
+    function indexToValue($indexOrIndexes) {
+        if (!$this->indexExist($indexOrIndexes)) {
+            throw new \InvalidArgumentException("Invalid \$indexOrIndexes[$indexOrIndexes] for " . __CLASS__ . " \$this[$this]");
         }
-        return false;
+        $indexes = static::boxing($indexOrIndexes);
+        $values = array_map(function ($i) {
+            return $this[$i];
+        }, $indexes);
+        $valueOrValues = static::unboxingByOrigin($values, is_array($indexOrIndexes));
+        return $valueOrValues;
     }
 
-    function getMax($comparator = null) {
-        if ($this->count() == 0) {
-            throw new \InvalidArgumentException();
-        }
+    // read operations: value
 
-        $actualComparator = $this->toComparator($comparator);
-        $result = $this->innerArray[0];
-        foreach ($this->innerArray as $v) {
-            if ($actualComparator($v, $result) > 0) {
-                $result = $v;
-            }
+    function valueExist($valueOrValues, $equals = null) {
+        try {
+            $this->valueToIndex($valueOrValues, $equals);
+        } catch (\InvalidArgumentException $e) {
+            return false;
         }
-        return $result;
-    }
-
-    function getMin($comparator = null) {
-        $maxComparator = $this->toComparator($comparator, false);
-        return $this->getMax($maxComparator);
+        return true;
     }
 
     /**
@@ -254,16 +245,42 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         return $foundIndexOrIndexes;
     }
 
-    function valueExist($valueOrValues, $equals = null) {
-        try {
-            $this->valueToIndex($valueOrValues, $equals);
-        } catch (\InvalidArgumentException $e) {
-            return false;
-        }
-        return true;
+    function getFirst() {
+        return $this->indexToValue(0);
     }
 
-    function getValueCount($value, $equals = null) {
+    function getNext($originValue, $offset = 1) {
+        $originIndex = $this->valueToIndex($originValue);
+        $targetIndex = Utils::getNormalizedModValue($originIndex + $offset, $this->count());
+        $targetValue = $this->indexToValue($targetIndex);
+        return $targetValue;
+    }
+
+    function getLast() {
+        return $this->indexToValue($this->count() - 1);
+    }
+
+    function getMin($comparator = null) {
+        $maxComparator = $this->toComparator($comparator, false);
+        return $this->getMax($maxComparator);
+    }
+
+    function getMax($comparator = null) {
+        if ($this->count() == 0) {
+            throw new \InvalidArgumentException();
+        }
+
+        $actualComparator = $this->toComparator($comparator);
+        $result = $this->innerArray[0];
+        foreach ($this->innerArray as $v) {
+            if ($actualComparator($v, $result) > 0) {
+                $result = $v;
+            }
+        }
+        return $result;
+    }
+
+    function getEqualValueCount($value, $equals = null) {
         $actualEquals = $this->toEquals($equals);
         $count = 0;
         foreach ($this->innerArray as $m) {
@@ -274,55 +291,26 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         return $count;
     }
 
-    function getMatchedValueCount(callable $predicate) {
+    function getFilteredValueCount(callable $predicate) {
         return count($this->toFilteredArray($predicate));
     }
 
-    function indexToValue($indexOrIndexes) {
-        if (!$this->indexExist($indexOrIndexes)) {
-            throw new \InvalidArgumentException("Invalid \$indexOrIndexes[$indexOrIndexes] for " . __CLASS__ . " \$this[$this]");
+    function any(callable $predicate) {
+        foreach ($this->innerArray as $v) {
+            if ($predicate($v) == true) {
+                return true;
+            }
         }
-        $indexes = static::boxing($indexOrIndexes);
-        $values = array_map(function ($i) {
-            return $this[$i];
-        }, $indexes);
-        $valueOrValues = static::unboxingByOrigin($values, is_array($indexOrIndexes));
-        return $valueOrValues;
+        return false;
     }
 
-    function indexExist($indexOrIndexes) {
-        $indexes = static::boxing($indexOrIndexes);
-        foreach ($indexes as $i) {
-            if (!$this->offsetExists($i)) {
+    function all(callable $predicate) {
+        foreach ($this->innerArray as $v) {
+            if ($predicate($v) == false) {
                 return false;
             }
         }
         return true;
-    }
-
-    function getNext($originValue, $offset = 1) {
-        $originIndex = $this->valueToIndex($originValue);
-        $targetIndex = Utils::getNormalizedModValue($originIndex + $offset, $this->count());
-        $targetValue = $this->indexToValue($targetIndex);
-        return $targetValue;
-    }
-
-    private function util_getNormalizedModValue($v, $n) {
-    return (($v) % $n + $n) % $n;
-}
-
-    /**
-     * @return mixed
-     */
-    function getFirst() {
-        return $this->indexToValue(0);
-    }
-
-    /**
-     * @return mixed
-     */
-    function getLast() {
-        return $this->indexToValue($this->count() - 1);
     }
 
     // write operations: special
@@ -348,7 +336,6 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         $this->onInnerArrayChanged();
     }
 
-    // todo test
     function leftShift($n) {
         $count = $this->count();
         if ($n == 0 || $count <= 1) {
@@ -368,7 +355,6 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         $this->onInnerArrayChanged();
     }
 
-    // todo test
     function rightShift($n) {
         $this->leftShift(-$n);
     }
@@ -376,7 +362,7 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
     function unique(callable $equals = null) {
         if ($equals !== null) {
             $result = new ArrayLikeObject([]);
-            foreach($this as $target) {
+            foreach ($this as $target) {
                 if (!$result->valueExist($target, $equals)) {
                     $result->push($target);
                 }
@@ -431,7 +417,7 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         $this->push($otherList->toArray());
     }
 
-    // write operations: delete
+    // write operations: remove
 
     function removeByIndex($indexOrIndexes) {
         $valid = !is_array($indexOrIndexes) || empty($indexOrIndexes) ||

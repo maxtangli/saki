@@ -1,28 +1,21 @@
 <?php
 
+use Saki\Game\MockRound;
+use Saki\Game\RoundPhase;
 use Saki\Tile\Tile;
 
 class WaitingAnalyzerTest extends \PHPUnit_Framework_TestCase {
 
-    function generateRoundData($isPrivate, $onHandTileListString, $declaredMeldListString, \Saki\Tile\Tile $winTile) {
-        $round = new \Saki\Game\Round();
-        $onHandTileList = \Saki\Tile\TileSortedList::fromString($onHandTileListString);
+    function generateRoundData($isPrivate, $handTileListString, $declaredMeldListString, \Saki\Tile\Tile $winTile) {
+        $r = new MockRound();
+        $handTileList = \Saki\Tile\TileSortedList::fromString($handTileListString);
         $declaredMeldList = \Saki\Meld\MeldList::fromString($declaredMeldListString);
-        $playerArea = $round->getPlayerList()->offsetGet(0)->getPlayerArea();
-        if ($isPrivate) {
-            $this->assertTrue($onHandTileList->isPrivatePhaseCount());
-            $round->getRoundData()->getTileAreas()->setTargetTile($winTile);
-            $playerArea->reset($onHandTileList, $declaredMeldList); // onHandTileList contains winTile
-        } else {
-            $this->assertTrue($onHandTileList->isPublicPhaseCount());
-            $round->discard($round->getPlayerList()[0], $playerArea->getHandTileSortedList()[0]);
-            $round->passPublicPhase();
-            $playerArea->reset($onHandTileList, $declaredMeldList); // onHandTileList do not contains winTile
 
-            $round->getPlayerList()->offsetGet(1)->getPlayerArea()->getHandTileSortedList()->replaceByIndex(0, $winTile);
-            $round->discard($round->getPlayerList()->offsetGet(1), $winTile);
-        }
-        return $round->getRoundData();
+        // todo not safe?
+        $r->getRoundData()->getTurnManager()->debugSet($r->getCurrentPlayer(), RoundPhase::getPrivateOrPublicInstance($isPrivate), 1);
+        $r->getRoundData()->getTileAreas()->debugSet($r->getCurrentPlayer(), $handTileList, $declaredMeldList, $winTile);
+
+        return $r->getRoundData();
     }
 
     function generateWinTarget($isPrivate, $onHandTileListString, $declaredMeldListString, \Saki\Tile\Tile $winTile) {

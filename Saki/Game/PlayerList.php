@@ -7,25 +7,24 @@ use Saki\Util\ArrayLikeObject;
 class PlayerList extends ArrayLikeObject {
 
     static function createStandard() {
-        return new self(4, 25000);
+        return new PlayerList(4, 25000);
     }
 
     /**
      * @var Player[]
      */
     private $players;
-    private $currentIndex;
-
-    private $globalTurn;
 
     /**
      * @param int $n
      * @param int $initialScore
      */
     function __construct($n, $initialScore) {
-        if ($n != 4) {
-            throw new \InvalidArgumentException('Invalid player count.');
+        $valid = 1 <= $n && $n <= 4;
+        if (!$valid) {
+            throw new \InvalidArgumentException();
         }
+
         $data = [
             [1, $initialScore, Tile::fromString('E')],
             [2, $initialScore, Tile::fromString('S')],
@@ -37,10 +36,7 @@ class PlayerList extends ArrayLikeObject {
         }, array_slice($data, 0, $n));
 
         parent::__construct($players);
-
         $this->players = $players;
-        $this->currentIndex = 0;
-        $this->globalTurn = 1;
     }
 
     function reset(Player $dealerPlayer) {
@@ -53,17 +49,12 @@ class PlayerList extends ArrayLikeObject {
             $playerSelfWind = $dealerSelfWind->toNextTile($offsetToDealer);
             $player->reset($playerSelfWind);
         }
-
-        $this->currentIndex = $dealerIndex;
-        $this->globalTurn = 1;
     }
 
-    function getGlobalTurn() {
-        return $this->globalTurn;
-    }
-
-    function setGlobalTurn($globalTurn) {
-        $this->globalTurn = $globalTurn;
+    function hasMinusScorePlayer() {
+        return $this->any(function (Player $player) {
+            return $player->getScore() < 0;
+        });
     }
 
     /**
@@ -88,54 +79,6 @@ class PlayerList extends ArrayLikeObject {
     /**
      * @return Player
      */
-    function getPrevPlayer() {
-        return $this->getCurrentOffsetPlayer(-1);
-    }
-
-    /**
-     * @return Player
-     */
-    function getCurrentPlayer() {
-        return $this->players[$this->currentIndex];
-    }
-
-    /**
-     * @return Player
-     */
-    function getNextPlayer() {
-        return $this->getCurrentOffsetPlayer(1);
-    }
-
-    /**
-     * @param int $offset
-     * @return Player
-     */
-    function getCurrentOffsetPlayer($offset) {
-        return $this->getOffsetPlayer($offset, $this->getCurrentPlayer());
-    }
-
-    /**
-     * @param int $offset
-     * @return Player
-     */
-    function getDealerOffsetPlayer($offset) {
-        return $this->getOffsetPlayer($offset, $this->getDealerPlayer());
-    }
-
-    /**
-     * @param int $offset
-     * @param Player $basePlayer
-     * @return Player
-     */
-    function getOffsetPlayer($offset, Player $basePlayer) {
-        $baseIndex = $this->valueToIndex($basePlayer);
-        $i = ($baseIndex + $offset + $this->count()) % $this->count();
-        return $this[$i];
-    }
-
-    /**
-     * @return Player
-     */
     function getDealerPlayer() {
         return $this->getSelfWindPlayer(Tile::fromString('E'));
     }
@@ -152,32 +95,12 @@ class PlayerList extends ArrayLikeObject {
             }
         }
         if (count($result) != 1) {
-            throw new \LogicException('not one and only one dealer.');
+            throw new \LogicException('not one and only one selfWind.');
         }
         return $result[0];
     }
 
-    function hasMinusScorePlayer() {
-        return $this->any(function (Player $player) {
-            return $player->getScore() < 0;
-        });
-    }
-
-    /**
-     * @param Player $player
-     */
-    function toPlayer(Player $player) {
-        $targetIndex = $this->valueToIndex($player); // valid check
-        $addTurn = ($targetIndex < $this->currentIndex);
-        $this->currentIndex = $targetIndex;
-        if ($addTurn) {
-            ++$this->globalTurn;
-        }
-    }
-
-    function toNextPlayer() {
-        $this->toPlayer($this->getNextPlayer());
-    }
+    // ArrayLikeObject signature override
 
     /**
      * @param callable|null $selector

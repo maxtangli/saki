@@ -149,9 +149,9 @@ class MeldList extends ArrayLikeObject {
         $uniqueRunMeldList->unique($this->getMeldEqualsCallback());
 
         $isDoubleRun = function(Meld $runMeld) use ($runMeldList) {
-            return $runMeldList->getValueCount($runMeld, $this->getMeldEqualsCallback()) >= 2;
+            return $runMeldList->getEqualValueCount($runMeld, $this->getMeldEqualsCallback()) >= 2;
         };
-        return $uniqueRunMeldList->getMatchedValueCount($isDoubleRun) >= $requiredDoubleRunCount;
+        return $uniqueRunMeldList->getFilteredValueCount($isDoubleRun) >= $requiredDoubleRunCount;
     }
 
     function isThreeColorRuns() {

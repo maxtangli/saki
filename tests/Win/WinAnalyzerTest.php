@@ -1,6 +1,7 @@
 <?php
 
 use Saki\Game\MockRound;
+use Saki\Game\RoundData;
 use Saki\Game\RoundPhase;
 use Saki\Game\TileArea;
 use Saki\Tile\Tile;
@@ -8,18 +9,17 @@ use Saki\Tile\TileList;
 use Saki\Tile\TileSortedList;
 use Saki\Win\WinState;
 use Saki\Game\Player;
+use Saki\Win\WinTarget;
+
 class WinAnalyzerTest extends \PHPUnit_Framework_TestCase {
     function testPublicPhaseTarget() {
-        $roundData = new \Saki\Game\RoundData();
+        $roundData = new RoundData();
 
-        $roundData->getTurnManager()->debugSetRoundPhase(RoundPhase::getInstance(RoundPhase::PUBLIC_PHASE));
-        $roundData->getTileAreas()->setTargetTile(\Saki\Tile\Tile::fromString('5s'));
+        $player = $roundData->getTurnManager()->getCurrentPlayer();
+        $roundData->getTurnManager()->debugSet($player, RoundPhase::getInstance(RoundPhase::PUBLIC_PHASE), 1);
+        $roundData->getTileAreas()->debugSet($player, TileList::fromString('123m456m789m123s5s'), null, Tile::fromString('5s'));
 
-        /** @var Player $player */
-        $player = $roundData->getPlayerList()[0];
-        $player->getPlayerArea()->reset(TileSortedList::fromString('123m456m789m123s5s'));
-
-        $target = new \Saki\Win\WinTarget($player, $roundData);
+        $target = new WinTarget($player, $roundData);
 
         $dataProvider = [
             [TileSortedList::fromString('123m456m789m123s55s'), $target->getHandTileSortedList(true)],

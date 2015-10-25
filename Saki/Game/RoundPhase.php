@@ -46,6 +46,11 @@ class RoundPhase extends Enum {
         return static::getInstance(self::OVER_PHASE);
     }
 
+    static function getPrivateOrPublicInstance($isPrivate) {
+        $v = $isPrivate ? RoundPhase::PRIVATE_PHASE : RoundPhase::PUBLIC_PHASE;
+        return static::getInstance($v);
+    }
+
     function isPrivateOrPublic() {
         return in_array($this->getValue(), [RoundPhase::PRIVATE_PHASE, RoundPhase::PUBLIC_PHASE]);
     }

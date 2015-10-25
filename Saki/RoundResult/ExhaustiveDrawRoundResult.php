@@ -62,7 +62,7 @@ class ExhaustiveDrawRoundResult extends RoundResult {
 
     function getIsWaitingCount() {
         $isWaitingList = new ArrayLikeObject($this->isWaitings);
-        return $isWaitingList->getValueCount(true);
+        return $isWaitingList->getEqualValueCount(true);
     }
 
     function getNotWaitingCount() {
