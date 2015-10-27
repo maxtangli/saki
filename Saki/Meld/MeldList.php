@@ -65,10 +65,22 @@ class MeldList extends ArrayLikeObject {
         return new self($this->toFilteredArray($filter));
     }
 
-    function toFilteredTypesMeldList(array $targetMeldTypes, $exposedFlag = null) {
-        return $this->toFilteredMeldList(function (Meld $meld) use ($targetMeldTypes, $exposedFlag) {
+    function toFilteredTypesMeldList(array $targetMeldTypes, $concealedFlag = null) {
+        return $this->toFilteredMeldList(function (Meld $meld) use ($targetMeldTypes, $concealedFlag) {
             return in_array($meld->getMeldType(), $targetMeldTypes)
-            && ($exposedFlag === null || $meld->isExposed() == $exposedFlag);
+            && ($concealedFlag === null || $meld->isConcealed() == $concealedFlag);
+        });
+    }
+
+    function toConcealed($concealedFlag) {
+        return new self($this->toArray(function (Meld $meld) use ($concealedFlag) {
+            return $meld->toConcealed($concealedFlag);
+        }));
+    }
+
+    function isConcealed() {
+        return $this->all(function(Meld $meld) {
+            return $meld->isConcealed();
         });
     }
 
@@ -129,14 +141,7 @@ class MeldList extends ArrayLikeObject {
         return $tripleOrQuadList->count() == 4 && $pairList->count() == 1 && $matchConcealed;
     }
 
-    // yaku. WARNING: be careful about Meld.$exposed, especially for ArrayLikeObject search operations.
-
-    protected function getMeldEqualsCallback() {
-        return function (Meld $a, Meld $b) {
-            $compareExposed = false;
-            return $a->equals($b, $compareExposed);
-        };
-    }
+    // WARNING: be careful about Meld.$concealed , especially for ArrayLikeObject search operations.
 
     // yaku: run concerned
 
@@ -148,10 +153,10 @@ class MeldList extends ArrayLikeObject {
         $runMeldList = $this->toFilteredTypesMeldList([RunMeldType::getInstance()]);
 
         $uniqueRunMeldList = new MeldList($runMeldList->toArray());
-        $uniqueRunMeldList->unique($this->getMeldEqualsCallback());
+        $uniqueRunMeldList->unique(Meld::getEqualsCallback(false));
 
-        $isDoubleRun = function(Meld $runMeld) use ($runMeldList) {
-            return $runMeldList->getEqualValueCount($runMeld, $this->getMeldEqualsCallback()) >= 2;
+        $isDoubleRun = function (Meld $runMeld) use ($runMeldList) {
+            return $runMeldList->getEqualValueCount($runMeld, Meld::getEqualsCallback(false)) >= 2;
         };
         return $uniqueRunMeldList->getFilteredValueCount($isDoubleRun) >= $requiredDoubleRunCount;
     }
@@ -160,16 +165,24 @@ class MeldList extends ArrayLikeObject {
         $this->assertCompleteCount();
 
         return $this->any(function (Meld $meld) {
-            $this->valueExist($meld->toAllSuitTypeWinSets(), $this->getMeldEqualsCallback());
+            return $meld->isRun() && $this->valueExist($meld->toAllSuitTypes(), Meld::getEqualsCallback(false));
         });
     }
 
-    function isThreeColorTriples() {
+    function isThreeColorTripleOrQuads() {
         $this->assertCompleteCount();
 
-        return $this->any(function (Meld $meld) {
-            $this->valueExist($meld->toAllSuitTypeWinSets(), $this->getMeldEqualsCallback());
-        });
+        $tripleOrQuadList = $this->toFilteredTypesMeldList([TripleMeldType::getInstance(), QuadMeldType::getInstance()]);
+
+        $map = []; // [1 => ['s' => 's'] ...]
+        foreach($tripleOrQuadList as $tripleOrQuad) {
+            $tile = $tripleOrQuad[0];
+            $map[$tile->getNumber()][$tile->getTileType()->__toString()] = true;
+            if (count($map[$tile->getNumber()]) == 3) {
+                return true;
+            }
+        }
+        return false;
     }
 
     function isFullStraight() {
@@ -180,19 +193,19 @@ class MeldList extends ArrayLikeObject {
             [Meld::fromString('123p'), Meld::fromString('456p'), Meld::fromString('789p')],
             [Meld::fromString('123s'), Meld::fromString('456s'), Meld::fromString('789s')],
         ]);
+
         return $targetMeldsArray->any(function (array $targetMelds) {
-            $this->valueExist($targetMelds, $this->getMeldEqualsCallback());
+            return $this->valueExist($targetMelds, Meld::getEqualsCallback(false));
         });
     }
 
     // yaku: triple/quad concerned
 
-    function isThreeConcealedTriples() {
+    function isThreeConcealedTripleOrQuads() {
         $this->assertCompleteCount();
-
-        $concealedTripleMeldList = $this->toFilteredTypesMeldList(
-            [TripleMeldType::getInstance(), QuadMeldType::getInstance()], false);
-        return $concealedTripleMeldList->count() >= 3;
+        $concealedTripleOrQuadList = $this->toFilteredTypesMeldList(
+            [TripleMeldType::getInstance(), QuadMeldType::getInstance()], true);
+        return $concealedTripleOrQuadList->count() == 3;
     }
 
     function isThreeOrFourQuads($isFour) {
@@ -213,7 +226,7 @@ class MeldList extends ArrayLikeObject {
         }
 
         return $this->all(function (Meld $meld) use ($isPure) {
-            return $meld->isOutsideWinSetOrPair($isPure);
+            return $meld->isAnyTerminalOrHonor($isPure);
         });
     }
 
@@ -221,7 +234,7 @@ class MeldList extends ArrayLikeObject {
         $this->assertCompleteCount();
 
         return $this->all(function (Meld $meld) {
-            return $meld->isTerminalWinSet();
+            return $meld->isAllTerminal();
         });
     }
 
@@ -229,7 +242,7 @@ class MeldList extends ArrayLikeObject {
         $this->assertCompleteCount();
 
         return $this->all(function (Meld $meld) {
-            return $meld->isHonorWinSet();
+            return $meld->isAllHonor();
         });
     }
 
@@ -237,7 +250,7 @@ class MeldList extends ArrayLikeObject {
         $this->assertCompleteCount();
 
         return $this->all(function (Meld $meld) {
-            return $meld->isTerminalOrHonorWinSetOrPair();
+            return $meld->isAllTerminalOrHonor();
         });
     }
 

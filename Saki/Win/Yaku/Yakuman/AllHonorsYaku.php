@@ -10,12 +10,12 @@ class AllHonorsYaku extends Yaku {
         return 13;
     }
 
-    protected function getExposedFanCount() {
+    protected function getNotConcealedFanCount() {
         return 13;
     }
 
     protected function getRequiredTileSeries() {
-        return [TileSeries::getInstance(TileSeries::FOUR_WIN_SET_AND_ONE_PAIR)];
+        return [];
     }
 
     protected function matchOtherConditions(WinSubTarget $subTarget) {

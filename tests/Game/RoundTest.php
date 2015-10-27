@@ -6,6 +6,7 @@ use Saki\Game\RoundPhase;
 use Saki\Meld\Meld;
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
+use Saki\RoundResult\WinRoundResult;
 
 class RoundTest extends PHPUnit_Framework_TestCase {
 
@@ -186,10 +187,7 @@ class RoundTest extends PHPUnit_Framework_TestCase {
     protected function getWinBySelfRound() {
         $r = $this->initialRound;
         // setup
-        $r->getCurrentPlayer()->getTileArea()->getHandTileSortedList()->setInnerArray(
-            \Saki\Tile\TileList::fromString('123m456m789m123s55s')->toArray()
-        );
-        $r->getRoundData()->getTileAreas()->setTargetTile(Tile::fromString('1m')); // $r->getCurrentPlayer()->getTileArea()->setPrivateTargetTile();
+        $r->getRoundData()->getTileAreas()->debugSet($r->getCurrentPlayer(), TileList::fromString('123m456m789m123s55s'));
         return $r;
     }
 

@@ -3,7 +3,7 @@ namespace Saki\Util;
 
 /**
  * Convenient base class for 0-begin-continuous-ascending-int-key-array like object.
- * Only optimized for less-than-200 elements case.
+ * Only optimized for less-than-200 elements case, which is the main case in pj saki.
  * @package Saki\Util
  */
 class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
@@ -12,7 +12,7 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
     }
 
     /**
-     * @param $valueOrValues
+     * @param mixed|array $valueOrValues
      * @return array
      */
     static function boxing($valueOrValues) {
@@ -20,8 +20,8 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
     }
 
     /**
-     * @param $valueOrValues
-     * @return object|array
+     * @param mixed|array $valueOrValues
+     * @return mixed|array
      */
     static function unboxing($valueOrValues) {
         if (is_array($valueOrValues)) {
@@ -31,7 +31,13 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         }
     }
 
-    // todo bad smell. originIsArray means count()>1 array?
+    /**
+     * For $originIsArray case, unpack 1-element-array to single element.
+     * Otherwise keep.
+     * @param array $values
+     * @param bool $originIsArray
+     * @return mixed|array
+     */
     protected static function unboxingByOrigin(array $values, $originIsArray) {
         $valid = !$originIsArray && count($values) != 1;
         if ($valid) {
@@ -40,12 +46,8 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         return $originIsArray ? $values : $values[0];
     }
 
-    protected static function isUniqueArray(array $a) {
-        return array_unique($a) == $a;
-    }
-
     /**
-     * @param null|object|callable|bool $equals
+     * @param null|bool|object|callable $equals
      * @return callable
      */
     protected static function toEquals($equals) {
@@ -72,7 +74,7 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
     }
 
     /**
-     * @param callable|null|array $comparator
+     * @param null|array|callable $comparator
      * @param bool $isAsc
      * @return \Closure with signature: -1|0|1 function($a, $b)
      */
@@ -95,21 +97,38 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
     }
 
     private $innerArray;
+    private $writable;
 
-    function __construct(array $innerArray) {
-        $this->setInnerArray($innerArray);
+    function __construct(array $innerArray, $writable = true) {
+        $this->writable = true; // to allow setInnerArray()
+        $this->setInnerArray($innerArray); // to trigger OnInnerArrayChanged()
+        $this->writable = $writable;
     }
 
     function reset() {
         $this->innerArray = [];
     }
 
-    // convert
-
     function __toString() {
         $glue = ',';
         return implode($glue, $this->innerArray);
     }
+
+    function isWritable() {
+        return $this->writable;
+    }
+
+    function setWritable($writable) {
+        $this->writable = $writable;
+    }
+
+    protected function assertWritable() {
+        if (!$this->isWritable()) {
+            throw new \LogicException('The ArrayLikeObject[%s] is not writable.', $this->__toString());
+        }
+    }
+
+    // convert
 
     function toArray(callable $selector = null) {
         if ($selector !== null) {
@@ -127,11 +146,11 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         return array_values(array_filter($this->innerArray, $predicate));
     }
 
-    function toReducedValue(callable $reduceCallback, $initial) {
-        return array_reduce($this->toArray(), $reduceCallback, $initial);
+    function toReducedValue(callable $reduceCallback, $initialValue) {
+        return array_reduce($this->toArray(), $reduceCallback, $initialValue);
     }
 
-    // implements
+    // implement interfaces
 
     function getIterator() {
         return new \ArrayIterator($this->innerArray);
@@ -173,6 +192,10 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
 
     // read operations: index
 
+    /**
+     * @param int|int[] $indexOrIndexes allow duplicate
+     * @return bool
+     */
     function indexExist($indexOrIndexes) {
         $indexes = static::boxing($indexOrIndexes);
         foreach ($indexes as $i) {
@@ -183,6 +206,10 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         return true;
     }
 
+    /**
+     * @param int|int[] $indexOrIndexes allow duplicate
+     * @return mixed|array
+     */
     function indexToValue($indexOrIndexes) {
         if (!$this->indexExist($indexOrIndexes)) {
             throw new \InvalidArgumentException("Invalid \$indexOrIndexes[$indexOrIndexes] for " . __CLASS__ . " \$this[$this]");
@@ -197,6 +224,11 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
 
     // read operations: value
 
+    /**
+     * @param object|array $valueOrValues
+     * @param null|bool|object|callable $equals
+     * @return bool whether all $valueOrValues existed or not, where duplicate values should exist for multiple times.
+     */
     function valueExist($valueOrValues, $equals = null) {
         try {
             $this->valueToIndex($valueOrValues, $equals);
@@ -207,40 +239,48 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
     }
 
     /**
-     * @param mixed|array $valueOrValues
-     * @param null|bool|callable $equals
-     * @return int|int[] non-duplicate first indexes of $targetItems
+     * @param object|array $valueOrValues
+     * @param null|bool|object|callable $equals
+     * @return int|int[] all $valueOrValues' indexes, where duplicate values should exist for multiple times.
      */
     function valueToIndex($valueOrValues, $equals = null) {
-        $targets = static::boxing($valueOrValues);
+        // prepare data
+        $targets = [];
+        foreach(static::boxing($valueOrValues) as $iTarget => $value) {
+            $targets[$iTarget]['tobeFoundValue'] = $value;
+            $targets[$iTarget]['foundIndex'] = false;
+        }
+        $tobeFoundCount = count($targets);
         $actualEquals = $this->toEquals($equals);
 
-        $tobeFoundCount = count($targets);
-        $foundIndexes = array_fill(0, $tobeFoundCount, false);
-        $innerArray = $this->innerArray;
-        $innerArrayCount = count($innerArray);
-
-        for ($i = 0; $i < $innerArrayCount && $tobeFoundCount > 0; ++$i) {
-            $v = $innerArray[$i];
-
+        // loop to find
+        foreach($this->innerArray as $i => $v) {
+            // if this $v is not found target, record it
             foreach ($targets as $k => $target) {
-                $alreadyFound = $foundIndexes[$k] !== false;
-                if (!$alreadyFound && $actualEquals($target, $v)) {
-                    $foundIndexes[$k] = $i;
+                $notFoundYet = $target['foundIndex'] === false;
+                if ($notFoundYet && $actualEquals($v, $target['tobeFoundValue'])) {
+                    $targets[$k]['foundIndex'] = $i;
                     --$tobeFoundCount;
                     break;
                 }
             }
+
+            if ($tobeFoundCount <= 0) {
+                break;
+            }
         }
 
+        // judge result
         $allFound = $tobeFoundCount == 0;
         if (!$allFound) {
-            $valueOrValuesString = is_array($valueOrValues) ? implode(',', $valueOrValues) : $valueOrValues;
             throw new \InvalidArgumentException(
-                "Invalid \$valueOrValues[$valueOrValuesString] for " . __CLASS__ . " \$this[$this]."
+                sprintf('Unable to find $valueOrValues[%s] in %s[%s]', implode(',', self::boxing($valueOrValues)), __CLASS__, $this->__toString())
             );
         }
 
+        $foundIndexes = array_map(function ($target) {
+            return $target['foundIndex'];
+        }, $targets);
         $foundIndexOrIndexes = static::unboxingByOrigin($foundIndexes, is_array($valueOrValues));
         return $foundIndexOrIndexes;
     }
@@ -260,11 +300,19 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         return $this->indexToValue($this->count() - 1);
     }
 
+    /**
+     * @param null|array|callable $comparator
+     * @return object
+     */
     function getMin($comparator = null) {
         $maxComparator = $this->toComparator($comparator, false);
         return $this->getMax($maxComparator);
     }
 
+    /**
+     * @param null|array|callable $comparator
+     * @return object
+     */
     function getMax($comparator = null) {
         if ($this->count() == 0) {
             throw new \InvalidArgumentException();
@@ -280,6 +328,11 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         return $result;
     }
 
+    /**
+     * @param object $value
+     * @param null|bool|object|callable $equals
+     * @return int
+     */
     function getEqualValueCount($value, $equals = null) {
         $actualEquals = $this->toEquals($equals);
         $count = 0;
@@ -316,27 +369,34 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
     // write operations: special
 
     function setInnerArray(array $innerArray) {
+        $this->assertWritable();
+
         if (!static::is0BeginAscendingIntKeyArray($innerArray)) {
-            $innerArrayString = implode(',', $innerArray);
-            throw new \InvalidArgumentException("Invalid \$innerArray[$innerArrayString], 0-begin-ascending-int-key-array expected.");
+            throw new \InvalidArgumentException(
+                sprintf('$innerArray[%s] should be 0-begin-ascending-int-key-array.', implode(',', $innerArray))
+            );
         }
         $this->innerArray = $innerArray;
         $this->onInnerArrayChanged();
     }
 
     function walk(callable $callback) {
-        foreach ($this as $v) {
-            $callback($v);
-        }
+        $this->assertWritable();
+
+        array_walk($this->innerArray, $callback);
         $this->onInnerArrayChanged();
     }
 
     function shuffle() {
+        $this->assertWritable();
+
         shuffle($this->innerArray);
         $this->onInnerArrayChanged();
     }
 
     function leftShift($n) {
+        $this->assertWritable();
+
         $count = $this->count();
         if ($n == 0 || $count <= 1) {
             return;
@@ -356,10 +416,18 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
     }
 
     function rightShift($n) {
+        $this->assertWritable();
+
         $this->leftShift(-$n);
+        // onInnerArrayChanged() already called in leftShift().
     }
 
+    /**
+     * @param null|bool|object|callable $equals
+     */
     function unique(callable $equals = null) {
+        $this->assertWritable();
+
         if ($equals !== null) {
             $result = new ArrayLikeObject([]);
             foreach ($this as $target) {
@@ -377,49 +445,75 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
     // write operations: replace
 
     function replaceByIndex($indexOrIndexes, $newValueOrValues) {
-        $indexes = static::boxing($indexOrIndexes);
-        $newValues = static::boxing($newValueOrValues);
-        $valid = $this->indexExist($indexOrIndexes) && static::isUniqueArray($indexes) && count($indexes) == count($newValues);
+        $this->assertWritable();
+
+        $isUniqueIndexOrIndexes = !is_array($indexOrIndexes) || (array_unique($indexOrIndexes) == $indexOrIndexes);
+        $valid = $this->indexExist($indexOrIndexes) && $isUniqueIndexOrIndexes;
         if (!$valid) {
             throw new \InvalidArgumentException();
         }
+
+        list($indexes, $newValues) = [static::boxing($indexOrIndexes), static::boxing($newValueOrValues)];
         $replace = array_combine($indexes, $newValues);
         $this->innerArray = array_replace($this->innerArray, $replace);
         $this->onInnerArrayChanged();
     }
 
+    /**
+     * @param object|array $oldValueOrValues
+     * @param object|array $newValueOrValues
+     * @param null|bool|object|callable $equals
+     */
     function replaceByValue($oldValueOrValues, $newValueOrValues, $equals = null) {
+        $this->assertWritable();
+
         $indexOrIndexes = $this->valueToIndex($oldValueOrValues, $equals);
         $this->replaceByIndex($indexOrIndexes, $newValueOrValues);
+        // onInnerArrayChanged() already called in replaceByIndex().
     }
 
     // write operations: insert
 
     function insert($valueOrValues, $pos) {
+        $this->assertWritable();
+
         $valid = is_int($pos) && $pos == $this->count() || $this->indexExist($pos);
         if (!$valid) {
             throw new \InvalidArgumentException();
         }
+
         $values = static::boxing($valueOrValues);
         array_splice($this->innerArray, $pos, 0, $values); // splice() will rearrange integer-keys
         $this->onInnerArrayChanged();
     }
 
     function unShift($valueOrValues) {
+        $this->assertWritable();
+
         $this->insert($valueOrValues, 0);
+        // onInnerArrayChanged() already called in insert().
     }
 
     function push($valueOrValues) {
+        $this->assertWritable();
+
         $this->insert($valueOrValues, $this->count());
+        // onInnerArrayChanged() already called in insert().
     }
 
     function merge(ArrayLikeObject $otherList) {
-        $this->push($otherList->toArray());
+        $this->assertWritable();
+
+        $this->insert($otherList->toArray(), $this->count());
+        // onInnerArrayChanged() already called in insert().
     }
 
+    // todo
     // write operations: remove
 
     function removeByIndex($indexOrIndexes) {
+        $this->assertWritable();
+
         $valid = !is_array($indexOrIndexes) || empty($indexOrIndexes) ||
             (array_unique($indexOrIndexes) == $indexOrIndexes
                 && isset($this->innerArray[is_array($indexOrIndexes) ? max($indexOrIndexes) : $indexOrIndexes]));
@@ -442,16 +536,23 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         return $removedValues;
     }
 
+    // null|bool|object|callable
     function removeByValue($valueOrValues, $equals = null) {
+        $this->assertWritable();
+
         return $this->removeByIndex($this->valueToIndex($valueOrValues, $equals));
     }
 
     function shift($n = 1) {
+        $this->assertWritable();
+
         $indexOrIndexes = $n == 1 ? 0 : range(0, $n - 1);
         return $this->removeByIndex($indexOrIndexes);
     }
 
     function pop($n = 1) {
+        $this->assertWritable();
+
         $count = $this->count();
         if (!(0 < $n && $n <= $count)) {
             throw new \InvalidArgumentException(

@@ -2,15 +2,9 @@
 
 use Saki\Meld\Meld;
 use Saki\Meld\MeldList;
+use Saki\Util\ArrayLikeObject;
 
 class MeldListTest extends PHPUnit_Framework_TestCase {
-    function testOverall() {
-
-        $l = new MeldList([
-            new Meld(\Saki\Tile\TileList::fromString('11m'), \Saki\Meld\PairMeldType::getInstance())
-        ]);
-    }
-
     /**
      * @dataProvider validStringProvider
      */
@@ -50,5 +44,51 @@ class MeldListTest extends PHPUnit_Framework_TestCase {
 
     function testTileSeries() {
         $this->assertTrue(MeldList::fromString('123s,456s,789s,111s,11s')->isFourWinSetAndOnePair());
+    }
+
+    function testOutsideHand() {
+        $this->assertTrue(Meld::fromString('123m')->isAnyTerminalOrHonor(false));
+        $this->assertTrue(Meld::fromString('789s')->isAnyTerminalOrHonor(false));
+        $this->assertTrue(Meld::fromString('EE')->isAnyTerminalOrHonor(false));
+        $this->assertTrue(Meld::fromString('EEE')->isAnyTerminalOrHonor(false));
+        $this->assertTrue(Meld::fromString('EEEE')->isAnyTerminalOrHonor(false));
+        $this->assertTrue(MeldList::fromString('123m,789m,123s,789s,EE')->isOutsideHand(false));
+    }
+
+    function testLoop() {
+        $a = new ArrayLikeObject([
+            [Meld::fromString('123m'), Meld::fromString('456m'), Meld::fromString('789m')],
+            [Meld::fromString('123p'), Meld::fromString('456p'), Meld::fromString('789p')],
+            [Meld::fromString('123s'), Meld::fromString('456s'), Meld::fromString('789s')],
+        ]);
+        $this->assertEquals(3, $a->count());
+        foreach($a as $v) {
+            $this->assertEquals('array', gettype($v));
+            $this->assertCount(3, $v);
+        }
+    }
+
+    function testFullStraight() {
+        $meldList = MeldList::fromString('123m,456m,789m,111m,EE');
+
+        $this->assertTrue($meldList->valueExist(Meld::fromString('123m')));
+        $this->assertTrue($meldList->valueExist(Meld::fromString('123m'), Meld::getEqualsCallback(false)));
+
+        $this->assertTrue($meldList->valueExist([Meld::fromString('123m'), Meld::fromString('456m')], Meld::getEqualsCallback(false)));
+        $this->assertTrue($meldList->valueExist([Meld::fromString('123m'), Meld::fromString('456m'), Meld::fromString('789m')], Meld::getEqualsCallback(false)));
+
+        $this->assertTrue($meldList->isFullStraight());
+
+        // different isConcealed case
+
+        $meldList = MeldList::fromString('(123m),456m,789m,111m,EE');
+
+        $this->assertFalse($meldList->valueExist(Meld::fromString('123m')));
+        $this->assertTrue($meldList->valueExist(Meld::fromString('123m'), Meld::getEqualsCallback(false)));
+
+        $this->assertTrue($meldList->valueExist([Meld::fromString('123m'), Meld::fromString('456m')], Meld::getEqualsCallback(false)));
+        $this->assertTrue($meldList->valueExist([Meld::fromString('123m'), Meld::fromString('456m'), Meld::fromString('789m')], Meld::getEqualsCallback(false)));
+
+        $this->assertTrue($meldList->isFullStraight());
     }
 }

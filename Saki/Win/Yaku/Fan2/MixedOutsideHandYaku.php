@@ -14,7 +14,7 @@ class MixedOutsideHandYaku extends Yaku {
         return 2;
     }
 
-    protected function getExposedFanCount() {
+    protected function getNotConcealedFanCount() {
         return 1;
     }
 

@@ -47,7 +47,7 @@ class YakuAnalyzer {
     }
 
     function analyzeYakuList(WinSubTarget $subTarget) {
-        $yakuList = new YakuList([], $subTarget->isExposed());
+        $yakuList = new YakuList([], $subTarget->isConcealed());
         foreach ($this->getYakus() as $yaku) {
             if ($yaku->existIn($subTarget)) {
                 $yakuList->push($yaku);

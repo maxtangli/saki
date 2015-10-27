@@ -10,7 +10,7 @@ class BigFourWindsYaku extends Yaku {
         return 13;
     }
 
-    protected function getExposedFanCount() {
+    protected function getNotConcealedFanCount() {
         return 13;
     }
 
@@ -32,7 +32,7 @@ class NineGatesYaku extends Yaku {
         return 13;
     }
 
-    protected function getExposedFanCount() {
+    protected function getNotConcealedFanCount() {
         return 13;
     }
 
@@ -50,7 +50,7 @@ class PureNineGatesYaku extends Yaku {
         return 26;
     }
 
-    protected function getExposedFanCount() {
+    protected function getNotConcealedFanCount() {
         return 26;
     }
 

@@ -4,38 +4,43 @@ namespace Saki\Tile;
 use Saki\Util\Enum;
 
 class TileType extends Enum {
-    const BAMBOO = 1;
-    const CHARACTER = 2;
-    const DOT = 3;
-    const EAST = 4;
-    const SOUTH = 5;
-    const WEST = 6;
-    const NORTH = 7;
-    const WHITE = 8;
-    const GREEN = 9;
-    const RED = 10;
+
+    const CHARACTER_M = 1;
+    const DOT_P = 2;
+    const BAMBOO_S = 3;
+
+    const EAST_E = 4;
+    const SOUTH_S = 5;
+    const WEST_W = 6;
+    const NORTH_N = 7;
+
+    const RED_C = 8;
+    const WHITE_P = 9;
+    const GREEN_F = 10;
 
     const REGEX_SUIT_TYPE = '[smp]';
-    const REGEX_HONOR_TYPE = '[ESWNCFP]';
+    const REGEX_HONOR_TYPE = '[ESWNCPF]';
 
     static function getValue2StringMap() {
         return [
-            self::BAMBOO => 's',
-            self::CHARACTER => 'm',
-            self::DOT => 'p',
-            self::EAST => 'E',
-            self::SOUTH => 'S',
-            self::WEST => 'W',
-            self::NORTH => 'N',
-            self::WHITE => 'P',
-            self::GREEN => 'F',
-            self::RED => 'C',
+            self::CHARACTER_M => 'm',
+            self::DOT_P => 'p',
+            self::BAMBOO_S => 's',
+
+            self::EAST_E => 'E',
+            self::SOUTH_S => 'S',
+            self::WEST_W => 'W',
+            self::NORTH_N => 'N',
+
+            self::RED_C => 'C',
+            self::WHITE_P => 'P',
+            self::GREEN_F => 'F',
         ];
     }
 
     static function getSuitTypes() {
         return [
-            self::getInstance(self::BAMBOO), self::getInstance(self::CHARACTER), self::getInstance(self::DOT),
+            self::getInstance(self::BAMBOO_S), self::getInstance(self::CHARACTER_M), self::getInstance(self::DOT_P),
         ];
     }
 
@@ -57,9 +62,9 @@ class TileType extends Enum {
 
     function isSuit() {
         switch ($this->getValue()) {
-            case self::BAMBOO:
-            case self::CHARACTER:
-            case self::DOT;
+            case self::BAMBOO_S:
+            case self::CHARACTER_M:
+            case self::DOT_P;
                 return true;
             default;
                 return false;
@@ -68,13 +73,13 @@ class TileType extends Enum {
 
     function isHonor() {
         switch ($this->getValue()) {
-            case self::EAST:
-            case self::WEST:
-            case self::SOUTH;
-            case self::NORTH;
-            case self::RED;
-            case self::GREEN;
-            case self::WHITE;
+            case self::EAST_E:
+            case self::WEST_W:
+            case self::SOUTH_S;
+            case self::NORTH_N;
+            case self::RED_C;
+            case self::GREEN_F;
+            case self::WHITE_P;
                 return true;
             default;
                 return false;
@@ -83,10 +88,10 @@ class TileType extends Enum {
 
     function isWind() {
         switch ($this->getValue()) {
-            case self::EAST:
-            case self::WEST:
-            case self::SOUTH;
-            case self::NORTH;
+            case self::EAST_E:
+            case self::WEST_W:
+            case self::SOUTH_S;
+            case self::NORTH_N;
                 return true;
             default;
                 return false;
@@ -95,9 +100,9 @@ class TileType extends Enum {
 
     function isDragon() {
         switch ($this->getValue()) {
-            case self::RED;
-            case self::GREEN;
-            case self::WHITE;
+            case self::RED_C;
+            case self::GREEN_F;
+            case self::WHITE_P;
                 return true;
             default;
                 return false;

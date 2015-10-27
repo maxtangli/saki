@@ -19,16 +19,16 @@ class TileSortedList extends TileList {
     static function getDisplayPriority(Tile $tile) {
         $tileType = $tile->getTileType();
         $base = [ // 萬筒
-            TileType::CHARACTER => 0,
-            TileType::DOT => 9,
-            TileType::BAMBOO => 18,
-            TileType::EAST => 28,
-            TileType::SOUTH => 29,
-            TileType::WEST => 30,
-            TileType::NORTH => 31,
-            TileType::RED => 32,
-            TileType::WHITE => 33,
-            TileType::GREEN => 34,
+            TileType::CHARACTER_M => 0,
+            TileType::DOT_P => 9,
+            TileType::BAMBOO_S => 18,
+            TileType::EAST_E => 28,
+            TileType::SOUTH_S => 29,
+            TileType::WEST_W => 30,
+            TileType::NORTH_N => 31,
+            TileType::RED_C => 32,
+            TileType::WHITE_P => 33,
+            TileType::GREEN_F => 34,
         ][$tileType->getValue()];
         $plus = $tileType->isSuit() ? $tile->getNumber() : 0;
         return 34 - ($base + $plus);

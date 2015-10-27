@@ -10,7 +10,7 @@ class AllTerminalsYaku extends Yaku {
         return 13;
     }
 
-    protected function getExposedFanCount() {
+    protected function getNotConcealedFanCount() {
         return 13;
     }
 

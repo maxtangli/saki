@@ -101,10 +101,6 @@ class WinTarget {
         return $this->player->getTileArea()->isConcealed();
     }
 
-    function isExposed() {
-        return $this->player->getTileArea()->isExposed();
-    }
-
     function isReach() {
         return $this->player->getTileArea()->isReach();
     }

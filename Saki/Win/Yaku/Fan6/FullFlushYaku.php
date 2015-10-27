@@ -10,7 +10,7 @@ class FullFlushYaku extends Yaku {
         return 6;
     }
 
-    protected function getExposedFanCount() {
+    protected function getNotConcealedFanCount() {
         return 5;
     }
 

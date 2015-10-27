@@ -11,7 +11,7 @@ class PureOutsideHandYaku extends Yaku {
         return 3;
     }
 
-    protected function getExposedFanCount() {
+    protected function getNotConcealedFanCount() {
         return 2;
     }
 

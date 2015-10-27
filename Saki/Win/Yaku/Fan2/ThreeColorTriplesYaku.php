@@ -9,7 +9,7 @@ class ThreeColorTriplesYaku extends Yaku {
         return 2;
     }
 
-    protected function getExposedFanCount() {
+    protected function getNotConcealedFanCount() {
         return 2;
     }
 
@@ -18,6 +18,6 @@ class ThreeColorTriplesYaku extends Yaku {
     }
 
     protected function matchOtherConditions(WinSubTarget $subTarget) {
-        return $subTarget->getAllMeldList()->isThreeColorTriples();
+        return $subTarget->getAllMeldList()->isThreeColorTripleOrQuads();
     }
 }

@@ -22,7 +22,8 @@ class Timer extends Singleton{
         $formattedPastMs = round($pastMs, 3);
         echo "$formattedPastMs ms \n";
 
-        $this->begin = $end;
+        // note that echo is an io operation that cost time.
+        $this->begin = microtime(true);
     }
 
     /**

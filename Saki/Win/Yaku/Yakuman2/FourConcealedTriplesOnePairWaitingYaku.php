@@ -12,7 +12,7 @@ class FourConcealedTriplesOnePairWaitingYaku extends Yaku {
         return 26;
     }
 
-    protected function getExposedFanCount() {
+    protected function getNotConcealedFanCount() {
         return 26;
     }
 

@@ -2,7 +2,6 @@
 
 namespace Saki\Meld;
 
-use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 use Saki\Tile\TileSortedList;
 
@@ -14,14 +13,14 @@ class MeldCompositionsAnalyzer {
      * @param TileList|\Saki\Tile\TileSortedList $tileList
      * @param MeldType[] $meldTypes
      * @param int $allowPureWeakCount
-     * @param bool $exposed
+     * @param bool $toConcealed
      * @return MeldList[]
      */
-    function analyzeMeldCompositions(TileList $tileList, array $meldTypes, $allowPureWeakCount = 0, $exposed = false) {
+    function analyzeMeldCompositions(TileList $tileList, array $meldTypes, $allowPureWeakCount = 0, $toConcealed = true) {
         $debug_time_start = microtime(true);
         $tileSortedList = $tileList instanceof TileSortedList ? $tileList : new TileSortedList($tileList->toArray());
 
-        $meldLists = $this->analyzeMeldCompositionsImpl($tileSortedList, $meldTypes, $allowPureWeakCount, $exposed);
+        $meldLists = $this->analyzeMeldCompositionsImpl($tileSortedList, $meldTypes, $allowPureWeakCount, $toConcealed);
 
         $debug_time_end = microtime(true);
         self::$debug_time_cost += ($debug_time_end - $debug_time_start);
@@ -34,10 +33,10 @@ class MeldCompositionsAnalyzer {
      * @param \Saki\Tile\TileSortedList $tileSortedList
      * @param MeldType[] $meldTypes
      * @param int $allowPureWeakCount
-     * @param bool $exposed
+     * @param bool $toConcealed
      * @return MeldList[]
      */
-    protected function analyzeMeldCompositionsImpl(TileSortedList $tileSortedList, array $meldTypes, $allowPureWeakCount, $exposed) {
+    protected function analyzeMeldCompositionsImpl(TileSortedList $tileSortedList, array $meldTypes, $allowPureWeakCount, $toConcealed) {
         /*
          * meldList(tiles) = all merge(a valid meld from begin, meldList(other tiles))
          */
@@ -51,11 +50,11 @@ class MeldCompositionsAnalyzer {
 
             $possibleCuts = $this->getPossibleCuts($tileSortedList, $meldType);
             if (!empty($possibleCuts)) { // with first tile, success to construct a meld by given meldType
-                foreach($possibleCuts as list($beginTileSortedList, $remainTileSortedList)) {
-                    $firstMeld = new Meld($beginTileSortedList, $meldType, $exposed);
+                foreach ($possibleCuts as list($beginTileSortedList, $remainTileSortedList)) {
+                    $firstMeld = new Meld($beginTileSortedList, $meldType, $toConcealed);
                     if (count($remainTileSortedList) > 0) {
                         $nextAllowPureWeakCount = $isPureWeak ? $allowPureWeakCount - 1 : $allowPureWeakCount;
-                        $thisMeldLists = $this->analyzeMeldCompositionsImpl($remainTileSortedList, $meldTypes, $nextAllowPureWeakCount, $exposed);
+                        $thisMeldLists = $this->analyzeMeldCompositionsImpl($remainTileSortedList, $meldTypes, $nextAllowPureWeakCount, $toConcealed);
                         if (count($thisMeldLists) > 0) { // with first meld, success to turn all remain tiles into melds
                             foreach ($thisMeldLists as $meldList) {
                                 $meldList->unShift($firstMeld);
@@ -89,7 +88,7 @@ class MeldCompositionsAnalyzer {
 
         $result = [];
         $meldTileSortedLists = $meldType->getPossibleTileSortedLists($tileSortedList[0]);
-        foreach($meldTileSortedLists as $meldTileSortedList) {
+        foreach ($meldTileSortedLists as $meldTileSortedList) {
             $meldTiles = $meldTileSortedList->toArray();
             if ($tileSortedList->valueExist($meldTiles)) {
                 $remainTileSortedList = new TileSortedList($tileSortedList->toArray());

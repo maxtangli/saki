@@ -10,7 +10,7 @@ abstract class AbstractValueTilesYaku extends Yaku {
         return 1;
     }
 
-    protected function getExposedFanCount() {
+    protected function getNotConcealedFanCount() {
         return 1;
     }
 

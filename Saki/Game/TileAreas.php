@@ -191,7 +191,7 @@ class TileAreas {
 
         $isConcealed = $player->getTileArea()->getDeclaredMeldList()->count() == 0;
         if (!$isConcealed) { // TileArea
-            throw new \InvalidArgumentException('Reach condition violated: is concealed.');
+            throw new \InvalidArgumentException('Reach condition violated: is isConcealed.');
         }
 
         $enoughScore = $player->getScore() >= 1000;

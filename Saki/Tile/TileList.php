@@ -96,6 +96,24 @@ class TileList extends ArrayLikeObject {
         });
     }
 
+    function isAllTerminal() {
+        return $this->all(function (Tile $tile) {
+            return $tile->isTerminal();
+        });
+    }
+
+    function isAllTerminalOrHonor() {
+        return $this->all(function (Tile $tile) {
+            return $tile->isTerminalOrHonor();
+        });
+    }
+
+    function isAllHonor() {
+        return $this->all(function (Tile $tile) {
+            return $tile->isHonor();
+        });
+    }
+
     function isNineKindsOfTerminalOrHonor() {
         $this->assertCompleteHandCount();
 
@@ -149,7 +167,9 @@ class TileList extends ArrayLikeObject {
         $uniqueSuitColorList->unique();
         $isSuitSameColor = $uniqueSuitColorList->count() == 1;
 
-        return $isFull ? $isSuitSameColor && $this->isAllSuit() : $isSuitSameColor;
+        $hasHonor = $suitList->count() != $this->count();
+
+        return $isFull ? $isSuitSameColor && !$hasHonor : $isSuitSameColor && $hasHonor;
     }
 
     function isNineGates($isPure, Tile $targetTileForIsPureCase = null) {
@@ -180,9 +200,11 @@ class TileList extends ArrayLikeObject {
         $this->assertCompleteHandCount();
 
         $greenTileList = TileList::fromString('23468sF');
-        return $this->all(function (Tile $tile) use ($greenTileList) {
-            $greenTileList->valueExist($tile);
-        });
+        $isAllGreenTile = function(Tile $tile) use($greenTileList) {
+            return $greenTileList->valueExist($tile);
+        };
+
+        return $this->all($isAllGreenTile);
     }
 
     /**

@@ -55,7 +55,7 @@ class WinAnalyzer {
         ];
         $handMeldCompositions = $analyzer->analyzeMeldCompositions($handTileList, $handMeldTypes);
         if (empty($handMeldCompositions)) {
-            return new WinResult(WinState::getInstance(WinState::NOT_WIN), new YakuList([], $target->isExposed()), 0, new TileSortedList([]));
+            return new WinResult(WinState::getInstance(WinState::NOT_WIN), new YakuList([], $target->isConcealed()), 0, new TileSortedList([]));
         }
 
         // get winResult[] of each subTarget
@@ -118,12 +118,12 @@ class WinAnalyzer {
     function analyzeSubTarget(WinSubTarget $subTarget) {
         $tileSeries = $this->getTileSeriesAnalyzer()->analyzeTileSeries($subTarget->getAllMeldList());
         if (!$tileSeries->exist()) {
-            return new WinSubResult(WinState::getInstance(WinState::NOT_WIN), new YakuList([], $subTarget->isExposed()), 0);
+            return new WinSubResult(WinState::getInstance(WinState::NOT_WIN), new YakuList([], $subTarget->isConcealed()), 0);
         }
 
         $yakuList = $this->getYakuAnalyzer()->analyzeYakuList($subTarget);
         if ($yakuList->count() == 0) {
-            return new WinSubResult(WinState::getInstance(WinState::NO_YAKU_FALSE_WIN), new YakuList([], $subTarget->isExposed()), 0);
+            return new WinSubResult(WinState::getInstance(WinState::NO_YAKU_FALSE_WIN), new YakuList([], $subTarget->isConcealed()), 0);
         }
 
         $winStateValue = $subTarget->isPrivatePhase() ? WinState::WIN_BY_SELF : WinState::WIN_BY_OTHER;

@@ -10,7 +10,7 @@ class TwoDoubleRunYaku extends Yaku {
         return 3;
     }
 
-    protected function getExposedFanCount() {
+    protected function getNotConcealedFanCount() {
         return 0;
     }
 

@@ -9,7 +9,7 @@ class ReachYaku extends Yaku {
         return 1;
     }
 
-    protected function getExposedFanCount() {
+    protected function getNotConcealedFanCount() {
         return 0;
     }
 

@@ -251,7 +251,7 @@ rush 25 OnTheWayDrawRoundResult 1.5h
 - [x] four kong drawn, keep dealer 0.4h
 - [x] four reach drawn, keep dealer 0.2h
 
-rush 26 all yaku: simple ones
+rush 26 all yaku: simple ones 12.6h
 
 - [x] not-count-yaku logic
 - [x] yaku-man logic 1h
@@ -260,12 +260,24 @@ rush 26 all yaku: simple ones
 - [x] test design 1.5h
 - [x] refactor: merge private/publicTargetTile 1.1h
 - [x] test fan1 yakus 1h
-- [ ] test fan2 yakus 1h
+- [x] test fan2 yakus 1.3h
+- [x] bug: Meld.isXXXWinSet() 0.4h
+- [x] bug: FullStraight 1h // Meld.equals issues; forget to write return for 
 - [x] test fan3,fan6 yakus 0.2h
-- [ ] test yakuman
-- [ ] test yakuman2 yakus
+- [x] test yakuman/yakuman2 yakus 0.3h
 
-rush refactor for beauty
+rush 27 refactor: concealed 1.7h
+
+- [x] refactor: remove isExposed, use isConcealed instead 1.7h
+- [x] Meld
+- [x] MeldList
+- [x] TileArea.declareMeld
+- [x] Yaku, YakuList
+- [x] MeldCompositionAnalyzer
+- [x] YakuAnalyzer
+- [x] grep exposed
+
+rush 28 refactor for beauty
 
 - [x] refactor: move Round.roundResult into RoundData 0.2h
 - [x] refactor: organize WinTarget 0.2h
@@ -278,49 +290,56 @@ rush refactor for beauty
 - [x] refactor: move RoundData.$playerList's rolling role into $turnManager 1.2h
 
 - [x] refactor: move TileArea.init() into TileAreas 0.3h
+- [ ] refactor: for ArrayLikeObject: test more, add writable, refactor valueToIndex 0.9h
+- [ ] refactor: RoundTest
 - [ ] refactor: move MockRound/YakuTestData methods into RoundData members
-- [ ] test ArrayLikeObject more 0.2h
+
+rush rule.md doc
+
+- [ ] tile 0.6h
+- [ ] yaku 0.7h
+
+rush dora yaku
+
+- [ ] design 0.1h
+- [ ] doraYaku
+- [ ] uraDoraYaku
+- [ ] redDoraYaku
+
+rush red dora
+
+- [x] Tile.getInstance() 0.3h
+- [x] Tile.isRed() 0.2h
+- [x] Tile.getID() 0.3h
+- [ ] adapt discard/createMeld logic
+
+rush all yaku: complicated ones
+
+- [ ] FirstTurnWinYaku
+- [ ] refactor: TileSeries <-> MeldList.xxx
+- [ ] refactor: SubTurn
 
 rush optimize to speed up tests
 
 - [x] optimize: new Round().drawInit 1.8h // ArrayLikeObject.pop() 5ms -> 1ms by simplify, Wall().draw 66ms -> 3ms by fix wrongly use of TileSortedList
 - [ ] optimize: new RoundData() 0.5h // TileSet extends TileSortedList -> extends TileList
 - [ ] refactor: speed up slow tests
-- [ ] bug: Timer not accurate since echo()'s timecost
+- [x] bug: Timer not accurate since echo()'s timecost
 - [ ] refactor: organize test sets
-
-rush red dora
-
-- [x] Tile.getInstance() 0.3h
-- [x] Tile.isRed() 0.2h
-- [ ] discard/createMeld logic
-
-rush all yaku: complicated ones
-
-- [ ] FirstTurnWinYaku
-- [ ] 
-- [ ] refactor: TileSeries <-> MeldList.xxx
-- [ ] refactor: SubTurn
+- [ ] optimize: RoundTest
+- [ ] optimize: RoundDrawTest
+- [ ] optimize: WinAnalyzerTest
 
 rush command system
 
 - [ ] command 0.2h
 - [ ] public command roller
 
-rush client-server logic
-rush client-server style ui
-
 rush refactor
 
 - [ ] refactor: RoundResult
 - [ ] refactor: getWaitingTiles to return TileSortedList 
 - [ ] refactor: move DrawScore logic into separate class
-
-# refactor turn
-
-global turn, selfWind, roundPhase
-
-TileAreas: recordXXX() requires globalTurn, reach() requires player.score
 
 # command system
 

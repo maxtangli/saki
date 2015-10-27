@@ -14,20 +14,20 @@ abstract class Yaku extends Singleton {
         return str_replace('Yaku', '', $cls);
     }
 
-    final function getFanCount($isExposed) {
-        return $isExposed ? $this->getExposedFanCount() : $this->getConcealedFanCount();
+    final function getFanCount($concealed) {
+        return $concealed ? $this->getConcealedFanCount() : $this->getNotConcealedFanCount();
     }
 
     abstract protected function getConcealedFanCount();
 
-    abstract protected function getExposedFanCount();
+    abstract protected function getNotConcealedFanCount();
 
     final function requireConcealed() {
-        return $this->getExposedFanCount() == 0;
+        return $this->getNotConcealedFanCount() == 0;
     }
 
     final function isYakuMan() {
-        return $this->getConcealedFanCount() >= 13 || $this->getExposedFanCount() >= 13;
+        return $this->getConcealedFanCount() >= 13 || $this->getNotConcealedFanCount() >= 13;
     }
 
     final function existIn(WinSubTarget $subTarget) {

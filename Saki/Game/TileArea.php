@@ -56,14 +56,7 @@ class TileArea {
      * @return bool 門前清
      */
     function isConcealed() {
-        return $this->getDeclaredMeldList()->isEmpty();
-    }
-
-    /**
-     * @return bool 鳴き牌あり
-     */
-    function isExposed() {
-        return !$this->isConcealed();
+        return $this->getDeclaredMeldList()->isConcealed();
     }
 
     function isReach() {
@@ -155,10 +148,10 @@ class TileArea {
         }
     }
 
-    protected function declareMeld(MeldType $targetMeldType, $targetExposed = null, array $handTiles = null, Tile $otherTile = null, Meld $declaredMeld = null) {
+    protected function declareMeld(MeldType $targetMeldType, $targetConcealed = null, array $handTiles = null, Tile $otherTile = null, Meld $declaredMeld = null) {
         if (!$this->canDeclareMeld($targetMeldType, $handTiles, $otherTile, $declaredMeld)) {
             throw new \InvalidArgumentException(
-                sprintf('can not declared meld for [%s],[%s],[%s],[%s],[%s],[%s]', $targetMeldType, $targetExposed, implode(',', $handTiles), $otherTile, $declaredMeld, $this->getHandTileSortedList())
+                sprintf('can not declared meld for [%s],[%s],[%s],[%s],[%s],[%s]', $targetMeldType, $targetConcealed, implode(',', $handTiles), $otherTile, $declaredMeld, $this->getHandTileSortedList())
             );
         }
 
@@ -178,9 +171,9 @@ class TileArea {
         $hasWaitingTile = !($handTiles && !$otherTile && !$declaredMeld);
         if ($hasWaitingTile) {
             $waitingTile = $otherTile ?: $handTiles[0];
-            $targetMeld = $fromMeld->toTargetMeld($waitingTile, $targetMeldType, $targetExposed);
+            $targetMeld = $fromMeld->toTargetMeld($waitingTile, $targetMeldType, $targetConcealed);
         } else {
-            $targetMeld = $fromMeld->toExposed($targetExposed);
+            $targetMeld = $fromMeld->toConcealed($targetConcealed);
         }
         $this->getDeclaredMeldList()->push($targetMeld);
         return $targetMeld;
@@ -193,7 +186,7 @@ class TileArea {
 
     function kongBySelf(Tile $selfTile) {
         $handTiles = [$selfTile, $selfTile, $selfTile, $selfTile];
-        return $this->declareMeld(QuadMeldType::getInstance(), false, $handTiles, null, null);
+        return $this->declareMeld(QuadMeldType::getInstance(), true, $handTiles, null, null);
     }
 
     function canPlusKongBySelf(Tile $selfTile) {
@@ -217,7 +210,7 @@ class TileArea {
 
     function chowByOther(Tile $otherTile, Tile $selfTile1, Tile $selfTile2) {
         $handTiles = [$selfTile1, $selfTile2];
-        return $this->declareMeld(RunMeldType::getInstance(), true, $handTiles, $otherTile, null);
+        return $this->declareMeld(RunMeldType::getInstance(), false, $handTiles, $otherTile, null);
     }
 
     function canPongByOther(Tile $otherTile) {
@@ -227,7 +220,7 @@ class TileArea {
 
     function pongByOther(Tile $otherTile) {
         $handTiles = [$otherTile, $otherTile];
-        return $this->declareMeld(TripleMeldType::getInstance(), true, $handTiles, $otherTile, null);
+        return $this->declareMeld(TripleMeldType::getInstance(), false, $handTiles, $otherTile, null);
     }
 
     function canKongByOther(Tile $otherTile) {
@@ -237,7 +230,7 @@ class TileArea {
 
     function kongByOther(Tile $otherTile) {
         $handTiles = [$otherTile, $otherTile, $otherTile];
-        return $this->declareMeld(QuadMeldType::getInstance(), true, $handTiles, $otherTile, null);
+        return $this->declareMeld(QuadMeldType::getInstance(), false, $handTiles, $otherTile, null);
     }
 
     function canPlusKongByOther(Tile $otherTile) {
@@ -247,6 +240,6 @@ class TileArea {
 
     function plusKongByOther(Tile $otherTile) {
         $declaredMeld = new Meld(new TileList([$otherTile, $otherTile, $otherTile]));
-        return $this->declareMeld(QuadMeldType::getInstance(), true, null, $otherTile, $declaredMeld);
+        return $this->declareMeld(QuadMeldType::getInstance(), false, null, $otherTile, $declaredMeld);
     }
 }

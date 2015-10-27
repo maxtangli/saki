@@ -1,12 +1,17 @@
 <?php
 
+use Saki\Meld\Meld;
+use Saki\Meld\MeldCompositionsAnalyzer;
+use Saki\Meld\RunMeldType;
+use Saki\Tile\TileList;
+
 class MeldCompositionsAnalyzerTest extends PHPUnit_Framework_TestCase {
     /**
      * @dataProvider getMeldCompositionsProvider
      */
     function testGetMeldCompositions($expectedMeldListStrings, $tilesStr, $meldTypes) {
         $r = new \Saki\Meld\MeldCompositionsAnalyzer();
-        $meldLists = $r->analyzeMeldCompositions(\Saki\Tile\TileSortedList::fromString($tilesStr), $meldTypes, 0, true);
+        $meldLists = $r->analyzeMeldCompositions(\Saki\Tile\TileSortedList::fromString($tilesStr), $meldTypes, 0, false);
         $actualMeldListStrings = array_map(function ($v) {
             return $v->__toString();
         }, $meldLists);
@@ -39,6 +44,14 @@ class MeldCompositionsAnalyzerTest extends PHPUnit_Framework_TestCase {
         ];
     }
 
+    function testConcealed() {
+        $r = new MeldCompositionsAnalyzer();
+        $meldLists = $r->analyzeMeldCompositions(TileList::fromString('123s'), [RunMeldType::getInstance()], 0, true);
+        $this->assertEquals(Meld::fromString('(123s)'), $meldLists[0][0]);
+        $meldLists = $r->analyzeMeldCompositions(TileList::fromString('123s'), [RunMeldType::getInstance()], 0, false);
+        $this->assertEquals(Meld::fromString('123s'), $meldLists[0][0]);
+    }
+
     function testPerformance() {
         $tileListString = '112233s';
         $r = new \Saki\Meld\MeldCompositionsAnalyzer();
@@ -49,7 +62,7 @@ class MeldCompositionsAnalyzerTest extends PHPUnit_Framework_TestCase {
         ];
         $tileSortedList = \Saki\Tile\TileSortedList::fromString($tileListString);
         $time = microtime(true);
-        $actual = $r->analyzeMeldCompositions($tileSortedList, $meldTypes, 0, true);
+        $actual = $r->analyzeMeldCompositions($tileSortedList, $meldTypes, 0, false);
         $cost = microtime(true) - $time;
         $costMs = round($cost * 1000);
         //echo sprintf('analyzeMeldCompositions time cost: %s ms.', $costMs);

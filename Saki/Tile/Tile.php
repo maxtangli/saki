@@ -10,9 +10,9 @@ class Tile {
     const REGEX_HONOR_TILE = TileType::REGEX_HONOR_TYPE;
     const REGEX_TILE = '(' . self::REGEX_SUIT_TILE . '|' . self::REGEX_HONOR_TILE . ')';
 
-    static function valid(TileType $tileType, $number) {
-        return ($tileType->isSuit() && self::validNumber($number))
-        || ($tileType->isHonor() && $number === null);
+    static function valid(TileType $tileType, $number, $isRedDora) {
+        return ($tileType->isSuit() && self::validNumber($number) && ($isRedDora == false || $number == 5))
+        || ($tileType->isHonor() && $number === null && $isRedDora == false);
     }
 
     static function validNumber($number) {
@@ -57,15 +57,41 @@ class Tile {
 
     private static $instances = []; // todo weakMap?
     private static $redDoraInstances = []; // todo weakMap?
+
     private static function isRedDoraTile(Tile $tile) {
         return in_array($tile, self::$redDoraInstances, true);
     }
 
-    private static function toTileID(TileType $tileType, $number = null, $isRedDora = false) {
-        $tileTypeID = ($tileType->getValue() + 1) * 100;
-        $numberID = ($number ?: 10) * 10;
-        $isRedID = $isRedDora ? 1 : 0;
-        return $tileTypeID + $numberID + $isRedID;
+    /**
+     * @param TileType $tileType
+     * @param int|null $number
+     * @param bool|false $isRedDora
+     * @return int
+     *
+     * - m 1-9   r5m  0
+     * - p 11-19 r5p 10
+     * - s 21-29 r5s 20
+     * - E 31 S 32 W 33 N 34
+     * - C 41 P 42 F 43
+     */
+    private static function toValueID(TileType $tileType, $number = null, $isRedDora = false) {
+        $bases = [
+            TileType::CHARACTER_M => 0,
+            TileType::DOT_P => 10,
+            TileType::BAMBOO_S => 20,
+
+            TileType::EAST_E => 31,
+            TileType::SOUTH_S => 32,
+            TileType::WEST_W => 33,
+            TileType::NORTH_N => 34,
+
+            TileType::RED_C => 35,
+            TileType::WHITE_P => 36,
+            TileType::GREEN_F => 37,
+        ];
+        $baseID = $bases[$tileType->getValue()];
+        $numberID = $tileType->isSuit() ? ($isRedDora ? 0 : $number) : 0;
+        return $baseID + $numberID;
     }
 
     /**
@@ -75,11 +101,11 @@ class Tile {
      * @return Tile
      */
     static function getInstance(TileType $tileType, $number = null, $isRedDora = false) {
-        if (!self::valid($tileType, $number)) {
+        if (!self::valid($tileType, $number, $isRedDora)) {
             throw new \InvalidArgumentException("Invalid argument \$tileType[$tileType], \$number[$number].Remind that \$number should be a int.");
         }
 
-        $key = self::toTileID($tileType, $number, $isRedDora);
+        $key = self::toValueID($tileType, $number, $isRedDora);
         if (!isset(self::$instances[$key])) {
             $obj = new Tile($tileType, $number, $isRedDora);
             self::$instances[$key] = $obj;
