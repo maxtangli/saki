@@ -1,21 +1,16 @@
 <?php
 namespace Saki\Win\Yaku\Fan1;
 
-use Saki\Tile\Tile;
 use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\Yaku;
 
-/**
- * 断么九
- * @package Saki\Win\Yaku
- */
-class AllSimplesYaku extends Yaku {
+class FinalTileWinMoon extends Yaku {
     protected function getConcealedFanCount() {
         return 1;
     }
 
     protected function getNotConcealedFanCount() {
-        return 1;
+        return 0;
     }
 
     protected function getRequiredTileSeries() {
@@ -23,6 +18,7 @@ class AllSimplesYaku extends Yaku {
     }
 
     protected function matchOtherConditions(WinSubTarget $subTarget) {
-        return $subTarget->getAllTileSortedList(true)->isAllSimple();
+        return $subTarget->getWallRemainTileAmount()==0 && $subTarget->isPrivatePhase();
     }
 }
+

@@ -24,7 +24,7 @@ class GameData {
      */
     function __construct() {
         $this->playerCount = 4;
-        $this->totalRoundType = TotalRoundType::getInstance(TotalRoundType::EAST);
+        $this->totalRoundType = GameLengthType::getInstance(GameLengthType::EAST);
         $this->initialScore = 25000;
         $this->finalScoreStrategy = new CompositeFinalScoreStrategy([
             RankingHorseFinalScoreStrategy::fromType(RankingHorseType::getInstance(RankingHorseType::UMA_10_20)),

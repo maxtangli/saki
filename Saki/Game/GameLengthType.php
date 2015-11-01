@@ -4,18 +4,10 @@ namespace Saki\Game;
 use Saki\Tile\Tile;
 use Saki\Util\Enum;
 
-class TotalRoundType extends Enum {
+class GameLengthType extends Enum {
     const EAST = 1;
     const EAST_SOUTH = 2;
     const FULL = 4;
-
-    static function getValue2StringMap() {
-        return [
-            self::EAST => 'east',
-            self::EAST_SOUTH => 'east-south',
-            self::FULL => 'full',
-        ];
-    }
 
     function getLastRoundWind() {
         switch ($this->getValue()) {
@@ -43,7 +35,7 @@ class TotalRoundType extends Enum {
 
     /**
      * @param $value
-     * @return TotalRoundType
+     * @return GameLengthType
      */
     static function getInstance($value) {
         return parent::getInstance($value);

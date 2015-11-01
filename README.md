@@ -292,7 +292,7 @@ rush 28 refactor for beauty 5.9h
 - [x] refactor: move TileArea.init() into TileAreas 0.3h
 - [x] refactor: for ArrayLikeObject: test more, add writable, refactor valueToIndex series 1.4h
 
-rush 29 all yaku: reach concerned 2.7h
+rush 29 all yaku: reach concerned 2.8h
 
 - [x] refactor: AbstractValueTilesYaku 0.2h
 - [x] DeclareHistory 0.3h
@@ -303,27 +303,32 @@ rush 29 all yaku: reach concerned 2.7h
 - [x] FirstTurnWinYaku 0.5h
 - [x] test FirstTurnWinYaku 0.2h // wrongly written pastTurn <= 0, should be pastTurn < = 1
 
-rush 30 all yaku: FinalTileWin
+rush all yaku: kong concerned
 
-- [ ] FinalTileWinFishYaku
-- [ ] FinalTileWinMoonYaku
+- [ ] refactor: RoundState
+- [ ] refactor: introduce RoundTurn 0.2h // not sure it's necessary
+
+- [ ] research 0.4h
+- [ ] Kong Public Phase
+- [ ] KingTileWinYaku
+- [ ] RobbingAQuadYaku
 
 rush 31 all yaku: HeavenlyWin, EarthlyWin, HumanlyWin
 
+- [ ] FinalTileWin Fish/Moon 0.1h 
 - [ ] HeavenlyWin
 - [ ] EarthlyWin
 - [ ] HumanlyWin
 
-rush all yaku: kong concerned
-
-- [ ] KingTileWinYaku
-- [ ] RobbingAQuadYaku
-
 rush all yaku
+
+rush command system
+
+- [ ] command 0.2h
+- [ ] public command roller
 
 rush refactor
 
-- [ ] refactor: introduce RoundTurn 0.2h // not sure it's necessary
 - [ ] refactor: move MockRound/YakuTestData methods into RoundData members
 - [ ] refactor: TileSeries <-> MeldList.xxx
 - [ ] refactor: RoundTest
@@ -363,11 +368,6 @@ rush optimize to speed up tests
 - [ ] optimize: RoundTest
 - [ ] optimize: RoundDrawTest
 - [ ] optimize: WinAnalyzerTest
-
-rush command system
-
-- [ ] command 0.2h
-- [ ] public command roller
 
 # command system
 

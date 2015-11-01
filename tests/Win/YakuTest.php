@@ -95,18 +95,7 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
             // not isConcealed
             [new YakuTestData('123m,123m,EE', '123s,123s', 'E'), TwoDoubleRunYaku::getInstance(), false],
 
-            // test FirstTurnWinYaku
-            // todo true
-
-            // not reach
-            [new YakuTestData('123m,456m,789m,123s,55s'), FirstTurnWinYaku::getInstance(), false],
-            // not sameOrNext turn
-            // todo
-            // not without-declare
-            // todo
-
-            // todo test Reach
-            // todo test DoubleReach
+            // reach and finalTileWin yakus is tested in separate functions
 
             // not reach
             [new YakuTestData('123m,456m,789m,123s,55s', null, '1s'), ReachYaku::getInstance(), false],
@@ -431,6 +420,14 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         $yakuList = $r->getWinResult($r->getCurrentPlayer())->getYakuList();
         $this->assertGreaterThan(0, $yakuList->count());
         $this->assertContains(FirstTurnWinYaku::getInstance(), $yakuList, $yakuList);
+    }
+
+    function testFinalTileWinMoon() {
+        
+    }
+
+    function testFinalTileWinFish() {
+
     }
 }
 

@@ -6,9 +6,9 @@ use Saki\Tile\Tile;
 class RoundWindData {
     private $playerCount;
     /**
-     * @var TotalRoundType
+     * @var GameLengthType
      */
-    private $totalRoundType;
+    private $gameLengthType;
 
     /**
      * @var Tile
@@ -17,9 +17,9 @@ class RoundWindData {
     private $roundWindTurn; // 東 [1] 局
     private $selfWindTurn; // [0] 本場
 
-    function __construct($playerCount, TotalRoundType $gameLengthType) {
+    function __construct($playerCount, GameLengthType $gameLengthType) {
         $this->playerCount = $playerCount;
-        $this->totalRoundType = $gameLengthType;
+        $this->gameLengthType = $gameLengthType;
 
         $this->roundWind = Tile::fromString('E');
         $this->roundWindTurn = 1;
@@ -28,15 +28,19 @@ class RoundWindData {
 
     function reset($keepDealer) {
         if ($keepDealer) {
+            // keep roundWind
+            // keep roundWindTurn
             $this->selfWindTurn += 1;
-        } else {
+        } else { // not keep dealer
             if ($this->isCurrentRoundWindLastTurn()) {
                 $this->roundWind = $this->roundWind->toNextTile();
                 $this->roundWindTurn = 1;
+                $this->selfWindTurn = 0;
             } else {
+                // keep roundWind
                 $this->roundWindTurn += 1;
+                $this->selfWindTurn = 0;
             }
-            $this->selfWindTurn = 0;
         }
     }
 
@@ -45,7 +49,7 @@ class RoundWindData {
     }
 
     function getTotalRoundType() {
-        return $this->totalRoundType;
+        return $this->gameLengthType;
     }
 
     function getRoundWind() {
@@ -103,7 +107,7 @@ class RoundWindData {
     // 最终局，完局后游戏结束
     function isFinalRound() {
         // 最多延长一个场风
-        if ($this->getTotalRoundType()->getValue() == TotalRoundType::FULL) {
+        if ($this->getTotalRoundType()->getValue() == GameLengthType::FULL) {
             throw new \LogicException('un implemented.');
         }
         $finalRoundWind = $this->getTotalRoundType()->getLastRoundWind()->toNextTile();
