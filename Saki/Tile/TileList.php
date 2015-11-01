@@ -129,16 +129,7 @@ class TileList extends ArrayLikeObject {
         if (!$valid) {
             throw new \InvalidArgumentException();
         }
-
         $this->assertCompleteHandCount();
-
-        $terminalOrHonorList = $this->toFilteredTileList(function (Tile $tile) {
-            return $tile->isTerminalOrHonor();
-        });
-        $isAllTerminalOrHonor = $terminalOrHonorList->isPrivateHandCount();
-        if (!$isAllTerminalOrHonor) {
-            return false;
-        }
 
         $requiredPartTileList = TileList::fromString('19m19p19sESWNCFP');
         // this works because for a full terminalOrHonor hand, the remain one tile will be terminalOrHonor.

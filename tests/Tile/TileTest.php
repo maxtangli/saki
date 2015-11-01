@@ -70,4 +70,12 @@ class TileTest extends PHPUnit_Framework_TestCase {
         $this->assertNotEquals($red5p, $red5m);
         $this->assertNotSame($red5p, $red5m);
     }
+
+    function testWindOffset() {
+        $e = Tile::fromString('E');
+        $w = Tile::fromString('W');
+        $this->assertEquals(0, $e->getWindOffset($e));
+        $this->assertEquals(-2, $e->getWindOffset($w));
+        $this->assertEquals(2, $w->getWindOffset($e));
+    }
 }

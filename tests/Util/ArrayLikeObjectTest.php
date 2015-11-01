@@ -49,14 +49,19 @@ class ArrayLikeObjectTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertTrue($obj->indexExist(0));
         $this->assertTrue($obj->indexExist([0]));
-        $this->assertTrue($obj->indexExist([0, 0]));
         $this->assertTrue($obj->indexExist([0, 5]));
         $this->assertFalse($obj->indexExist([0, 6]));
 
         $this->assertEquals(0, $obj->indexToValue(0));
         $this->assertEquals([0], $obj->indexToValue([0]));
-        $this->assertEquals([0, 0], $obj->indexToValue([0, 0]));
-        $this->assertEquals([0, 3, 0], $obj->indexToValue([0, 3, 0]));
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    function testRetrieveIndexException() {
+        $obj = new ArrayLikeObject([1,2,3]);
+        $obj->indexToValue([0,0]);
     }
 
     /**

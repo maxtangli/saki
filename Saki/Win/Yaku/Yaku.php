@@ -11,7 +11,9 @@ use Saki\Win\WinSubTarget;
 abstract class Yaku extends Singleton {
     function __toString() {
         $cls = get_called_class();
-        return str_replace('Yaku', '', $cls);
+        $s = str_replace('Yaku', '', $cls);
+        $s = end(explode('\\', $s));
+        return $s;
     }
 
     final function getFanCount($concealed) {

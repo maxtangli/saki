@@ -15,14 +15,15 @@ use Saki\Win\Fu\FuCountAnalyzer;
 use Saki\Win\Fu\FuCountTarget;
 use Saki\Win\Yaku\YakuAnalyzer;
 use Saki\Win\Yaku\YakuList;
+use Saki\Win\Yaku\YakuSet;
 
 class WinAnalyzer {
     private $yakuAnalyzer;
     private $tileSeriesAnalyzer;
     private $waitingAnalyzer;
 
-    function __construct() {
-        $this->yakuAnalyzer = new YakuAnalyzer();
+    function __construct(YakuSet $yakuSet) {
+        $this->yakuAnalyzer = new YakuAnalyzer($yakuSet);
         $this->tileSeriesAnalyzer = new TileSeriesAnalyzer();
         $this->waitingAnalyzer = new WaitingAnalyzer();
     }
@@ -163,8 +164,9 @@ class WinAnalyzer {
             if ($globalTurn == 1) {
                 $fromTurn = 1;
             } else {
-                $selfWindComparator = Utils::getComparatorByBestArray(Tile::getWindTiles());
-                $selfTurnPassed = $selfWindComparator($target->getSelfWind(), $target->getCurrentPlayer()->getSelfWind()) >= 0;
+                $targetSelfWind = $target->getSelfWind();
+                $currentSelfWind = $target->getCurrentPlayer()->getSelfWind();
+                $selfTurnPassed = $targetSelfWind->getWindOffset($currentSelfWind) <= 0;
                 $fromTurn = $selfTurnPassed ? $globalTurn : $globalTurn - 1;
             }
         }

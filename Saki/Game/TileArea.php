@@ -15,20 +15,20 @@ class TileArea {
     private $handTileSortedList;
     private $discardedTileList;
     private $declaredMeldList;
-    private $reachTurn;
+    private $reachGlobalTurn;
 
     function __construct() {
         $this->handTileSortedList = TileSortedList::fromString('');
         $this->discardedTileList = TileList::fromString('');
         $this->declaredMeldList = MeldList::fromString('');
-        $this->reachTurn = false;
+        $this->reachGlobalTurn = false;
     }
 
     function reset() {
         $this->handTileSortedList->setInnerArray([]);
         $this->discardedTileList->reset();
         $this->declaredMeldList->setInnerArray([]);
-        $this->reachTurn = false;
+        $this->reachGlobalTurn = false;
     }
 
     /**
@@ -60,26 +60,26 @@ class TileArea {
     }
 
     function isReach() {
-        return $this->reachTurn !== false;
+        return $this->reachGlobalTurn !== false;
     }
 
-    function getReachTurn() {
+    function getReachGlobalTurn() {
         if (!$this->isReach()) {
             throw new \LogicException();
         }
-        return $this->reachTurn;
+        return $this->reachGlobalTurn;
     }
 
     function isDoubleReach() {
-        return $this->isReach() && $this->getReachTurn() == 1;
+        return $this->isReach() && $this->getReachGlobalTurn() == 1;
     }
 
-    function reach(Tile $selfTile, $reachTurn) {
+    function reach(Tile $selfTile, $reachGlobalTurn) {
         if ($this->isReach()) {
             throw new \InvalidArgumentException();
         }
         $this->discard($selfTile);
-        $this->reachTurn = $reachTurn;
+        $this->reachGlobalTurn = $reachGlobalTurn;
     }
 
     /**

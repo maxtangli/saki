@@ -11,8 +11,8 @@ use Saki\Win\Yaku\AbstractValueTilesYaku;
  */
 class RedValueTilesYaku extends AbstractValueTilesYaku
 {
-    function isValueTile(Tile $tile, WinSubTarget $subTarget)
+    function getValueTile(WinSubTarget $subTarget)
     {
-        return $tile == Tile::fromString('C');
+        return Tile::fromString('C');
     }
 }

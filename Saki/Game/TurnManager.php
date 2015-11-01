@@ -120,6 +120,12 @@ class TurnManager {
         return $this->selfWindToPlayer($wind);
     }
 
+    function getRoundTurn() {
+        $globalTurn = $this->playerWindRoller->getGlobalTurn();
+        $wind = $this->playerWindRoller->getCurrentTarget();
+        return new RoundTurn($globalTurn, $wind);
+    }
+
     /**
      * @param $offset
      * @param Player $basePlayer

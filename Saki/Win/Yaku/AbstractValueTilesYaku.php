@@ -19,13 +19,12 @@ abstract class AbstractValueTilesYaku extends Yaku {
     }
 
     protected function matchOtherConditions(WinSubTarget $subTarget) {
-        $meldList = $subTarget->getAllMeldList()->toFilteredMeldList(function (Meld $meld) {
-            return $meld->isTripleOrQuad();
-        });
-        return $meldList->any(function (Meld $meld) use ($subTarget) {
-            return $this->isValueTile($meld[0], $subTarget);
-        });
+        return $subTarget->getAllMeldList()->isValueTiles($this->getValueTile($subTarget));
     }
 
-    abstract function isValueTile(Tile $tile, WinSubTarget $subTarget);
+    /**
+     * @param WinSubTarget $subTarget
+     * @return Tile
+     */
+    abstract function getValueTile(WinSubTarget $subTarget);
 }

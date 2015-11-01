@@ -1,14 +1,16 @@
 <?php
 
 use Saki\Game\MockRound;
-use Saki\Meld\Meld;
+use Saki\Game\RoundPhase;
 use Saki\Meld\MeldList;
 use Saki\Tile\Tile;
+use Saki\Tile\TileList;
 use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\Fan1\AllRunsYaku;
 use Saki\Win\Yaku\Fan1\AllSimplesYaku;
 use Saki\Win\Yaku\Fan1\ConcealedSelfDrawYaku;
 use Saki\Win\Yaku\Fan1\DoubleRunYaku;
+use Saki\Win\Yaku\Fan1\FirstTurnWinYaku;
 use Saki\Win\Yaku\Fan1\GreenValueTilesYaku;
 use Saki\Win\Yaku\Fan1\ReachYaku;
 use Saki\Win\Yaku\Fan1\RedValueTilesYaku;
@@ -17,6 +19,7 @@ use Saki\Win\Yaku\Fan1\SelfWindValueTilesYaku;
 use Saki\Win\Yaku\Fan1\WhiteValueTilesYaku;
 use Saki\Win\Yaku\Fan2\AllTerminalsAndHonorsYaku;
 use Saki\Win\Yaku\Fan2\AllTriplesYaku;
+use Saki\Win\Yaku\Fan2\DoubleReachYaku;
 use Saki\Win\Yaku\Fan2\FullStraightYaku;
 use Saki\Win\Yaku\Fan2\LittleThreeDragonsYaku;
 use Saki\Win\Yaku\Fan2\MixedOutsideHandYaku;
@@ -40,7 +43,7 @@ use Saki\Win\Yaku\Yakuman\FourQuadsYaku;
 use Saki\Win\Yaku\Yakuman\SmallFourWindsYaku;
 use Saki\Win\Yaku\Yakuman2\FourConcealedTriplesOnePairWaitingYaku;
 
-class YakuTest extends PHPUnit_Framework_TestCase {
+class YakuTest extends \PHPUnit_Framework_TestCase {
     static function assertYakuExist($expected, YakuTestData $yakuTestData, Yaku $yaku) {
         $subTarget = $yakuTestData->toWinSubTarget();
         self::assertEquals($expected, $yaku->existIn($subTarget), sprintf('%s, %s', $yakuTestData, $yaku));
@@ -91,6 +94,16 @@ class YakuTest extends PHPUnit_Framework_TestCase {
             [new YakuTestData('123m,123m,123m,123m,EE', null, 'E'), TwoDoubleRunYaku::getInstance(), false],
             // not isConcealed
             [new YakuTestData('123m,123m,EE', '123s,123s', 'E'), TwoDoubleRunYaku::getInstance(), false],
+
+            // test FirstTurnWinYaku
+            // todo true
+
+            // not reach
+            [new YakuTestData('123m,456m,789m,123s,55s'), FirstTurnWinYaku::getInstance(), false],
+            // not sameOrNext turn
+            // todo
+            // not without-declare
+            // todo
 
             // todo test Reach
             // todo test DoubleReach
@@ -341,6 +354,83 @@ class YakuTest extends PHPUnit_Framework_TestCase {
                 [new YakuTestData('111s,222s,333s,456s,55s', null, '5s'), FourConcealedTriplesOnePairWaitingYaku::getInstance(), false],
             ];
         }
+    }
+
+    // todo simplify testReach
+
+    function testReach() {
+        $r = new MockRound();
+
+        // pass first round
+        $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('E'));
+        $r->passPublicPhase();
+
+        $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('E'));
+        $r->passPublicPhase();
+
+        $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('E'));
+        $r->passPublicPhase();
+        $this->assertEquals(RoundPhase::PRIVATE_PHASE, $r->getRoundPhase()->getValue());
+
+        $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('N'));
+        $r->passPublicPhase();
+        $this->assertEquals(RoundPhase::PRIVATE_PHASE, $r->getRoundPhase()->getValue(), $r->getRoundData()->getTurnManager()->getGlobalTurn());
+
+        // E reach
+        $r->debugReachByReplace($r->getCurrentPlayer(), Tile::fromString('E'), TileList::fromString('123456789s2355mE'));
+        $r->passPublicPhase();
+
+        // W discard, E may win
+        $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('1m'));
+
+        $yakuList = $r->getWinResult($r->getPlayerList()[0])->getYakuList();
+
+        $this->assertGreaterThan(0, $yakuList->count());
+        $this->assertContains(ReachYaku::getInstance(), $yakuList, $yakuList);
+    }
+
+    function testDoubleReach() {
+        $r = new MockRound();
+        // E double reach
+        $r->debugReachByReplace($r->getCurrentPlayer(), Tile::fromString('E'), TileList::fromString('123456789s2355mE'));
+        $r->passPublicPhase();
+
+        // W discard, E may win
+        $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('1m'));
+
+        $yakuList = $r->getWinResult($r->getPlayerList()[0])->getYakuList();
+
+        $this->assertGreaterThan(0, $yakuList->count());
+        $this->assertNotContains(ReachYaku::getInstance(), $yakuList, $yakuList);
+        $this->assertContains(DoubleReachYaku::getInstance(), $yakuList, $yakuList);
+    }
+
+    function testFirstTurnWin() {
+        $r = new MockRound();
+
+        $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('E'));
+        $r->passPublicPhase();
+
+        // S double Reach
+        $r->debugReachByReplace($r->getCurrentPlayer(), Tile::fromString('S'), TileList::fromString('123456789s2355mS'));
+        $r->passPublicPhase();
+
+        // pass
+        $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('E'));
+        $r->passPublicPhase();
+
+        $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('E'));
+        $r->passPublicPhase();
+
+        $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('E'));
+        $r->debugSetWallPopTile(Tile::fromString('1m'));
+        $r->passPublicPhase();
+        $this->assertEquals(Tile::fromString('1m'), $r->getRoundData()->getTileAreas()->getTargetTile());
+
+        // S winBySelf FirstTurnWin
+        $yakuList = $r->getWinResult($r->getCurrentPlayer())->getYakuList();
+        $this->assertGreaterThan(0, $yakuList->count());
+        $this->assertContains(FirstTurnWinYaku::getInstance(), $yakuList, $yakuList);
     }
 }
 

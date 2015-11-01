@@ -34,7 +34,7 @@ rush 1 reset pj 1h
 rush 2 judge pinfu 5h
 
 - [x] MeldTypes
-- [x] new a TileSequence 
+- [x] new a TileSequence
 - [x] Hand.getMeldCompositions()
 - [x] refactor ArrayLikeObject
 
@@ -262,7 +262,7 @@ rush 26 all yaku: simple ones 12.6h
 - [x] test fan1 yakus 1h
 - [x] test fan2 yakus 1.3h
 - [x] bug: Meld.isXXXWinSet() 0.4h
-- [x] bug: FullStraight 1h // Meld.equals issues; forget to write return for 
+- [x] bug: FullStraight 1h // Meld.equals issues; forget to write return for
 - [x] test fan3,fan6 yakus 0.2h
 - [x] test yakuman/yakuman2 yakus 0.3h
 
@@ -277,7 +277,7 @@ rush 27 refactor: concealed 1.7h
 - [x] YakuAnalyzer
 - [x] grep exposed
 
-rush 28 refactor for beauty
+rush 28 refactor for beauty 5.9h
 
 - [x] refactor: move Round.roundResult into RoundData 0.2h
 - [x] refactor: organize WinTarget 0.2h
@@ -290,14 +290,51 @@ rush 28 refactor for beauty
 - [x] refactor: move RoundData.$playerList's rolling role into $turnManager 1.2h
 
 - [x] refactor: move TileArea.init() into TileAreas 0.3h
-- [ ] refactor: for ArrayLikeObject: test more, add writable, refactor valueToIndex 0.9h
-- [ ] refactor: RoundTest
+- [x] refactor: for ArrayLikeObject: test more, add writable, refactor valueToIndex series 1.4h
+
+rush 29 all yaku: reach concerned 2.7h
+
+- [x] refactor: AbstractValueTilesYaku 0.2h
+- [x] DeclareHistory 0.3h
+- [x] RoundTurn 0.4h
+- [x] YakuSet 0.6h // batch is not necessary and too much labour here
+- [x] test reach, doubleReach 0.4h
+- [x] bug: wrongly turn into over phase after pass N's public phase 0.1h // It's not a bug but test case results in FourWindDraw!
+- [x] FirstTurnWinYaku 0.5h
+- [x] test FirstTurnWinYaku 0.2h // wrongly written pastTurn <= 0, should be pastTurn < = 1
+
+rush 30 all yaku: FinalTileWin
+
+- [ ] FinalTileWinFishYaku
+- [ ] FinalTileWinMoonYaku
+
+rush 31 all yaku: HeavenlyWin, EarthlyWin, HumanlyWin
+
+- [ ] HeavenlyWin
+- [ ] EarthlyWin
+- [ ] HumanlyWin
+
+rush all yaku: kong concerned
+
+- [ ] KingTileWinYaku
+- [ ] RobbingAQuadYaku
+
+rush all yaku
+
+rush refactor
+
+- [ ] refactor: introduce RoundTurn 0.2h // not sure it's necessary
 - [ ] refactor: move MockRound/YakuTestData methods into RoundData members
+- [ ] refactor: TileSeries <-> MeldList.xxx
+- [ ] refactor: RoundTest
+- [ ] refactor: RoundResult
+- [ ] refactor: move DrawScore logic into separate class
 
 rush rule.md doc
 
+- [ ] rule 0.6h
 - [ ] tile 0.6h
-- [ ] yaku 0.7h
+- [ ] yaku 1.1h
 
 rush dora yaku
 
@@ -311,13 +348,8 @@ rush red dora
 - [x] Tile.getInstance() 0.3h
 - [x] Tile.isRed() 0.2h
 - [x] Tile.getID() 0.3h
+- [ ] toString issues
 - [ ] adapt discard/createMeld logic
-
-rush all yaku: complicated ones
-
-- [ ] FirstTurnWinYaku
-- [ ] refactor: TileSeries <-> MeldList.xxx
-- [ ] refactor: SubTurn
 
 rush optimize to speed up tests
 
@@ -326,6 +358,8 @@ rush optimize to speed up tests
 - [ ] refactor: speed up slow tests
 - [x] bug: Timer not accurate since echo()'s timecost
 - [ ] refactor: organize test sets
+- [ ] optimize: WaitingAnalyzer.analyzePrivatePhaseWaitingTiles // 500ms -> ?
+
 - [ ] optimize: RoundTest
 - [ ] optimize: RoundDrawTest
 - [ ] optimize: WinAnalyzerTest
@@ -334,12 +368,6 @@ rush command system
 
 - [ ] command 0.2h
 - [ ] public command roller
-
-rush refactor
-
-- [ ] refactor: RoundResult
-- [ ] refactor: getWaitingTiles to return TileSortedList 
-- [ ] refactor: move DrawScore logic into separate class
 
 # command system
 

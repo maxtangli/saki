@@ -35,24 +35,25 @@ class RoundDrawTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(RoundResultType::FOUR_WIND_DRAW, $r->getRoundData()->getTurnManager()->getRoundResult()->getRoundResultType()->getValue());
     }
 
-    function testFourReachDraw() {
-        $r = new MockRound();
-        $tileList = TileList::fromString('123456789m12355s');
-        $tile = Tile::fromString('1s');
-
-        $r->debugReachByReplace($r->getCurrentPlayer(), $tile, $tileList);
-        $r->passPublicPhase();
-
-        $r->debugReachByReplace($r->getCurrentPlayer(), $tile, $tileList);
-        $r->passPublicPhase();
-
-        $r->debugReachByReplace($r->getCurrentPlayer(), $tile, $tileList);
-        $r->passPublicPhase();
-
-        $r->debugReachByReplace($r->getCurrentPlayer(), $tile, $tileList);
-        $r->passPublicPhase();
-        $this->assertEquals(RoundResultType::FOUR_REACH_DRAW, $r->getRoundData()->getTurnManager()->getRoundResult()->getRoundResultType()->getValue());
-    }
+//    function testFourReachDraw() { // 2.29s
+//        $r = new MockRound();
+//        $tileList = TileList::fromString('123456789m12355s');
+//        $tile = Tile::fromString('1s');
+//
+//        $r->debugReachByReplace($r->getCurrentPlayer(), $tile, $tileList); // 500ms
+//        $r->passPublicPhase();
+//
+//        $r->debugReachByReplace($r->getCurrentPlayer(), $tile, $tileList);
+//        $r->passPublicPhase();
+//
+//        $r->debugReachByReplace($r->getCurrentPlayer(), $tile, $tileList);
+//        $r->passPublicPhase();
+//
+//        $r->debugReachByReplace($r->getCurrentPlayer(), $tile, $tileList);
+//        $r->passPublicPhase();
+//
+//        $this->assertEquals(RoundResultType::FOUR_REACH_DRAW, $r->getRoundData()->getTurnManager()->getRoundResult()->getRoundResultType()->getValue());
+//    }
 
     function testFourKongDraw() { // todo handle kongPublicPhase
         $r = new MockRound();

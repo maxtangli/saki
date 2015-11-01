@@ -5,6 +5,7 @@ use Saki\FinalScore\MoundFinalScoreStrategy;
 use Saki\FinalScore\RankingHorseType;
 use Saki\Tile\TileSet;
 use Saki\FinalScore\CompositeFinalScoreStrategy;
+use Saki\Win\Yaku\YakuSet;
 
 /**
  * Holds immutable data during a game.
@@ -16,6 +17,7 @@ class GameData {
     private $initialScore;
     private $finalScoreStrategy;
     private $tileSet;
+    private $yakuSet;
 
     /**
      * default: 4 player, east game, 25000-30000 initial score,
@@ -29,6 +31,7 @@ class GameData {
             new MoundFinalScoreStrategy(25000, 30000),
         ]);
         $this->tileSet = TileSet::getStandardTileSet();
+        $this->yakuSet = YakuSet::getStandardYakuSet();
     }
 
     function getPlayerCount() {
@@ -49,5 +52,9 @@ class GameData {
 
     function getTileSet() {
         return $this->tileSet;
+    }
+
+    function getYakuSet() {
+        return $this->yakuSet;
     }
 }

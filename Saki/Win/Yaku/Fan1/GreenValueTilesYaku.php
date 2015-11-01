@@ -10,7 +10,7 @@ use Saki\Win\Yaku\AbstractValueTilesYaku;
  * @package Saki\Win\Yaku\Fan1
  */
 class GreenValueTilesYaku extends AbstractValueTilesYaku {
-    function isValueTile(Tile $tile, WinSubTarget $subTarget) {
-        return $tile == Tile::fromString('F');
+    function getValueTile(WinSubTarget $subTarget) {
+        return Tile::fromString('F');
     }
 }

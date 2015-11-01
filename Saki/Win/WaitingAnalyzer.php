@@ -19,7 +19,7 @@ class WaitingAnalyzer {
     }
 
     /**
-     * usage: ableReach.
+     * use case: ableReach.
      * @param TileSortedList $handTileList 18-tiles-style target.
      * @param MeldList $declaredMeldList
      * @return FutureWaitingList
@@ -48,7 +48,7 @@ class WaitingAnalyzer {
     }
 
     /**
-     * usage: exhaustiveDraw, furiten.
+     * use case: exhaustiveDraw, furiten.
      * @param TileSortedList $handTileList 17-like tile list
      * @param MeldList $declaredMeldList
      * @return TileSortedList unique waiting tile list

@@ -11,20 +11,17 @@ use Saki\RoundResult\RoundResultType;
 use Saki\RoundResult\WinRoundResult;
 use Saki\Tile\Tile;
 use Saki\Util\ArrayLikeObject;
-use Saki\Util\Timer;
-use Saki\Win\WaitingAnalyzer;
 use Saki\Win\WinAnalyzer;
 use Saki\Win\WinTarget;
 
 class Round {
     private $roundData;
     private $winAnalyzer;
-    private $waitingAnalyzer;
 
     function __construct(RoundData $roundData = null) {
-        $this->roundData = $roundData ?: new RoundData();
-        $this->winAnalyzer = new WinAnalyzer();
-        $this->waitingAnalyzer = new WaitingAnalyzer();
+        $actualRoundData = $roundData ?: new RoundData();
+        $this->roundData = $actualRoundData;
+        $this->winAnalyzer = new WinAnalyzer($actualRoundData->getGameData()->getYakuSet());
         $this->toInitPhase();
     }
 
@@ -63,10 +60,6 @@ class Round {
     function getWinResult(Player $player) {
         // WinTarget will assert valid player
         return $this->getWinAnalyzer()->analyzeTarget(new WinTarget($player, $this->getRoundData()));
-    }
-
-    function getWaitingAnalyzer() {
-        return $this->waitingAnalyzer;
     }
 
     protected function toInitPhase() {
@@ -174,7 +167,7 @@ class Round {
         $this->assertPrivatePhase($player);
 
         // assert waiting after discard
-        $analyzer = $this->getWaitingAnalyzer();
+        $analyzer = $this->getWinAnalyzer()->getWaitingAnalyzer();
         $handList = $player->getTileArea()->getHandTileSortedList();
         $futureWaitingList = $analyzer->analyzePrivatePhaseFutureWaitingList($handList, $player->getTileArea()->getDeclaredMeldList());
         $isWaiting = $futureWaitingList->count() > 0;
@@ -229,7 +222,7 @@ class Round {
 
         $currentTurn = $this->getRoundData()->getTurnManager()->getGlobalTurn();
         $isFirstTurn = $currentTurn == 1;
-        $noDeclaredActions = !$this->getRoundData()->getTileAreas()->getDeclareHistory()->hasDeclare($currentTurn);
+        $noDeclaredActions = !$this->getRoundData()->getTileAreas()->getDeclareHistory()->hasDeclare($currentTurn, Tile::fromString('E'));
         $validTileList = $player->getTileArea()->getHandTileSortedList()->isNineKindsOfTerminalOrHonor();
 
         $valid = $isFirstTurn && $noDeclaredActions && $validTileList;
@@ -265,12 +258,12 @@ class Round {
         $isExhaustiveDraw = $this->getRoundData()->getTileAreas()->getWall()->getRemainTileCount() == 0;
         if ($isExhaustiveDraw) {
             $players = $this->getPlayerList()->toArray();
-            $analyzer = $this->getWaitingAnalyzer();
+            $waitingAnalyzer = $this->getWinAnalyzer()->getWaitingAnalyzer();
             $roundData = $this->getRoundData();
-            $isWaitingStates = array_map(function (Player $player) use ($analyzer, $roundData) {
+            $isWaitingStates = array_map(function (Player $player) use ($waitingAnalyzer, $roundData) {
                 $handTileList = $player->getTileArea()->getHandTileSortedList();
                 $declaredMeldList = $player->getTileArea()->getDeclaredMeldList();
-                $waitingTileList = $analyzer->analyzePublicPhaseHandWaitingTileList($handTileList, $declaredMeldList);
+                $waitingTileList = $waitingAnalyzer->analyzePublicPhaseHandWaitingTileList($handTileList, $declaredMeldList);
                 $isWaiting = $waitingTileList->count() > 0;
                 return $isWaiting;
             }, $players);
@@ -397,89 +390,3 @@ class Round {
         }
     }
 }
-
-//
-//class CommandProcessor {
-//
-//    private $publicPhaseCommandPoller;
-//
-//    function toPublicPhase() {
-//        $this->getPublicPhaseCommandPoller()->reset($this->getCandidateCommands());
-//        $this->wonderIfPollerDecided();
-//    }
-//
-//    protected function getPublicPhaseCommandPoller() {
-//        if ($this->publicPhaseCommandPoller === null) {
-//            $this->publicPhaseCommandPoller = new PublicPhaseCommandPoller([]);
-//        }
-//        return $this->publicPhaseCommandPoller;
-//    }
-//
-//    protected function wonderIfPollerDecided() {
-//        $poller = $this->getPublicPhaseCommandPoller();;
-//        if ($poller->decided()) {
-//            $todoCommands = $poller->getDecidedCommands();
-//            if (!empty($todoCommands)) {
-//                foreach ($todoCommands as $todoCommand) {
-//                    $todoCommand->execute();
-//                }
-//            } else { // no decided commands
-//                $this->toPrivatePhase($this->getNextPlayer(), true);
-//            }
-//        } else { // candidate commands exist
-//            // waiting commands decided
-//        }
-//    }
-//
-//    function acceptCommand(Command $command) {
-//        switch ($this->getRoundPhase()->getValue()) {
-//            case RoundPhase::PRIVATE_PHASE:
-//                $command->execute();
-//                break;
-//            case RoundPhase::PUBLIC_PHASE:
-//                $this->getPublicPhaseCommandPoller()->acceptCommand($command);
-//                $this->wonderIfPollerDecided();
-//                break;
-//            default:
-//                throw new \LogicException();
-//        }
-//    }
-//
-//    /**
-//     * @return Command[]
-//     */
-//    function getCandidateCommands() {
-//        $candidateCommands = [];
-//
-//        switch ($this->getRoundPhase()->getValue()) {
-//            case RoundPhase::PRIVATE_PHASE:
-//                $currentPlayer = $this->getCurrentPlayer();
-//                $currentPlayerArea = $this->getTileArea($currentPlayer);
-//                foreach ($currentPlayerArea->getOnHandTileSortedList() as $onHandTile) {
-//                    $candidateCommands[] = new DiscardCommand($this, $currentPlayer, $onHandTile);
-//                }
-//                if ($currentPlayerArea->hasCandidateTile()) {
-//                    $candidateCommands[] = new DiscardCommand($this, $currentPlayer, $currentPlayerArea->getPrivateTargetTile());
-//                }
-//                $candidateCommands = array_unique($candidateCommands);
-//                break;
-//            case RoundPhase::PUBLIC_PHASE:
-//                // nextPlayer chow
-//
-//                // non-currentPlayer pong/kang/ron
-//                break;
-//            case RoundPhase::OVER_PHASE:
-//                break;
-//            default:
-//                throw new \LogicException();
-//        }
-//
-//        return $candidateCommands;
-//    }
-//
-//    function getCandidateCommand(Player $player) {
-//        return array_values(array_filter($this->getCandidateCommands(), function (Command $v) use ($player) {
-//            return $v->getPlayer() == $player;
-//        }));
-//    }
-//}

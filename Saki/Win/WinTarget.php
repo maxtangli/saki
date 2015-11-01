@@ -109,8 +109,12 @@ class WinTarget {
         return $this->player->getTileArea()->isDoubleReach();
     }
 
+    function isFirstTurnWin() {
+        return $this->roundData->getTileAreas()->isFirstTurnWin($this->player);
+    }
+
     function getReachTurn() {
-        return $this->player->getTileArea()->getReachTurn();
+        return $this->player->getTileArea()->getReachGlobalTurn();
     }
 
     function getSelfWind() {

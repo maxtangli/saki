@@ -3,6 +3,7 @@
 namespace Saki\Tile;
 
 use Saki\Util\ArrayLikeObject;
+use Saki\Util\Utils;
 
 class Tile {
     const REGEX_SUIT_NUMBER = '[1-9]';
@@ -193,5 +194,17 @@ class Tile {
         $a = new ArrayLikeObject($a);
         $next = $a->getNext($this, $offset);
         return $next;
+    }
+
+    function getWindOffset(Tile $other) {
+        $valid = $this->isWind() && $other->isWind();
+        if (!$valid) {
+            throw new \InvalidArgumentException();
+        }
+
+        $windArray = new ArrayLikeObject(Tile::getWindTiles());
+        $iThis = $windArray->valueToIndex($this);
+        $iOther = $windArray->valueToIndex($other);
+        return $iThis - $iOther;
     }
 }

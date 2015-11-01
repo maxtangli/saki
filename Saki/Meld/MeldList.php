@@ -79,7 +79,7 @@ class MeldList extends ArrayLikeObject {
     }
 
     function isConcealed() {
-        return $this->all(function(Meld $meld) {
+        return $this->all(function (Meld $meld) {
             return $meld->isConcealed();
         });
     }
@@ -175,7 +175,7 @@ class MeldList extends ArrayLikeObject {
         $tripleOrQuadList = $this->toFilteredTypesMeldList([TripleMeldType::getInstance(), QuadMeldType::getInstance()]);
 
         $map = []; // [1 => ['s' => 's'] ...]
-        foreach($tripleOrQuadList as $tripleOrQuad) {
+        foreach ($tripleOrQuadList as $tripleOrQuad) {
             $tile = $tripleOrQuad[0];
             $map[$tile->getNumber()][$tile->getTileType()->__toString()] = true;
             if (count($map[$tile->getNumber()]) == 3) {
@@ -200,6 +200,23 @@ class MeldList extends ArrayLikeObject {
     }
 
     // yaku: triple/quad concerned
+
+    function isValueTiles(Tile $valueTile) {
+        $this->assertCompleteCount();
+        $tripleOrQuadList = $this->toFilteredTypesMeldList([TripleMeldType::getInstance(), QuadMeldType::getInstance()]);
+        return $tripleOrQuadList->any(function (Meld $tripleOrQuad) use ($valueTile) {
+            return $tripleOrQuad[0] == $valueTile;
+        });
+    }
+
+    function isPeace() {
+        $this->assertCompleteCount();
+        // all suits
+        // 4 runs
+        // 1 pair
+        // (outside check) concealed
+        // (outside check) 2-side-waiting
+    }
 
     function isThreeConcealedTripleOrQuads() {
         $this->assertCompleteCount();

@@ -215,6 +215,7 @@ class RoundTest extends PHPUnit_Framework_TestCase {
     }
 
     function testGameOver() {
+        // to E Round N Dealer
         $rd = new \Saki\Game\RoundData();
         $rd->reset(false);
         $rd->reset(false);
@@ -223,13 +224,16 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         $this->assertSame($rd, $r->getRoundData());
         $this->assertFalse($r->isGameOver());
 
+        // E Player winBySelf, but score not over 30000
         $r->getCurrentPlayer()->getTileArea()->getHandTileSortedList()->setInnerArray(
             \Saki\Tile\TileList::fromString('123m456m789m123s55s')->toArray()
         );
-        $r->getRoundData()->getTileAreas()->setTargetTile(Tile::fromString('1m'));//$r->getCurrentPlayer()->getTileArea()->setPrivateTargetTile(Tile::fromString('1m'));
+        $r->getRoundData()->getTileAreas()->setTargetTile(Tile::fromString('2m'));
         $r->winBySelf($r->getCurrentPlayer());
-
+        $r->getCurrentPlayer()->setScore('25000');
         $this->assertFalse($r->isGameOver());
+
+        // score over 30000
         $dealerPlayer = $r->getRoundData()->getPlayerList()->getDealerPlayer();
         $dealerPlayer->setScore('29999');
         $this->assertFalse($r->isGameOver());

@@ -11,8 +11,8 @@ use Saki\Win\Yaku\AbstractValueTilesYaku;
  */
 class RoundWindValueTilesYaku extends AbstractValueTilesYaku
 {
-    function isValueTile(Tile $tile, WinSubTarget $subTarget)
+    function getValueTile(WinSubTarget $subTarget)
     {
-        return $tile == $subTarget->getRoundWind();
+        return $subTarget->getRoundWind();
     }
 }

@@ -23,7 +23,7 @@ class RoundData {
         $this->turnManager = new TurnManager($this->playerList);
         $wall = new Wall($gameData->getTileSet());
         $this->tileAreas = new TileAreas($wall, $this->playerList, function () {
-            return $this->turnManager->getGlobalTurn();
+            return $this->turnManager->getRoundTurn();
         });
     }
 

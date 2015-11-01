@@ -1,7 +1,7 @@
 <?php
 namespace Saki\Game;
+
 use Saki\Tile\Tile;
-use Saki\Util\Utils;
 
 /**
  * Implementation class
@@ -11,7 +11,7 @@ class DiscardHistoryItem {
     private $selfWind;
     private $discardedTile;
 
-    public function __construct($globalTurn, Tile $selfWind, Tile $discardedTile) {
+    function __construct($globalTurn, Tile $selfWind, Tile $discardedTile) {
         if (!($globalTurn >= 1)) {
             throw new \InvalidArgumentException(
                 sprintf('$globalTurn[%s] should >= 1.', $globalTurn)
@@ -50,10 +50,9 @@ class DiscardHistoryItem {
         }
 
         if ($this->getGlobalTurn() == $priorItem->getGlobalTurn()) {
-            $selfWindComparator = Utils::getComparatorByBestArray(Tile::getWindTiles());
-            $compareResult = $selfWindComparator($this->getSelfWind(), $priorItem->getSelfWind());
-            $isLaterWind = $compareResult < 0;
-            $isSameWind = $compareResult == 0;
+            $windOffset = $this->getSelfWind()->getWindOffset($priorItem->getSelfWind());
+            $isLaterWind = $windOffset > 0;
+            $isSameWind = $windOffset == 0;
             if ($isLaterWind || $allowSameTurnAndSelfWind && $isSameWind) {
                 return true;
             }

@@ -11,8 +11,8 @@ use Saki\Win\Yaku\AbstractValueTilesYaku;
  */
 class SelfWindValueTilesYaku extends AbstractValueTilesYaku
 {
-    function isValueTile(Tile $tile, WinSubTarget $subTarget)
+    function getValueTile(WinSubTarget $subTarget)
     {
-        return $tile == $subTarget->getSelfWind();
+        return $subTarget->getSelfWind();
     }
 }

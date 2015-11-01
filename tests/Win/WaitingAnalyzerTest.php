@@ -3,6 +3,7 @@
 use Saki\Game\MockRound;
 use Saki\Game\RoundPhase;
 use Saki\Tile\Tile;
+use Saki\Win\Yaku\YakuSet;
 
 class WaitingAnalyzerTest extends \PHPUnit_Framework_TestCase {
 
@@ -58,7 +59,7 @@ class WaitingAnalyzerTest extends \PHPUnit_Framework_TestCase {
      * @dataProvider privateDataProvider
      */
     function testPrivateData($onHandTileListString, $declaredMeldListString, $expected) {
-        $winAnalyzer = new \Saki\Win\WinAnalyzer();
+        $winAnalyzer = new \Saki\Win\WinAnalyzer(YakuSet::getStandardYakuSet());
         $waitingTileAnalyzer = new \Saki\Win\WaitingAnalyzer($winAnalyzer);
         $handTileList = \Saki\Tile\TileSortedList::fromString($onHandTileListString);
         $declaredMeldList = \Saki\Meld\MeldList::fromString($declaredMeldListString);
