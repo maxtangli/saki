@@ -4,7 +4,7 @@ A japanese-mahjong server.
 
 ## good practice
 
-- Agile, TDD, KISS, bad-design WINs over-design
+- agile = tdd + kiss + refactor
 
 ## todo
 
@@ -305,8 +305,9 @@ rush 29 all yaku: reach concerned 2.8h
 
 rush all yaku: kong concerned
 
+- [ ] organize doc 0.2h
 - [ ] refactor: RoundState
-- [ ] refactor: introduce RoundTurn 0.2h // not sure it's necessary
+- [ ] refactor: introduce RoundTurn 0.2h // not sure whether necessary or not
 
 - [ ] research 0.4h
 - [ ] Kong Public Phase
@@ -315,12 +316,14 @@ rush all yaku: kong concerned
 
 rush 31 all yaku: HeavenlyWin, EarthlyWin, HumanlyWin
 
-- [ ] FinalTileWin Fish/Moon 0.1h 
+- [ ] fix FinalTileWin Fish/Moon 0.1h 
 - [ ] HeavenlyWin
 - [ ] EarthlyWin
 - [ ] HumanlyWin
 
-rush all yaku
+rush all yaku: thirteen orphans
+
+- [ ] thirteen orphan meld
 
 rush command system
 
@@ -369,6 +372,13 @@ rush optimize to speed up tests
 - [ ] optimize: RoundDrawTest
 - [ ] optimize: WinAnalyzerTest
 
+# round state class
+
+responsibility
+
+- support command by call $this->($commandName)($command.getParams())
+- store state-specific fields such as RoundResult
+
 # command system
 
 client send command string
@@ -380,232 +390,6 @@ save commands as list
 
 replay
 initialState, command strings(notice NO random allowed)
-
-# furiten, turn
-
-furiten/one-turn-win: all other player's discarded tiles after self player xx's turn xx (reach turn or one ago turn)
-furiten/display: all self's discarded tiles after turn xx
-
-PlayerArea:  discardTileList -> array(turn->discardedTiles)
-
-## note: turn count
-
-1巡目東・親→南→西→北
-2巡目東・親→南（捨てた牌を親がポン）した時、2巡目西家・北家は、飛ばして、
-3巡目東・親→南→西→北・・・・・・となるのでしょうか？
-
-## note: discarded false waiting
-
-waitingTiles:
- hand = hand without winTile = 17 tiles
- 
-## note: waitingTiles
-
-18 tiles, tileSeries N, waitingTiles = merge (remove one tile -> 17 case)
-18 tiles, tileSeries Y, waitingTiles without winTile = remove winTile -> 17 case
-17 tiles, waitingTiles = algorithm(17 tiles)
-
-usage
-- reachable: 18 tiles, selfTile is in FutureWaitingList's discard
-- exhaustiveDraw: each player 17 tiles, isWaiting?
-- furiten: private 18-1 or public 17 tiles, is waitingTiles contains exclude tiles?
-
-## note: winAnalyzer
-
-FuCount：Meld，Pair，WaitingType，Exposed，isWinBySelf，specialYaku(喰い/ツモ平和，七対子)
-WinState：
-WaitingType：4+1牌型分别计算，七对子一定是单骑待，国士？用途：计算符数，役判定
-
-18 tiles isWaiting: for any discard tile ,the 17 tiles isWaiting
-17 tiles isWaiting: for any one coming tile, the 17+1 tiles 's winState.isTrueOrFalseWin() 
-
-## note: game over score
-
-順位ウマ 4位と3位の者から1位と2位の者に支払われる
-+20
-+10
--10
--20
-
-オカ トップ者が総取りする
-配給原点（はいきゅうげんてん） 半荘開始時の持ち点
-原点（げんてん） 半荘終了時の成績評価に使う
-
-25000 -> 31100 +1100 +1.1 +2 +20 = +22
-25000 -> 24400 -5600 -5.6 -6     = -6
-25000 -> 22300 -7700 -7.7 -8     = -8
-25000 -> 22200 -7800 -7.8 -8     = -8
-
-result tpl
-
-rank player finalScore scorePoint
-1st p1 31100 +42
-2nd p2 24400 +4
-3rd p3 22300 -18
-4th p4 22200 -28
-
-## note: overPhase
-
-types
-
-- exhaustive draw: each player isWaiting? scores delta depend on isWaiting.
-- winOnSelf: winPlayer, fuCount, fanCount, yakuList. scores depend on fu/fanCount + isDealer. 
-
-scores delta format? 
- 
-- show origin score& delta
-
-when to modify player scores?
-
-- toOverPhase(): modify scores, keep scoreDeltaInfo
-- view: show result type -> show result type concerned info -> show scoreDeltaInfo
-
-## note: to next round
-
-if game over
- show GameResult
-else nextDealer = $roundResult.getNextDealer
-return new Round($playerList, $nextDealer)
-
-game over: lastRound, nextDealer != dealer
-
-## note: GameResult
-
-1st p1 45000 +5000 etc-rank-concerned-info
-...
-...
-...
-
-## note: RoundResult
-
-roundWind roundWindTurn selfWindTurn
-(East) (4) (Round 2)
-
-no selfWind roundTurn score
-(p1) (South) (turn 10) (score 40000)
-...
-...
-...
-
-## note: result.tpl $roundResult (pass required info to decouple from Round)
-
-- winOnSelf
-
-p1 winOnSelf
-
-yaku1 1ban
-yaku2 1ban
-dora  2ban
-
-70fu 4ban +7700(total scoreDelta = baseScoreDelta + reachScoreDelta + dealerScoreDelta)
-
-p1 xxxx + 7700 -> xxxx
-p2 xxxx - xxxx -> xxxx
-p3 xxxx - xxxx -> xxxx
-p4 xxxx - xxxx -> xxxx
-
-next round = winnner is dealer ? winner : dealer's next
-
-- exhaustive draw
-
-p1 waiting
-p2 waiting
-p3 waiting
-p4 not waiting
-
-p1 xxxx + 7700 -> xxxx
-p2 xxxx - xxxx -> xxxx
-p3 xxxx - xxxx -> xxxx
-p4 xxxx - xxxx -> xxxx
-
-next round = dealer is waiting ?
-
-## note: Command
-
-Command
-
-- RoundCommand operates on round, Round do not know Concrete Command? thus adding new Command will be easy?
-- CommandAnalyzer list all possible commands with a given Round.
-
-Command serialize
-
-- toString discard p1 4p
-- fromString DiscardCommand $round $player $params
-
-## note: isWait
-
-after 1 tile discarded, for every player judge:
-
-    possibleTileList = onHand + candidate
-    possibleMeldList = analyzeMeld candidateTileList
-    yakuList = analyzeYaku possibleMeldList, exposedMeldList, discardedTileList, isLizhi, turn ...
-
-isWaitingHand? iterate all possible candidate tile -> winning tile
-TileSet.getUniqueTiles
-todo zhengting?
-
-    onHandMeldLists = MeldAnalyzer.analyze(onHandTileList)
-    totalMeldLists = onHandMeldLists merge declaredMeldLists
-
-foreach onHandMeldList
-analyze yakuList
-return yakulist.highest yaku ones
-
-## note: win state
-
-- not win tiles: win tiles not exist
-- discarded win tile: win tiles exist but pinfu discarded
-- no yaku: win tiles exist but yaku count = 0
-- win: win tiles exist and yaku count > 0
-
-## note: plus kong
-
-in private phase
-
-- plusKongBySelf: plus declared triple meld with 1 self tile. meld isExposed or isConcealed (keep).
-- kongBySelf: turn 4 self tile into a quad meld. meld isConcealed (new).
-
-in public phase
-
-- plusKongByOther: plus declared triple meld with 1 other tile. meld isExposed (force).
-- kongByOther: turn 3 self and 1 other tile into a quad meld. meld isExposed (new).
-
-## note: ArrayLikeObject
-
-main responsibility
-
-- support foreach/count/isset/get/(set)
-- encapsulate PHP array operations
-
-modify operations visibility
-
-- all: extends ArrayLikeAccessable
-- none: implement ArrayLikeReadable and delegate to ArrayLikeAccessable
-- some: implement ArrayLikeReadable and delegate to ArrayLikeAccessable
-
-common operations
-
-- create by v[] (constructor)
-
-- retrieve k/k[]->all exist?
-- retrieve k/k[]->v/v[] ($this[])
-- retrieve v/v[]->all exist?
-- retrieve v/v[]->k/k[]
-
-- update v/v[] at k/k[] -> newV/newV[] ($this[]=)
-- update all v[] -> new v[]
-
-- insert pos v/v[], rearrange key
-- insert unshift v/v[], rearrange key
-- insert push v/v[], rearrange key
-
-- delete k/k[] (unset($this[])) rearrange key
-- delete shift->v/v[]
-- delete pop->v/v[]
-
-support keep-sorted
-
-- modifiedHook()
 
 ## note: round logic
 
@@ -655,36 +439,3 @@ over phase
 - draw or win
 - calculate points and modify players' points
 - new next round
-
-## note: getMelds(draft)
-
-getMeldCompositions(tileList)
-
--idea: first tile should belong to one of the meld, otherwise empty result
--solution:
-
-> list all possible meld that contains first tile
-> foreach possibleMelds as firstMeld
->   reaminedTileList = tileList->remove($meld->toArray())
->   remainedMeldLists = getMeldCompositiosn(tileList)
->   if remainedMeldLlists not empty, merge firstMeld with remainedMeldLists
-
-list all possible meld that contains first tile
-
-getMelds(TileList, MeldType)
-
-- return getMeldsThatContainsFirstTile(TileList, MeldType) merge getMelds(TileList.remove(0), MeldType)
-
-getMeldsThatContainsFirstTile(TileList, MeldType)
-
-getMeldsThatContainsTile(TileList, MeldType, Tile)
-
-- sort+unique
-
-getCandidateMelds($tileList, $candidateTile, $meldTypes)
-
-simple soulution reuse getMeldCompositions:
-
-- add tile into newTileList and sort
-- getMeldLists
-- return meld in meldLists where meld contians candidateTile

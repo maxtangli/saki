@@ -10,6 +10,18 @@ use Saki\Meld\WeakPairMeldType;
 use Saki\Meld\WeakRunMeldType;
 use Saki\Tile\TileSortedList;
 
+/**
+ * cases
+ * - 18 tiles, tileSeries N, waitingTiles = merge (remove one tile -> 17 case)
+ * - 18 tiles, tileSeries Y, waitingTiles without winTile = remove winTile -> 17 case
+ * - 17 tiles, waitingTiles = algorithm(17 tiles)
+ *
+ * usage
+ * - reachable: 18 tiles, selfTile is in FutureWaitingList's discard
+ * - exhaustiveDraw: each player 17 tiles, isWaiting?
+ * - furiten: private 18-1 or public 17 tiles, is waitingTiles contains exclude tiles?
+ * @package Saki\Win
+ */
 class WaitingAnalyzer {
     private $meldCompositionsAnalyzer;
 

@@ -4,6 +4,12 @@ namespace Saki\Util;
 /**
  * Convenient base class for 0-begin-continuous-ascending-int-key-array like object.
  * Only optimized for less-than-200 elements case, which is the main case in pj saki.
+ *
+ * main responsibility
+ * - support foreach/count/isset/get/(set)
+ * - encapsulate PHP array operations and provide other convenient operations.
+ * - support readonly.
+ * - support onChange hook.
  * @package Saki\Util
  */
 class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
@@ -255,7 +261,7 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
     function valueToIndex($valueOrValues, $equals = null) {
         // prepare data
         $targets = [];
-        foreach(static::boxing($valueOrValues) as $iTarget => $value) {
+        foreach (static::boxing($valueOrValues) as $iTarget => $value) {
             $targets[$iTarget]['tobeFoundValue'] = $value;
             $targets[$iTarget]['foundIndex'] = false;
         }
@@ -263,7 +269,7 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         $actualEquals = $this->toEquals($equals);
 
         // loop to find
-        foreach($this->innerArray as $i => $v) {
+        foreach ($this->innerArray as $i => $v) {
             // if this $v is not found target, record it
             foreach ($targets as $k => $target) {
                 $notFoundYet = $target['foundIndex'] === false;
