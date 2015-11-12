@@ -4,7 +4,6 @@ namespace Saki\Tile;
 use Saki\Util\Enum;
 
 class TileType extends Enum {
-
     const CHARACTER_M = 1;
     const DOT_P = 2;
     const BAMBOO_S = 3;
@@ -39,10 +38,26 @@ class TileType extends Enum {
     }
 
     static function getSuitTypes() {
-        return [
-            self::getInstance(self::BAMBOO_S), self::getInstance(self::CHARACTER_M), self::getInstance(self::DOT_P),
-        ];
+        return [self::getInstance(self::CHARACTER_M), self::getInstance(self::DOT_P), self::getInstance(self::BAMBOO_S)];
     }
+
+    function isSuit() {
+        return !$this->isHonor();
+    }
+
+    function isHonor() {
+        return $this->isWind() || $this->isDragon();
+    }
+
+    function isWind() {
+        return in_array($this->getValue(), [self::EAST_E, self::SOUTH_S, self::WEST_W, self::NORTH_N]);
+    }
+
+    function isDragon() {
+        return in_array($this->getValue(), [self::RED_C, self::WHITE_P, self::GREEN_F]);
+    }
+
+    // overrides return type
 
     /**
      * @param $value
@@ -58,54 +73,5 @@ class TileType extends Enum {
      */
     static function fromString($s) {
         return parent::fromString($s);
-    }
-
-    function isSuit() {
-        switch ($this->getValue()) {
-            case self::BAMBOO_S:
-            case self::CHARACTER_M:
-            case self::DOT_P;
-                return true;
-            default;
-                return false;
-        }
-    }
-
-    function isHonor() {
-        switch ($this->getValue()) {
-            case self::EAST_E:
-            case self::WEST_W:
-            case self::SOUTH_S;
-            case self::NORTH_N;
-            case self::RED_C;
-            case self::GREEN_F;
-            case self::WHITE_P;
-                return true;
-            default;
-                return false;
-        }
-    }
-
-    function isWind() {
-        switch ($this->getValue()) {
-            case self::EAST_E:
-            case self::WEST_W:
-            case self::SOUTH_S;
-            case self::NORTH_N;
-                return true;
-            default;
-                return false;
-        }
-    }
-
-    function isDragon() {
-        switch ($this->getValue()) {
-            case self::RED_C;
-            case self::GREEN_F;
-            case self::WHITE_P;
-                return true;
-            default;
-                return false;
-        }
     }
 }

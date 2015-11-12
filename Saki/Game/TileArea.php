@@ -13,19 +13,23 @@ use Saki\Tile\TileSortedList;
 
 class TileArea {
     private $handTileSortedList;
+    private $targetTile;
     private $discardedTileList;
     private $declaredMeldList;
     private $reachGlobalTurn;
 
     function __construct() {
         $this->handTileSortedList = TileSortedList::fromString('');
+        $this->targetTile = null;
         $this->discardedTileList = TileList::fromString('');
         $this->declaredMeldList = MeldList::fromString('');
         $this->reachGlobalTurn = false;
+
     }
 
     function reset() {
         $this->handTileSortedList->setInnerArray([]);
+        $this->targetTile = null;
         $this->discardedTileList->reset();
         $this->declaredMeldList->setInnerArray([]);
         $this->reachGlobalTurn = false;
@@ -36,6 +40,29 @@ class TileArea {
      */
     function getHandTileSortedList() {
         return $this->handTileSortedList;
+    }
+
+    function get13styleHandTileList() {
+        return new TileSortedList($this->handTileSortedList->toArray());
+    }
+
+    function get14styleHandTileList() {
+        if (!$this->handTileSortedList->isPrivateHandCount()) {
+            throw new \InvalidArgumentException();
+        }
+        return $this->handTileSortedList; // todo
+
+        $l = $this->get13styleHandTileList();
+        $l->push($this->getTargetTile());
+        return $l;
+    }
+
+    function getTargetTile() {
+        return $this->targetTile;
+    }
+
+    function setTargetTile($targetTile) {
+        $this->targetTile = $targetTile;
     }
 
     /**

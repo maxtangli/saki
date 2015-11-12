@@ -22,7 +22,8 @@ class MockRound extends Round {
     }
 
     function debugSetHandTileList(Player $player, TileList $replacedHandTileList) {
-        $player->getTileArea()->getHandTileSortedList()->setInnerArray($replacedHandTileList->toArray());
+        $tileAreas = $this->getRoundData()->getTileAreas();
+        $tileAreas->debugSet($player, $replacedHandTileList, $player->getTileArea()->getDeclaredMeldList(), $tileAreas->getTargetTile());
     }
 
     function debugDiscardByReplace(Player $player, Tile $selfTile, TileList $replacedHandTileList = null) {
@@ -42,12 +43,16 @@ class MockRound extends Round {
             }
             $this->debugSetHandTileList($player, $replacedHandTileList);
         } else {
-            $player->getTileArea()->getHandTileSortedList()->replaceByIndex(0, $selfTile);
+            $handTileList = $player->getTileArea()->get13styleHandTileList();
+            $handTileList->replaceByIndex(0, $selfTile);
+            $this->debugSetHandTileList($player, $handTileList);
         }
     }
 
     function debugKongBySelfByReplace(Player $player, Tile $selfTile) {
-        $player->getTileArea()->getHandTileSortedList()->replaceByIndex([0, 1, 2, 3], [$selfTile, $selfTile, $selfTile, $selfTile]);
+        $handTileList = $player->getTileArea()->get13styleHandTileList();
+        $handTileList->replaceByIndex([0, 1, 2, 3], [$selfTile, $selfTile, $selfTile, $selfTile]);
+        $this->debugSetHandTileList($player, $handTileList);
         $this->kongBySelf($player, $selfTile);
     }
 }

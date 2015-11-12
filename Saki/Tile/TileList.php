@@ -46,7 +46,7 @@ class TileList extends ArrayLikeObject {
     }
 
     function __toString() {
-        // 123m456p789s東東東中中
+        // 123m456p789sEEECC
         $s = "";
         $tiles = $this->toArray();
         $len = count($tiles);

@@ -3,19 +3,6 @@
 namespace Saki\Util;
 
 class Utils {
-    static function assertEqual($expected, $actual) {
-        if ($expected != $actual) {
-            throw new \LogicException("Failed; $expected not equals to $actual.");
-        }
-    }
-
-    static function str_class_last_part($actualClass, $trimSubString = '') {
-        $lastSeparatorPos = strrpos($actualClass, '\\');
-        $lastToken = substr($actualClass, $lastSeparatorPos + 1); // DiscardCommand
-        $trimmedToken = str_replace($trimSubString, '', $lastToken);
-        return $trimmedToken;
-    }
-
     static function getComparatorByBestArray(array $descBestOnes) {
         $comparator = function($a, $b)use($descBestOnes) {
             $ia = array_search($a, $descBestOnes);
@@ -40,6 +27,10 @@ class Utils {
 
     static function getNormalizedModValue($v, $n) {
         return (($v) % $n + $n) % $n;
+    }
+
+    static function inRange($v, $lowerLimit, $upperLimit) {
+        return $lowerLimit <= $v && $v <= $upperLimit;
     }
 
     private function __construct() {

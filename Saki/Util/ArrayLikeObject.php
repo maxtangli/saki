@@ -6,7 +6,7 @@ namespace Saki\Util;
  * Only optimized for less-than-200 elements case, which is the main case in pj saki.
  *
  * main responsibility
- * - support foreach/count/isset/get/(set)
+ * - support foreach/count/isset/get/set.
  * - encapsulate PHP array operations and provide other convenient operations.
  * - support readonly.
  * - support onChange hook.
@@ -536,7 +536,7 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
     function removeByIndex($indexOrIndexes) {
         $this->assertWritable();
 
-        $removedValues = $this->indexToValue($indexOrIndexes); // valid check
+        $removedValues = $this->indexToValue($indexOrIndexes); // validate
 
         $tobeRemovedIndexes = static::boxing($indexOrIndexes);
         $newInnerArray = [];

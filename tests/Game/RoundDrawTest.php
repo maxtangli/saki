@@ -4,8 +4,20 @@ use Saki\Game\MockRound;
 use Saki\RoundResult\RoundResultType;
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
+use Saki\Game\RoundPhase;
 
 class RoundDrawTest extends PHPUnit_Framework_TestCase {
+    function testExhaustiveDraw() {
+        $r = new MockRound();
+        // 130ms = avg0.7ms/time * 200times
+        for ($phase = $r->getRoundPhase(); $phase != RoundPhase::getOverPhaseInstance(); $phase = $r->getRoundPhase()) {
+            $r->discard($r->getCurrentPlayer(), $r->getCurrentPlayer()->getTileArea()->getHandTileSortedList()[0]);
+            $r->passPublicPhase();
+        }
+        $cls = get_class(new \Saki\RoundResult\ExhaustiveDrawRoundResult(\Saki\Game\PlayerList::createStandard()->toArray(), [false, false, false, false]));
+        $this->assertInstanceOf($cls, $r->getRoundData()->getTurnManager()->getRoundResult());
+    }
+
     function testNineKindsOfTerminalOrHonorDraw() {
         $validTileList = TileList::fromString('19m19p15559sESWNC');
         $this->assertTrue($validTileList->isNineKindsOfTerminalOrHonor());

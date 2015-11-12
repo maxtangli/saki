@@ -496,7 +496,7 @@ class YakuTestData {
         // set tiles
         $handMeldList = $this->handMeldList;
         $targetTile = $this->targetTile;
-        $handTileList = $handMeldList->toSortedTileList()->toPrivateOrPublicPhaseTileSortedList($isPrivatePhase, $targetTile);
+        $handTileList = $handMeldList->toSortedTileList()->toHandTileSortedList($isPrivatePhase, $targetTile);
 
         $mockRound->getRoundData()->getTileAreas()->debugSet($targetPlayer, $handTileList, $this->declareMeldList, $targetTile);
 

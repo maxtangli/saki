@@ -1,11 +1,7 @@
 <?php
 namespace Saki\Util;
 
-interface IEnum {
-    static function getValue2StringMap();
-}
-
-abstract class Enum implements IEnum {
+abstract class Enum {
     private static $instances;
 
     static function validValue($value) {
@@ -81,7 +77,7 @@ abstract class Enum implements IEnum {
     static function getValue2StringMap() {
         $r = [];
         $refClass = new \ReflectionClass(get_called_class());
-        foreach($refClass->getConstants() as $name => $value) {
+        foreach ($refClass->getConstants() as $name => $value) {
             $text = strtolower(str_replace('_', ' ', $name));
             $r[$value] = $text;
         }

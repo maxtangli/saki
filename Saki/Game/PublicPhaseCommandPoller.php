@@ -17,7 +17,7 @@
 //    /**
 //     * @param Command[] $commands
 //     */
-//    function init(array $commands) {
+//    function reset(array $commands) {
 //        // record each player's highest priority
 //        $mapWaitingPlayerNo2priority = [];
 //        foreach ($commands as $command) {

@@ -25,7 +25,7 @@ class TurnManager {
     private $roundResult;
 
     function __construct(PlayerList $playerList) {
-        $windTiles = Tile::getWindTiles($playerList->count()); // valid check
+        $windTiles = Tile::getWindTiles($playerList->count()); // validate
 
         $this->playerList = $playerList;
 

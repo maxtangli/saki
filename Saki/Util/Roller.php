@@ -24,7 +24,7 @@ class Roller {
     }
 
     function reset($initialTarget) {
-        $initialIndex = $this->targetList->valueToIndex($initialTarget);  // valid check
+        $initialIndex = $this->targetList->valueToIndex($initialTarget);  // validate
 
         $this->targetList->leftShift($initialIndex);
         $this->currentIndex = 0;
@@ -59,7 +59,7 @@ class Roller {
     }
 
     function getOffsetTarget($offset, $baseTarget = null) {
-        $baseIndex = $baseTarget !== null ? $this->targetList->valueToIndex($baseTarget) // valid check
+        $baseIndex = $baseTarget !== null ? $this->targetList->valueToIndex($baseTarget) // validate
             : $this->currentIndex;
 
         $targetIndex = Utils::getNormalizedModValue($baseIndex + $offset, $this->getTargetsCount());
@@ -71,12 +71,12 @@ class Roller {
     }
 
     function getTargetLocalTurn($target) {
-        $i = $this->targetList->valueToIndex($target); // valid check
+        $i = $this->targetList->valueToIndex($target); // validate
         return $this->localTurns[$i];
     }
 
     function toTarget($target) {
-        $targetIndex = $this->targetList->valueToIndex($target); // valid check
+        $targetIndex = $this->targetList->valueToIndex($target); // validate
 
         if ($targetIndex == $this->currentIndex) {
             throw new \InvalidArgumentException('target should not be same with current. Logic maybe confusing.');

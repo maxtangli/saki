@@ -2,8 +2,8 @@
 namespace Saki\Util;
 
 /**
- * @see origin version from http://www.phptherightway.com/pages/Design-Patterns.html
- * @package Saki
+ * @see originated from http://www.phptherightway.com/pages/Design-Patterns.html
+ * @package Saki\Util
  */
 abstract class Singleton {
 

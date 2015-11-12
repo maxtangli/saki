@@ -10,6 +10,7 @@ use Saki\Win\WinSubTarget;
 
 abstract class Yaku extends Singleton {
     function __toString() {
+        // Saki\Win\Yaku\ReachYaku -> Reach
         $cls = get_called_class();
         $s = str_replace('Yaku', '', $cls);
         $s = end(explode('\\', $s));

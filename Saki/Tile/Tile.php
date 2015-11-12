@@ -3,6 +3,7 @@
 namespace Saki\Tile;
 
 use Saki\Util\ArrayLikeObject;
+use Saki\Util\Factory;
 use Saki\Util\Utils;
 
 class Tile {
@@ -56,18 +57,13 @@ class Tile {
         return [Tile::fromString('C'), Tile::fromString('P'), Tile::fromString('F')];
     }
 
-    private static $instances = []; // todo weakMap?
-    private static $redDoraInstances = []; // todo weakMap?
-
-    private static function isRedDoraTile(Tile $tile) {
-        return in_array($tile, self::$redDoraInstances, true);
-    }
-
     /**
      * @param TileType $tileType
      * @param int|null $number
      * @param bool|false $isRedDora
      * @return int
+     *
+     * ValueID map
      *
      * - m 1-9   r5m  0
      * - p 11-19 r5p 10
@@ -96,6 +92,22 @@ class Tile {
     }
 
     /**
+     * A trick to support redDora while keep == operator ignores redDora(since == compares object members only).
+     *
+     * The trick exists because when red dora is considered to be added,
+     * Tile comparisons with == operations have been used almost everywhere,
+     * thus too expensive to add a $redDora member and replace tons of Tile == comparisons by Tile.equals(), which is the common way.
+     *
+     * Note that WeakMap is not necessary since Tile is a Multiton Class.
+     * @var Tile[]
+     */
+    private static $redDoraInstances = [];
+
+    private static function isRedDoraTile(Tile $tile) {
+        return in_array($tile, self::$redDoraInstances, true);
+    }
+
+    /**
      * @param TileType $tileType
      * @param null|int $number
      * @param bool $isRedDora
@@ -103,26 +115,28 @@ class Tile {
      */
     static function getInstance(TileType $tileType, $number = null, $isRedDora = false) {
         if (!self::valid($tileType, $number, $isRedDora)) {
-            throw new \InvalidArgumentException("Invalid argument \$tileType[$tileType], \$number[$number].Remind that \$number should be a int.");
+            throw new \InvalidArgumentException(
+                "Invalid argument \$tileType[$tileType], \$number[$number].Remind that \$number should be a int."
+            );
         }
 
+        $tileFactory = Factory::getInstance(__CLASS__);
         $key = self::toValueID($tileType, $number, $isRedDora);
-        if (!isset(self::$instances[$key])) {
+        $generator = function () use ($tileType, $number, $isRedDora) {
             $obj = new Tile($tileType, $number, $isRedDora);
-            self::$instances[$key] = $obj;
-
             if ($isRedDora) {
                 self::$redDoraInstances[] = $obj;
             }
-        }
-        return self::$instances[$key];
+            return $obj;
+        };
+        return $tileFactory->getOrGenerate($key, $generator);
     }
 
     private $tileType;
     private $number;
 
     private function __construct(TileType $tileType, $number = null, $isRedDora = false) {
-        // valid checked by getInstance()
+        // validated by getInstance()
         $this->tileType = $tileType;
         $this->number = $number;
     }
@@ -141,6 +155,10 @@ class Tile {
             throw new \BadMethodCallException('getNumber() is not supported on non-suit tile.');
         }
         return $this->number;
+    }
+
+    function getValueID() {
+        return $this->toValueID($this->tileType, $this->number, $this->isRedDora());
     }
 
     function isRedDora() {
@@ -192,8 +210,7 @@ class Tile {
         }
 
         $a = new ArrayLikeObject($a);
-        $next = $a->getNext($this, $offset);
-        return $next;
+        return $a->getNext($this, $offset);
     }
 
     function getWindOffset(Tile $other) {

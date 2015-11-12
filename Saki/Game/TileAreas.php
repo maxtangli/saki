@@ -49,7 +49,9 @@ class TileAreas {
         } elseif ($tileList->isPublicHandCount() && $targetTile) {
             $actualTargetTile = $targetTile;
         } else {
-            throw new \InvalidArgumentException();
+            throw new \InvalidArgumentException(
+                sprintf('Invalid $tileList[%s], $targetTile[%s]', $tileList, $targetTile)
+            );
         }
 
         $tileArea = $player->getTileArea();
@@ -118,7 +120,7 @@ class TileAreas {
     function toPlayerHandTileList(Player $player, $isPrivate) {
         $originHandTileList = $player->getTileArea()->getHandTileSortedList();
         $targetTile = $this->getTargetTile();
-        return $originHandTileList->toPrivateOrPublicPhaseTileSortedList($isPrivate, $targetTile);
+        return $originHandTileList->toHandTileSortedList($isPrivate, $targetTile);
     }
 
     function toPlayerAllTileList(Player $player, $isPrivate) {

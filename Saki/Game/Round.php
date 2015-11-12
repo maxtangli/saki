@@ -168,7 +168,7 @@ class Round {
 
         // assert waiting after discard
         $analyzer = $this->getWinAnalyzer()->getWaitingAnalyzer();
-        $handList = $player->getTileArea()->getHandTileSortedList();
+        $handList = $player->getTileArea()->get14styleHandTileList();
         $futureWaitingList = $analyzer->analyzePrivatePhaseFutureWaitingList($handList, $player->getTileArea()->getDeclaredMeldList());
         $isWaiting = $futureWaitingList->count() > 0;
         if (!$isWaiting) {
@@ -223,7 +223,7 @@ class Round {
         $currentTurn = $this->getRoundData()->getTurnManager()->getGlobalTurn();
         $isFirstTurn = $currentTurn == 1;
         $noDeclaredActions = !$this->getRoundData()->getTileAreas()->getDeclareHistory()->hasDeclare($currentTurn, Tile::fromString('E'));
-        $validTileList = $player->getTileArea()->getHandTileSortedList()->isNineKindsOfTerminalOrHonor();
+        $validTileList = $player->getTileArea()->get14styleHandTileList()->isNineKindsOfTerminalOrHonor();
 
         $valid = $isFirstTurn && $noDeclaredActions && $validTileList;
         if (!$valid) {
@@ -261,7 +261,7 @@ class Round {
             $waitingAnalyzer = $this->getWinAnalyzer()->getWaitingAnalyzer();
             $roundData = $this->getRoundData();
             $isWaitingStates = array_map(function (Player $player) use ($waitingAnalyzer, $roundData) {
-                $handTileList = $player->getTileArea()->getHandTileSortedList();
+                $handTileList = $player->getTileArea()->get13styleHandTileList();
                 $declaredMeldList = $player->getTileArea()->getDeclaredMeldList();
                 $waitingTileList = $waitingAnalyzer->analyzePublicPhaseHandWaitingTileList($handTileList, $declaredMeldList);
                 $isWaiting = $waitingTileList->count() > 0;

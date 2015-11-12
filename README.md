@@ -4,7 +4,13 @@ A japanese-mahjong server.
 
 ## good practice
 
-- agile = tdd + kiss + refactor
+agile = tdd + kiss + refactor
+
+naming conventions
+
+- constructor(): new members and set to default state
+- init(): set members to default state, without constructor()'s new operations cost.
+- reset($params): set members to specified state defined by $params and current members state.
 
 ## todo
 
@@ -15,8 +21,9 @@ total time cost
 - rush 11-15 15.8h
 - rush 16-20 25.6h
 - rush 21-25 26.7h
-- rush 26-30 ?h
--      total 125.9h + ?h
+- rush 26-30 24.1h
+- rush 31-35 ?h
+-      total 150h + ?h
 
 rush 0 scribble 1.5h
 
@@ -303,6 +310,45 @@ rush 29 all yaku: reach concerned 2.8h
 - [x] FirstTurnWinYaku 0.5h
 - [x] test FirstTurnWinYaku 0.2h // wrongly written pastTurn <= 0, should be pastTurn < = 1
 
+rush 30 refactor for joy 1.1h
+
+- [x] refactor: Saki/Tile, Saki/Util 0.8h
+- [x] Factory 0.3h
+
+rush 31 benchmark 1.4h
+
+- [x] enhance Timer 0.2h
+- [x] Benchmark 0.3h
+- [x] some common items 0.8h
+- [x] log 0.1h
+
+rush 32 refactor RoundTest 0.6h
+
+- [x] remove unnecessary setUp() 0.3h // 1300ms -> 1160ms, -140ms
+- [x] merge testToNextRound into testWinBySelf by avoid 1 winBySelf op // 1160ms -> 1020ms, -140s
+- [x] measure testExhaustiveDraw 0.2h // it's ok
+- [x] split slow parts into RoundWinTest 0.1h // conclusion: It's all WinAnalyzer's fault!
+
+rush refactor private/public hand
+
+- [ ] refactor: handTileList -> 13style + targetTile // should have been considered before. Now it's too complicated for refactoring.
+- [ ] plan 0.2h
+- [ ] remove TileArea->getHandTileSortedList() 0.3h
+- [x] reset() vs init() 0.3h // conclusion: reset() is more expressive.
+
+rush optimize tests
+
+- [x] optimize: new Round().drawInit 1.8h // ArrayLikeObject.pop() 5ms -> 1ms by simplify, Wall().draw 66ms -> 3ms by fix wrongly use of TileSortedList
+- [x] optimize: new RoundData() 0.5h // TileSet extends TileSortedList -> extends TileList
+- [x] bug: Timer not accurate since echo()'s time cost
+- [ ] optimize: WaitingAnalyzer.analyzePrivatePhaseWaitingTiles // 500ms -> ?
+
+- [ ] optimize: RoundTest
+- [ ] optimize: WaitingAnalyzerTest
+- [ ] optimize: WinAnalyzerTest
+- [ ] optimize: YakuTest
+- [ ] optimize: RoundDrawTest/testFourReachDraw
+
 rush all yaku: kong concerned
 
 - [ ] organize doc 0.2h
@@ -359,18 +405,6 @@ rush red dora
 - [ ] toString issues
 - [ ] adapt discard/createMeld logic
 
-rush optimize to speed up tests
-
-- [x] optimize: new Round().drawInit 1.8h // ArrayLikeObject.pop() 5ms -> 1ms by simplify, Wall().draw 66ms -> 3ms by fix wrongly use of TileSortedList
-- [ ] optimize: new RoundData() 0.5h // TileSet extends TileSortedList -> extends TileList
-- [ ] refactor: speed up slow tests
-- [x] bug: Timer not accurate since echo()'s timecost
-- [ ] refactor: organize test sets
-- [ ] optimize: WaitingAnalyzer.analyzePrivatePhaseWaitingTiles // 500ms -> ?
-
-- [ ] optimize: RoundTest
-- [ ] optimize: RoundDrawTest
-- [ ] optimize: WinAnalyzerTest
 
 # round state class
 

@@ -44,7 +44,7 @@ class DiscardHistory {
         $actualFromSelfWind = $fromSelfWind ?: Tile::fromString('E');
 
         $notUsedParam = $actualFromSelfWind;
-        $compareItem = new DiscardHistoryItem($fromTurn, $actualFromSelfWind, $notUsedParam); // valid check
+        $compareItem = new DiscardHistoryItem($fromTurn, $actualFromSelfWind, $notUsedParam); // validate
         $match = function(DiscardHistoryItem $item) use ($isSelf, $mySelfWind, $compareItem) {
             $matchIsSelf = $isSelf ? $item->getSelfWind() == $mySelfWind : $item->getSelfWind() != $mySelfWind;
             $matchOrder = $item->validLaterItemOf($compareItem, true);
@@ -67,7 +67,7 @@ class DiscardHistory {
     }
 
     function recordDiscardTile($currentTurn, Tile $mySelfWind, Tile $tile) {
-        $newItem = new DiscardHistoryItem($currentTurn, $mySelfWind, $tile); // valid check
+        $newItem = new DiscardHistoryItem($currentTurn, $mySelfWind, $tile); // validate
         if ($this->a->count() > 0) {
             /** @var DiscardHistoryItem $lastItem */
             $lastItem = $this->a->getLast();
