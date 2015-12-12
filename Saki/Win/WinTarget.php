@@ -20,15 +20,7 @@ class WinTarget {
             throw new \InvalidArgumentException();
         }
 
-        $handTileList = $player->getTileArea()->getHandTileSortedList();
-        $isPrivate = $roundPhase->getValue() == RoundPhase::PRIVATE_PHASE;
-        $validHandTileCount = $handTileList->isPrivateOrPublicHandCount($isPrivate);
-        if (!$validHandTileCount) {
-            throw new \InvalidArgumentException(
-                sprintf('Invalid $handTileList[%s] count[%s] of for $roundPhase[%s].',
-                    $handTileList, $handTileList->count(), $roundPhase)
-            );
-        }
+        // todo validate hand count, target tile
     }
 
     function toSubTarget(MeldList $handMeldList) {
@@ -51,11 +43,11 @@ class WinTarget {
     }
 
     function isPrivatePhase() {
-        return $this->roundData->getTurnManager()->getRoundPhase()->getValue() == RoundPhase::PRIVATE_PHASE;
+        return $this->roundData->getTurnManager()->getRoundPhase()->isPrivate();
     }
 
     function isPubicPhase() {
-        return $this->roundData->getTurnManager()->getRoundPhase()->getValue() == RoundPhase::PUBLIC_PHASE;
+        return $this->roundData->getTurnManager()->getRoundPhase()->isPublic();
     }
 
     function getActPlayer() {
@@ -83,21 +75,24 @@ class WinTarget {
     }
 
     // about target player
+    function getPublicHand() {
+        return $this->roundData->getTileAreas()->getPublicHand($this->player);
+    }
 
-    function getHandTileSortedList($includePublicTargetTile) {
-        return $this->roundData->getTileAreas()->toPlayerHandTileList($this->player, $includePublicTargetTile);
+    function getPrivateHand() {
+        return $this->roundData->getTileAreas()->getPrivateHand($this->player);
+    }
+
+    function getPrivateFull() {
+        return $this->roundData->getTileAreas()->getPrivateFull($this->player);
     }
 
     function getDeclaredMeldList() {
-        return $this->player->getTileArea()->getDeclaredMeldList();
-    }
-
-    function getAllTileSortedList($includePublicTargetTile) {
-        return $this->roundData->getTileAreas()->toPlayerAllTileList($this->player, $includePublicTargetTile);
+        return $this->player->getTileArea()->getDeclaredMeldListReference();
     }
 
     function getDiscardedTileList() {
-        return $this->player->getTileArea()->getDiscardedTileList();
+        return $this->player->getTileArea()->getDiscardedReference();
     }
 
     function isConcealed() {

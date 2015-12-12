@@ -14,6 +14,7 @@ class RoundWindData {
      * @var Tile
      */
     private $roundWind; // [東] 1 局
+
     private $roundWindTurn; // 東 [1] 局
     private $selfWindTurn; // [0] 本場
 
@@ -42,6 +43,16 @@ class RoundWindData {
                 $this->selfWindTurn = 0;
             }
         }
+    }
+
+    function debugReset(Tile $roundWind = null, $roundWindTurn = null, $selfWindTurn = null) {
+        if ($roundWind && !$roundWind->isWind()) {
+            throw new \InvalidArgumentException();
+        }
+
+        $this->roundWind = $roundWind ?: Tile::fromString('E');
+        $this->roundWindTurn = $roundWindTurn ?: 1;
+        $this->selfWindTurn = $selfWindTurn ?: 0;
     }
 
     function getPlayerCount() {

@@ -41,7 +41,7 @@ class NineGatesYaku extends Yaku {
     }
 
     protected function matchOtherConditions(WinSubTarget $subTarget) {
-        return $subTarget->getAllTileSortedList(true)->isNineGates(false);
+        return $subTarget->getPrivateFull()->isNineGates(false);
     }
 }
 
@@ -59,7 +59,7 @@ class PureNineGatesYaku extends Yaku {
     }
 
     protected function matchOtherConditions(WinSubTarget $subTarget) {
-        return $subTarget->getAllTileSortedList(true)->isNineGates(true, $subTarget->getTargetTile());
+        return $subTarget->getPrivateFull()->isNineGates(true, $subTarget->getTargetTile());
     }
 
     function getExcludedYakus() {

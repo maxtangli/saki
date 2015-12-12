@@ -324,17 +324,33 @@ rush 31 benchmark 1.4h
 
 rush 32 refactor RoundTest 0.6h
 
-- [x] remove unnecessary setUp() 0.3h // 1300ms -> 1160ms, -140ms
-- [x] merge testToNextRound into testWinBySelf by avoid 1 winBySelf op // 1160ms -> 1020ms, -140s
+- [x] optimize: remove unnecessary setUp() 0.3h // 1300ms -> 1160ms, -140ms
+- [x] optimize: merge testToNextRound into testWinBySelf by avoid 1 winBySelf op // 1160ms -> 1020ms, -140s
 - [x] measure testExhaustiveDraw 0.2h // it's ok
-- [x] split slow parts into RoundWinTest 0.1h // conclusion: It's all WinAnalyzer's fault!
+- [x] optimize: split slow parts into RoundWinTest 0.1h // conclusion: It's all WinAnalyzer's fault!
 
-rush refactor private/public hand
+rush 33 refactor handTileList -> 13style + targetTile 3.7h
 
-- [ ] refactor: handTileList -> 13style + targetTile // should have been considered before. Now it's too complicated for refactoring.
-- [ ] plan 0.2h
-- [ ] remove TileArea->getHandTileSortedList() 0.3h
-- [x] reset() vs init() 0.3h // conclusion: reset() is more expressive.
+- [x] plan 0.2h // should have been considered before. Now it's too complicated to refactor.
+- [x] refactor: reset() vs init() 0.3h // conclusion: reset() is more expressive.
+- [x] refactor: ArrayLikeObject chain style. 0.5h
+- [x] refactor: TileArea->getHandTileSortedList() -> getPrivateHand/getPublicHand 2.2h // refactor TileArea is hard, while refactor TileAreas is easy.
+- [x] HandCount 0.5h
+
+rush 34 refactor YakuTestData -> RoundData.debugInit
+
+- [x] RoundWindTurn 0.3h
+- [x] RoundDebugResetData 0.3h
+- [x] refactor: remove MockRound.debugSetTurn() -> Round.debugSkipTo 0.4h
+- [x] MockRound.debugSkipTo() 1h
+- [ ] TileAreas.setHand(targetTile) 
+- [ ] refactor: YakuTestData -> RoundData.debugInit() 0.3h
+
+- [ ] refactor: remove MockRound?
+- [ ] TileAreas.debugSet() -> TileAreas.debugSetPrivate/Public() 0.2h
+- [ ] refactor: move MockRound methods into RoundData members 1.3 h
+- [ ] debugSetHand vs debugReplaceHand 0.2h
+- [ ] summary: possible ways to avoid those terrible refactorings when coding?
 
 rush optimize tests
 
@@ -378,9 +394,7 @@ rush command system
 
 rush refactor
 
-- [ ] refactor: move MockRound/YakuTestData methods into RoundData members
 - [ ] refactor: TileSeries <-> MeldList.xxx
-- [ ] refactor: RoundTest
 - [ ] refactor: RoundResult
 - [ ] refactor: move DrawScore logic into separate class
 
@@ -405,7 +419,6 @@ rush red dora
 - [ ] toString issues
 - [ ] adapt discard/createMeld logic
 
-
 # round state class
 
 responsibility
@@ -424,52 +437,3 @@ save commands as list
 
 replay
 initialState, command strings(notice NO random allowed)
-
-## note: round logic
-
-new phase
-
-- reset and shuffle wall
-- decide dealer player
-- decide each player's wind
-
-reset phase
-
-- each player draw 4 tiles
-- goto dealer player's private phase
- 
-p's private phase: before execute command
-
-- when enter: turn++, draw 1 tile if allowed
-- show candidate commands
-- always: discard one of onHand tile 
-- sometime: kong, plusKong, zimo
-
-p's private phase: after execute command
-
-- if discard: go to public phase
-- if zimo: go to round-over phase
-- if kong/plusKong: drawBack, stay in private phase
-
-p's public phase: basic version
-
-- public phase means waiting for other's response for current player's action
-- poller responsible for select a final action for public phase
-
-p's public phase: before execute command
-
-- only non-current players may have candidate commands
-- if none candidate commands exist: goto next player's private phase if remainTileCount > 0, otherwise go to over phase
-- if candidate commands exist, wait for each player's response, and execute the highest priority ones.
-- command types: ron, chow, pon, kong
-
-p's public phase: after execute command
-
-- if ron: go to round-over phase
-- if chow/pon/kong: go to execute player's private phase?
-
-over phase
-
-- draw or win
-- calculate points and modify players' points
-- new next round

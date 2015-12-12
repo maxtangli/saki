@@ -5,54 +5,81 @@ use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 
 class MockRound extends Round {
-
-    function debugSetTurn(Player $currentPlayer, $isPublicPhase, $globalTurn) {
-        $roundPhase = RoundPhase::getInstance($isPublicPhase ? RoundPhase::PUBLIC_PHASE : RoundPhase::PRIVATE_PHASE);
-
-        $this->getRoundData()->getTurnManager()->debugSet($currentPlayer, $roundPhase, $globalTurn);
-    }
-
-    function debugSetRoundWindData(Tile $roundWind) {
-        $this->getRoundData()->getRoundWindData()->setRoundWind($roundWind);
-    }
-
+    // modify
     function debugSetWallPopTile(Tile $tile) {
-        $wallRemainTileList = $this->getRoundData()->getTileAreas()->getWall()->getRemainTileList();
-        $wallRemainTileList->replaceByIndex($wallRemainTileList->count() - 1, $tile);
+        $this->getRoundData()->getTileAreas()->getWall()->debugSetNextDrawTile($tile);
     }
 
-    function debugSetHandTileList(Player $player, TileList $replacedHandTileList) {
-        $tileAreas = $this->getRoundData()->getTileAreas();
-        $tileAreas->debugSet($player, $replacedHandTileList, $player->getTileArea()->getDeclaredMeldList(), $tileAreas->getTargetTile());
+    // modify
+    function debugSetHand(Player $player, TileList $replaceHandTileList) {
+        $this->getRoundData()->getTileAreas()->debugReplaceHand($player, $replaceHandTileList);
+        // todo seems not right
     }
 
-    function debugDiscardByReplace(Player $player, Tile $selfTile, TileList $replacedHandTileList = null) {
-        $this->debugByReplaceImpl($player, $selfTile, $replacedHandTileList);
-        $this->discard($player, $selfTile);
-    }
+    // command
+    function debugSkipTo(Player $currentPlayer, RoundPhase $roundPhase = null, $globalTurn = null,
+                         Tile $mockDiscardTile = null) {
+        $validCurrentState = $this->getRoundPhase()->isPrivateOrPublic();
+        if (!$validCurrentState) {
+            throw new \InvalidArgumentException();
+        }
 
-    function debugReachByReplace(Player $player, Tile $selfTile, TileList $replacedHandTileList = null) {
-        $this->debugByReplaceImpl($player, $selfTile, $replacedHandTileList);
-        $this->reach($player, $selfTile);
-    }
+        $actualRoundPhase = $roundPhase ?: RoundPhase::getPrivatePhaseInstance();
+        $validRoundPhase = $actualRoundPhase->isPrivateOrPublic();
+        if (!$validRoundPhase) {
+            throw new \InvalidArgumentException();
+        }
 
-    protected function debugByReplaceImpl(Player $player, Tile $selfTile, TileList $replacedHandTileList = null) {
-        if ($replacedHandTileList) {
-            if (!$replacedHandTileList->valueExist($selfTile)) {
-                throw new \InvalidArgumentException();
+        $actualGlobalTurn = $globalTurn ?: 1;
+        $validActualGlobalTurn = $actualGlobalTurn == 1;
+        if (!$validActualGlobalTurn) {
+            throw new \InvalidArgumentException('Not implemented.');
+        }
+
+        $actualMockDiscardTile = $mockDiscardTile ?: Tile::fromString('C');
+        $validMockDiscardTile = !$actualMockDiscardTile->isWind();
+        if (!$validMockDiscardTile) {
+            throw new \InvalidArgumentException('Not implemented: consider FourWindDiscardedDraw issue.');
+        }
+
+        $isTargetTurn = function () use ($currentPlayer, $actualRoundPhase) {
+            $isTargetTurn = ($this->getCurrentPlayer() == $currentPlayer) && ($this->getRoundPhase() == $actualRoundPhase);
+            return $this->isGameOver() || $isTargetTurn;
+        };
+        while (!$isTargetTurn()) {
+            if ($this->getRoundPhase()->isPrivate()) {
+                $this->debugDiscardByReplace($this->getCurrentPlayer(), $actualMockDiscardTile);
+            } elseif ($this->getRoundPhase()->isPublic()) {
+                $this->passPublicPhase();
+            } else {
+                throw new \LogicException();
             }
-            $this->debugSetHandTileList($player, $replacedHandTileList);
-        } else {
-            $handTileList = $player->getTileArea()->get13styleHandTileList();
-            $handTileList->replaceByIndex(0, $selfTile);
-            $this->debugSetHandTileList($player, $handTileList);
+        }
+
+        if ($this->getRoundData()->getTurnManager()->getGlobalTurn() != 1) {
+            throw new \LogicException('Not implemented.');
         }
     }
 
+    // command
+    function debugDiscardByReplace(Player $player, Tile $discardTile, TileList $replaceHandTileList = null) {
+        $actualReplaceHandTileList = $replaceHandTileList ?: new TileList([$discardTile]);
+        $this->getRoundData()->getTileAreas()->debugReplaceHand($player, $actualReplaceHandTileList);
+
+        $this->discard($player, $discardTile);
+    }
+
+    // command
+    function debugReachByReplace(Player $player, Tile $reachTile, TileList $replaceHandTileList = null) {
+        $actualReplaceHandTileList = $replaceHandTileList ?: new TileList([$reachTile]);
+        $this->getRoundData()->getTileAreas()->debugReplaceHand($player, $actualReplaceHandTileList);
+
+        $this->reach($player, $reachTile);
+    }
+
+    // command
     function debugKongBySelfByReplace(Player $player, Tile $selfTile) {
-        $handTileList = $player->getTileArea()->get13styleHandTileList();
-        $handTileList->replaceByIndex([0, 1, 2, 3], [$selfTile, $selfTile, $selfTile, $selfTile]);
-        $this->debugSetHandTileList($player, $handTileList);
+        $this->getRoundData()->getTileAreas()->debugReplaceHand($player, new TileList([$selfTile, $selfTile, $selfTile, $selfTile]));
         $this->kongBySelf($player, $selfTile);
     }
 }

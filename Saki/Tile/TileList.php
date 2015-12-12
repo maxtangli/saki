@@ -46,7 +46,7 @@ class TileList extends ArrayLikeObject {
     }
 
     function __toString() {
-        // 123m456p789sEEECC
+        // 123m456p789sEEECC(handCountInfo)
         $s = "";
         $tiles = $this->toArray();
         $len = count($tiles);
@@ -60,28 +60,33 @@ class TileList extends ArrayLikeObject {
             }
         }
         return $s;
+//        return sprintf('%s(%s)', $s, $this->getHandCount()->__toString());
     }
 
-    function isCompleteHandCount() {
+    function toTileList() {
+        return new TileList($this->toArray());
+    }
+
+    function getHandCount() {
+        return new HandCount($this->count());
+    }
+
+    function isCompletePrivateHand() {
         return $this->count() == 14;
     }
 
-    function isPrivateHandCount() {
+    protected function assertCompletePrivateHand() {
+        if (!$this->isCompletePrivateHand()) {
+            throw new \LogicException();
+        }
+    }
+
+    function isPrivateHand() {
         return $this->count() % 3 == 2;
     }
 
-    function isPublicHandCount() {
+    function isPublicHand() {
         return $this->count() % 3 == 1;
-    }
-
-    function isPrivateOrPublicHandCount($isPrivate) {
-        return $isPrivate ? $this->isPrivateHandCount() : $this->isPublicHandCount();
-    }
-
-    protected function assertCompleteHandCount() {
-        if (!$this->isCompleteHandCount()) {
-            throw new \LogicException();
-        }
     }
 
     function isAllSuit() {
@@ -115,7 +120,7 @@ class TileList extends ArrayLikeObject {
     }
 
     function isNineKindsOfTerminalOrHonor() {
-        $this->assertCompleteHandCount();
+        $this->assertCompletePrivateHand();
 
         $uniqueTerminalOrHonorList = $this->toFilteredTileList(function (Tile $tile) {
             return $tile->isTerminalOrHonor();
@@ -129,7 +134,7 @@ class TileList extends ArrayLikeObject {
         if (!$valid) {
             throw new \InvalidArgumentException();
         }
-        $this->assertCompleteHandCount();
+        $this->assertCompletePrivateHand();
 
         $requiredPartTileList = TileList::fromString('19m19p19sESWNCFP');
         // this works because for a full terminalOrHonor hand, the remain one tile will be terminalOrHonor.
@@ -143,7 +148,7 @@ class TileList extends ArrayLikeObject {
     }
 
     function isFlush($isFull) {
-        $this->assertCompleteHandCount();
+        $this->assertCompletePrivateHand();
 
         $suitList = $this->toFilteredTileList(function (Tile $tile) {
             return $tile->isSuit();
@@ -169,7 +174,7 @@ class TileList extends ArrayLikeObject {
             throw new \InvalidArgumentException();
         }
 
-        $this->assertCompleteHandCount();
+        $this->assertCompletePrivateHand();
 
         if (!$this->isFlush(true)) {
             return false;
@@ -188,7 +193,7 @@ class TileList extends ArrayLikeObject {
     }
 
     function isAllGreen() {
-        $this->assertCompleteHandCount();
+        $this->assertCompletePrivateHand();
 
         $greenTileList = TileList::fromString('23468sF');
         $isAllGreenTile = function(Tile $tile) use($greenTileList) {

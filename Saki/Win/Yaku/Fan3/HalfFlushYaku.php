@@ -22,7 +22,7 @@ class HalfFlushYaku extends Yaku {
     }
 
     protected function matchOtherConditions(WinSubTarget $subTarget) {
-        return $subTarget->getAllTileSortedList(true)->isFlush(false);
+        return $subTarget->getPrivateFull()->isFlush(false);
     }
 }
 

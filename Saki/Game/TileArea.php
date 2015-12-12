@@ -11,71 +11,51 @@ use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 use Saki\Tile\TileSortedList;
 
+/*
+TileCount
+- init: all 13
+- private: current 14 other 13
+- public: current 13 other 14
+ */
 class TileArea {
     private $handTileSortedList;
-    private $targetTile;
     private $discardedTileList;
     private $declaredMeldList;
     private $reachGlobalTurn;
 
     function __construct() {
         $this->handTileSortedList = TileSortedList::fromString('');
-        $this->targetTile = null;
         $this->discardedTileList = TileList::fromString('');
         $this->declaredMeldList = MeldList::fromString('');
         $this->reachGlobalTurn = false;
-
     }
 
     function reset() {
         $this->handTileSortedList->setInnerArray([]);
-        $this->targetTile = null;
         $this->discardedTileList->reset();
         $this->declaredMeldList->setInnerArray([]);
         $this->reachGlobalTurn = false;
     }
 
     /**
+     * note: should not be used except when client is not sure handTileList is 13 or 14 style.
      * @return TileSortedList
      */
-    function getHandTileSortedList() {
+    function getHandReference() {
         return $this->handTileSortedList;
-    }
-
-    function get13styleHandTileList() {
-        return new TileSortedList($this->handTileSortedList->toArray());
-    }
-
-    function get14styleHandTileList() {
-        if (!$this->handTileSortedList->isPrivateHandCount()) {
-            throw new \InvalidArgumentException();
-        }
-        return $this->handTileSortedList; // todo
-
-        $l = $this->get13styleHandTileList();
-        $l->push($this->getTargetTile());
-        return $l;
-    }
-
-    function getTargetTile() {
-        return $this->targetTile;
-    }
-
-    function setTargetTile($targetTile) {
-        $this->targetTile = $targetTile;
     }
 
     /**
      * @return TileList
      */
-    function getDiscardedTileList() {
+    function getDiscardedReference() {
         return $this->discardedTileList;
     }
 
     /**
      * @return MeldList
      */
-    function getDeclaredMeldList() {
+    function getDeclaredMeldListReference() {
         return $this->declaredMeldList;
     }
 
@@ -83,7 +63,7 @@ class TileArea {
      * @return bool 門前清
      */
     function isConcealed() {
-        return $this->getDeclaredMeldList()->isConcealed();
+        return $this->getDeclaredMeldListReference()->isConcealed();
     }
 
     function isReach() {
@@ -114,26 +94,26 @@ class TileArea {
      */
     function drawInit($otherTiles) {
         // always valid
-        $this->getHandTileSortedList()->push($otherTiles);
+        $this->getHandReference()->push($otherTiles);
     }
 
     function draw(Tile $newTile) {
         // always valid
-        $this->getHandTileSortedList()->push($newTile);
+        $this->getHandReference()->push($newTile);
     }
 
     function drawReplacement(Tile $newTile) {
         // always valid
-        $this->getHandTileSortedList()->push($newTile);
+        $this->getHandReference()->push($newTile);
     }
 
     function canDiscard(Tile $selfTile) {
-        return $this->getHandTileSortedList()->valueExist($selfTile);
+        return $this->getHandReference()->valueExist($selfTile);
     }
 
     function discard(Tile $selfTile) {
-        $this->getHandTileSortedList()->removeByValue($selfTile); // valid test
-        $this->getDiscardedTileList()->push($selfTile);
+        $this->getHandReference()->removeByValue($selfTile); // validate
+        $this->getDiscardedReference()->push($selfTile);
     }
 
     /*
@@ -147,11 +127,11 @@ class TileArea {
 
     protected function canDeclareMeld(MeldType $targetMeldType, array $handTiles = null, Tile $otherTile = null, Meld $declaredMeld = null) {
         // exist
-        if ($handTiles && !$this->getHandTileSortedList()->valueExist($handTiles)) {
+        if ($handTiles && !$this->getHandReference()->valueExist($handTiles)) {
             return false;
         }
 
-        if ($declaredMeld && !$this->getDeclaredMeldList()->valueExist($declaredMeld, function (Meld $a, Meld $b) {
+        if ($declaredMeld && !$this->getDeclaredMeldListReference()->valueExist($declaredMeld, function (Meld $a, Meld $b) {
                 return $a->equals($b, false);
             })
         ) {
@@ -175,20 +155,22 @@ class TileArea {
         }
     }
 
-    protected function declareMeld(MeldType $targetMeldType, $targetConcealed = null, array $handTiles = null, Tile $otherTile = null, Meld $declaredMeld = null) {
+    protected function declareMeld(MeldType $targetMeldType, $targetConcealed = null,
+                                   array $handTiles = null, Tile $otherTile = null, Meld $declaredMeld = null) {
         if (!$this->canDeclareMeld($targetMeldType, $handTiles, $otherTile, $declaredMeld)) {
             throw new \InvalidArgumentException(
-                sprintf('can not declared meld for [%s],[%s],[%s],[%s],[%s],[%s]', $targetMeldType, $targetConcealed, implode(',', $handTiles), $otherTile, $declaredMeld, $this->getHandTileSortedList())
+                sprintf('can not declared meld for [%s],[%s],[%s],[%s],[%s],[%s]',
+                    $targetMeldType, $targetConcealed, implode(',', $handTiles), $otherTile, $declaredMeld, $this->getHandReference())
             );
         }
 
         // remove origin tiles and meld
         if ($handTiles) {
-            $this->getHandTileSortedList()->removeByValue($handTiles);
+            $this->getHandReference()->removeByValue($handTiles);
         }
 
         if ($declaredMeld) {
-            $this->getDeclaredMeldList()->removeByValue($declaredMeld, function (Meld $a, Meld $b) {
+            $this->getDeclaredMeldListReference()->removeByValue($declaredMeld, function (Meld $a, Meld $b) {
                 return $a->equals($b, false);
             });
         }
@@ -202,7 +184,7 @@ class TileArea {
         } else {
             $targetMeld = $fromMeld->toConcealed($targetConcealed);
         }
-        $this->getDeclaredMeldList()->push($targetMeld);
+        $this->getDeclaredMeldListReference()->push($targetMeld);
         return $targetMeld;
     }
 

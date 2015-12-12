@@ -128,7 +128,7 @@ class TileSeries extends Enum {
     }
 
     protected function assertValidAllMeldList(MeldList $allMeldList) {
-        $valid = $allMeldList->isCompleteCount();
+        $valid = $allMeldList->isCompletePrivateHandCount();
         if (!$valid) {
             throw new \InvalidArgumentException(
                 sprintf('Invalid $allMeldList[%s].', $allMeldList)

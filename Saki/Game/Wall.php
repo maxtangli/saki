@@ -39,6 +39,10 @@ class Wall {
         return $this->getDeadWall()->__toString() . ',' . $this->getRemainTileList()->__toString();
     }
 
+    function debugSetNextDrawTile(Tile $tile) {
+        $this->getRemainTileList()->replaceByIndex($this->getRemainTileList()->count() - 1, $tile);
+    }
+
     /**
      * @return TileSet
      */
@@ -72,15 +76,18 @@ class Wall {
      * @return Tile[]
      */
     function drawInit($n) {
-        $tiles = $this->getRemainTileList()->pop($n);
-        return ArrayLikeObject::boxing($tiles);
+        $tiles = $this->getRemainTileList()->getLastMany($n);
+        $this->getRemainTileList()->pop($n);
+        return $tiles;
     }
 
     /**
      * @return Tile
      */
     function draw() {
-        return $this->getRemainTileList()->pop();
+        $tile = $this->getRemainTileList()->getLast();
+        $this->getRemainTileList()->pop();
+        return $tile;
     }
 
     /**

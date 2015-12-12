@@ -14,6 +14,58 @@ use Saki\Util\ArrayLikeObject;
 use Saki\Win\WinAnalyzer;
 use Saki\Win\WinTarget;
 
+/*
+
+## note: round logic
+
+new phase
+
+- reset and shuffle wall
+- decide dealer player
+- decide each player's wind
+
+reset phase
+
+- each player draw 4 tiles
+- goto dealer player's private phase
+
+p's private phase: before execute command
+
+- when enter: turn++, draw 1 tile if allowed
+- show candidate commands
+- always: discard one of onHand tile
+- sometime: kong, plusKong, zimo
+
+p's private phase: after execute command
+
+- if discard: go to public phase
+- if zimo: go to round-over phase
+- if kong/plusKong: drawBack, stay in private phase
+
+p's public phase: basic version
+
+- public phase means waiting for other's response for current player's action
+- poller responsible for select a final action for public phase
+
+p's public phase: before execute command
+
+- only non-current players may have candidate commands
+- if none candidate commands exist: goto next player's private phase if remainTileCount > 0, otherwise go to over phase
+- if candidate commands exist, wait for each player's response, and execute the highest priority ones.
+- command types: ron, chow, pon, kong
+
+p's public phase: after execute command
+
+- if ron: go to round-over phase
+- if chow/pon/kong: go to execute player's private phase?
+
+over phase
+
+- draw or win
+- calculate points and modify players' points
+- new next round
+
+*/
 class Round {
     private $roundData;
     private $winAnalyzer;
@@ -156,6 +208,10 @@ class Round {
         $this->toInitPhase();
     }
 
+    function init() {
+        $this->toInitPhase();
+    }
+
     function discard(Player $player, Tile $selfTile) {
         $this->assertPrivatePhase($player);
         $this->getRoundData()->getTileAreas()->discard($player, $selfTile);
@@ -168,8 +224,8 @@ class Round {
 
         // assert waiting after discard
         $analyzer = $this->getWinAnalyzer()->getWaitingAnalyzer();
-        $handList = $player->getTileArea()->get14styleHandTileList();
-        $futureWaitingList = $analyzer->analyzePrivatePhaseFutureWaitingList($handList, $player->getTileArea()->getDeclaredMeldList());
+        $handList = $this->getRoundData()->getTileAreas()->getPrivateHand($player);
+        $futureWaitingList = $analyzer->analyzePrivatePhaseFutureWaitingList($handList, $player->getTileArea()->getDeclaredMeldListReference());
         $isWaiting = $futureWaitingList->count() > 0;
         if (!$isWaiting) {
             throw new \InvalidArgumentException('Reach condition violated: is waiting.');
@@ -223,7 +279,7 @@ class Round {
         $currentTurn = $this->getRoundData()->getTurnManager()->getGlobalTurn();
         $isFirstTurn = $currentTurn == 1;
         $noDeclaredActions = !$this->getRoundData()->getTileAreas()->getDeclareHistory()->hasDeclare($currentTurn, Tile::fromString('E'));
-        $validTileList = $player->getTileArea()->get14styleHandTileList()->isNineKindsOfTerminalOrHonor();
+        $validTileList = $this->getRoundData()->getTileAreas()->getPrivateHand($player)->isNineKindsOfTerminalOrHonor();
 
         $valid = $isFirstTurn && $noDeclaredActions && $validTileList;
         if (!$valid) {
@@ -261,9 +317,9 @@ class Round {
             $waitingAnalyzer = $this->getWinAnalyzer()->getWaitingAnalyzer();
             $roundData = $this->getRoundData();
             $isWaitingStates = array_map(function (Player $player) use ($waitingAnalyzer, $roundData) {
-                $handTileList = $player->getTileArea()->get13styleHandTileList();
-                $declaredMeldList = $player->getTileArea()->getDeclaredMeldList();
-                $waitingTileList = $waitingAnalyzer->analyzePublicPhaseHandWaitingTileList($handTileList, $declaredMeldList);
+                $a13StyleHandTileList = $roundData->getTileAreas()->getPublicHand($player);
+                $declaredMeldList = $player->getTileArea()->getDeclaredMeldListReference();
+                $waitingTileList = $waitingAnalyzer->analyzePublicPhaseHandWaitingTileList($a13StyleHandTileList, $declaredMeldList);
                 $isWaiting = $waitingTileList->count() > 0;
                 return $isWaiting;
             }, $players);
@@ -306,7 +362,7 @@ class Round {
     protected function handleFourKongDraw() {
         // more than 4 declared-kong-meld by at least 2 targetList
         $declaredKongCounts = $this->getPlayerList()->toArray(function (Player $player) {
-            return $player->getTileArea()->getDeclaredMeldList()->toFilteredTypesMeldList([QuadMeldType::getInstance()])->count();
+            return $player->getTileArea()->getDeclaredMeldListReference()->toFilteredTypesMeldList([QuadMeldType::getInstance()])->count();
         });
         $kongCount = array_sum($declaredKongCounts);
         $declaredKongCountArray = new ArrayLikeObject($declaredKongCounts);

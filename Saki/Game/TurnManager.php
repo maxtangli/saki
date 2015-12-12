@@ -55,7 +55,9 @@ class TurnManager {
 
     function getRoundResult() {
         if (!$this->roundResult) {
-            throw new \LogicException();
+            throw new \LogicException(
+                sprintf('RoundResult not exist in RoundPhase[%s]', $this->getRoundPhase())
+            );
         }
         return $this->roundResult;
     }
@@ -132,12 +134,17 @@ class TurnManager {
      * @return Player
      */
     function getOffsetPlayer($offset, Player $basePlayer = null) {
-        $basePlayerWind = $basePlayer ? $basePlayer->getSelfWind(): null;
+        $basePlayerWind = $basePlayer ? $basePlayer->getSelfWind() : null;
         $wind = $this->playerWindRoller->getOffsetTarget($offset, $basePlayerWind);
         return $this->selfWindToPlayer($wind);
     }
 
     protected function selfWindToPlayer(Tile $selfWind) {
         return $this->playerList->getSelfWindPlayer($selfWind);
+    }
+
+    // convenient methods
+    function isJustBegin() {
+        return $this->getGlobalTurn() == 1 && $this->getRoundPhase()->getValue() == RoundPhase::PRIVATE_PHASE;
     }
 }

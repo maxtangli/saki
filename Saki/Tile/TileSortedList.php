@@ -57,18 +57,8 @@ class TileSortedList extends TileList {
         parent::setInnerArray($sortedTiles);
     }
 
-    function toHandTileSortedList($isPrivate, Tile $targetTile) {
-        $tileSortedList = new TileSortedList($this->toArray());
-        if ($isPrivate) {
-            if (!$tileSortedList->isPrivateHandCount()) {
-                $tileSortedList->push($targetTile);
-            }
-        } else {
-            if (!$tileSortedList->isPublicHandCount()) {
-                $tileSortedList->removeByValue($targetTile);
-            }
-        }
-        return $tileSortedList;
+    function toTileSortedList() {
+        return new TileSortedList($this->toArray());
     }
 }
 

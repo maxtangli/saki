@@ -3,6 +3,7 @@ namespace Saki\Game;
 
 use Saki\Tile\Tile;
 use Saki\Util\ArrayLikeObject;
+use Saki\Util\Utils;
 
 class PlayerList extends ArrayLikeObject {
 
@@ -55,6 +56,12 @@ class PlayerList extends ArrayLikeObject {
         return $this->any(function (Player $player) {
             return $player->getScore() < 0;
         });
+    }
+
+    function isNextPlayer(Player $currentPlayer, Player $targetPlayer) {
+        $windOffset = $targetPlayer->getSelfWind()->getWindOffset($currentPlayer->getSelfWind());
+        $normalizedWindOffset = Utils::getNormalizedModValue($windOffset, $this->count());
+        return $normalizedWindOffset == 1;
     }
 
     /**

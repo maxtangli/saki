@@ -5,8 +5,9 @@ namespace Saki\Tile;
 use Saki\Util\ArrayLikeObject;
 use Saki\Util\Factory;
 use Saki\Util\Utils;
+use Saki\Util\ValueObject;
 
-class Tile {
+class Tile implements ValueObject {
     const REGEX_SUIT_NUMBER = '[1-9]';
     const REGEX_SUIT_TILE = '(' . self::REGEX_SUIT_NUMBER . TileType::REGEX_SUIT_TYPE . ')';
     const REGEX_HONOR_TILE = TileType::REGEX_HONOR_TYPE;

@@ -48,7 +48,7 @@ class WinAnalyzer {
     function analyzeTarget(WinTarget $target) {
         // handTiles target -> handMelds[] subTarget
         $analyzer = new MeldCompositionsAnalyzer();
-        $handTileList = $target->getHandTileSortedList(true);
+        $handTileList = $target->getPrivateHand();
         $handMeldTypes = [
             RunMeldType::getInstance(),
             TripleMeldType::getInstance(),
@@ -81,7 +81,7 @@ class WinAnalyzer {
 
         // handle furiten
         if ($targetSubResult->getWinState()->isTrueWin()) {
-            $publicHandTileList = $target->getHandTileSortedList(false);
+            $publicHandTileList = $target->getPublicHand();
             $waitingTileList = $this->getWaitingAnalyzer()->analyzePublicPhaseHandWaitingTileList(
                 $publicHandTileList, $target->getDeclaredMeldList()
             );

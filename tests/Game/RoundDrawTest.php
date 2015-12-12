@@ -11,7 +11,8 @@ class RoundDrawTest extends PHPUnit_Framework_TestCase {
         $r = new MockRound();
         // 130ms = avg0.7ms/time * 200times
         for ($phase = $r->getRoundPhase(); $phase != RoundPhase::getOverPhaseInstance(); $phase = $r->getRoundPhase()) {
-            $r->discard($r->getCurrentPlayer(), $r->getCurrentPlayer()->getTileArea()->getHandTileSortedList()[0]);
+            $discardTile = $r->getRoundData()->getTileAreas()->getPrivateHand($r->getCurrentPlayer())[0];
+            $r->discard($r->getCurrentPlayer(), $discardTile);
             $r->passPublicPhase();
         }
         $cls = get_class(new \Saki\RoundResult\ExhaustiveDrawRoundResult(\Saki\Game\PlayerList::createStandard()->toArray(), [false, false, false, false]));
@@ -23,7 +24,7 @@ class RoundDrawTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($validTileList->isNineKindsOfTerminalOrHonor());
 
         $r = new MockRound();
-        $r->debugSetHandTileList($r->getCurrentPlayer(), $validTileList);
+        $r->debugSetHand($r->getCurrentPlayer(), $validTileList);
         $r->nineKindsOfTerminalOrHonorDraw($r->getCurrentPlayer());
         $this->assertEquals(RoundResultType::NINE_KINDS_OF_TERMINAL_OR_HONOR_DRAW, $r->getRoundData()->getTurnManager()->getRoundResult()->getRoundResultType()->getValue());
     }

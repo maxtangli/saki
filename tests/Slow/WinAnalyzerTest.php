@@ -13,17 +13,17 @@ use Saki\Win\WinTarget;
 
 class WinAnalyzerTest extends \PHPUnit_Framework_TestCase {
     function testPublicPhaseTarget() {
-        $roundData = new RoundData();
+        $r = new MockRound();
+        $targetTile = Tile::fromString('5s');
+        $replaceHand = TileList::fromString('123m456m789m123s5s');
+        $r->debugDiscardByReplace($r->getCurrentPlayer(), $targetTile);
+        $r->debugSetHand($r->getCurrentPlayer(), $replaceHand);
 
-        $player = $roundData->getTurnManager()->getCurrentPlayer();
-        $roundData->getTurnManager()->debugSet($player, RoundPhase::getInstance(RoundPhase::PUBLIC_PHASE), 1);
-        $roundData->getTileAreas()->debugSet($player, TileList::fromString('123m456m789m123s5s'), null, Tile::fromString('5s'));
-
-        $target = new WinTarget($player, $roundData);
+        $target = new WinTarget($r->getCurrentPlayer(), $r->getRoundData());
 
         $dataProvider = [
-            [TileSortedList::fromString('123m456m789m123s55s'), $target->getHandTileSortedList(true)],
-            [TileSortedList::fromString('123m456m789m123s5s'), $target->getHandTileSortedList(false)],
+            ['123456789m12355s', $target->getPrivateHand()->__toString()],
+            ['123456789m1235s', $target->getPublicHand()->__toString()],
         ];
         foreach($dataProvider as list($expected, $actual)) {
             $this->assertEquals($expected, $actual, sprintf('expected[%s] but actual[%s]', $expected, $actual));

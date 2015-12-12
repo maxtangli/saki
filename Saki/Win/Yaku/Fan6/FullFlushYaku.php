@@ -19,7 +19,7 @@ class FullFlushYaku extends Yaku {
     }
 
     protected function matchOtherConditions(WinSubTarget $subTarget) {
-        return $subTarget->getAllTileSortedList(true)->isFlush(true);
+        return $subTarget->getPrivateFull()->isFlush(true);
     }
 
     function getExcludedYakus() {

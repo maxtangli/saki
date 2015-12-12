@@ -23,6 +23,6 @@ class AllSimplesYaku extends Yaku {
     }
 
     protected function matchOtherConditions(WinSubTarget $subTarget) {
-        return $subTarget->getAllTileSortedList(true)->isAllSimple();
+        return $subTarget->getPrivateFull()->isAllSimple();
     }
 }

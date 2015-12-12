@@ -42,7 +42,7 @@ class RoundWinTest extends PHPUnit_Framework_TestCase {
     function testWinByOther() {
         $r = new MockRound();
         $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('4s'));
-        $r->debugSetHandTileList($r->getPlayerList()[1], TileList::fromString('123m456m789m23s55s'));
+        $r->debugSetHand($r->getPlayerList()[1], TileList::fromString('123m456m789m23s55s'));
         $r->winByOther($r->getPlayerList()[1]);
         $this->assertTrue($r->getRoundData()->getTurnManager()->getRoundResult()->getRoundResultType()->isWin());
     }
@@ -50,8 +50,8 @@ class RoundWinTest extends PHPUnit_Framework_TestCase {
     function testMultiWinByOther() {
         $r = new MockRound();
         $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('4s'));
-        $r->debugSetHandTileList($r->getPlayerList()[1], TileList::fromString('123m456m789m23s55s'));
-        $r->debugSetHandTileList($r->getPlayerList()[2], TileList::fromString('123m456m789m23s55s'));
+        $r->debugSetHand($r->getPlayerList()[1], TileList::fromString('123m456m789m23s55s'));
+        $r->debugSetHand($r->getPlayerList()[2], TileList::fromString('123m456m789m23s55s'));
         $r->multiWinByOther([$r->getPlayerList()[1], $r->getPlayerList()[2]]);
         $this->assertTrue($r->getRoundData()->getTurnManager()->getRoundResult()->getRoundResultType()->isWin());
     }
@@ -67,10 +67,7 @@ class RoundWinTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($r->isGameOver());
 
         // E Player winBySelf, but score not over 30000
-        $r->getCurrentPlayer()->getTileArea()->getHandTileSortedList()->setInnerArray(
-            \Saki\Tile\TileList::fromString('123m456m789m123s55s')->toArray()
-        );
-        $r->getRoundData()->getTileAreas()->setTargetTile(Tile::fromString('2m'));
+        $r->getRoundData()->getTileAreas()->debugSet($r->getCurrentPlayer(), TileList::fromString('123m456m789m123s55s'), null, Tile::fromString('2m'));
         $r->winBySelf($r->getCurrentPlayer());
         $r->getCurrentPlayer()->setScore('25000');
         $this->assertFalse($r->isGameOver());

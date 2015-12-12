@@ -160,18 +160,17 @@ class ArrayLikeObjectTest extends \PHPUnit_Framework_TestCase {
     /**
      * @dataProvider removeProvider
      */
-    function testRemove($expectedReturn, array $expectedRemain, array $a, $removeIndex) {
+    function testRemove(array $expectedRemain, array $a, $removeIndex) {
         $obj = new ArrayLikeObject($a);
-        $ret = $obj->removeByIndex($removeIndex);
-        $this->assertEquals($expectedReturn, $ret);
+        $obj->removeByIndex($removeIndex);
         $this->assertEquals($expectedRemain, $obj->toArray());
     }
 
     function removeProvider() {
         return [
-            [0, [1, 2], [0, 1, 2], 0,],
-            [[0], [1, 2], [0, 1, 2], [0]],
-            [[0, 2], [1], [0, 1, 2], [0, 2]]
+            [[1, 2], [0, 1, 2], 0,],
+            [[1, 2], [0, 1, 2], [0]],
+            [[1], [0, 1, 2], [0, 2]]
         ];
     }
 
@@ -201,21 +200,21 @@ class ArrayLikeObjectTest extends \PHPUnit_Framework_TestCase {
         $a = [0, 1, 2, 3, 4, 5];
         $obj = new ArrayLikeObject($a);
 
-        $this->assertEquals(5, $obj->pop());
-        $this->assertEquals([0, 1, 2, 3, 4], $obj->toArray());
+        $this->assertEquals([5], $obj->getLastMany(1));
+        $this->assertEquals([0, 1, 2, 3, 4], $obj->pop(1)->toArray());
 
-        $this->assertEquals([4, 3], $obj->pop(2));
-        $this->assertEquals([0, 1, 2], $obj->toArray());
+        $this->assertEquals([4, 3], $obj->getLastMany(2));
+        $this->assertEquals([0, 1, 2], $obj->pop(2)->toArray());
     }
 
     function testShift() {
         $a = [-5, -4, -3, -2, -1, 0];
         $obj = new ArrayLikeObject($a);
 
-        $this->assertEquals(-5, $obj->shift());
-        $this->assertEquals([-4, -3, -2, -1, 0], $obj->toArray());
+        $this->assertEquals(-5, $obj->getFirst());
+        $this->assertEquals([-4, -3, -2, -1, 0], $obj->shift()->toArray());
 
-        $this->assertEquals([-4, -3], $obj->shift(2));
-        $this->assertEquals([-2, -1, 0], $obj->toArray());
+        $this->assertEquals([-4, -3], $obj->getFirstMany(2));
+        $this->assertEquals([-2, -1, 0], $obj->shift(2)->toArray());
     }
 }

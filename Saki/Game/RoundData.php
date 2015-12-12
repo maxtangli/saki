@@ -1,6 +1,8 @@
 <?php
 namespace Saki\Game;
 
+use Saki\Tile\Tile;
+
 class RoundData {
     // immutable during game
     private $gameData;
@@ -37,6 +39,17 @@ class RoundData {
         $currentDealer = $this->getPlayerList()->getDealerPlayer();
         $nextDealer = $keepDealer ? $currentDealer : $this->getTurnManager()->getOffsetPlayer(1, $currentDealer);
         $this->getPlayerList()->reset($nextDealer);
+
+        $this->getTurnManager()->reset();
+        $this->getTileAreas()->reset();
+    }
+
+    function debugReset(RoundDebugResetData $resetData) {
+        $this->getRoundWindData()->debugReset($resetData->getRoundWind(), $resetData->getRoundWindTurn(), $resetData->getSelfWindTurn());
+
+        $dealer = $this->getPlayerList()->getSelfWindPlayer($resetData->getDealerWind());
+        $this->getPlayerList()->reset($dealer);
+
         $this->getTurnManager()->reset();
         $this->getTileAreas()->reset();
     }

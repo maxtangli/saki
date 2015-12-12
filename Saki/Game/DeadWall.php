@@ -79,6 +79,8 @@ class DeadWall {
         if ($this->tileList->count() <= 10) {
             throw new \InvalidArgumentException();
         }
-        return $this->tileList->shift();
+        $tile = $this->tileList->getFirst();
+        $this->tileList->shift();
+        return $tile;
     }
 }

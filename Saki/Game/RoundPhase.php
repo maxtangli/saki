@@ -52,7 +52,15 @@ class RoundPhase extends Enum {
     }
 
     function isPrivateOrPublic() {
-        return in_array($this->getValue(), [RoundPhase::PRIVATE_PHASE, RoundPhase::PUBLIC_PHASE]);
+        return $this->isPrivate() || $this->isPublic();
+    }
+
+    function isPrivate() {
+        return $this->getValue() == RoundPhase::PRIVATE_PHASE;
+    }
+
+    function isPublic() {
+        return $this->getValue() == RoundPhase::PUBLIC_PHASE;
     }
 
     /**

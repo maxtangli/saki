@@ -44,15 +44,13 @@ class PerformanceTest extends PHPUnit_Framework_TestCase {
         $b = new Benchmark('TileArea');
 
         $r = new Round();
-        $tileArea = $r->getCurrentPlayer()->getTileArea();
-        $b->add(new BenchmarkItem('getHandTileSortedList()', function() use($tileArea) {
-            return $tileArea->getHandTileSortedList();
+        $tileAreas = $r->getRoundData()->getTileAreas();
+        $currentPlayer = $r->getCurrentPlayer();
+        $b->add(new BenchmarkItem('get13styleHandTileList()', function() use($tileAreas, $currentPlayer) {
+            return $tileAreas->getPublicHand($currentPlayer);
         }));
-        $b->add(new BenchmarkItem('get13styleHandTileList()', function() use($tileArea) {
-            return $tileArea->get13styleHandTileList();
-        }));
-        $b->add(new BenchmarkItem('get14styleHandTileList()', function() use($tileArea) {
-            return $tileArea->get14styleHandTileList();
+        $b->add(new BenchmarkItem('get14styleHandTileList()', function() use($tileAreas, $currentPlayer) {
+            return $tileAreas->getPrivateHand($currentPlayer);
         }));
         return $b;
     }
@@ -65,7 +63,7 @@ class PerformanceTest extends PHPUnit_Framework_TestCase {
         }));
 
         $r = new MockRound();
-        $tile = $r->getCurrentPlayer()->getTileArea()->get13styleHandTileList()[0];
+        $tile = $r->getRoundData()->getTileAreas()->getPrivateHand($r->getCurrentPlayer());
         $b->add(new BenchmarkItem('discard()', function()use($r, $tile) {
             $r->discard($r->getCurrentPlayer(), $tile);
         }));
@@ -79,13 +77,13 @@ class PerformanceTest extends PHPUnit_Framework_TestCase {
         }));
 
         $notWinPlayer = $r->getPlayerList()->getSelfWindPlayer(Tile::fromString('S'));
-        $r->debugSetHandTileList($notWinPlayer, TileList::fromString('13579m13579p135s'));
+        $r->debugSetHand($notWinPlayer, TileList::fromString('13579m13579p135s'));
         $b->add(new BenchmarkItem('getWinResult()//notWin', function () use ($r, $notWinPlayer) {
             return $r->getWinResult($notWinPlayer);
         }));
 
         $winPlayer = $r->getPlayerList()->getSelfWindPlayer(Tile::fromString('W'));
-        $r->debugSetHandTileList($winPlayer, TileList::fromString('123456789m123sE'));
+        $r->debugSetHand($winPlayer, TileList::fromString('123456789m123sE'));
         $b->add(new BenchmarkItem('getWinResult()//win', function () use ($r, $winPlayer) {
             return $r->getWinResult($winPlayer);
         }));

@@ -84,14 +84,18 @@ class MeldList extends ArrayLikeObject {
         });
     }
 
-    function isCompleteCount() {
+    function getHandCount() {
         $quadMeldCount = $this->toFilteredTypesMeldList([QuadMeldType::getInstance()])->count();
         $n = $this->toSortedTileList()->count() - $quadMeldCount;
-        return $n == 14;
+        return $n;
     }
 
-    function assertCompleteCount() {
-        if (!$this->isCompleteCount()) {
+    function isCompletePrivateHandCount() {
+        return $this->getHandCount() == 14;
+    }
+
+    function assertCompletePrivateHandCount() {
+        if (!$this->isCompletePrivateHandCount()) {
             throw new \LogicException();
         }
     }
@@ -105,7 +109,7 @@ class MeldList extends ArrayLikeObject {
     // tileSeries
 
     function isSevenUniquePairs() {
-        $this->assertCompleteCount();
+        $this->assertCompletePrivateHandCount();
 
         $pairs = $this->toFilteredTypesMeldList([PairMeldType::getInstance()])->toArray();
         $isUnique = array_unique($pairs) == $pairs;
@@ -113,7 +117,7 @@ class MeldList extends ArrayLikeObject {
     }
 
     function isFourWinSetAndOnePair() {
-        $this->assertCompleteCount();
+        $this->assertCompletePrivateHandCount();
 
         $winSetList = $this->toFilteredMeldList(function (Meld $meld) {
             return $meld->getWinSetType()->isWinSet();
@@ -123,7 +127,7 @@ class MeldList extends ArrayLikeObject {
     }
 
     function isFourRunAndOnePair() {
-        $this->assertCompleteCount();
+        $this->assertCompletePrivateHandCount();
 
         $runList = $this->toFilteredTypesMeldList([RunMeldType::getInstance()]);
         $pairList = $this->toFilteredTypesMeldList([PairMeldType::getInstance()]);
@@ -131,7 +135,7 @@ class MeldList extends ArrayLikeObject {
     }
 
     function isFourTripleOrQuadAndOnePair($requireConcealedTripleOrQuad = false) {
-        $this->assertCompleteCount();
+        $this->assertCompletePrivateHandCount();
 
         $tripleOrQuadList = $this->toFilteredTypesMeldList([TripleMeldType::getInstance(), QuadMeldType::getInstance()]);
         $pairList = $this->toFilteredTypesMeldList([PairMeldType::getInstance()]);
@@ -146,7 +150,7 @@ class MeldList extends ArrayLikeObject {
     // yaku: run concerned
 
     function isDoubleRun($isTwoDoubleRun) {
-        $this->assertCompleteCount();
+        $this->assertCompletePrivateHandCount();
 
         $requiredDoubleRunCount = $isTwoDoubleRun ? 2 : 1;
 
@@ -162,7 +166,7 @@ class MeldList extends ArrayLikeObject {
     }
 
     function isThreeColorRuns() {
-        $this->assertCompleteCount();
+        $this->assertCompletePrivateHandCount();
 
         return $this->any(function (Meld $meld) {
             return $meld->isRun() && $this->valueExist($meld->toAllSuitTypes(), Meld::getEqualsCallback(false));
@@ -170,7 +174,7 @@ class MeldList extends ArrayLikeObject {
     }
 
     function isThreeColorTripleOrQuads() {
-        $this->assertCompleteCount();
+        $this->assertCompletePrivateHandCount();
 
         $tripleOrQuadList = $this->toFilteredTypesMeldList([TripleMeldType::getInstance(), QuadMeldType::getInstance()]);
 
@@ -186,7 +190,7 @@ class MeldList extends ArrayLikeObject {
     }
 
     function isFullStraight() {
-        $this->assertCompleteCount();
+        $this->assertCompletePrivateHandCount();
 
         $targetMeldsArray = new ArrayLikeObject([
             [Meld::fromString('123m'), Meld::fromString('456m'), Meld::fromString('789m')],
@@ -202,7 +206,7 @@ class MeldList extends ArrayLikeObject {
     // yaku: triple/quad concerned
 
     function isValueTiles(Tile $valueTile) {
-        $this->assertCompleteCount();
+        $this->assertCompletePrivateHandCount();
         $tripleOrQuadList = $this->toFilteredTypesMeldList([TripleMeldType::getInstance(), QuadMeldType::getInstance()]);
         return $tripleOrQuadList->any(function (Meld $tripleOrQuad) use ($valueTile) {
             return $tripleOrQuad[0] == $valueTile;
@@ -210,7 +214,7 @@ class MeldList extends ArrayLikeObject {
     }
 
     function isPeace() {
-        $this->assertCompleteCount();
+        $this->assertCompletePrivateHandCount();
         // all suits
         // 4 runs
         // 1 pair
@@ -219,14 +223,14 @@ class MeldList extends ArrayLikeObject {
     }
 
     function isThreeConcealedTripleOrQuads() {
-        $this->assertCompleteCount();
+        $this->assertCompletePrivateHandCount();
         $concealedTripleOrQuadList = $this->toFilteredTypesMeldList(
             [TripleMeldType::getInstance(), QuadMeldType::getInstance()], true);
         return $concealedTripleOrQuadList->count() == 3;
     }
 
     function isThreeOrFourQuads($isFour) {
-        $this->assertCompleteCount();
+        $this->assertCompletePrivateHandCount();
 
         $quadList = $this->toFilteredTypesMeldList([QuadMeldType::getInstance()]);
         $n = $isFour ? 4 : 3;
@@ -235,7 +239,7 @@ class MeldList extends ArrayLikeObject {
 
     // yaku: tile concerned
     function isOutsideHand($isPure) {
-        $this->assertCompleteCount();
+        $this->assertCompletePrivateHandCount();
 
         $runMeldList = $this->toFilteredTypesMeldList([RunMeldType::getInstance()]);
         if ($runMeldList->isEmpty()) {
@@ -248,7 +252,7 @@ class MeldList extends ArrayLikeObject {
     }
 
     function isAllTerminals() {
-        $this->assertCompleteCount();
+        $this->assertCompletePrivateHandCount();
 
         return $this->all(function (Meld $meld) {
             return $meld->isAllTerminal();
@@ -256,7 +260,7 @@ class MeldList extends ArrayLikeObject {
     }
 
     function isAllHonors() {
-        $this->assertCompleteCount();
+        $this->assertCompletePrivateHandCount();
 
         return $this->all(function (Meld $meld) {
             return $meld->isAllHonor();
@@ -264,7 +268,7 @@ class MeldList extends ArrayLikeObject {
     }
 
     function isAllTerminalsAndHonors() {
-        $this->assertCompleteCount();
+        $this->assertCompletePrivateHandCount();
 
         return $this->all(function (Meld $meld) {
             return $meld->isAllTerminalOrHonor();
@@ -272,7 +276,7 @@ class MeldList extends ArrayLikeObject {
     }
 
     function isThreeDragon($isBig) {
-        $this->assertCompleteCount();
+        $this->assertCompletePrivateHandCount();
 
         $dragonMeldList = $this->toFilteredMeldList(function (Meld $meld) {
             return $meld[0]->getTileType()->isDragon();
@@ -286,7 +290,7 @@ class MeldList extends ArrayLikeObject {
     }
 
     function isFourWinds($isBig) {
-        $this->assertCompleteCount();
+        $this->assertCompletePrivateHandCount();
 
         $windMeldList = $this->toFilteredMeldList(function (Meld $meld) {
             return $meld[0]->getTileType()->isWind();

@@ -10,7 +10,7 @@ class MeldCompositionsAnalyzer {
     static $debug_time_cost = 0;
 
     /**
-     * @param TileList|\Saki\Tile\TileSortedList $tileList
+     * @param TileList $tileList
      * @param MeldType[] $meldTypes
      * @param int $allowPureWeakCount
      * @param bool $toConcealed
@@ -30,7 +30,7 @@ class MeldCompositionsAnalyzer {
     }
 
     /**
-     * @param \Saki\Tile\TileSortedList $tileSortedList
+     * @param TileSortedList $tileSortedList
      * @param MeldType[] $meldTypes
      * @param int $allowPureWeakCount
      * @param bool $toConcealed

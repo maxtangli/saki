@@ -6,12 +6,13 @@ use Saki\Tile\TileList;
 use Saki\Tile\TileSortedList;
 use Saki\Tile\TileType;
 use Saki\Util\ArrayLikeObject;
+use Saki\Util\ValueObject;
 
 /**
  * ValueObject
  * @package Saki\Meld
  */
-class Meld extends ArrayLikeObject {
+class Meld extends ArrayLikeObject implements ValueObject {
     private static $meldTypeAnalyzer;
 
     /**

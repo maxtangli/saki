@@ -122,15 +122,20 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
 
     function setWritable($writable) {
         $this->writable = $writable;
+        return $this;
     }
 
     protected function assertWritable() {
         if (!$this->isWritable()) {
-            throw new \LogicException('The ArrayLikeObject[%s] is not writable.', $this->__toString());
+            throw new \LogicException('ArrayLikeObject[%s] is not writable.', $this->__toString());
         }
     }
 
     // convert
+
+    function toArrayLikeObject() {
+        return new ArrayLikeObject($this->innerArray);
+    }
 
     function toArray(callable $selector = null) {
         if ($selector !== null) {
@@ -149,7 +154,7 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
     }
 
     function toReducedValue(callable $reduceCallback, $initialValue) {
-        return array_reduce($this->toArray(), $reduceCallback, $initialValue);
+        return array_reduce($this->innerArray, $reduceCallback, $initialValue);
     }
 
     // implement interfaces
@@ -174,6 +179,7 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         if ($this->offsetExists($offset)) {
             $this->innerArray[$offset] = $value;
             $this->onInnerArrayChanged();
+            return $this;
         } else {
             throw new \InvalidArgumentException("Invalid \$offset[$offset] for ArrayLikeObject \$this[$this].");
         }
@@ -301,18 +307,31 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
     }
 
     function getFirst() {
-        return $this->indexToValue(0);
+        $targetIndex = 0;
+        return $this->indexToValue($targetIndex); // validate
+    }
+
+    function getFirstMany($n) {
+        $targetIndexes = range(0, $n - 1);
+        return $this->indexToValue($targetIndexes); // validate
     }
 
     function getNext($originValue, $offset = 1) {
-        $originIndex = $this->valueToIndex($originValue);
+        $originIndex = $this->valueToIndex($originValue); // validate
         $targetIndex = Utils::getNormalizedModValue($originIndex + $offset, $this->count());
-        $targetValue = $this->indexToValue($targetIndex);
+        $targetValue = $this->indexToValue($targetIndex); // validate
         return $targetValue;
     }
 
     function getLast() {
-        return $this->indexToValue($this->count() - 1);
+        $targetIndex = $this->count() - 1;
+        return $this->indexToValue($targetIndex); // validate
+    }
+
+    function getLastMany($n) {
+        $count = $this->count();
+        $targetIndexes = range($count - 1, $count - $n);
+        return $this->indexToValue($targetIndexes); // validate
     }
 
     /**
@@ -393,6 +412,7 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         }
         $this->innerArray = $innerArray;
         $this->onInnerArrayChanged();
+        return $this;
     }
 
     protected function util_is0BeginAscendingIntKeyArray(array $a) {
@@ -404,6 +424,7 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
 
         array_walk($this->innerArray, $callback);
         $this->onInnerArrayChanged();
+        return $this;
     }
 
     function shuffle() {
@@ -411,6 +432,7 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
 
         shuffle($this->innerArray);
         $this->onInnerArrayChanged();
+        return $this;
     }
 
     function leftShift($n) {
@@ -432,6 +454,7 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         $this->innerArray = $newAll;
 
         $this->onInnerArrayChanged();
+        return $this;
     }
 
     function rightShift($n) {
@@ -439,10 +462,12 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
 
         $this->leftShift(-$n);
         // onInnerArrayChanged() already called in leftShift().
+        return $this;
     }
 
     /**
      * @param null|bool|object|callable $equals
+     * @return ArrayLikeObject
      */
     function unique(callable $equals = null) {
         $this->assertWritable();
@@ -459,6 +484,7 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
             $this->innerArray = array_unique($this->innerArray);
         }
         $this->onInnerArrayChanged();
+        return $this;
     }
 
     // write operations: replace
@@ -480,12 +506,14 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         $replace = array_combine($indexes, $newValues);
         $this->innerArray = array_replace($this->innerArray, $replace);
         $this->onInnerArrayChanged();
+        return $this;
     }
 
     /**
      * @param object|array $oldValueOrValues
      * @param object|array $newValueOrValues
      * @param null|bool|object|callable $equals
+     * @return ArrayLikeObject
      */
     function replaceByValue($oldValueOrValues, $newValueOrValues, $equals = null) {
         $this->assertWritable();
@@ -493,6 +521,7 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         $indexOrIndexes = $this->valueToIndex($oldValueOrValues, $equals);
         $this->replaceByIndex($indexOrIndexes, $newValueOrValues);
         // onInnerArrayChanged() already called in replaceByIndex().
+        return $this;
     }
 
     // write operations: insert
@@ -508,6 +537,7 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         $values = static::boxing($valueOrValues);
         array_splice($this->innerArray, $pos, 0, $values); // splice() will rearrange integer-keys
         $this->onInnerArrayChanged();
+        return $this;
     }
 
     function unShift($valueOrValues) {
@@ -515,6 +545,7 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
 
         $this->insert($valueOrValues, 0);
         // onInnerArrayChanged() already called in insert().
+        return $this;
     }
 
     function push($valueOrValues) {
@@ -522,6 +553,7 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
 
         $this->insert($valueOrValues, $this->count());
         // onInnerArrayChanged() already called in insert().
+        return $this;
     }
 
     function merge(ArrayLikeObject $otherList) {
@@ -529,6 +561,7 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
 
         $this->insert($otherList->toArray(), $this->count());
         // onInnerArrayChanged() already called in insert().
+        return $this;
     }
 
     // write operations: remove
@@ -548,42 +581,45 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         $this->innerArray = $newInnerArray;
         $this->onInnerArrayChanged();
 
-        return $removedValues;
+        return $removedValues; // todo
     }
 
     /**
      * @param object|array $valueOrValues
      * @param null|bool|object|callable $equals
-     * @return object|array removed value or values.
+     * @return ArrayLikeObject
      */
     function removeByValue($valueOrValues, $equals = null) {
         $this->assertWritable();
 
-        return $this->removeByIndex($this->valueToIndex($valueOrValues, $equals));
+        $this->removeByIndex($this->valueToIndex($valueOrValues, $equals));
+        return $this;
     }
 
     function shift($n = 1) {
         $this->assertWritable();
+        $this->assertValidRemoveCount($n);
 
-        $indexOrIndexes = $n == 1 ? 0 : range(0, $n - 1);
-        return $this->removeByIndex($indexOrIndexes);
+        array_splice($this->innerArray, 0, $n);
+        $this->onInnerArrayChanged();
+        return $this;
     }
 
     function pop($n = 1) {
         $this->assertWritable();
+        $this->assertValidRemoveCount($n);
 
-        $count = $this->count();
-        if (!(0 < $n && $n <= $count)) {
+        array_splice($this->innerArray, $this->count() - $n, $n);
+        $this->onInnerArrayChanged();
+        return $this;
+    }
+
+    protected function assertValidRemoveCount($n) {
+        if (!Utils::inRange($n, 1, $this->count())) {
             throw new \InvalidArgumentException(
-                sprintf('pop count $n[%s] should less than total count[%s].', $n, $count)
+                sprintf('remove count $n[%s] should < total count[%s].', $n, $this->count())
             );
         }
-
-        $reversedResult = array_splice($this->innerArray, $count - $n, $n);
-        $this->onInnerArrayChanged();
-
-        $result = array_reverse($reversedResult, false);
-        return self::unboxingByOrigin($result, $n > 1);
     }
 
     // hook

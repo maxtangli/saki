@@ -2,13 +2,15 @@
 
 namespace Saki\Game;
 
-// operations upon a Wall and 2-4 TileArea
 use Saki\Meld\MeldList;
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 use Saki\Tile\TileSortedList;
-use Saki\Game\RoundTurn;
 
+/**
+ * Provide collaborate operations on 1 Wall and 2-4 TileArea.
+ * @package Saki\Game
+ */
 class TileAreas {
     // immutable
     private $playerList;
@@ -42,22 +44,63 @@ class TileAreas {
         $this->declareHistory->reset();
     }
 
-    function debugSet(Player $player, TileList $tileList, MeldList $declareMeldList = null, Tile $targetTile = null) {
-        $actualDeclareMeldList = $declareMeldList ? : MeldList::fromString('');
-        if ($tileList->isPrivateHandCount()) {
-            $actualTargetTile = $targetTile ? : $tileList[0];
-        } elseif ($tileList->isPublicHandCount() && $targetTile) {
-            $actualTargetTile = $targetTile;
-        } else {
+    function debugSet(Player $player, TileList $hand, MeldList $declareMeldList = null, Tile $targetTile = null) {
+        $currentHand = $player->getTileArea()->getHandReference();
+        $validHandPhase = $hand->getHandCount()->equalsPhase($currentHand->getHandCount());
+        if (!$validHandPhase) {
             throw new \InvalidArgumentException(
-                sprintf('Invalid $tileList[%s], $targetTile[%s]', $tileList, $targetTile)
+                sprintf('Invalid $hand[%s(%s)], expected same phase one with current hand[%s(%s)].',
+                    $hand, $hand->getHandCount(), $currentHand, $currentHand->getHandCount())
             );
         }
 
-        $tileArea = $player->getTileArea();
-        $tileArea->getHandTileSortedList()->setInnerArray($tileList->toArray());
-        $tileArea->getDeclaredMeldList()->setInnerArray($actualDeclareMeldList->toArray());
+        $actualDeclareMeldList = $declareMeldList ?: MeldList::fromString('');
+
+        if ($hand->isPrivateHand() && $targetTile && $hand->valueExist($targetTile)) {
+            $actualTargetTile = $targetTile;
+        } elseif ($hand->isPrivateHand() && !$targetTile) {
+            $actualTargetTile = $hand[0];
+        } elseif ($hand->isPublicHand() && !$targetTile && $this->hasTargetTile()) {
+            $actualTargetTile = $this->getTargetTile();
+        } else {
+            throw new \InvalidArgumentException(
+                sprintf('Invalid combination of $hand[%s], $targetTile[%s].', $hand, $targetTile)
+            );
+        }
+
+        $privateFullCount = $hand->count() + ($hand->isPublicHand() ? 1 : 0) + $actualDeclareMeldList->getHandCount();
+        $validPrivateFullCount = $privateFullCount == 14;
+        if (!$validPrivateFullCount) {
+            throw new \InvalidArgumentException(
+                sprintf('Invalid privateFullCount[%s] of $hand[%s], $actualDeclareMeldList[%s], $targetTile[%s].'
+                    , $privateFullCount, $hand, $actualDeclareMeldList, $targetTile)
+            );
+        }
+
+        $player->getTileArea()->getHandReference()->setInnerArray($hand->toArray());
+        $player->getTileArea()->getDeclaredMeldListReference()->setInnerArray($actualDeclareMeldList->toArray());
         $this->setTargetTile($actualTargetTile);
+    }
+
+    function debugSetPrivate(Player $player, TileList $hand, MeldList $declareMeldList = null, Tile $targetTile = null) {
+        $this->debugSet($player, $hand, $declareMeldList, $targetTile);
+    }
+
+    function debugSetPublic(Player $player, TileList $hand, MeldList $declareMeldList = null) {
+        $this->debugSet($player, $hand, $declareMeldList);
+    }
+
+    function debugReplaceHand(Player $player, TileList $replaceTileList) {
+        $handReference = $player->getTileArea()->getHandReference();
+        $valid = $replaceTileList->count() <= $handReference->count();
+        if (!$valid) {
+            throw new \InvalidArgumentException();
+        }
+
+        $replaceIndexes = range(0, $replaceTileList->count() - 1);
+        $newHand = $handReference->toTileSortedList()->replaceByIndex($replaceIndexes, $replaceTileList->toArray());
+        $declaredMeldList = $player->getTileArea()->getDeclaredMeldListReference();
+        $this->debugSet($player, $newHand, $declaredMeldList);
     }
 
     // getter,setter
@@ -85,16 +128,19 @@ class TileAreas {
         return $this->targetTile !== null;
     }
 
+    /**
+     * @return Tile
+     */
     function getTargetTile() {
         if (!$this->hasTargetTile()) {
-            throw new \InvalidArgumentException('$publicTargetTile not existed.');
+            throw new \InvalidArgumentException('$targetTile not existed.');
         }
         return $this->targetTile;
     }
 
     function setTargetTile(Tile $targetTile) {
         if ($targetTile === null) {
-            throw new \InvalidArgumentException('$publicTargetTile should not be [null]');
+            throw new \InvalidArgumentException('$targetTile should not be [null]');
         }
         $this->targetTile = $targetTile;
     }
@@ -117,32 +163,37 @@ class TileAreas {
 
     // convert
 
-    function toPlayerHandTileList(Player $player, $isPrivate) {
-        $originHandTileList = $player->getTileArea()->getHandTileSortedList();
-        $targetTile = $this->getTargetTile();
-        return $originHandTileList->toHandTileSortedList($isPrivate, $targetTile);
+    function getPublicHand(Player $player) {
+        $originHand = $player->getTileArea()->getHandReference()->toTileSortedList();
+        return $originHand->isPublicHand() ? $originHand
+            : $originHand->removeByValue($this->getTargetTile());
     }
 
-    function toPlayerAllTileList(Player $player, $isPrivate) {
-        $allTileList = $this->toPlayerHandTileList($player, $isPrivate);
-        $declaredMeldTileList = $player->getTileArea()->getDeclaredMeldList()->toSortedTileList();
-        $allTileList->merge($declaredMeldTileList);
-        return $allTileList;
+    function getPrivateHand(Player $player) {
+        $originHand = $player->getTileArea()->getHandReference()->toTileSortedList();
+        return $originHand->isPrivateHand() ? $originHand :
+            $originHand->push($this->getTargetTile());
     }
 
-    function toAllPlayersDiscardedTileList() {
-        $sortedTileList = new TileSortedList([]);
+    function getPrivateFull(Player $player) {
+        $privateHand = $this->getPrivateHand($player);
+        $declared = $player->getTileArea()->getDeclaredMeldListReference()->toSortedTileList();
+        return $privateHand->merge($declared);
+    }
+
+    function getDiscarded() {
+        $discarded = new TileSortedList([]);
         foreach ($this->playerList as $player) {
-            $sortedTileList->insert($player->getTileArea()->getDiscardedTileList()->toArray(), 0);
+            $discarded->insert($player->getTileArea()->getDiscardedReference()->toArray(), 0);
         }
-        return $sortedTileList;
+        return $discarded;
     }
 
     // data
 
     function getOutsideRemainTileAmount(Tile $tile) {
         $total = $this->getWall()->getTileSet()->getEqualValueCount($tile);
-        $discarded = $this->toAllPlayersDiscardedTileList()->getEqualValueCount($tile);
+        $discarded = $this->getDiscarded()->getEqualValueCount($tile);
         $remain = $total - $discarded;
         return $remain;
     }
@@ -220,7 +271,7 @@ class TileAreas {
             throw new \InvalidArgumentException('Reach condition violated: not reach yet.');
         }
 
-        $isConcealed = $player->getTileArea()->getDeclaredMeldList()->count() == 0;
+        $isConcealed = $player->getTileArea()->getDeclaredMeldListReference()->count() == 0;
         if (!$isConcealed) { // TileArea
             throw new \InvalidArgumentException('Reach condition violated: is isConcealed.');
         }
@@ -261,9 +312,9 @@ class TileAreas {
         $targetPlayerArea = $targetPlayer->getTileArea();
         $actPlayerArea = $actPlayer->getTileArea();
 
-        $targetTile = $targetPlayerArea->getDiscardedTileList()->getLast(); // test valid
+        $targetTile = $targetPlayerArea->getDiscardedReference()->getLast(); // test valid
         $actPlayerArea->chowByOther($targetTile, $tile1, $tile2); // test valid
-        $targetPlayerArea->getDiscardedTileList()->pop();
+        $targetPlayerArea->getDiscardedReference()->pop();
 
         $this->recordDeclare($actPlayer->getSelfWind());
     }
@@ -273,9 +324,9 @@ class TileAreas {
         $targetPlayerArea = $targetPlayer->getTileArea();
         $actPlayerArea = $actPlayer->getTileArea();
 
-        $targetTile = $targetPlayerArea->getDiscardedTileList()->getLast(); // test valid
+        $targetTile = $targetPlayerArea->getDiscardedReference()->getLast(); // test valid
         $actPlayerArea->pongByOther($targetTile); // test valid
-        $targetPlayerArea->getDiscardedTileList()->pop();
+        $targetPlayerArea->getDiscardedReference()->pop();
 
         $this->recordDeclare($actPlayer->getSelfWind());
     }
@@ -285,10 +336,10 @@ class TileAreas {
         $targetPlayerArea = $targetPlayer->getTileArea();
         $actPlayerArea = $actPlayer->getTileArea();
 
-        $targetTile = $targetPlayerArea->getDiscardedTileList()->getLast(); // test valid
+        $targetTile = $targetPlayerArea->getDiscardedReference()->getLast(); // test valid
         $actPlayerArea->kongByOther($targetTile); // test valid
         $this->drawReplacement($actPlayer);
-        $targetPlayerArea->getDiscardedTileList()->pop();
+        $targetPlayerArea->getDiscardedReference()->pop();
 
         $this->recordDeclare($actPlayer->getSelfWind());
     }
@@ -298,10 +349,10 @@ class TileAreas {
         $currentPlayerArea = $targetPlayer->getTileArea();
         $playerArea = $actPlayer->getTileArea();
 
-        $targetTile = $currentPlayerArea->getDiscardedTileList()->getLast(); // test valid
+        $targetTile = $currentPlayerArea->getDiscardedReference()->getLast(); // test valid
         $playerArea->plusKongByOther($targetTile);
         $this->drawReplacement($actPlayer);
-        $currentPlayerArea->getDiscardedTileList()->pop();
+        $currentPlayerArea->getDiscardedReference()->pop();
 
         $this->recordDeclare($actPlayer->getSelfWind());
     }

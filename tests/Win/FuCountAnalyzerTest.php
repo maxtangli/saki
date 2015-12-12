@@ -1,29 +1,33 @@
 <?php
 
-use Saki\Game\RoundPhase;
+use Saki\Game\MockRound;
 use Saki\Meld\MeldList;
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
+use Saki\Win\Fu\FuCountAnalyzer;
+use Saki\Win\Fu\FuCountTarget;
 use Saki\Win\WaitingType;
-use Saki\Tile\TileSortedList;
-use Saki\Game\TileArea;
+use Saki\Win\WinSubTarget;
+use Saki\Win\Yaku\YakuList;
 
 class FuCountAnalyzerTest extends PHPUnit_Framework_TestCase {
 
     function testFuCount() {
-        $roundData = new \Saki\Game\RoundData();
-
-        $player = $roundData->getTurnManager()->getCurrentPlayer();
-        $roundData->getTurnManager()->debugSet($player, RoundPhase::getInstance(RoundPhase::PRIVATE_PHASE), 1);
-        $roundData->getTileAreas()->debugSet($player, TileList::fromString('123pCCFFF'), MeldList::fromString('8888p,999m'), Tile::fromString('3p'));
-
+        $targetTile = Tile::fromString('3p');
+        $declareMeldList = MeldList::fromString('8888p,999m');
+        $hand = TileList::fromString('123pCCFFF');
         $handMeldList = MeldList::fromString('123p,CC,(FFF)');
 
-        $subTarget = new \Saki\Win\WinSubTarget($handMeldList, $player, $roundData);
-        $yakuList = new \Saki\Win\Yaku\YakuList([], true);
+        $r = new MockRound();
+        $roundData = $r->getRoundData();
+        $player = $r->getCurrentPlayer();
+        $roundData->getTileAreas()->debugSetPrivate($player, $hand, $declareMeldList, $targetTile);
+
+        $subTarget = new WinSubTarget($handMeldList, $player, $roundData);
+        $yakuList = new YakuList([], true);
         $waitingType = WaitingType::getInstance(WaitingType::ONE_SIDE_RUN_WAITING);
-        $target = new \Saki\Win\Fu\FuCountTarget($subTarget, $yakuList, $waitingType);
-        $analyzer = \Saki\Win\Fu\FuCountAnalyzer::getInstance();
+        $target = new FuCountTarget($subTarget, $yakuList, $waitingType);
+        $analyzer = FuCountAnalyzer::getInstance();
         $result = $analyzer->getResult($target);
 
         /**
