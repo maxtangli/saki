@@ -41,8 +41,15 @@ class TileList extends ArrayLikeObject {
         return new static($tiles);
     }
 
-    function __construct(array $tiles) {
-        parent::__construct($tiles);
+    function __construct(array $tiles, $writable = true) {
+        parent::__construct($tiles, $writable);
+    }
+
+    function sort() {
+        // &getInnerArrayReferenceUnsafe() won't make it faster, but results in shorter code.
+        usort($this->getInnerArrayReferenceUnsafe(), function (Tile $a, Tile $b) {
+            return $a->getDisplayValueID() - $b->getDisplayValueID();
+        });
     }
 
     function __toString() {
@@ -196,7 +203,7 @@ class TileList extends ArrayLikeObject {
         $this->assertCompletePrivateHand();
 
         $greenTileList = TileList::fromString('23468sF');
-        $isAllGreenTile = function(Tile $tile) use($greenTileList) {
+        $isAllGreenTile = function (Tile $tile) use ($greenTileList) {
             return $greenTileList->valueExist($tile);
         };
 

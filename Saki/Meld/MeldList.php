@@ -53,12 +53,14 @@ class MeldList extends ArrayLikeObject {
         return implode(',', $meldStrings);
     }
 
-    function toSortedTileList() {
-        $l = new TileSortedList([]);
-        foreach ($this as $meld) {
-            $l->insert($meld->toArray(), 0);
-        }
-        return $l;
+    function toTileList() {
+        return $this->toReducedValue(function(TileList $l, Meld $meld) {
+            return $l->push($meld->toArray());
+        }, TileList::fromString(''));
+    }
+
+    function toMeldList() {
+        return new MeldList($this->toArray());
     }
 
     function toFilteredMeldList(callable $filter) {
@@ -85,8 +87,12 @@ class MeldList extends ArrayLikeObject {
     }
 
     function getHandCount() {
+        // each quad introduces 1 extra Tile
         $quadMeldCount = $this->toFilteredTypesMeldList([QuadMeldType::getInstance()])->count();
-        $n = $this->toSortedTileList()->count() - $quadMeldCount;
+        $tileCount = $this->toReducedValue(function($tileCount, Meld $meld) {
+            return $tileCount + $meld->count();
+        },0);
+        $n = $tileCount - $quadMeldCount;
         return $n;
     }
 
@@ -168,9 +174,22 @@ class MeldList extends ArrayLikeObject {
     function isThreeColorRuns() {
         $this->assertCompletePrivateHandCount();
 
-        return $this->any(function (Meld $meld) {
-            return $meld->isRun() && $this->valueExist($meld->toAllSuitTypes(), Meld::getEqualsCallback(false));
-        });
+        $runList = $this->toFilteredTypesMeldList([RunMeldType::getInstance()]);
+
+        $map = []; // [1 => ['s' => true] ...]
+        foreach ($runList as $run) {
+            $tile = $run[0];
+            $map[$tile->getNumber()][$tile->getTileType()->__toString()] = true;
+            if (count($map[$tile->getNumber()]) == 3) {
+                return true;
+            }
+        }
+        return false; // 0.6s
+
+//        $equals = Meld::getEqualsCallback(false);
+//        return $runList->any(function (Meld $meld)use($runList, $equals) {
+//            return $runList->valueExist($meld->toAllSuitTypes(), $equals);
+//        }); // 1.9s
     }
 
     function isThreeColorTripleOrQuads() {
@@ -178,7 +197,7 @@ class MeldList extends ArrayLikeObject {
 
         $tripleOrQuadList = $this->toFilteredTypesMeldList([TripleMeldType::getInstance(), QuadMeldType::getInstance()]);
 
-        $map = []; // [1 => ['s' => 's'] ...]
+        $map = []; // [1 => ['s' => true] ...]
         foreach ($tripleOrQuadList as $tripleOrQuad) {
             $tile = $tripleOrQuad[0];
             $map[$tile->getNumber()][$tile->getTileType()->__toString()] = true;
@@ -208,6 +227,7 @@ class MeldList extends ArrayLikeObject {
     function isValueTiles(Tile $valueTile) {
         $this->assertCompletePrivateHandCount();
         $tripleOrQuadList = $this->toFilteredTypesMeldList([TripleMeldType::getInstance(), QuadMeldType::getInstance()]);
+
         return $tripleOrQuadList->any(function (Meld $tripleOrQuad) use ($valueTile) {
             return $tripleOrQuad[0] == $valueTile;
         });

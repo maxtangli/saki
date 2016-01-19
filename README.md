@@ -6,24 +6,28 @@ A japanese-mahjong server.
 
 agile = tdd + kiss + refactor
 
+measure performance at dev-phase for complex functions
+
 naming conventions
 
 - constructor(): new members and set to default state
 - init(): set members to default state, without constructor()'s new operations cost.
 - reset($params): set members to specified state defined by $params and current members state.
 
-## todo
+## rush cost
 
-total time cost
+rush       | hours
+--------- | -----
+rush  0-5  | 34h
+rush  6-10 | 23.8h
+rush 11-15 | 15.8h
+rush 16-20 | 25.6h
+rush 21-25 | 26.7h
+rush 26-30 | 24.1h
+rush 31-35 | ?h
+     total | 150h + ?h
 
-- rush  0- 5 34h
-- rush  6-10 23.8h
-- rush 11-15 15.8h
-- rush 16-20 25.6h
-- rush 21-25 26.7h
-- rush 26-30 24.1h
-- rush 31-35 ?h
--      total 150h + ?h
+## rush history
 
 rush 0 scribble 1.5h
 
@@ -337,12 +341,34 @@ rush 33 refactor handTileList -> 13style + targetTile 3.7h
 - [x] refactor: TileArea->getHandTileSortedList() -> getPrivateHand/getPublicHand 2.2h // refactor TileArea is hard, while refactor TileAreas is easy.
 - [x] HandCount 0.5h
 
-rush 34 refactor YakuTestData -> RoundData.debugInit
+rush 34 optimize WinAnalyzer 6.3h
+
+- [x] understand WaitingAnalyzer 0.4h
+
+- [x] measure analyzeTarget 0.5h // point: slow functions should be tracked when added, which avoid future measure 
+- [x] refactor, review 0.3h
+
+- [x] measure analyzeSubTarget 0.4h
+- [x] measure Yaku.existIn 0.3h
+- [x] optimize GreenValueTilesYaku 0.6h // astonished! it's assertPrivatePhaseCompleteCount() that is slow (0.6ms) where wrongly use of TileSortedList
+
+- [x] optimize TileSortedList 1.4h // 0.9ms -> 0.5ms/0.2ms by removing unnecessary process. point: slower because of violation of KISS
+- [x] fix wrong impl of MeldList.toTileSortedList() 0.1h // astonished! all-tests 2.6s -> 1.2s by fixing MeldList.toTileSortedList() impl from TileList.insert() * n to TileList.toReducedValue().
+- [x] remove unnecessary usage of TileSortedList: first try 0.6h
+
+- [x] measure waitingAnalyzer 0.2h
+- [x] measure and try optimize meldCompositionAnalyzer 1.5h // failed to optimize 8ms
+
+- [x] summary: WinAnalyzer 70ms -> 20ms, all tests 2.6s -> 1.2s. a success! mainly reason: TileSortedList too slow.
+
+rush refactor YakuTestData -> RoundData.debugInit
 
 - [x] RoundWindTurn 0.3h
 - [x] RoundDebugResetData 0.3h
 - [x] refactor: remove MockRound.debugSetTurn() -> Round.debugSkipTo 0.4h
 - [x] MockRound.debugSkipTo() 1h
+
+- [x] recall where am I a month ago 0.5h
 - [ ] TileAreas.setHand(targetTile) 
 - [ ] refactor: YakuTestData -> RoundData.debugInit() 0.3h
 
@@ -357,12 +383,15 @@ rush optimize tests
 - [x] optimize: new Round().drawInit 1.8h // ArrayLikeObject.pop() 5ms -> 1ms by simplify, Wall().draw 66ms -> 3ms by fix wrongly use of TileSortedList
 - [x] optimize: new RoundData() 0.5h // TileSet extends TileSortedList -> extends TileList
 - [x] bug: Timer not accurate since echo()'s time cost
-- [ ] optimize: WaitingAnalyzer.analyzePrivatePhaseWaitingTiles // 500ms -> ?
+
+- [ ] optimize: YakuTest
+
+- [ ] optimize: WaitingAnalyzer.analyzePrivate
 
 - [ ] optimize: RoundTest
-- [ ] optimize: WaitingAnalyzerTest
+
 - [ ] optimize: WinAnalyzerTest
-- [ ] optimize: YakuTest
+
 - [ ] optimize: RoundDrawTest/testFourReachDraw
 
 rush all yaku: kong concerned

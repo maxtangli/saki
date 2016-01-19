@@ -30,14 +30,13 @@ abstract class MeldType extends Singleton {
 
     /**
      * @param Tile $firstTile
-     * @return TileSortedList[] possible TileSortedLists begin with $firstTile under this MeldType.
+     * @return TileList[] possible sorted TileLists begin with $firstTile under this MeldType.
      */
-    abstract function getPossibleTileSortedLists(Tile $firstTile);
+    abstract function getPossibleTileLists(Tile $firstTile);
 
-    final protected function getPossibleTileSortedListImplByRepeat(Tile $firstTile) {
+    final protected function getPossibleTileListsImplByRepeat(Tile $firstTile) {
         $tiles = array_fill(0, $this->getTileCount(), $firstTile);
-        $tileSortedList = new TileSortedList($tiles);
-        return [$tileSortedList];
+        return [new TileList($tiles)];
     }
 
     /**

@@ -10,7 +10,6 @@ use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 use Saki\Tile\TileSortedList;
 use Saki\Util\ArrayLikeObject;
-use Saki\Util\Utils;
 use Saki\Win\Fu\FuCountAnalyzer;
 use Saki\Win\Fu\FuCountTarget;
 use Saki\Win\Yaku\YakuAnalyzer;
@@ -63,31 +62,31 @@ class WinAnalyzer {
         $subTargets = array_map(function (MeldList $handMeldList) use ($target) {
             return $target->toSubTarget($handMeldList);
         }, $handMeldCompositions);
-        $subResults = $this->analyzeSubTargets($subTargets);
+        $subResults = array_map(function (WinSubTarget $subTarget) {
+            return $this->analyzeSubTarget($subTarget);
+        }, $subTargets);
 
         /*
-         * merge subResults into final result todo
+         * merge subResults into final result
          *
          * final yakuList/fuCount: max subResult.xx
          * final winState: handle furiten and waiting
-         * final waitingTiles: waitingAnalyzer->analyzePublicPhaseWaitingTiles()
+         * final waitingTiles: waitingAnalyzer->analyzePublic
          */
 
-        // get best winSubResult
-        $l = new ArrayLikeObject($subResults);
+        // get best winSubResult as final result
         /** @var WinSubResult $targetSubResult */
-        $targetSubResult = $l->getMax(WinSubResult::getComparator());
+        $targetSubResult = (new ArrayLikeObject($subResults))->getMax(WinSubResult::getComparator());
         $finalWinState = $targetSubResult->getWinState();
 
         // handle furiten
         if ($targetSubResult->getWinState()->isTrueWin()) {
-            $publicHandTileList = $target->getPublicHand();
-            $waitingTileList = $this->getWaitingAnalyzer()->analyzePublicPhaseHandWaitingTileList(
-                $publicHandTileList, $target->getDeclaredMeldList()
+            $waitingTileList = $this->getWaitingAnalyzer()->analyzePublic(
+                $target->getPublicHand(), $target->getDeclaredMeldList()
             );
 
-            $isFuriten = $this->isFuritenFalseWin($target, $waitingTileList);
-            if ($isFuriten) {
+            $isFuritenFalseWin = $this->isFuritenFalseWin($target, $waitingTileList);
+            if ($isFuritenFalseWin) {
                 $finalWinState = WinState::getInstance(WinState::FURITEN_FALSE_WIN);
             }
         }
@@ -95,20 +94,6 @@ class WinAnalyzer {
         // final winResult
         $result = new WinResult($finalWinState, $targetSubResult->getYakuList(), $targetSubResult->getFuCount());
         return $result;
-    }
-
-    /**
-     * exist to support code hinting
-     * @param WinSubTarget[] $subTargets
-     * @return WinSubResult[]
-     */
-    protected function analyzeSubTargets(array $subTargets) {
-        $subResults = [];
-        foreach ($subTargets as $subTarget) {
-            $result = $this->analyzeSubTarget($subTarget);
-            $subResults[] = $result;
-        }
-        return $subResults;
     }
 
     /**
@@ -138,7 +123,12 @@ class WinAnalyzer {
         return new WinSubResult($winState, $yakuList, $fuCount);
     }
 
-    protected function isFuritenFalseWin(WinTarget $target, TileList $waitingTileList) {
+    /**
+     * @param WinTarget $target
+     * @param TileList $waitingTileList
+     * @return bool
+     */
+    function isFuritenFalseWin(WinTarget $target, TileList $waitingTileList) {
         if ($target->isPrivatePhase()) {
             return false;
         }

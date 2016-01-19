@@ -58,6 +58,20 @@ class Tile implements ValueObject {
         return [Tile::fromString('C'), Tile::fromString('P'), Tile::fromString('F')];
     }
 
+    private static $valueIDBases = [
+        TileType::CHARACTER_M => 0,
+        TileType::DOT_P => 10,
+        TileType::BAMBOO_S => 20,
+
+        TileType::EAST_E => 31,
+        TileType::SOUTH_S => 32,
+        TileType::WEST_W => 33,
+        TileType::NORTH_N => 34,
+
+        TileType::RED_C => 35,
+        TileType::WHITE_P => 36,
+        TileType::GREEN_F => 37,
+    ];
     /**
      * @param TileType $tileType
      * @param int|null $number
@@ -73,31 +87,27 @@ class Tile implements ValueObject {
      * - C 41 P 42 F 43
      */
     private static function toValueID(TileType $tileType, $number = null, $isRedDora = false) {
-        $bases = [
-            TileType::CHARACTER_M => 0,
-            TileType::DOT_P => 10,
-            TileType::BAMBOO_S => 20,
-
-            TileType::EAST_E => 31,
-            TileType::SOUTH_S => 32,
-            TileType::WEST_W => 33,
-            TileType::NORTH_N => 34,
-
-            TileType::RED_C => 35,
-            TileType::WHITE_P => 36,
-            TileType::GREEN_F => 37,
-        ];
-        $baseID = $bases[$tileType->getValue()];
+        $baseID = self::$valueIDBases[$tileType->getValue()];
         $numberID = $tileType->isSuit() ? ($isRedDora ? 0 : $number) : 0;
         return $baseID + $numberID;
+    }
+
+    /**
+     * @param TileType $tileType
+     * @param null $number
+     * @param bool|false $isRedDora
+     * @return int same with toValueID(), except red dora-5 is treated same as 5
+     */
+    private static function toDisplayValueID(TileType $tileType, $number = null, $isRedDora = false) {
+        return self::toValueID($tileType, $number, false);
     }
 
     /**
      * A trick to support redDora while keep == operator ignores redDora(since == compares object members only).
      *
      * The trick exists because when red dora is considered to be added,
-     * Tile comparisons with == operations have been used almost everywhere,
-     * thus too expensive to add a $redDora member and replace tons of Tile == comparisons by Tile.equals(), which is the common way.
+     * Tile comparisons with == have been used so much
+     * that it's too expensive to add a $redDora member and replace tons of Tile == by Tile.equals(), which should be the common way.
      *
      * Note that WeakMap is not necessary since Tile is a Multiton Class.
      * @var Tile[]
@@ -159,7 +169,11 @@ class Tile implements ValueObject {
     }
 
     function getValueID() {
-        return $this->toValueID($this->tileType, $this->number, $this->isRedDora());
+        return self::toValueID($this->tileType, $this->number, $this->isRedDora());
+    }
+
+    function getDisplayValueID() {
+        return self::toDisplayValueID($this->tileType, $this->number, $this->isRedDora());
     }
 
     function isRedDora() {

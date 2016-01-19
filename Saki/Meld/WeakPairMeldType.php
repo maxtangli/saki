@@ -14,8 +14,8 @@ class WeakPairMeldType extends WeakMeldType {
         return true;
     }
 
-    function getPossibleTileSortedLists(Tile $firstTile) {
-        return $this->getPossibleTileSortedListImplByRepeat($firstTile);
+    function getPossibleTileLists(Tile $firstTile) {
+        return $this->getPossibleTileListsImplByRepeat($firstTile);
     }
 
     function getTargetMeldType() {

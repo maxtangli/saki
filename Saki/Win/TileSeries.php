@@ -12,6 +12,10 @@ use Saki\Util\ArrayLikeObject;
 use Saki\Util\Enum;
 use Saki\Util\Utils;
 
+/**
+ *
+ * @package Saki\Win
+ */
 class TileSeries extends Enum {
     static function getComparator() {
         $descBestArray = [
@@ -78,8 +82,7 @@ class TileSeries extends Enum {
             $waitingTypes = $winTileMeldList->toArray(function (Meld $meld) use ($winTile) {
                 return $meld->toWeakMeld($winTile)->getWaitingType();
             });
-            $l = new ArrayLikeObject($waitingTypes);
-            $waitingType = $l->getMax(WaitingType::getComparator());
+            $waitingType = (new ArrayLikeObject($waitingTypes))->getMax(WaitingType::getComparator());
             return $waitingType;
         }
     }

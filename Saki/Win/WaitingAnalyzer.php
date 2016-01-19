@@ -8,7 +8,10 @@ use Saki\Meld\RunMeldType;
 use Saki\Meld\TripleMeldType;
 use Saki\Meld\WeakPairMeldType;
 use Saki\Meld\WeakRunMeldType;
+use Saki\Tile\TileList;
 use Saki\Tile\TileSortedList;
+use Saki\Util\MsTimer;
+use Saki\Util\Utils;
 
 /**
  * cases
@@ -24,33 +27,43 @@ use Saki\Tile\TileSortedList;
  */
 class WaitingAnalyzer {
     private $meldCompositionsAnalyzer;
+    private $tileSeriesAnalyzer;
 
     function __construct() {
         $this->meldCompositionsAnalyzer = new MeldCompositionsAnalyzer();
-        $this->tileSeriesAnalyzer = new TileSeriesAnalyzer(); // todo
+        $this->tileSeriesAnalyzer = new TileSeriesAnalyzer(); // todo pass by arguments
+    }
+
+    function getMeldCompositionsAnalyzer() {
+        return $this->meldCompositionsAnalyzer;
+    }
+
+    function getTileSeriesAnalyzer() {
+        return $this->tileSeriesAnalyzer;
     }
 
     /**
      * use case: ableReach.
-     * @param TileSortedList $handTileList 18-tiles-style target.
+     * @param TileList $handTileList 18-tiles-style target.
      * @param MeldList $declaredMeldList
      * @return FutureWaitingList
      */
-    function analyzePrivatePhaseFutureWaitingList(TileSortedList $handTileList, MeldList $declaredMeldList) {
+    function analyzePrivate(TileList $handTileList, MeldList $declaredMeldList) {
         if (!$handTileList->isPrivateHand()) {
             throw new \InvalidArgumentException();
         }
 
         $futureWaitingList = new FutureWaitingList([]);
 
-        // discard each tile and test if left-handTiles has publicPhaseWaitingTiles
+        // discard each tile and test if remained handTiles has publicPhaseWaitingTiles
         $uniqueHandTiles = array_unique($handTileList->toArray());
-        $handTileListAfterDiscard = new TileSortedList([]);
-        foreach ($uniqueHandTiles as $discardedTile) { // 0.06s a loop
-            $handTileListAfterDiscard->setInnerArray($handTileList->toArray());
-            $handTileListAfterDiscard->removeByValue($discardedTile);
+        $handTileListAfterDiscard = TileList::fromString('');
+        foreach ($uniqueHandTiles as $discardedTile) { // 7ms a loop
+            $handTileListAfterDiscard
+                ->setInnerArray($handTileList->toArray())
+                ->removeByValue($discardedTile);
 
-            $waitingTileList = $this->analyzePublicPhaseHandWaitingTileList($handTileListAfterDiscard, $declaredMeldList);
+            $waitingTileList = $this->analyzePublic($handTileListAfterDiscard, $declaredMeldList);
             if ($waitingTileList->count() > 0) {
                 $futureWaitingList->push(new FutureWaiting($discardedTile, $waitingTileList));
             }
@@ -61,27 +74,29 @@ class WaitingAnalyzer {
 
     /**
      * use case: exhaustiveDraw, furiten.
-     * @param TileSortedList $handTileList 17-like tile list
+     * @param TileList $tileList 17-like tile list
      * @param MeldList $declaredMeldList
      * @return TileSortedList unique waiting tile list
      */
-    function analyzePublicPhaseHandWaitingTileList(TileSortedList $handTileList, MeldList $declaredMeldList) {
+    function analyzePublic(TileList $tileList, MeldList $declaredMeldList) {
+        $handTileList = $tileList instanceof TileSortedList ? $tileList : new TileSortedList($tileList->toArray(), false);
+
         if (!$handTileList->isPublicHand()) {
             throw new \InvalidArgumentException(
                 sprintf('Invalid handTileList[%s] with count[%s] for WaitingAnalyzer public phase analyze.', $handTileList, $handTileList->count())
             );
         }
 
-        // step1. break 17-like tiles into MeldList include at most 1 WeakType
-        $tileSeriesAnalyzer = $this->tileSeriesAnalyzer;
-        $meldCompositionAnalyzer = $this->meldCompositionsAnalyzer;
+        // step1. break 17-like tiles into MeldList which include at most 1 WeakType
         $meldTypes = [
             RunMeldType::getInstance(), TripleMeldType::getInstance(),
             PairMeldType::getInstance(),
             WeakRunMeldType::getInstance(), WeakPairMeldType::getInstance(),
         ];
-        $handMeldLists = $meldCompositionAnalyzer->analyzeMeldCompositions($handTileList, $meldTypes, 1);
+        $handMeldLists = $this->getMeldCompositionsAnalyzer()->analyzeMeldCompositions($handTileList, $meldTypes, 1);
 
+        // step2. for each handMeldList,
+        $tileSeriesAnalyzer = $this->getTileSeriesAnalyzer();
         $waitingTileList = new TileSortedList([]);
         foreach ($handMeldLists as $handMeldList) {
             // step2. given a handMeldList, if waitingTiles exist, they must come from melds that matches:
@@ -102,17 +117,17 @@ class WaitingAnalyzer {
 
             foreach ($handSourceMeldList as $handSourceMeld) {
                 // step3. given a handSourceMeld, get its waitingTiles, test each waitingTile if with it any TileSeries exist.
-                //        Take passed ones as finalWaitingTiles.
+                //        take passed ones as finalWaitingTiles.
                 $potentialWaitingTiles = $handSourceMeld->getWaitingTiles();
                 foreach ($potentialWaitingTiles as $potentialWaitingTile) {
-                    if ($waitingTileList->valueExist($potentialWaitingTile)) { // ignore duplicate items to speedup
+                    if ($waitingTileList->valueExist($potentialWaitingTile)) { // ignore duplicated items to speedup
                         continue;
                     }
 
                     $futureHandMeld = $handSourceMeld->toTargetMeld($potentialWaitingTile);
-                    $futureAllMeldList = new MeldList($handMeldList->toArray());
-                    $futureAllMeldList->replaceByValue($handSourceMeld, $futureHandMeld);
-                    $futureAllMeldList->merge($declaredMeldList);
+                    $futureAllMeldList = $handMeldList->toMeldList()
+                        ->replaceByValue($handSourceMeld, $futureHandMeld)
+                        ->merge($declaredMeldList);
 
                     $tileSeries = $tileSeriesAnalyzer->analyzeTileSeries($futureAllMeldList);
                     if ($tileSeries->exist()) {

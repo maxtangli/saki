@@ -66,7 +66,7 @@ class Meld extends ArrayLikeObject implements ValueObject {
      * @param bool $concealed
      */
     function __construct(TileList $tileList, MeldType $meldType = null, $concealed = false) {
-        $tileSortedList = new TileSortedList($tileList->toArray());
+        $tileSortedList = $tileList instanceof TileSortedList ? $tileList : new TileSortedList($tileList->toArray());
         if ($meldType !== null && !$meldType->valid($tileSortedList)) {
             throw new \InvalidArgumentException();
         }

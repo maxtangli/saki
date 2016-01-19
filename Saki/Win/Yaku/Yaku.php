@@ -13,7 +13,8 @@ abstract class Yaku extends Singleton {
         // Saki\Win\Yaku\ReachYaku -> Reach
         $cls = get_called_class();
         $s = str_replace('Yaku', '', $cls);
-        $s = end(explode('\\', $s));
+        $s = substr($s, strrpos($s, '\\'));
+//        $s = end(explode('\\', $s));
         return $s;
     }
 
@@ -50,8 +51,7 @@ abstract class Yaku extends Singleton {
         }
 
         $allMeldList = $subTarget->getAllMeldList();
-        $l = new ArrayLikeObject($requiredTileSeries);
-        return $l->any(function (TileSeries $tileSeries) use ($allMeldList) {
+        return (new ArrayLikeObject($requiredTileSeries))->any(function (TileSeries $tileSeries) use ($allMeldList) {
             return $tileSeries->existIn($allMeldList);
         });
     }

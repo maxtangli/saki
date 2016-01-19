@@ -225,7 +225,7 @@ class Round {
         // assert waiting after discard
         $analyzer = $this->getWinAnalyzer()->getWaitingAnalyzer();
         $handList = $this->getRoundData()->getTileAreas()->getPrivateHand($player);
-        $futureWaitingList = $analyzer->analyzePrivatePhaseFutureWaitingList($handList, $player->getTileArea()->getDeclaredMeldListReference());
+        $futureWaitingList = $analyzer->analyzePrivate($handList, $player->getTileArea()->getDeclaredMeldListReference());
         $isWaiting = $futureWaitingList->count() > 0;
         if (!$isWaiting) {
             throw new \InvalidArgumentException('Reach condition violated: is waiting.');
@@ -319,7 +319,7 @@ class Round {
             $isWaitingStates = array_map(function (Player $player) use ($waitingAnalyzer, $roundData) {
                 $a13StyleHandTileList = $roundData->getTileAreas()->getPublicHand($player);
                 $declaredMeldList = $player->getTileArea()->getDeclaredMeldListReference();
-                $waitingTileList = $waitingAnalyzer->analyzePublicPhaseHandWaitingTileList($a13StyleHandTileList, $declaredMeldList);
+                $waitingTileList = $waitingAnalyzer->analyzePublic($a13StyleHandTileList, $declaredMeldList);
                 $isWaiting = $waitingTileList->count() > 0;
                 return $isWaiting;
             }, $players);

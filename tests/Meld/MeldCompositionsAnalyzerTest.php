@@ -11,7 +11,7 @@ class MeldCompositionsAnalyzerTest extends PHPUnit_Framework_TestCase {
      */
     function testGetMeldCompositions($expectedMeldListStrings, $tilesStr, $meldTypes) {
         $r = new \Saki\Meld\MeldCompositionsAnalyzer();
-        $meldLists = $r->analyzeMeldCompositions(\Saki\Tile\TileSortedList::fromString($tilesStr), $meldTypes, 0, false);
+        $meldLists = $r->analyzeMeldCompositions(\Saki\Tile\TileList::fromString($tilesStr), $meldTypes, 0, false);
         $actualMeldListStrings = array_map(function ($v) {
             return $v->__toString();
         }, $meldLists);
@@ -60,9 +60,9 @@ class MeldCompositionsAnalyzerTest extends PHPUnit_Framework_TestCase {
             \Saki\Meld\RunMeldType::getInstance(),
             \Saki\Meld\TripleMeldType::getInstance(),
         ];
-        $tileSortedList = \Saki\Tile\TileSortedList::fromString($tileListString);
+        $tileList = \Saki\Tile\TileList::fromString($tileListString);
         $time = microtime(true);
-        $actual = $r->analyzeMeldCompositions($tileSortedList, $meldTypes, 0, false);
+        $actual = $r->analyzeMeldCompositions($tileList, $meldTypes, 0, false);
         $cost = microtime(true) - $time;
         $costMs = round($cost * 1000);
         //echo sprintf('analyzeMeldCompositions time cost: %s ms.', $costMs);

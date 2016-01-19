@@ -9,6 +9,9 @@ class MsTimer extends Singleton{
         $this->begin = microtime(true);
     }
 
+    /**
+     * @return float past time in millisecond
+     */
     function restart() {
         // note that echo is an time-costly io operation that should be avoid.
         $begin = $this->begin;
@@ -21,6 +24,13 @@ class MsTimer extends Singleton{
         return $pastMs;
     }
 
+    function restartWithDump() {
+        echo sprintf("%.2f ms\n", $this->restart());
+    }
+
+    /**
+     * @return float
+     */
     function measure(callable $f) {
         $this->restart();
         $f();

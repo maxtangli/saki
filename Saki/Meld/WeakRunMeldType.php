@@ -2,6 +2,7 @@
 namespace Saki\Meld;
 
 use Saki\Tile\Tile;
+use Saki\Tile\TileList;
 use Saki\Tile\TileSortedList;
 use Saki\Win\WaitingType;
 
@@ -20,21 +21,18 @@ class WeakRunMeldType extends WeakMeldType {
         return in_array($numberDiff, [1, 2]);
     }
 
-    function getPossibleTileSortedLists(Tile $firstTile) {
+    function getPossibleTileLists(Tile $firstTile) {
+        $result = [];
         if ($firstTile->isSuit() && $firstTile->getNumber() <= 8) {
-            $result = [];
             $nextTile = $firstTile->toNextTile();
-            $result[] = new TileSortedList([$firstTile, $nextTile]);
+            $result[] = new TileList([$firstTile, $nextTile]);
 
             if ($firstTile->getNumber() <= 7) {
                 $nextNextTile = $nextTile->toNextTile();
-                $result[] = new TileSortedList([$firstTile, $nextNextTile]);
+                $result[] = new TileList([$firstTile, $nextNextTile]);
             }
-
-            return $result;
-        } else {
-            return [];
         }
+        return $result;
     }
 
     function getTargetMeldType() {

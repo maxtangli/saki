@@ -9,7 +9,7 @@ class WaitingAnalyzerTest extends \PHPUnit_Framework_TestCase {
 
     function generateRoundData($isPrivate, $handTileListString, $declaredMeldListString, \Saki\Tile\Tile $winTile) {
         $r = new MockRound();
-        $handTileList = \Saki\Tile\TileSortedList::fromString($handTileListString);
+        $handTileList = \Saki\Tile\TileList::fromString($handTileListString);
         $declaredMeldList = \Saki\Meld\MeldList::fromString($declaredMeldListString);
 
         // todo not safe?
@@ -30,10 +30,10 @@ class WaitingAnalyzerTest extends \PHPUnit_Framework_TestCase {
     function testPublicData($onHandTileListString, $declaredMeldListString, $expected) {
         $waitingTileAnalyzer = new \Saki\Win\WaitingAnalyzer();
 
-        $handTileList = \Saki\Tile\TileSortedList::fromString($onHandTileListString);
+        $handTileList = \Saki\Tile\TileList::fromString($onHandTileListString);
         $declaredMeldList = \Saki\Meld\MeldList::fromString($declaredMeldListString);
 
-        $waitingTileList = $waitingTileAnalyzer->analyzePublicPhaseHandWaitingTileList($handTileList, $declaredMeldList);
+        $waitingTileList = $waitingTileAnalyzer->analyzePublic($handTileList, $declaredMeldList);
         $waitingTileStrings = $waitingTileList->toArray(function (Tile $waitingTile) {
             return $waitingTile->__toString();
         });
@@ -61,10 +61,10 @@ class WaitingAnalyzerTest extends \PHPUnit_Framework_TestCase {
     function testPrivateData($onHandTileListString, $declaredMeldListString, $expected) {
         $winAnalyzer = new \Saki\Win\WinAnalyzer(YakuSet::getStandardYakuSet());
         $waitingTileAnalyzer = new \Saki\Win\WaitingAnalyzer($winAnalyzer);
-        $handTileList = \Saki\Tile\TileSortedList::fromString($onHandTileListString);
+        $handTileList = \Saki\Tile\TileList::fromString($onHandTileListString);
         $declaredMeldList = \Saki\Meld\MeldList::fromString($declaredMeldListString);
 
-        $futureWaitingList = $waitingTileAnalyzer->analyzePrivatePhaseFutureWaitingList($handTileList, $declaredMeldList);
+        $futureWaitingList = $waitingTileAnalyzer->analyzePrivate($handTileList, $declaredMeldList);
         $discardedTileStrings = $futureWaitingList->toArray(function (\Saki\Win\FutureWaiting $futureWaiting) {
             return $futureWaiting->getDiscardedTile()->__toString();
         });
@@ -76,11 +76,11 @@ class WaitingAnalyzerTest extends \PHPUnit_Framework_TestCase {
     function privateDataProvider() {
         return [
             // not reachable
-            ['123456789m1249sE', '', []], // 715ms
+            ['123456789m1249sE', '', []],
             // 4+1
-            ['123456789m129sEE', '', ['9s']], // 683ms
+            ['123456789m129sEE', '', ['9s']],
             // already win
-            ['123sWW', '123m,456m,789m', ['1s','2s','3s','W']], // 115ms
+            ['123sWW', '123m,456m,789m', ['1s','2s','3s','W']],
         ];
     }
 }

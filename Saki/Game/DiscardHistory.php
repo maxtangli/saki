@@ -22,7 +22,7 @@ class DiscardHistory {
     }
 
     function reset() {
-        $this->a->reset();
+        $this->a->clear();
     }
 
     function getOtherDiscardTileList(Tile $mySelfWind, $fromTurn = 1, $fromSelfWind = null, $excludedLastTile = false) {

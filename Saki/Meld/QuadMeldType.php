@@ -13,8 +13,8 @@ class QuadMeldType extends MeldType {
         return $tileSortedList[0] == $tileSortedList[1] && $tileSortedList[1] == $tileSortedList[2] && $tileSortedList[2] == $tileSortedList[3];
     }
 
-    function getPossibleTileSortedLists(Tile $firstTile) {
-        return $this->getPossibleTileSortedListImplByRepeat($firstTile);
+    function getPossibleTileLists(Tile $firstTile) {
+        return $this->getPossibleTileListsImplByRepeat($firstTile);
     }
 
     function getWinSetType() {

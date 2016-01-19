@@ -98,7 +98,7 @@ class TileAreas {
         }
 
         $replaceIndexes = range(0, $replaceTileList->count() - 1);
-        $newHand = $handReference->toTileSortedList()->replaceByIndex($replaceIndexes, $replaceTileList->toArray());
+        $newHand = $handReference->toTileList()->replaceByIndex($replaceIndexes, $replaceTileList->toArray());
         $declaredMeldList = $player->getTileArea()->getDeclaredMeldListReference();
         $this->debugSet($player, $newHand, $declaredMeldList);
     }
@@ -163,30 +163,43 @@ class TileAreas {
 
     // convert
 
+    /**
+     * @param Player $player
+     * @return TileSortedList
+     */
     function getPublicHand(Player $player) {
         $originHand = $player->getTileArea()->getHandReference()->toTileSortedList();
         return $originHand->isPublicHand() ? $originHand
             : $originHand->removeByValue($this->getTargetTile());
     }
 
+    /**
+     * @param Player $player
+     * @return TileSortedList
+     */
     function getPrivateHand(Player $player) {
         $originHand = $player->getTileArea()->getHandReference()->toTileSortedList();
         return $originHand->isPrivateHand() ? $originHand :
             $originHand->push($this->getTargetTile());
     }
 
+    /**
+     * @param Player $player
+     * @return TileSortedList
+     */
     function getPrivateFull(Player $player) {
         $privateHand = $this->getPrivateHand($player);
-        $declared = $player->getTileArea()->getDeclaredMeldListReference()->toSortedTileList();
+        $declared = $player->getTileArea()->getDeclaredMeldListReference()->toTileList();
         return $privateHand->merge($declared);
     }
 
-    function getDiscarded() {
-        $discarded = new TileSortedList([]);
-        foreach ($this->playerList as $player) {
-            $discarded->insert($player->getTileArea()->getDiscardedReference()->toArray(), 0);
-        }
-        return $discarded;
+    /**
+     * @return TileList
+     */
+    protected function getDiscarded() {
+        return $this->playerList->toReducedValue(function(TileList $l, Player $player) {
+            return $l->push($player->getTileArea()->getDiscardedReference()->toArray());
+        }, TileList::fromString(''));
     }
 
     // data

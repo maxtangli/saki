@@ -2,6 +2,7 @@
 namespace Saki\Meld;
 
 use Saki\Tile\Tile;
+use Saki\Tile\TileList;
 use Saki\Tile\TileSortedList;
 
 class RunMeldType extends MeldType {
@@ -21,12 +22,11 @@ class RunMeldType extends MeldType {
         return $isConsecutiveNumber;
     }
 
-    function getPossibleTileSortedLists(Tile $firstTile) {
+    function getPossibleTileLists(Tile $firstTile) {
         if ($firstTile->isSuit() && $firstTile->getNumber() <= 7) {
             $nextTile = $firstTile->toNextTile();
             $nextNextTile = $nextTile->toNextTile();
-            $tileSortedList = new TileSortedList([$firstTile, $nextTile, $nextNextTile]);
-            return [$tileSortedList];
+            return [new TileList([$firstTile, $nextTile, $nextNextTile])];
         } else {
             return [];
         }

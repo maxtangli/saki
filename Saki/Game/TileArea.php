@@ -32,7 +32,7 @@ class TileArea {
 
     function reset() {
         $this->handTileSortedList->setInnerArray([]);
-        $this->discardedTileList->reset();
+        $this->discardedTileList->clear();
         $this->declaredMeldList->setInnerArray([]);
         $this->reachGlobalTurn = false;
     }

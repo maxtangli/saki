@@ -5,6 +5,8 @@ namespace Saki\Util;
  * Convenient base class for 0-begin-continuous-ascending-int-key-array like object.
  * Only optimized for less-than-200 elements case, which is the main case in pj saki.
  *
+ * note: seems a bad idea to impl by self rather than search for high performance impl library.
+ *
  * main responsibility
  * - support foreach/count/isset/get/set.
  * - encapsulate PHP array operations and provide other convenient operations.
@@ -107,13 +109,17 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         $this->writable = $writable;
     }
 
-    function reset() {
+    function clear() {
         $this->innerArray = [];
     }
 
     function __toString() {
         $glue = ',';
         return implode($glue, $this->innerArray);
+    }
+
+    function &getInnerArrayReferenceUnsafe() {
+        return $this->innerArray;
     }
 
     function isWritable() {
@@ -626,7 +632,7 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
 
     private $allowHook = true;
 
-    protected final function onInnerArrayChanged() {
+    final function onInnerArrayChanged() {
         if ($this->allowHook) {
             $this->allowHook = false;
             try {
