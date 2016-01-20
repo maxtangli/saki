@@ -1,10 +1,10 @@
 <?php
 
-use Saki\Game\MockRound;
+use Saki\Game\Round;
 
 class TileAreasTest extends PHPUnit_Framework_TestCase {
     function testFirstTurnWin() {
-        $r = new MockRound();
+        $r = new Round();
         $t = $r->getRoundData()->getTileAreas();
     }
 }

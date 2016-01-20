@@ -44,7 +44,15 @@ class TileAreas {
         $this->declareHistory->reset();
     }
 
-    function debugSet(Player $player, TileList $hand, MeldList $declareMeldList = null, Tile $targetTile = null) {
+    /**
+     * note: the function is protected since
+     * - client should be clearly about current phase and hand count by calling setPrivate or setPublic rather than this function.
+     * @param Player $player
+     * @param TileList $hand
+     * @param MeldList|null $declareMeldList
+     * @param Tile|null $targetTile
+     */
+    protected function debugSetHandImpl(Player $player, TileList $hand, MeldList $declareMeldList = null, Tile $targetTile = null) {
         $currentHand = $player->getTileArea()->getHandReference();
         $validHandPhase = $hand->getHandCount()->equalsPhase($currentHand->getHandCount());
         if (!$validHandPhase) {
@@ -54,7 +62,7 @@ class TileAreas {
             );
         }
 
-        $actualDeclareMeldList = $declareMeldList ?: MeldList::fromString('');
+        $actualDeclareMeldList = $declareMeldList ?? MeldList::fromString('');
 
         if ($hand->isPrivateHand() && $targetTile && $hand->valueExist($targetTile)) {
             $actualTargetTile = $targetTile;
@@ -83,11 +91,11 @@ class TileAreas {
     }
 
     function debugSetPrivate(Player $player, TileList $hand, MeldList $declareMeldList = null, Tile $targetTile = null) {
-        $this->debugSet($player, $hand, $declareMeldList, $targetTile);
+        $this->debugSetHandImpl($player, $hand, $declareMeldList, $targetTile);
     }
 
     function debugSetPublic(Player $player, TileList $hand, MeldList $declareMeldList = null) {
-        $this->debugSet($player, $hand, $declareMeldList);
+        $this->debugSetHandImpl($player, $hand, $declareMeldList);
     }
 
     function debugReplaceHand(Player $player, TileList $replaceTileList) {
@@ -100,7 +108,7 @@ class TileAreas {
         $replaceIndexes = range(0, $replaceTileList->count() - 1);
         $newHand = $handReference->toTileList()->replaceByIndex($replaceIndexes, $replaceTileList->toArray());
         $declaredMeldList = $player->getTileArea()->getDeclaredMeldListReference();
-        $this->debugSet($player, $newHand, $declaredMeldList);
+        $this->debugSetHandImpl($player, $newHand, $declaredMeldList);
     }
 
     // getter,setter

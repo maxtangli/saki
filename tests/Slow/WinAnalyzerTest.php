@@ -1,6 +1,6 @@
 <?php
 
-use Saki\Game\MockRound;
+use Saki\Game\Round;
 use Saki\Game\RoundData;
 use Saki\Game\RoundPhase;
 use Saki\Game\TileArea;
@@ -13,11 +13,11 @@ use Saki\Win\WinTarget;
 
 class WinAnalyzerTest extends \PHPUnit_Framework_TestCase {
     function testPublicPhaseTarget() {
-        $r = new MockRound();
+        $r = new Round();
         $targetTile = Tile::fromString('5s');
-        $replaceHand = TileList::fromString('123m456m789m123s5s');
+        $replaceHand = TileList::fromString('123m456m789m123s5s'); // 13 tiels
         $r->debugDiscardByReplace($r->getCurrentPlayer(), $targetTile);
-        $r->debugSetHand($r->getCurrentPlayer(), $replaceHand);
+        $r->getRoundData()->getTileAreas()->debugSetPublic($r->getCurrentPlayer(), $replaceHand);
 
         $target = new WinTarget($r->getCurrentPlayer(), $r->getRoundData());
 
@@ -32,7 +32,7 @@ class WinAnalyzerTest extends \PHPUnit_Framework_TestCase {
 
     function testFuritenSelfDiscardedCase() {
         // self discarded furiten
-        $r = new MockRound();
+        $r = new Round();
         $p1 = $r->getCurrentPlayer();
         $r->debugDiscardByReplace($p1, Tile::fromString('1s'), TileList::fromString('123m456m789m123s55s'));
 
@@ -47,7 +47,7 @@ class WinAnalyzerTest extends \PHPUnit_Framework_TestCase {
 
     function testFuritenReachCase() {
         // other discarded after self reach furiten
-        $r = new MockRound();
+        $r = new Round();
         $p1 = $r->getCurrentPlayer();
         $r->debugReachByReplace($p1, Tile::fromString('E'), TileList::fromString('123m456m789m23s55sE'));
 
@@ -64,7 +64,7 @@ class WinAnalyzerTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(WinState::getInstance(WinState::FURITEN_FALSE_WIN), $r->getWinResult($p1)->getWinState());
 
         // furiten even after 1 turn
-        $r->debugSetWallPopTile(Tile::fromString('E'));
+        $r->getRoundData()->getTileAreas()->getWall()->debugSetNextDrawTile(Tile::fromString('E'));
         $r->passPublicPhase();
         $r->discard($p1, Tile::fromString('E'));
 
@@ -80,7 +80,7 @@ class WinAnalyzerTest extends \PHPUnit_Framework_TestCase {
     function testFuritenOtherDiscardedCase() {
         // other discarded in one turn
         // other discarded after self reach furiten
-        $r = new MockRound();
+        $r = new Round();
         $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('E'));
 
         $r->passPublicPhase();
@@ -100,7 +100,7 @@ class WinAnalyzerTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(WinState::getInstance(WinState::FURITEN_FALSE_WIN), $r->getWinResult($p2)->getWinState());
 
         // not furiten after 1 turn
-        $r->debugSetWallPopTile(Tile::fromString('E'));
+        $r->getRoundData()->getTileAreas()->getWall()->debugSetNextDrawTile(Tile::fromString('E'));
         $r->passPublicPhase();
         $r->discard($p2, Tile::fromString('E'));
 

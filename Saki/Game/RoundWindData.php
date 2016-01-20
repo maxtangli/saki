@@ -50,9 +50,9 @@ class RoundWindData {
             throw new \InvalidArgumentException();
         }
 
-        $this->roundWind = $roundWind ?: Tile::fromString('E');
-        $this->roundWindTurn = $roundWindTurn ?: 1;
-        $this->selfWindTurn = $selfWindTurn ?: 0;
+        $this->roundWind = $roundWind ?? Tile::fromString('E');
+        $this->roundWindTurn = $roundWindTurn ?? 1;
+        $this->selfWindTurn = $selfWindTurn ?? 0;
     }
 
     function getPlayerCount() {

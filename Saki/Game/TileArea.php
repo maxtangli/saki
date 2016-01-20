@@ -140,7 +140,7 @@ class TileArea {
 
         // exist tiles can form a fromMeld
         try {
-            $fromMeld = $declaredMeld ?: new Meld(new TileList($handTiles));
+            $fromMeld = $declaredMeld ?? new Meld(new TileList($handTiles));
         } catch (\InvalidArgumentException $e) {
             return false;
         }
@@ -148,7 +148,7 @@ class TileArea {
         // fromMeld can to target meld
         $hasWaitingTile = !($handTiles && !$otherTile && !$declaredMeld);
         if ($hasWaitingTile) {
-            $waitingTile = $otherTile ?: $handTiles[0];
+            $waitingTile = $otherTile ?? $handTiles[0];
             return $fromMeld->canToTargetMeld($waitingTile, $targetMeldType);
         } else {
             return $fromMeld->getMeldType() == $targetMeldType;
@@ -176,10 +176,10 @@ class TileArea {
         }
 
         // push target meld
-        $fromMeld = $declaredMeld ?: new Meld(new TileList($handTiles));
+        $fromMeld = $declaredMeld ?? new Meld(new TileList($handTiles));
         $hasWaitingTile = !($handTiles && !$otherTile && !$declaredMeld);
         if ($hasWaitingTile) {
-            $waitingTile = $otherTile ?: $handTiles[0];
+            $waitingTile = $otherTile ?? $handTiles[0];
             $targetMeld = $fromMeld->toTargetMeld($waitingTile, $targetMeldType, $targetConcealed);
         } else {
             $targetMeld = $fromMeld->toConcealed($targetConcealed);

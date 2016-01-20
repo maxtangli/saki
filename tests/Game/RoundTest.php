@@ -1,26 +1,21 @@
 <?php
 
-use Saki\Game\MockRound;
-use Saki\Game\Round;
-use Saki\Game\RoundData;
 use Saki\Game\RoundPhase;
 use Saki\Meld\Meld;
 use Saki\Tile\Tile;
-use Saki\Tile\TileList;
-use Saki\RoundResult\WinRoundResult;
-use Saki\Util\MsTimer;
+use Saki\Game\Round;
 
 class RoundTest extends PHPUnit_Framework_TestCase {
     protected function getInitialRound() {
-        return new MockRound();
+        return new Round();
     }
 
     protected function getRoundAfterDiscard1m() {
-        $r = new MockRound();
+        $r = new Round();
         $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('1m'));
         return $r;
     }
-    
+
     function testInit() {
         $r = $this->getInitialRound();
 
@@ -181,5 +176,22 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($r->getCurrentPlayer()->getTileArea()->getDeclaredMeldListReference()->valueExist(Meld::fromString('1111m')));
         $this->assertEquals($tileCountBefore + 1, $r->getCurrentPlayer()->getTileArea()->getHandReference()->count());
         $this->assertEquals(0, $prePlayer->getTileArea()->getDiscardedReference()->count());
+    }
+
+    function testDebugSkipTo() {
+        $r = new Round();
+        $playerE = $r->getCurrentPlayer();
+
+        // phase not changed
+        $targetTile = $r->getRoundData()->getTileAreas()->getTargetTile()->toNextTile();
+        $r->debugSkipTo($playerE, null, null, null);
+        $this->assertEquals($playerE, $r->getCurrentPlayer());
+        $this->assertEquals(RoundPhase::getPrivatePhaseInstance(), $r->getRoundPhase());
+
+        // to public phase
+        // todo
+
+        // to other player
+        // todo
     }
 }

@@ -1,37 +1,23 @@
 <?php
 
-use Saki\Game\MockRound;
-use Saki\Game\RoundPhase;
+use Saki\Meld\MeldList;
 use Saki\Tile\Tile;
+use Saki\Tile\TileList;
+use Saki\Win\FutureWaiting;
+use Saki\Win\WaitingAnalyzer;
+use Saki\Win\WinAnalyzer;
 use Saki\Win\Yaku\YakuSet;
 
 class WaitingAnalyzerTest extends \PHPUnit_Framework_TestCase {
-
-    function generateRoundData($isPrivate, $handTileListString, $declaredMeldListString, \Saki\Tile\Tile $winTile) {
-        $r = new MockRound();
-        $handTileList = \Saki\Tile\TileList::fromString($handTileListString);
-        $declaredMeldList = \Saki\Meld\MeldList::fromString($declaredMeldListString);
-
-        // todo not safe?
-        $r->getRoundData()->getTurnManager()->debugSet($r->getCurrentPlayer(), RoundPhase::getPrivateOrPublicInstance($isPrivate), 1);
-        $r->getRoundData()->getTileAreas()->debugSet($r->getCurrentPlayer(), $handTileList, $declaredMeldList, $winTile);
-
-        return $r->getRoundData();
-    }
-
-    function generateWinTarget($isPrivate, $onHandTileListString, $declaredMeldListString, \Saki\Tile\Tile $winTile) {
-        $roundData = $this->generateRoundData($isPrivate, $onHandTileListString, $declaredMeldListString, $winTile);
-        return new \Saki\Win\WinTarget($roundData->getPlayerList()[0], $roundData);
-    }
 
     /**
      * @dataProvider publicDataProvider
      */
     function testPublicData($onHandTileListString, $declaredMeldListString, $expected) {
-        $waitingTileAnalyzer = new \Saki\Win\WaitingAnalyzer();
+        $waitingTileAnalyzer = new WaitingAnalyzer();
 
-        $handTileList = \Saki\Tile\TileList::fromString($onHandTileListString);
-        $declaredMeldList = \Saki\Meld\MeldList::fromString($declaredMeldListString);
+        $handTileList = TileList::fromString($onHandTileListString);
+        $declaredMeldList = MeldList::fromString($declaredMeldListString);
 
         $waitingTileList = $waitingTileAnalyzer->analyzePublic($handTileList, $declaredMeldList);
         $waitingTileStrings = $waitingTileList->toArray(function (Tile $waitingTile) {
@@ -59,13 +45,13 @@ class WaitingAnalyzerTest extends \PHPUnit_Framework_TestCase {
      * @dataProvider privateDataProvider
      */
     function testPrivateData($onHandTileListString, $declaredMeldListString, $expected) {
-        $winAnalyzer = new \Saki\Win\WinAnalyzer(YakuSet::getStandardYakuSet());
-        $waitingTileAnalyzer = new \Saki\Win\WaitingAnalyzer($winAnalyzer);
-        $handTileList = \Saki\Tile\TileList::fromString($onHandTileListString);
-        $declaredMeldList = \Saki\Meld\MeldList::fromString($declaredMeldListString);
+        $winAnalyzer = new WinAnalyzer(YakuSet::getStandardYakuSet());
+        $waitingTileAnalyzer = new WaitingAnalyzer($winAnalyzer);
+        $handTileList = TileList::fromString($onHandTileListString);
+        $declaredMeldList = MeldList::fromString($declaredMeldListString);
 
         $futureWaitingList = $waitingTileAnalyzer->analyzePrivate($handTileList, $declaredMeldList);
-        $discardedTileStrings = $futureWaitingList->toArray(function (\Saki\Win\FutureWaiting $futureWaiting) {
+        $discardedTileStrings = $futureWaitingList->toArray(function (FutureWaiting $futureWaiting) {
             return $futureWaiting->getDiscardedTile()->__toString();
         });
         $this->assertEquals($expected, $discardedTileStrings,
@@ -80,7 +66,7 @@ class WaitingAnalyzerTest extends \PHPUnit_Framework_TestCase {
             // 4+1
             ['123456789m129sEE', '', ['9s']],
             // already win
-            ['123sWW', '123m,456m,789m', ['1s','2s','3s','W']],
+            ['123sWW', '123m,456m,789m', ['1s', '2s', '3s', 'W']],
         ];
     }
 }

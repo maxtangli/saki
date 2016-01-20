@@ -10,6 +10,10 @@ class RoundDebugResetData {
     private $roundWindTurnData;
     private $selfWindTurn;
 
+    /**
+     * note: no params provided since
+     * - it's more convenient to set RoundWindTurnData by setters setRoundWindTurn() and setDealerWind()
+     */
     function __construct() {
         $this->roundWind = Tile::fromString('E');
         $this->roundWindTurnData = new RoundWindTurnData(1);
@@ -20,7 +24,7 @@ class RoundDebugResetData {
         return $this->roundWind;
     }
 
-    function setRoundWind($roundWind) {
+    function setRoundWind(Tile $roundWind) {
         $this->roundWind = $roundWind;
         return $this;
     }
@@ -29,7 +33,7 @@ class RoundDebugResetData {
         return $this->roundWindTurnData->getTurn();
     }
 
-    function setRoundWindTurn($roundWindTurn) {
+    function setRoundWindTurn(int $roundWindTurn) {
         $this->roundWindTurnData->setTurn($roundWindTurn);
         return $this;
     }
@@ -47,7 +51,7 @@ class RoundDebugResetData {
         return $this->selfWindTurn;
     }
 
-    function setSelfWindTurn($selfWindTurn) {
+    function setSelfWindTurn(int $selfWindTurn) {
         $this->selfWindTurn = $selfWindTurn;
         return $this;
     }

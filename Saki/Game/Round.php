@@ -10,6 +10,7 @@ use Saki\RoundResult\RoundResult;
 use Saki\RoundResult\RoundResultType;
 use Saki\RoundResult\WinRoundResult;
 use Saki\Tile\Tile;
+use Saki\Tile\TileList;
 use Saki\Util\ArrayLikeObject;
 use Saki\Win\WinAnalyzer;
 use Saki\Win\WinTarget;
@@ -71,10 +72,77 @@ class Round {
     private $winAnalyzer;
 
     function __construct(RoundData $roundData = null) {
-        $actualRoundData = $roundData ?: new RoundData();
+        $actualRoundData = $roundData ?? new RoundData();
         $this->roundData = $actualRoundData;
         $this->winAnalyzer = new WinAnalyzer($actualRoundData->getGameData()->getYakuSet());
         $this->toInitPhase();
+    }
+
+    // todo move into RoundData
+    function debugSkipTo(Player $currentPlayer, RoundPhase $roundPhase = null, $globalTurn = null,
+                         Tile $mockDiscardTile = null) {
+        $validCurrentState = $this->getRoundPhase()->isPrivateOrPublic();
+        if (!$validCurrentState) {
+            throw new \InvalidArgumentException();
+        }
+
+        $actualRoundPhase = $roundPhase ?? RoundPhase::getPrivatePhaseInstance();
+        $validRoundPhase = $actualRoundPhase->isPrivateOrPublic();
+        if (!$validRoundPhase) {
+            throw new \InvalidArgumentException();
+        }
+
+        $actualGlobalTurn = $globalTurn ?? 1;
+        $validActualGlobalTurn = ($actualGlobalTurn == 1);
+        if (!$validActualGlobalTurn) {
+            throw new \InvalidArgumentException('Not implemented.');
+        }
+
+        $actualMockDiscardTile = $mockDiscardTile ?? Tile::fromString('C');
+        $validMockDiscardTile = !$actualMockDiscardTile->isWind();
+        if (!$validMockDiscardTile) {
+            throw new \InvalidArgumentException('Not implemented: consider FourWindDiscardedDraw issue.');
+        }
+
+        $isTargetTurn = function () use ($currentPlayer, $actualRoundPhase) {
+            $isTargetTurn = ($this->getCurrentPlayer() == $currentPlayer) && ($this->getRoundPhase() == $actualRoundPhase);
+            return $this->isGameOver() || $isTargetTurn;
+        };
+        while (!$isTargetTurn()) {
+            if ($this->getRoundPhase()->isPrivate()) {
+                $this->debugDiscardByReplace($this->getCurrentPlayer(), $actualMockDiscardTile);
+            } elseif ($this->getRoundPhase()->isPublic()) {
+                $this->passPublicPhase();
+            } else {
+                throw new \LogicException();
+            }
+        }
+
+        if ($this->getRoundData()->getTurnManager()->getGlobalTurn() != 1) {
+            throw new \LogicException('Not implemented.');
+        }
+    }
+
+    // command
+    function debugDiscardByReplace(Player $player, Tile $discardTile, TileList $replaceHandTileList = null) {
+        $actualReplaceHandTileList = $replaceHandTileList ?? new TileList([$discardTile]);
+        $this->getRoundData()->getTileAreas()->debugReplaceHand($player, $actualReplaceHandTileList);
+
+        $this->discard($player, $discardTile);
+    }
+
+    // command
+    function debugReachByReplace(Player $player, Tile $reachTile, TileList $replaceHandTileList = null) {
+        $actualReplaceHandTileList = $replaceHandTileList ?? new TileList([$reachTile]);
+        $this->getRoundData()->getTileAreas()->debugReplaceHand($player, $actualReplaceHandTileList);
+
+        $this->reach($player, $reachTile);
+    }
+
+    // command
+    function debugKongBySelfByReplace(Player $player, Tile $selfTile) {
+        $this->getRoundData()->getTileAreas()->debugReplaceHand($player, new TileList([$selfTile, $selfTile, $selfTile, $selfTile]));
+        $this->kongBySelf($player, $selfTile);
     }
 
     /**

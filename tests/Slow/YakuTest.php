@@ -1,6 +1,6 @@
 <?php
 
-use Saki\Game\MockRound;
+use Saki\Game\Round;
 use Saki\Game\RoundDebugResetData;
 use Saki\Game\RoundPhase;
 use Saki\Meld\MeldList;
@@ -49,7 +49,14 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         $subTarget = $yakuTestData->toWinSubTarget();
         self::assertEquals($expected, $yaku->existIn($subTarget),
             sprintf("yaku        : %s\nyakuTestData: %s\nSubTarget   : currentPlayerWind[%s], targetPlayerWind[%s],%s\n",
-                $yakuTestData, $yaku, $subTarget->getCurrentPlayer()->getSelfWind(), $subTarget->getSelfWind(), 'isPrivatePhase:'.var_export($subTarget->isPrivatePhase(), true)));
+                $yakuTestData, $yaku, $subTarget->getCurrentPlayer()->getSelfWind(), $subTarget->getSelfWind(), 'isPrivatePhase:' . var_export($subTarget->isPrivatePhase(), true)));
+    }
+
+    /**
+     * @dataProvider fan1Provider
+     */
+    function testFan1(YakuTestData $yakuTestData, Yaku $yaku, $expected) {
+        $this->assertYakuExist($expected, $yakuTestData, $yaku);
     }
 
     function fan1Provider() {
@@ -111,7 +118,8 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
             // test RoundWindValueTilesYaku
             [new YakuTestData('123m,44m,55m,66m,55s', 'EEE', '5s'), RoundWindValueTilesYaku::getInstance(), true],
             // not roundWind
-            [(new YakuTestData('123m,44m,55m,66m,55s', 'EEE', '5s'))->setRoundWind(Tile::fromString('S')), RoundWindValueTilesYaku::getInstance(), false],
+            [(new YakuTestData('123m,44m,55m,66m,55s', 'EEE', '5s', null, null, (new RoundDebugResetData())->setRoundWind(Tile::fromString('S'))))
+                , RoundWindValueTilesYaku::getInstance(), false],
 
             // test SelfWindValueTilesYaku
             [new YakuTestData('123m,44m,55m,66m,55s', 'SSS', '5s', 'E', 'S'), SelfWindValueTilesYaku::getInstance(), true],
@@ -344,7 +352,7 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
     // todo simplify testReach
 
     function testReach() {
-        $r = new MockRound();
+        $r = new Round();
 
         // pass first round
         $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('E'));
@@ -375,7 +383,7 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
     }
 
     function testDoubleReach() {
-        $r = new MockRound();
+        $r = new Round();
         // E double reach
         $r->debugReachByReplace($r->getCurrentPlayer(), Tile::fromString('E'), TileList::fromString('123456789s2355mE'));
         $r->passPublicPhase();
@@ -391,7 +399,7 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
     }
 
     function testFirstTurnWin() {
-        $r = new MockRound();
+        $r = new Round();
 
         $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('E'));
         $r->passPublicPhase();
@@ -408,7 +416,7 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         $r->passPublicPhase();
 
         $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('E'));
-        $r->debugSetWallPopTile(Tile::fromString('1m'));
+        $r->getRoundData()->getTileAreas()->getWall()->debugSetNextDrawTile(Tile::fromString('1m'));
         $r->passPublicPhase();
         $this->assertEquals(Tile::fromString('1m'), $r->getRoundData()->getTileAreas()->getTargetTile());
 
@@ -429,9 +437,12 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
 
 /**
  * Convenient adaptor for write yaku test cases.
+ * tobe removed
+ * goal
+ * - YakuTestCase: RoundDebugSetData RoundDebugSkipToData targetPlayer yaku isExist getRound
  */
 class YakuTestData {
-    private static $mockRound;
+    private static $round;
 
     private $handMeldList;
     private $declareMeldList;
@@ -440,18 +451,18 @@ class YakuTestData {
     private $currentPlayerWind;
     private $targetPlayerWind;
 
-    private $roundWind;
+    private $roundDebugResetData;
 
-    function __construct($handMeldListString, $declareMeldListString = null, $targetTileString = null,
-                         $currentPlayerWindString = null, $targetPlayerWindString = null) {
+    function __construct(string $handMeldListString, string $declareMeldListString = null, string $targetTileString = null,
+                         string $currentPlayerWindString = null, string $targetPlayerWindString = null, RoundDebugResetData $roundDebugResetData = null) {
         $this->handMeldList = MeldList::fromString($handMeldListString)->toConcealed(true);
         $this->declareMeldList = MeldList::fromString($declareMeldListString !== null ? $declareMeldListString : "");
         $this->targetTile = $targetTileString !== null ? Tile::fromString($targetTileString) : $this->handMeldList[0][0];
 
-        $this->currentPlayerWind = $currentPlayerWindString !== null ? Tile::fromString($currentPlayerWindString) : Tile::fromString('E');
+        $this->currentPlayerWind = Tile::fromString($currentPlayerWindString ?? 'E');
         $this->targetPlayerWind = $targetPlayerWindString !== null ? Tile::fromString($targetPlayerWindString) : $this->currentPlayerWind;
 
-        $this->roundWind = Tile::fromString('E');
+        $this->roundDebugResetData = $roundDebugResetData ?? new RoundDebugResetData();
     }
 
     function __toString() {
@@ -459,41 +470,33 @@ class YakuTestData {
             , $this->handMeldList, $this->declareMeldList, $this->currentPlayerWind, $this->targetPlayerWind);
     }
 
-    function setRoundWind($roundWind) {
-        $this->roundWind = $roundWind;
-        return $this;
-    }
-
     function toWinSubTarget() {
-        if (!self::$mockRound) {
-            self::$mockRound = new MockRound(); // for 10 test cases, 1.2s => 0.2s which is 6x faster
+        if (!self::$round) {
+            self::$round = new Round(); // for 10 test cases, 1.2s => 0.2s which is 6x faster
         }
-        $mockRound = self::$mockRound;
-        $resetData = new RoundDebugResetData();
-        $resetData->setRoundWind($this->roundWind);
-        $mockRound->getRoundData()->debugReset($resetData);
-        $mockRound->init();
+        $round = self::$round;
+        $round->getRoundData()->debugReset($this->roundDebugResetData);
+        $round->init();
 
         // set phase
-        $currentPlayer = $mockRound->getPlayerList()->getSelfWindPlayer($this->currentPlayerWind);
-        $targetPlayer = $mockRound->getPlayerList()->getSelfWindPlayer($this->targetPlayerWind);
-        $isPublicPhase = ($currentPlayer !== $targetPlayer);
+        $currentPlayer = $round->getPlayerList()->getSelfWindPlayer($this->currentPlayerWind);
+        $targetPlayer = $round->getPlayerList()->getSelfWindPlayer($this->targetPlayerWind);
+        $isPrivatePhase = ($currentPlayer === $targetPlayer);
 
         // set tiles
         $handMeldList = $this->handMeldList;
         $targetTile = $this->targetTile;
-        $tileAreas = $mockRound->getRoundData()->getTileAreas();
+        $tileAreas = $round->getRoundData()->getTileAreas();
 
-        $mockRound->debugSkipTo($currentPlayer, RoundPhase::getPrivatePhaseInstance(), null, null, $targetTile);
-        if ($isPublicPhase) {
-            $handTileList = $handMeldList->toTileList()->removeByValue($targetTile);
-//            $mockRound->debugDiscardByReplace($currentPlayer, $targetTile);
-            $tileAreas->debugSetPublic($targetPlayer, $handTileList, $this->declareMeldList);
-        } else {
+        $round->debugSkipTo($currentPlayer, RoundPhase::getPrivateOrPublicInstance($isPrivatePhase), null, null, $targetTile);
+        if ($isPrivatePhase) {
             $handTileList = $handMeldList->toTileList();
             $tileAreas->debugSetPrivate($targetPlayer, $handTileList, $this->declareMeldList, $targetTile);
+        } else {
+            $handTileList = $handMeldList->toTileList()->removeByValue($targetTile);
+            $tileAreas->debugSetPublic($targetPlayer, $handTileList, $this->declareMeldList);
         }
 
-        return new WinSubTarget($this->handMeldList, $targetPlayer, $mockRound->getRoundData());
+        return new WinSubTarget($this->handMeldList, $targetPlayer, $round->getRoundData());
     }
 }

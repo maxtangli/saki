@@ -6,7 +6,7 @@ class Factory {
     private static $factoryOfFactories;
 
     static function getInstance($factoryKey) {
-        self::$factoryOfFactories = self::$factoryOfFactories ?: new Factory();
+        self::$factoryOfFactories = self::$factoryOfFactories ?? new Factory();
         return self::$factoryOfFactories->getOrGenerate($factoryKey, function () {
             return new Factory();
         });

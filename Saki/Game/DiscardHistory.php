@@ -41,7 +41,7 @@ class DiscardHistory {
     }
 
     private function getDiscardTileListImpl($isSelf, Tile $mySelfWind, $fromTurn = 1, $fromSelfWind = null, $excludedLastTile = false) {
-        $actualFromSelfWind = $fromSelfWind ?: Tile::fromString('E');
+        $actualFromSelfWind = $fromSelfWind ?? Tile::fromString('E');
 
         $notUsedParam = $actualFromSelfWind;
         $compareItem = new DiscardHistoryItem($fromTurn, $actualFromSelfWind, $notUsedParam); // validate

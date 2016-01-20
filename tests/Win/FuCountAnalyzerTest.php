@@ -1,6 +1,6 @@
 <?php
 
-use Saki\Game\MockRound;
+use Saki\Game\Round;
 use Saki\Meld\MeldList;
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
@@ -18,7 +18,7 @@ class FuCountAnalyzerTest extends PHPUnit_Framework_TestCase {
         $hand = TileList::fromString('123pCCFFF');
         $handMeldList = MeldList::fromString('123p,CC,(FFF)');
 
-        $r = new MockRound();
+        $r = new Round();
         $roundData = $r->getRoundData();
         $player = $r->getCurrentPlayer();
         $roundData->getTileAreas()->debugSetPrivate($player, $hand, $declareMeldList, $targetTile);

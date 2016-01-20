@@ -1,18 +1,14 @@
 <?php
 
-use Saki\Game\MockRound;
-use Saki\Game\Round;
 use Saki\Game\RoundPhase;
-use Saki\Meld\Meld;
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
-use Saki\RoundResult\WinRoundResult;
-use Saki\Util\MsTimer;
+use Saki\Game\Round;
 
 class RoundWinTest extends PHPUnit_Framework_TestCase {
     function testWinBySelf() {
         // setup
-        $r = new MockRound();
+        $r = new Round();
         // setup
         $r->getRoundData()->getTileAreas()->debugSetPrivate($r->getCurrentPlayer(), TileList::fromString('123m456m789m123s55s'));
         // execute
@@ -40,18 +36,18 @@ class RoundWinTest extends PHPUnit_Framework_TestCase {
     }
 
     function testWinByOther() {
-        $r = new MockRound();
+        $r = new Round();
         $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('4s'));
-        $r->debugSetHand($r->getPlayerList()[1], TileList::fromString('123m456m789m23s55s'));
+        $r->getRoundData()->getTileAreas()->debugSetPublic($r->getPlayerList()[1], TileList::fromString('123m456m789m23s55s'));
         $r->winByOther($r->getPlayerList()[1]);
         $this->assertTrue($r->getRoundData()->getTurnManager()->getRoundResult()->getRoundResultType()->isWin());
     }
 
     function testMultiWinByOther() {
-        $r = new MockRound();
+        $r = new Round();
         $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('4s'));
-        $r->debugSetHand($r->getPlayerList()[1], TileList::fromString('123m456m789m23s55s'));
-        $r->debugSetHand($r->getPlayerList()[2], TileList::fromString('123m456m789m23s55s'));
+        $r->getRoundData()->getTileAreas()->debugSetPublic($r->getPlayerList()[1], TileList::fromString('123m456m789m23s55s'));
+        $r->getRoundData()->getTileAreas()->debugSetPublic($r->getPlayerList()[2], TileList::fromString('123m456m789m23s55s'));
         $r->multiWinByOther([$r->getPlayerList()[1], $r->getPlayerList()[2]]);
         $this->assertTrue($r->getRoundData()->getTurnManager()->getRoundResult()->getRoundResultType()->isWin());
     }

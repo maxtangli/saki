@@ -1,6 +1,6 @@
 <?php
 
-use Saki\Game\MockRound;
+use Saki\Game\Round;
 use Saki\RoundResult\RoundResultType;
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
@@ -8,7 +8,7 @@ use Saki\Game\RoundPhase;
 
 class RoundDrawTest extends PHPUnit_Framework_TestCase {
     function testExhaustiveDraw() {
-        $r = new MockRound();
+        $r = new Round();
         // 130ms = avg0.7ms/time * 200times
         for ($phase = $r->getRoundPhase(); $phase != RoundPhase::getOverPhaseInstance(); $phase = $r->getRoundPhase()) {
             $discardTile = $r->getRoundData()->getTileAreas()->getPrivateHand($r->getCurrentPlayer())[0];
@@ -23,8 +23,8 @@ class RoundDrawTest extends PHPUnit_Framework_TestCase {
         $validTileList = TileList::fromString('19m19p15559sESWNC');
         $this->assertTrue($validTileList->isNineKindsOfTerminalOrHonor());
 
-        $r = new MockRound();
-        $r->debugSetHand($r->getCurrentPlayer(), $validTileList);
+        $r = new Round();
+        $r->getRoundData()->getTileAreas()->debugSetPrivate($r->getCurrentPlayer(), $validTileList);
         $r->nineKindsOfTerminalOrHonorDraw($r->getCurrentPlayer());
         $this->assertEquals(RoundResultType::NINE_KINDS_OF_TERMINAL_OR_HONOR_DRAW, $r->getRoundData()->getTurnManager()->getRoundResult()->getRoundResultType()->getValue());
     }
@@ -32,7 +32,7 @@ class RoundDrawTest extends PHPUnit_Framework_TestCase {
     // nine, exception case
 
     function testFourWindDraw() {
-        $r = new MockRound();
+        $r = new Round();
         $tileE = Tile::fromString('E');
         $r->debugDiscardByReplace($r->getCurrentPlayer(), $tileE);
         $r->passPublicPhase();
@@ -49,7 +49,7 @@ class RoundDrawTest extends PHPUnit_Framework_TestCase {
     }
 
 //    function testFourReachDraw() { // 2.29s
-//        $r = new MockRound();
+//        $r = new Round();
 //        $tileList = TileList::fromString('123456789m12355s');
 //        $tile = Tile::fromString('1s');
 //
@@ -69,7 +69,7 @@ class RoundDrawTest extends PHPUnit_Framework_TestCase {
 //    }
 
     function testFourKongDraw() { // todo handle kongPublicPhase
-        $r = new MockRound();
+        $r = new Round();
         $tile = Tile::fromString('1s');
 
         $r->debugKongBySelfByReplace($r->getCurrentPlayer(), $tile);

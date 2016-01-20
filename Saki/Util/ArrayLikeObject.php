@@ -86,7 +86,7 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         if (is_array($comparator)) {
             $s = Utils::getComparatorByBestArray($comparator);
         } else {
-            $s = $comparator ?: function ($a, $b) {
+            $s = $comparator ?? function ($a, $b) {
                 if ($a == $b) {
                     return 0;
                 } else {

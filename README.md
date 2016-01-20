@@ -24,8 +24,9 @@ rush 11-15 | 15.8h
 rush 16-20 | 25.6h
 rush 21-25 | 26.7h
 rush 26-30 | 24.1h
-rush 31-35 | ?h
-     total | 150h + ?h
+rush 31-35 | 17.4h
+rush 36-40 | ing
+     total | 167.4h + ing
 
 ## rush history
 
@@ -361,22 +362,22 @@ rush 34 optimize WinAnalyzer 6.3h
 
 - [x] summary: WinAnalyzer 70ms -> 20ms, all tests 2.6s -> 1.2s. a success! mainly reason: TileSortedList too slow.
 
-rush refactor YakuTestData -> RoundData.debugInit
+rush 35 refactor YakuTestData -> RoundData.debugInit 5.4h
 
 - [x] RoundWindTurn 0.3h
 - [x] RoundDebugResetData 0.3h
 - [x] refactor: remove MockRound.debugSetTurn() -> Round.debugSkipTo 0.4h
 - [x] MockRound.debugSkipTo() 1h
 
+- [x] <del>goal: remove YakuTestData</del>
 - [x] recall where am I a month ago 0.5h
-- [ ] TileAreas.setHand(targetTile) 
-- [ ] refactor: YakuTestData -> RoundData.debugInit() 0.3h
+- [x] refactor: YakuTestData -> RoundData.debugInit() 0.8h
 
-- [ ] refactor: remove MockRound?
-- [ ] TileAreas.debugSet() -> TileAreas.debugSetPrivate/Public() 0.2h
-- [ ] refactor: move MockRound methods into RoundData members 1.3 h
-- [ ] debugSetHand vs debugReplaceHand 0.2h
-- [ ] summary: possible ways to avoid those terrible refactorings when coding?
+- [x] goal: remove MockRound
+- [x] TileAreas.debugSet() -> TileAreas.debugSetPrivate/Public() 0.3h
+- [x] refactor: move MockRound methods into RoundData members 1.9 h
+
+- [x] summary: how to avoid those terrible refactorings? refactor as soon as bad smell appears; self code review periodically.
 
 rush optimize tests
 
@@ -393,6 +394,10 @@ rush optimize tests
 - [ ] optimize: WinAnalyzerTest
 
 - [ ] optimize: RoundDrawTest/testFourReachDraw
+
+rush refactor Round
+
+- [ ] refactor: move Round methods into RoundData except commands
 
 rush all yaku: kong concerned
 
