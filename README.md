@@ -386,8 +386,12 @@ rush introduce commands
 - [x] test parse 0.2h
 - [x] try profiling 1.2h
 - [x] optimize: remove TileSortedList in TileAreas 0.2h // profiler found out the ultimate evil thing in pj saki!
+- [x] CommandParser 0.1h
 
-- [ ] Command.executable()
+- [x] Command.executable() 1h
+
+- [ ] flexible phase switch
+
 - [ ] XXXCommand::getExecutables($player) // maybe better to exist in AI class?
 
 rush optimize tests

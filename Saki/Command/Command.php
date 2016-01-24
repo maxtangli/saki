@@ -1,4 +1,26 @@
 <?php
+/*
+Command
+- Command.new(context, specificParams...), Command.execute().
+- goal: support central control on commands, such as history, priority,
+- Usage: new DiscardCommand($context, $player, $tile).execute();
+
+CommandParser
+- goal: support string2command
+- CommandParser.parse(string): first token as class, remains as params.
+- Command.fromString(string): multi-poly impl of parse(string).
+- Usage: CommandParser.parse('discard E 1p'), DiscardCommand.fromString('discard E 1p');
+
+Command.executable() execute()
+- executable: client's responsibility.
+- execution
+
+Phase System
+- todo
+
+Command.getExecutables()
+- todo goal: list all possible commands for a given player
+ */
 namespace Saki\Command;
 
 use Saki\Command\ParamDeclaration\ParamDeclaration;
@@ -6,7 +28,7 @@ use Saki\Util\Utils;
 
 abstract class Command {
     //region parser
-    static function parseName($line) {
+    static function parseName(string $line) {
         $tokens = Utils::explodeSafe(' ', $line);
         if (empty($tokens)) {
             throw new \InvalidArgumentException();
@@ -16,7 +38,7 @@ abstract class Command {
         return $name;
     }
 
-    static function fromString(CommandContext $context, $line) {
+    static function fromString(CommandContext $context, string $line) {
         $name = static::parseName($line);
         if ($name !== static::getName()) {
             throw new \InvalidArgumentException(
@@ -61,6 +83,7 @@ abstract class Command {
         array_unshift($tokens, static::getName());
         return implode(' ', $tokens);
     }
+
     //endregion
 
     static function getParamDeclarations() {
@@ -86,7 +109,9 @@ abstract class Command {
     protected function getParam(int $i) {
         $valid = array_key_exists($i, $this->params);
         if (!$valid) {
-            throw new \InvalidArgumentException();
+            throw new \InvalidArgumentException(
+                sprintf('Invalid $i[%s] for $this->params[%s]', $i, var_export($this->params, true))
+            );
         }
         return $this->params[$i];
     }
