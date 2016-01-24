@@ -12,9 +12,8 @@ abstract class Yaku extends Singleton {
     function __toString() {
         // Saki\Win\Yaku\ReachYaku -> Reach
         $cls = get_called_class();
-        $s = str_replace('Yaku', '', $cls);
-        $s = substr($s, strrpos($s, '\\'));
-//        $s = end(explode('\\', $s));
+        $s = substr($cls, strrpos($cls, '\\'));
+        $s = str_replace('Yaku', '', $s);
         return $s;
     }
 

@@ -350,9 +350,8 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
     }
 
     // todo simplify testReach
-
     function testReach() {
-        $r = new Round();
+        $r = YakuTestData::getInitedRound();
 
         // pass first round
         $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('E'));
@@ -363,11 +362,9 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
 
         $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('E'));
         $r->passPublicPhase();
-        $this->assertEquals(RoundPhase::PRIVATE_PHASE, $r->getRoundPhase()->getValue());
 
         $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('N'));
         $r->passPublicPhase();
-        $this->assertEquals(RoundPhase::PRIVATE_PHASE, $r->getRoundPhase()->getValue(), $r->getRoundData()->getTurnManager()->getGlobalTurn());
 
         // E reach
         $r->debugReachByReplace($r->getCurrentPlayer(), Tile::fromString('E'), TileList::fromString('123456789s2355mE'));
@@ -383,7 +380,7 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
     }
 
     function testDoubleReach() {
-        $r = new Round();
+        $r = YakuTestData::getInitedRound();
         // E double reach
         $r->debugReachByReplace($r->getCurrentPlayer(), Tile::fromString('E'), TileList::fromString('123456789s2355mE'));
         $r->passPublicPhase();
@@ -399,7 +396,7 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
     }
 
     function testFirstTurnWin() {
-        $r = new Round();
+        $r = YakuTestData::getInitedRound();
 
         $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('E'));
         $r->passPublicPhase();
@@ -443,6 +440,15 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
  */
 class YakuTestData {
     private static $round;
+    static function getInitedRound(RoundDebugResetData $roundDebugResetData = null) {
+        if (!self::$round) {
+            self::$round = new Round(); // for 10 test cases, 1.2s => 0.2s which is 6x faster
+        }
+        $round = self::$round;
+        $round->getRoundData()->debugReset($roundDebugResetData ?? new RoundDebugResetData());
+        $round->init();
+        return $round;
+    }
 
     private $handMeldList;
     private $declareMeldList;
@@ -471,12 +477,7 @@ class YakuTestData {
     }
 
     function toWinSubTarget() {
-        if (!self::$round) {
-            self::$round = new Round(); // for 10 test cases, 1.2s => 0.2s which is 6x faster
-        }
-        $round = self::$round;
-        $round->getRoundData()->debugReset($this->roundDebugResetData);
-        $round->init();
+        $round = self::getInitedRound($this->roundDebugResetData);
 
         // set phase
         $currentPlayer = $round->getPlayerList()->getSelfWindPlayer($this->currentPlayerWind);

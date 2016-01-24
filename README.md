@@ -379,13 +379,24 @@ rush 35 refactor YakuTestData -> RoundData.debugInit 5.4h
 
 - [x] summary: how to avoid those terrible refactorings? refactor as soon as bad smell appears; self code review periodically.
 
+rush introduce commands
+
+- [x] scratch 3h // point: confusion in design or coding comes from lack of REQUIREMENT ANALYSIS!
+- [x] parse by ParamDeclaration 1h // point: explore requirement by trying design and coding
+- [x] test parse 0.2h
+- [x] try profiling 1.2h
+- [x] optimize: remove TileSortedList in TileAreas 0.2h // profiler found out the ultimate evil thing in pj saki!
+
+- [ ] Command.executable()
+- [ ] XXXCommand::getExecutables($player) // maybe better to exist in AI class?
+
 rush optimize tests
 
 - [x] optimize: new Round().drawInit 1.8h // ArrayLikeObject.pop() 5ms -> 1ms by simplify, Wall().draw 66ms -> 3ms by fix wrongly use of TileSortedList
 - [x] optimize: new RoundData() 0.5h // TileSet extends TileSortedList -> extends TileList
 - [x] bug: Timer not accurate since echo()'s time cost
 
-- [ ] optimize: YakuTest
+- [ ] optimize: YakuTest 0.1h // 1 test case 40ms -> debugReplaceHand() slow?
 
 - [ ] optimize: WaitingAnalyzer.analyzePrivate
 

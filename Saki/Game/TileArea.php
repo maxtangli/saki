@@ -9,7 +9,6 @@ use Saki\Meld\RunMeldType;
 use Saki\Meld\TripleMeldType;
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
-use Saki\Tile\TileSortedList;
 
 /*
 TileCount
@@ -17,21 +16,22 @@ TileCount
 - private: current 14 other 13
 - public: current 13 other 14
  */
+
 class TileArea {
-    private $handTileSortedList;
+    private $handTileList;
     private $discardedTileList;
     private $declaredMeldList;
     private $reachGlobalTurn;
 
     function __construct() {
-        $this->handTileSortedList = TileSortedList::fromString('');
+        $this->handTileList = TileList::fromString('');//TileSortedList::fromString('');
         $this->discardedTileList = TileList::fromString('');
         $this->declaredMeldList = MeldList::fromString('');
         $this->reachGlobalTurn = false;
     }
 
     function reset() {
-        $this->handTileSortedList->setInnerArray([]);
+        $this->handTileList->setInnerArray([]);
         $this->discardedTileList->clear();
         $this->declaredMeldList->setInnerArray([]);
         $this->reachGlobalTurn = false;
@@ -39,10 +39,10 @@ class TileArea {
 
     /**
      * note: should not be used except when client is not sure handTileList is 13 or 14 style.
-     * @return TileSortedList
+     * @return TileList
      */
     function getHandReference() {
-        return $this->handTileSortedList;
+        return $this->handTileList;
     }
 
     /**

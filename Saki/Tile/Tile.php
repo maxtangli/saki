@@ -22,15 +22,13 @@ class Tile implements ValueObject {
         return is_int($number) && 1 <= $number && $number <= 9;
     }
 
-    static function validString($s) {
-        $regex = '/^' . self::REGEX_TILE . '$/';
-        return preg_match($regex, $s) === 1;
-    }
+//    static function validString($s) {
+//        $regex = '/^' . self::REGEX_TILE . '$/';
+//        return preg_match($regex, $s) === 1;
+//    }
 
     static function fromString($s) {
-        if (!self::validString($s)) {
-            throw new \InvalidArgumentException();
-        }
+        // will be validated in getInstance()
         if (strlen($s) == 1) {
             return Tile::getInstance(TileType::fromString($s));
         } else {

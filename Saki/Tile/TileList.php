@@ -50,10 +50,11 @@ class TileList extends ArrayLikeObject {
         usort($this->getInnerArrayReferenceUnsafe(), function (Tile $a, Tile $b) {
             return $a->getDisplayValueID() - $b->getDisplayValueID();
         });
+        return $this;
     }
 
     function __toString() {
-        // 123m456p789sEEECC(handCountInfo)
+        // 123m456p789sEEECC
         $s = "";
         $tiles = $this->toArray();
         $len = count($tiles);
@@ -67,7 +68,6 @@ class TileList extends ArrayLikeObject {
             }
         }
         return $s;
-//        return sprintf('%s(%s)', $s, $this->getHandCount()->__toString());
     }
 
     function toTileList() {

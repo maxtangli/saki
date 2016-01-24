@@ -25,8 +25,4 @@ class TileSortedList extends TileList {
     protected function innerArrayChangedHook() {
         $this->sort();
     }
-
-    function toTileSortedList() {
-        return new TileSortedList($this->toArray());
-    }
 }

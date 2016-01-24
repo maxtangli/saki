@@ -39,51 +39,52 @@ use Saki\Win\Yaku\Yakuman\SmallFourWindsYaku;
 use Saki\Win\Yaku\Yakuman2\FourConcealedTriplesOnePairWaitingYaku;
 
 class YakuSet extends ArrayLikeObject {
+    private static $standardYakusSet;
     static function getStandardYakuSet() {
-        $standardYakus = [
-            // Fan1
-            AllRunsYaku::getInstance(),
-            AllSimplesYaku::getInstance(),
-            ConcealedSelfDrawYaku::getInstance(),
-            DoubleRunYaku::getInstance(),
-            FirstTurnWinYaku::getInstance(),
-            GreenValueTilesYaku::getInstance(),
-            ReachYaku::getInstance(),
-            RedValueTilesYaku::getInstance(),
-            RoundWindValueTilesYaku::getInstance(),
-            SelfWindValueTilesYaku::getInstance(),
-            WhiteValueTilesYaku::getInstance(),
-            // Fan2
-            AllTerminalsAndHonorsYaku::getInstance(),
-            AllTriplesYaku::getInstance(),
-            DoubleReachYaku::getInstance(),
-            FullStraightYaku::getInstance(),
-            LittleThreeDragonsYaku::getInstance(),
-            MixedOutsideHandYaku::getInstance(),
-            SevenPairsYaku::getInstance(),
-            ThreeColorRunsYaku::getInstance(),
-            ThreeColorTriplesYaku::getInstance(),
-            ThreeConcealedTriplesYaku::getInstance(),
-            ThreeQuadsYaku::getInstance(),
-            // Fan3
-            HalfFlushYaku::getInstance(),
-            PureOutsideHandYaku::getInstance(),
-            TwoDoubleRunYaku::getInstance(),
-            // Fan6
-            FullFlushYaku::getInstance(),
-            // Yakuman
-            AllGreenYaku::getInstance(),
-            AllHonorsYaku::getInstance(),
-            AllTerminalsYaku::getInstance(),
-            BigFourWindsYaku::getInstance(),
-            BigThreeDragonsYaku::getInstance(),
-            FourConcealedTriplesYaku::getInstance(),
-            FourQuadsYaku::getInstance(),
-            SmallFourWindsYaku::getInstance(),
-            // Yakuman2
-            FourConcealedTriplesOnePairWaitingYaku::getInstance(),
-        ];
-        return new YakuSet($standardYakus);
+        self::$standardYakusSet = self::$standardYakusSet ?? new self([
+                // Fan1
+                AllRunsYaku::getInstance(),
+                AllSimplesYaku::getInstance(),
+                ConcealedSelfDrawYaku::getInstance(),
+                DoubleRunYaku::getInstance(),
+                FirstTurnWinYaku::getInstance(),
+                GreenValueTilesYaku::getInstance(),
+                ReachYaku::getInstance(),
+                RedValueTilesYaku::getInstance(),
+                RoundWindValueTilesYaku::getInstance(),
+                SelfWindValueTilesYaku::getInstance(),
+                WhiteValueTilesYaku::getInstance(),
+                // Fan2
+                AllTerminalsAndHonorsYaku::getInstance(),
+                AllTriplesYaku::getInstance(),
+                DoubleReachYaku::getInstance(),
+                FullStraightYaku::getInstance(),
+                LittleThreeDragonsYaku::getInstance(),
+                MixedOutsideHandYaku::getInstance(),
+                SevenPairsYaku::getInstance(),
+                ThreeColorRunsYaku::getInstance(),
+                ThreeColorTriplesYaku::getInstance(),
+                ThreeConcealedTriplesYaku::getInstance(),
+                ThreeQuadsYaku::getInstance(),
+                // Fan3
+                HalfFlushYaku::getInstance(),
+                PureOutsideHandYaku::getInstance(),
+                TwoDoubleRunYaku::getInstance(),
+                // Fan6
+                FullFlushYaku::getInstance(),
+                // Yakuman
+                AllGreenYaku::getInstance(),
+                AllHonorsYaku::getInstance(),
+                AllTerminalsYaku::getInstance(),
+                BigFourWindsYaku::getInstance(),
+                BigThreeDragonsYaku::getInstance(),
+                FourConcealedTriplesYaku::getInstance(),
+                FourQuadsYaku::getInstance(),
+                SmallFourWindsYaku::getInstance(),
+                // Yakuman2
+                FourConcealedTriplesOnePairWaitingYaku::getInstance(),
+            ]);
+        return self::$standardYakusSet;
     }
 
     function __construct(array $yakus) {

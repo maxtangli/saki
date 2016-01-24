@@ -5,7 +5,6 @@ namespace Saki\Game;
 use Saki\Meld\MeldList;
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
-use Saki\Tile\TileSortedList;
 
 /**
  * Provide collaborate operations on 1 Wall and 2-4 TileArea.
@@ -108,6 +107,8 @@ class TileAreas {
         $replaceIndexes = range(0, $replaceTileList->count() - 1);
         $newHand = $handReference->toTileList()->replaceByIndex($replaceIndexes, $replaceTileList->toArray());
         $declaredMeldList = $player->getTileArea()->getDeclaredMeldListReference();
+
+        // call to handle targetTile
         $this->debugSetHandImpl($player, $newHand, $declaredMeldList);
     }
 
@@ -173,27 +174,27 @@ class TileAreas {
 
     /**
      * @param Player $player
-     * @return TileSortedList
+     * @return TileList
      */
     function getPublicHand(Player $player) {
-        $originHand = $player->getTileArea()->getHandReference()->toTileSortedList();
+        $originHand = $player->getTileArea()->getHandReference()->toTileList();
         return $originHand->isPublicHand() ? $originHand
             : $originHand->removeByValue($this->getTargetTile());
     }
 
     /**
      * @param Player $player
-     * @return TileSortedList
+     * @return TileList
      */
     function getPrivateHand(Player $player) {
-        $originHand = $player->getTileArea()->getHandReference()->toTileSortedList();
+        $originHand = $player->getTileArea()->getHandReference()->toTileList();
         return $originHand->isPrivateHand() ? $originHand :
             $originHand->push($this->getTargetTile());
     }
 
     /**
      * @param Player $player
-     * @return TileSortedList
+     * @return TileList
      */
     function getPrivateFull(Player $player) {
         $privateHand = $this->getPrivateHand($player);
@@ -205,7 +206,7 @@ class TileAreas {
      * @return TileList
      */
     protected function getDiscarded() {
-        return $this->playerList->toReducedValue(function(TileList $l, Player $player) {
+        return $this->playerList->toReducedValue(function (TileList $l, Player $player) {
             return $l->push($player->getTileArea()->getDiscardedReference()->toArray());
         }, TileList::fromString(''));
     }

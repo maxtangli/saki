@@ -3,8 +3,13 @@
 namespace Saki\Util;
 
 class Utils {
+    /**
+     * todo bad smell. any better ways?
+     * @param array $descBestOnes
+     * @return \Closure
+     */
     static function getComparatorByBestArray(array $descBestOnes) {
-        $comparator = function($a, $b)use($descBestOnes) {
+        $comparator = function ($a, $b) use ($descBestOnes) {
             $ia = array_search($a, $descBestOnes);
             $ib = array_search($b, $descBestOnes);
             if ($ia === false || $ib === false) {
@@ -31,6 +36,14 @@ class Utils {
 
     static function inRange($v, $lowerLimit, $upperLimit) {
         return $lowerLimit <= $v && $v <= $upperLimit;
+    }
+
+    static function explodeSafe(string $delimiter, string $string) {
+        $tokens = explode($delimiter, $string);
+        if ($tokens === false) {
+            throw new \InvalidArgumentException();
+        }
+        return $tokens;
     }
 
     private function __construct() {
