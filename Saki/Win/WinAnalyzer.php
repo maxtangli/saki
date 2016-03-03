@@ -115,7 +115,7 @@ class WinAnalyzer {
         $winStateValue = $subTarget->isPrivatePhase() ? WinState::WIN_BY_SELF : WinState::WIN_BY_OTHER;
         $winState = WinState::getInstance($winStateValue);
 
-        $waitingType = $tileSeries->getWaitingType($subTarget->getAllMeldList(), $subTarget->getTargetTile(), $subTarget->getDeclaredMeldList());
+        $waitingType = $tileSeries->getWaitingType($subTarget->getAllMeldList(), $subTarget->getTileOfTargetTile(), $subTarget->getDeclaredMeldList());
         $fuCountTarget = new FuCountTarget($subTarget, $yakuList, $waitingType);
         $fuCountResult = FuCountAnalyzer::getInstance()->getResult($fuCountTarget);
         $fuCount = $fuCountResult->getTotalFuCount();

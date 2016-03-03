@@ -7,12 +7,14 @@ use Saki\Meld\MeldList;
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 use Saki\Win\WinSubTarget;
+use Saki\Win\WinTarget;
 use Saki\Win\Yaku\Fan1\AllRunsYaku;
 use Saki\Win\Yaku\Fan1\AllSimplesYaku;
 use Saki\Win\Yaku\Fan1\ConcealedSelfDrawYaku;
 use Saki\Win\Yaku\Fan1\DoubleRunYaku;
 use Saki\Win\Yaku\Fan1\FirstTurnWinYaku;
 use Saki\Win\Yaku\Fan1\GreenValueTilesYaku;
+use Saki\Win\Yaku\Fan1\KingSTileWinYaku;
 use Saki\Win\Yaku\Fan1\ReachYaku;
 use Saki\Win\Yaku\Fan1\RedValueTilesYaku;
 use Saki\Win\Yaku\Fan1\RoundWindValueTilesYaku;
@@ -415,12 +417,24 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('E'));
         $r->getRoundData()->getTileAreas()->getWall()->debugSetNextDrawTile(Tile::fromString('1m'));
         $r->passPublicPhase();
-        $this->assertEquals(Tile::fromString('1m'), $r->getRoundData()->getTileAreas()->getTargetTile());
+        $this->assertEquals(Tile::fromString('1m'), $r->getRoundData()->getTileAreas()->getTargetTile()->getTile());
 
         // S winBySelf FirstTurnWin
         $yakuList = $r->getWinResult($r->getCurrentPlayer())->getYakuList();
         $this->assertGreaterThan(0, $yakuList->count());
         $this->assertContains(FirstTurnWinYaku::getInstance(), $yakuList, $yakuList);
+    }
+
+    function testKingSTileWin() {
+        $r = YakuTestData::getInitedRound();
+        $r->getRoundData()->getTileAreas()->debugReplaceHand($r->getCurrentPlayer(), TileList::fromString('123s456s789s7777m5m'));
+        $r->getRoundData()->getTileAreas()->getWall()->debugSetNextReplaceTile(Tile::fromString('5m'));
+        $r->kongBySelf($r->getCurrentPlayer(), Tile::fromString('7m'));
+
+        $yakuList = $r->getWinResult($r->getCurrentPlayer())->getYakuList();
+
+        $this->assertGreaterThan(0, $yakuList->count());
+        $this->assertContains(KingSTileWinYaku::getInstance(), $yakuList, $yakuList);
     }
 
     function testFinalTileWinMoon() {
@@ -446,7 +460,9 @@ class YakuTestData {
         }
         $round = self::$round;
         $round->getRoundData()->debugReset($roundDebugResetData ?? new RoundDebugResetData());
-        $round->init();
+//        $round->getRoundData()->toInitPhase();
+        $round->getRoundData()->toNextPhase(); // initPhase now
+        $round->getRoundData()->toNextPhase(); // privatePhase now
         return $round;
     }
 
@@ -489,7 +505,8 @@ class YakuTestData {
         $targetTile = $this->targetTile;
         $tileAreas = $round->getRoundData()->getTileAreas();
 
-        $round->debugSkipTo($currentPlayer, RoundPhase::getPrivateOrPublicInstance($isPrivatePhase), null, null, $targetTile);
+        $roundPhase = $isPrivatePhase ? RoundPhase::getPrivateInstance() : RoundPhase::getPublicInstance();
+        $round->debugSkipTo($currentPlayer, $roundPhase, null, null, $targetTile);
         if ($isPrivatePhase) {
             $handTileList = $handMeldList->toTileList();
             $tileAreas->debugSetPrivate($targetPlayer, $handTileList, $this->declareMeldList, $targetTile);

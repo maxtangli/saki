@@ -20,7 +20,7 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         $r = $this->getInitialRound();
 
         // phase
-        $this->assertEquals(RoundPhase::getPrivatePhaseInstance(), $r->getRoundPhase());
+        $this->assertEquals(RoundPhase::getPrivateInstance(), $r->getRoundPhase());
         // initial current player
         $dealerPlayer = $r->getRoundData()->getPlayerList()->getDealerPlayer();
         $this->assertSame($dealerPlayer, $r->getCurrentPlayer());
@@ -61,7 +61,7 @@ class RoundTest extends PHPUnit_Framework_TestCase {
             [3, -18],
             [4, -28],
         ];
-        $items = $r->getFinalScoreItems(false);
+        $items = $r->getRoundData()->getFinalScoreItems(false);
         foreach ($r->getPlayerList() as $k => $player) {
             $item = $items[$k];
             list($expectedRank, $expectedPoint) = [$expected[$k][0], $expected[$k][1]];
@@ -183,10 +183,10 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         $playerE = $r->getCurrentPlayer();
 
         // phase not changed
-        $targetTile = $r->getRoundData()->getTileAreas()->getTargetTile()->toNextTile();
+        $targetTile = $r->getRoundData()->getTileAreas()->getTargetTile()->getTile()->toNextTile();
         $r->debugSkipTo($playerE, null, null, null);
         $this->assertEquals($playerE, $r->getCurrentPlayer());
-        $this->assertEquals(RoundPhase::getPrivatePhaseInstance(), $r->getRoundPhase());
+        $this->assertEquals(RoundPhase::getPrivateInstance(), $r->getRoundPhase());
 
         // to public phase
         // todo

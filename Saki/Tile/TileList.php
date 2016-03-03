@@ -79,12 +79,14 @@ class TileList extends ArrayLikeObject {
     }
 
     function isCompletePrivateHand() {
-        return $this->count() == 14;
+        return $this->count() >= 14; // todo remove
     }
 
     protected function assertCompletePrivateHand() {
         if (!$this->isCompletePrivateHand()) {
-            throw new \LogicException();
+            throw new \LogicException(
+                sprintf('Assertion Failed. Require complete-private-hand but [%s] given.', $this->__toString())
+            );
         }
     }
 

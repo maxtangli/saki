@@ -1,16 +1,30 @@
 <?php
 namespace Saki\Command;
 
-use Saki\Command\ParamDeclaration\SelfWindParamDeclaration;
-
 abstract class PlayerCommand extends Command {
     // todo constructor validate?
 
     /**
      * @return Tile
      */
-    function getPlayerSelfWind() {
+    function getActPlayerSelfWind() {
         return $this->getParam(0);
+    }
+
+    function getActPlayer() {
+        return $this->getContext()->getRoundData()->getPlayerList()->getSelfWindPlayer($this->getActPlayerSelfWind());
+    }
+
+    function getCurrentPlayer() {
+        return $this->getContext()->getRoundData()->getTurnManager()->getCurrentPlayer();
+    }
+
+    function isCurrentPlayer() {
+        return $this->getActPlayer() == $this->getCurrentPlayer();
+    }
+
+    function getRoundPhase() {
+        return $this->getContext()->getRoundData()->getPhaseState()->getRoundPhase();
     }
 
     function executable() {

@@ -8,6 +8,7 @@ use Saki\Win\Yaku\Fan1\ConcealedSelfDrawYaku;
 use Saki\Win\Yaku\Fan1\DoubleRunYaku;
 use Saki\Win\Yaku\Fan1\FirstTurnWinYaku;
 use Saki\Win\Yaku\Fan1\GreenValueTilesYaku;
+use Saki\Win\Yaku\Fan1\KingSTileWinYaku;
 use Saki\Win\Yaku\Fan1\ReachYaku;
 use Saki\Win\Yaku\Fan1\RedValueTilesYaku;
 use Saki\Win\Yaku\Fan1\RoundWindValueTilesYaku;
@@ -49,6 +50,7 @@ class YakuSet extends ArrayLikeObject {
                 DoubleRunYaku::getInstance(),
                 FirstTurnWinYaku::getInstance(),
                 GreenValueTilesYaku::getInstance(),
+                KingSTileWinYaku::getInstance(),
                 ReachYaku::getInstance(),
                 RedValueTilesYaku::getInstance(),
                 RoundWindValueTilesYaku::getInstance(),

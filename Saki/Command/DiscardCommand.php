@@ -22,12 +22,13 @@ class DiscardCommand extends PrivateCommand {
     }
 
     function matchOtherConditions() {
-        $validTile = $this->getContext()->getRound()->getCurrentPlayer()->getTileArea()->canDiscard($this->getTile());
+        $validTile = $this->getActPlayer()->getTileArea()->canDiscard($this->getTile());
         return $validTile;
     }
 
-    function execute() {
-        $player = $this->getContext()->getRound()->getPlayerList()->getSelfWindPlayer($this->getPlayerSelfWind());
-        $this->getContext()->getRound()->discard($player, $this->getTile());
+    function executeImpl() {
+        $this->getContext()->getRoundData()->getTileAreas()->discard($this->getActPlayer(), $this->getTile());
+//        $this->getContext()->getRoundData()->toPublicPhase();
+        $this->getContext()->getRoundData()->toNextPhase();
     }
 }

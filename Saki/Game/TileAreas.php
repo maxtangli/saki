@@ -68,7 +68,7 @@ class TileAreas {
         } elseif ($hand->isPrivateHand() && !$targetTile) {
             $actualTargetTile = $hand[0];
         } elseif ($hand->isPublicHand() && !$targetTile && $this->hasTargetTile()) {
-            $actualTargetTile = $this->getTargetTile();
+            $actualTargetTile = $this->getTargetTile()->getTile();
         } else {
             throw new \InvalidArgumentException(
                 sprintf('Invalid combination of $hand[%s], $targetTile[%s].', $hand, $targetTile)
@@ -86,7 +86,7 @@ class TileAreas {
 
         $player->getTileArea()->getHandReference()->setInnerArray($hand->toArray());
         $player->getTileArea()->getDeclaredMeldListReference()->setInnerArray($actualDeclareMeldList->toArray());
-        $this->setTargetTile($actualTargetTile);
+        $this->setTargetTile(new TargetTile($actualTargetTile));
     }
 
     function debugSetPrivate(Player $player, TileList $hand, MeldList $declareMeldList = null, Tile $targetTile = null) {
@@ -138,7 +138,7 @@ class TileAreas {
     }
 
     /**
-     * @return Tile
+     * @return TargetTile
      */
     function getTargetTile() {
         if (!$this->hasTargetTile()) {
@@ -147,7 +147,7 @@ class TileAreas {
         return $this->targetTile;
     }
 
-    function setTargetTile(Tile $targetTile) {
+    function setTargetTile(TargetTile $targetTile) {
         if ($targetTile === null) {
             throw new \InvalidArgumentException('$targetTile should not be [null]');
         }
@@ -179,7 +179,7 @@ class TileAreas {
     function getPublicHand(Player $player) {
         $originHand = $player->getTileArea()->getHandReference()->toTileList();
         return $originHand->isPublicHand() ? $originHand
-            : $originHand->removeByValue($this->getTargetTile());
+            : $originHand->removeByValue($this->getTargetTile()->getTile());
     }
 
     /**
@@ -189,7 +189,7 @@ class TileAreas {
     function getPrivateHand(Player $player) {
         $originHand = $player->getTileArea()->getHandReference()->toTileList();
         return $originHand->isPrivateHand() ? $originHand :
-            $originHand->push($this->getTargetTile());
+            $originHand->push($this->getTargetTile()->getTile());
     }
 
     /**
@@ -254,18 +254,18 @@ class TileAreas {
     function draw(Player $player) {
         $newTile = $this->getWall()->draw();
         $player->getTileArea()->draw($newTile);
-        $this->setTargetTile($newTile);
+        $this->setTargetTile(new TargetTile($newTile));
     }
 
     function drawReplacement(Player $player) {
         $newTile = $this->getWall()->drawReplacement();
         $player->getTileArea()->draw($newTile);
-        $this->setTargetTile($newTile);
+        $this->setTargetTile(new TargetTile($newTile, true));
     }
 
     function discard(Player $player, Tile $selfTile) {
         $player->getTileArea()->discard($selfTile);
-        $this->setTargetTile($selfTile);
+        $this->setTargetTile(new TargetTile($selfTile));
 
         $this->recordDiscard($this->getRoundTurn()->getGlobalTurn(), $player->getSelfWind(), $selfTile);
     }

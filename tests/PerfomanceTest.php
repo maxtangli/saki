@@ -148,7 +148,7 @@ class PerformanceTest extends PHPUnit_Framework_TestCase {
             $r->getWinResult($r->getCurrentPlayer());
         }));
 
-        $analyzer = $r->getWinAnalyzer();
+        $analyzer = $r->getRoundData()->getWinAnalyzer();
         $target = new WinTarget($r->getCurrentPlayer(), $r->getRoundData());
         $b->add(new BenchmarkItem('analyzeTarget()', function () use ($analyzer, $target) {
             $analyzer->analyzeTarget($target);
@@ -178,11 +178,11 @@ class PerformanceTest extends PHPUnit_Framework_TestCase {
 
         $tileSeries = $analyzer->getTileSeriesAnalyzer()->analyzeTileSeries($subTarget->getAllMeldList());
         $b->add(new BenchmarkItem('analyzeSubTarget().getWaitingType()', function () use ($analyzer, $subTarget, $tileSeries) {
-            $waitingType = $tileSeries->getWaitingType($subTarget->getAllMeldList(), $subTarget->getTargetTile(), $subTarget->getDeclaredMeldList());
+            $waitingType = $tileSeries->getWaitingType($subTarget->getAllMeldList(), $subTarget->getTileOfTargetTile(), $subTarget->getDeclaredMeldList());
         }));
 
         $yakuList = $analyzer->getYakuAnalyzer()->analyzeYakuList($subTarget);
-        $waitingType = $tileSeries->getWaitingType($subTarget->getAllMeldList(), $subTarget->getTargetTile(), $subTarget->getDeclaredMeldList());
+        $waitingType = $tileSeries->getWaitingType($subTarget->getAllMeldList(), $subTarget->getTileOfTargetTile(), $subTarget->getDeclaredMeldList());
         $b->add(new BenchmarkItem('analyzeSubTarget().getFuCount()', function () use ($analyzer, $subTarget, $yakuList, $waitingType) {
             $fuCountTarget = new FuCountTarget($subTarget, $yakuList, $waitingType);
             $fuCountResult = FuCountAnalyzer::getInstance()->getResult($fuCountTarget);
@@ -198,7 +198,7 @@ class PerformanceTest extends PHPUnit_Framework_TestCase {
         $r = new Round();
         $r->getRoundData()->getTileAreas()->debugSetPrivate($r->getCurrentPlayer(),
             TileSortedList::fromString('123456789m234sWW'), null, Tile::fromString('2s'));
-        $analyzer = $r->getWinAnalyzer();
+        $analyzer = $r->getRoundData()->getWinAnalyzer();
         $target = new WinTarget($r->getCurrentPlayer(), $r->getRoundData());
         $waitingAnalyzer = $analyzer->getWaitingAnalyzer();
 
@@ -229,7 +229,7 @@ class PerformanceTest extends PHPUnit_Framework_TestCase {
         $r = new Round();
         $r->getRoundData()->getTileAreas()->debugSetPrivate($r->getCurrentPlayer(),
             TileSortedList::fromString('123456789m234sWW'), null, Tile::fromString('2s'));
-        $analyzer = $r->getWinAnalyzer();
+        $analyzer = $r->getRoundData()->getWinAnalyzer();
         $target = new WinTarget($r->getCurrentPlayer(), $r->getRoundData());
         $handMeldList = MeldList::fromString('(123m),(456m),(789m),(234s),(WW)');
         $subTarget = $target->toSubTarget($handMeldList);

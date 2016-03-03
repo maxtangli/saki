@@ -118,5 +118,12 @@ abstract class Command {
 
     abstract function executable();
 
-    abstract function execute();
+    function execute() {
+        if (!$this->executable()) {
+            throw new \InvalidArgumentException('Invalid command');
+        }
+        $this->executeImpl();
+    }
+
+    abstract function executeImpl();
 }

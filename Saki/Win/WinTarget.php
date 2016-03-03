@@ -15,7 +15,7 @@ class WinTarget {
         $this->player = $player;
         $this->roundData = $roundData;
 
-        $roundPhase = $roundData->getTurnManager()->getRoundPhase();
+        $roundPhase = $roundData->getPhaseState()->getRoundPhase();
         if (!$roundPhase->isPrivateOrPublic()) {
             throw new \InvalidArgumentException();
         }
@@ -43,11 +43,11 @@ class WinTarget {
     }
 
     function isPrivatePhase() {
-        return $this->roundData->getTurnManager()->getRoundPhase()->isPrivate();
+        return $this->roundData->getPhaseState()->getRoundPhase()->isPrivate();
     }
 
     function isPubicPhase() {
-        return $this->roundData->getTurnManager()->getRoundPhase()->isPublic();
+        return $this->roundData->getPhaseState()->getRoundPhase()->isPublic();
     }
 
     function getActPlayer() {
@@ -58,8 +58,8 @@ class WinTarget {
         return $this->roundData->getTurnManager()->getCurrentPlayer();
     }
 
-    function getTargetTile() {
-        return $this->roundData->getTileAreas()->getTargetTile();
+    function getTileOfTargetTile() {
+        return $this->roundData->getTileAreas()->getTargetTile()->getTile();
     }
 
     function getDiscardHistory() {
@@ -109,6 +109,10 @@ class WinTarget {
 
     function isFirstTurnWin() {
         return $this->roundData->getTileAreas()->isFirstTurnWin($this->player);
+    }
+
+    function isKingSTileWin() {
+        return $this->roundData->getTileAreas()->getTargetTile()->isKingSTile();
     }
 
     function getReachTurn() {

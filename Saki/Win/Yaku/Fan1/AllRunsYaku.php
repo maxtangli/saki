@@ -36,7 +36,7 @@ class AllRunsYaku extends Yaku {
          */
 
         $waitingType = TileSeries::getInstance(TileSeries::FOUR_RUN_AND_ONE_PAIR)->getWaitingType(
-            $subTarget->getAllMeldList(), $subTarget->getTargetTile(), $subTarget->getDeclaredMeldList()
+            $subTarget->getAllMeldList(), $subTarget->getTileOfTargetTile(), $subTarget->getDeclaredMeldList()
         );
         return $subTarget->getPrivateFull()->isAllSuit() && ($waitingType == WaitingType::getInstance(WaitingType::TWO_SIDE_RUN_WAITING));
     }

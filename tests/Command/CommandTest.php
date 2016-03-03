@@ -40,7 +40,7 @@ class HelloCommand extends Command {
         return true;
     }
 
-    function execute() {
+    function executeImpl() {
         return 'hello';
     }
 }
@@ -69,6 +69,6 @@ class CommandTest extends \PHPUnit_Framework_TestCase {
         $this->assertTrue($validCommand->executable());
 
         $validCommand->execute();
-        $this->assertEquals(RoundPhase::getPublicPhaseInstance(), $r->getRoundPhase());
+        $this->assertEquals(RoundPhase::getPublicInstance(), $r->getRoundPhase());
     }
 }

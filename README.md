@@ -379,9 +379,15 @@ rush 35 refactor YakuTestData -> RoundData.debugInit 5.4h
 
 - [x] summary: how to avoid those terrible refactorings? refactor as soon as bad smell appears; self code review periodically.
 
-rush introduce commands
+rush 36 optimize tests: => 1s 2.3h
 
-- [x] scratch 3h // point: confusion in design or coding comes from lack of REQUIREMENT ANALYSIS!
+- [x] optimize: new Round().drawInit 1.8h // ArrayLikeObject.pop() 5ms -> 1ms by simplify, Wall().draw 66ms -> 3ms by fix wrongly use of TileSortedList
+- [x] optimize: new RoundData() 0.5h // TileSet extends TileSortedList -> extends TileList
+- [x] bug: Timer not accurate since echo()'s time cost
+
+rush 37 introduce commands: first step 7.5h
+
+- [x] scratch 3.2h // point: confusion in design or coding comes from lack of REQUIREMENT ANALYSIS!
 - [x] parse by ParamDeclaration 1h // point: explore requirement by trying design and coding
 - [x] test parse 0.2h
 - [x] try profiling 1.2h
@@ -390,44 +396,28 @@ rush introduce commands
 
 - [x] Command.executable() 1h
 
-- [ ] flexible phase switch
-
-- [ ] XXXCommand::getExecutables($player) // maybe better to exist in AI class?
-
-rush optimize tests
-
-- [x] optimize: new Round().drawInit 1.8h // ArrayLikeObject.pop() 5ms -> 1ms by simplify, Wall().draw 66ms -> 3ms by fix wrongly use of TileSortedList
-- [x] optimize: new RoundData() 0.5h // TileSet extends TileSortedList -> extends TileList
-- [x] bug: Timer not accurate since echo()'s time cost
-
-- [ ] optimize: YakuTest 0.1h // 1 test case 40ms -> debugReplaceHand() slow?
-
-- [ ] optimize: WaitingAnalyzer.analyzePrivate
-
-- [ ] optimize: RoundTest
-
-- [ ] optimize: WinAnalyzerTest
-
-- [ ] optimize: RoundDrawTest/testFourReachDraw
-
-rush refactor Round
-
-- [ ] refactor: move Round methods into RoundData except commands
+- [x] refactor and recall where am i 0.4h
+- [x] refactor: replace Symfony autoloader by Composer ones 0.2h
 
 rush all yaku: kong concerned
 
-- [ ] organize doc 0.2h
-- [ ] refactor: RoundState
-- [ ] refactor: introduce RoundTurn 0.2h // not sure whether necessary or not
+- [x] analyze 0.8h
+- [x] KingTileWinYaku 0.6h
 
-- [ ] research 0.4h
-- [ ] Kong Public Phase
-- [ ] KingTileWinYaku
+- [x] analyze phase logic 2.3h // !important: requirement first, design second, coding last.
+- [x] refactor: move RoundData.toXXPhase() into PhaseState 0.7h
+- [x] refactor: move TurnManager's roundPhase methods into PhaseState 0.6h
+
 - [ ] RobbingAQuadYaku
 
-rush 31 all yaku: HeavenlyWin, EarthlyWin, HumanlyWin
+rush introduce commands: second step
 
-- [ ] fix FinalTileWin Fish/Moon 0.1h 
+- [ ] refactor: move Round methods into Commands
+- [ ] XXXCommand::getExecutables($player) // maybe better to exist in AI class?
+
+rush all yaku: HeavenlyWin, EarthlyWin, HumanlyWin
+
+- [ ] fix FinalTileWin Fish/Moon 0.1h // ? what's wrong
 - [ ] HeavenlyWin
 - [ ] EarthlyWin
 - [ ] HumanlyWin
@@ -436,16 +426,26 @@ rush all yaku: thirteen orphans
 
 - [ ] thirteen orphan meld
 
-rush command system
+rush public command roller
 
-- [ ] command 0.2h
 - [ ] public command roller
 
 rush refactor
 
+- [x] refactor: move Round methods into RoundData except commands 1.1h
+- [ ] refactor: merge Round and RoundData together
+
 - [ ] refactor: TileSeries <-> MeldList.xxx
 - [ ] refactor: RoundResult
 - [ ] refactor: move DrawScore logic into separate class
+
+rush optimize tests
+
+- [ ] optimize: WaitingAnalyzer.analyzePrivate // 270ms
+- [ ] optimize: WinAnalyzerTest // 230ms
+- [ ] optimize: YakuTest 0.1h // 120ms  1 test case 40ms -> debugReplaceHand() slow?
+- [ ] optimize: RoundWinTest 80ms
+- [ ] optimize: RoundDrawTest/testFourReachDraw // 40ms
 
 rush rule.md doc
 
@@ -467,22 +467,3 @@ rush red dora
 - [x] Tile.getID() 0.3h
 - [ ] toString issues
 - [ ] adapt discard/createMeld logic
-
-# round state class
-
-responsibility
-
-- support command by call $this->($commandName)($command.getParams())
-- store state-specific fields such as RoundResult
-
-# command system
-
-client send command string
-parse string into a command bind with a Game
-command.execute()
-
-publicCommandRoller
-save commands as list
-
-replay
-initialState, command strings(notice NO random allowed)

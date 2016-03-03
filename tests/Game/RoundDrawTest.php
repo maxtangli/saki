@@ -10,13 +10,13 @@ class RoundDrawTest extends PHPUnit_Framework_TestCase {
     function testExhaustiveDraw() {
         $r = new Round();
         // 130ms = avg0.7ms/time * 200times
-        for ($phase = $r->getRoundPhase(); $phase != RoundPhase::getOverPhaseInstance(); $phase = $r->getRoundPhase()) {
+        for ($phase = $r->getRoundPhase(); $phase != RoundPhase::getOverInstance(); $phase = $r->getRoundPhase()) {
             $discardTile = $r->getRoundData()->getTileAreas()->getPrivateHand($r->getCurrentPlayer())[0];
             $r->discard($r->getCurrentPlayer(), $discardTile);
             $r->passPublicPhase();
         }
         $cls = get_class(new \Saki\RoundResult\ExhaustiveDrawRoundResult(\Saki\Game\PlayerList::createStandard()->toArray(), [false, false, false, false]));
-        $this->assertInstanceOf($cls, $r->getRoundData()->getTurnManager()->getRoundResult());
+        $this->assertInstanceOf($cls, $r->getRoundData()->getPhaseState()->getRoundResult());
     }
 
     function testNineKindsOfTerminalOrHonorDraw() {
@@ -26,7 +26,7 @@ class RoundDrawTest extends PHPUnit_Framework_TestCase {
         $r = new Round();
         $r->getRoundData()->getTileAreas()->debugSetPrivate($r->getCurrentPlayer(), $validTileList);
         $r->nineKindsOfTerminalOrHonorDraw($r->getCurrentPlayer());
-        $this->assertEquals(RoundResultType::NINE_KINDS_OF_TERMINAL_OR_HONOR_DRAW, $r->getRoundData()->getTurnManager()->getRoundResult()->getRoundResultType()->getValue());
+        $this->assertEquals(RoundResultType::NINE_KINDS_OF_TERMINAL_OR_HONOR_DRAW, $r->getRoundData()->getPhaseState()->getRoundResult()->getRoundResultType()->getValue());
     }
 
     // nine, exception case
@@ -45,7 +45,7 @@ class RoundDrawTest extends PHPUnit_Framework_TestCase {
 
         $r->debugDiscardByReplace($r->getCurrentPlayer(), $tileE);
         $r->passPublicPhase();
-        $this->assertEquals(RoundResultType::FOUR_WIND_DRAW, $r->getRoundData()->getTurnManager()->getRoundResult()->getRoundResultType()->getValue());
+        $this->assertEquals(RoundResultType::FOUR_WIND_DRAW, $r->getRoundData()->getPhaseState()->getRoundResult()->getRoundResultType()->getValue());
     }
 
 //    function testFourReachDraw() { // 2.29s
@@ -85,6 +85,6 @@ class RoundDrawTest extends PHPUnit_Framework_TestCase {
         $r->passPublicPhase();
 
         $r->debugKongBySelfByReplace($r->getCurrentPlayer(), $tile);
-        $this->assertEquals(RoundResultType::FOUR_KONG_DRAW, $r->getRoundData()->getTurnManager()->getRoundResult()->getRoundResultType()->getValue());
+        $this->assertEquals(RoundResultType::FOUR_KONG_DRAW, $r->getRoundData()->getPhaseState()->getRoundResult()->getRoundResultType()->getValue());
     }
 }

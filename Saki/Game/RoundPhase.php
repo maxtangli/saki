@@ -4,55 +4,50 @@ namespace Saki\Game;
 use Saki\Util\Enum;
 
 class RoundPhase extends Enum {
+    const NULL_PHASE = 0;
     const INIT_PHASE = 1;
     const PRIVATE_PHASE = 2;
     const PUBLIC_PHASE = 3;
     const OVER_PHASE = 4;
 
-    static function getValue2StringMap() {
-        return [
-            self::INIT_PHASE => 'reset phase',
-            self::PRIVATE_PHASE => 'private phase',
-            self::PUBLIC_PHASE => 'public phase',
-            self::OVER_PHASE => 'over phase',
-        ];
+    static function getNullInstance() {
+        return static::getInstance(self::NULL_PHASE);
     }
 
     /**
      * @return RoundPhase
      */
-    static function getInitPhaseInstance() {
+    static function getInitInstance() {
         return static::getInstance(self::INIT_PHASE);
     }
 
     /**
      * @return RoundPhase
      */
-    static function getPrivatePhaseInstance() {
+    static function getPrivateInstance() {
         return static::getInstance(self::PRIVATE_PHASE);
     }
 
     /**
      * @return RoundPhase
      */
-    static function getPublicPhaseInstance() {
+    static function getPublicInstance() {
         return static::getInstance(self::PUBLIC_PHASE);
     }
 
     /**
      * @return RoundPhase
      */
-    static function getOverPhaseInstance() {
+    static function getOverInstance() {
         return static::getInstance(self::OVER_PHASE);
     }
 
-    static function getPrivateOrPublicInstance($isPrivate) {
-        $v = $isPrivate ? RoundPhase::PRIVATE_PHASE : RoundPhase::PUBLIC_PHASE;
-        return static::getInstance($v);
+    function isNull() {
+        return $this->getValue() == RoundPhase::NULL_PHASE;
     }
 
-    function isPrivateOrPublic() {
-        return $this->isPrivate() || $this->isPublic();
+    function isInit() {
+        return $this->getValue() == RoundPhase::INIT_PHASE;
     }
 
     function isPrivate() {
@@ -61,6 +56,14 @@ class RoundPhase extends Enum {
 
     function isPublic() {
         return $this->getValue() == RoundPhase::PUBLIC_PHASE;
+    }
+
+    function isOver() {
+        return $this->getValue() == RoundPhase::OVER_PHASE;
+    }
+
+    function isPrivateOrPublic() {
+        return $this->isPrivate() || $this->isPublic();
     }
 
     /**

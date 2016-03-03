@@ -28,6 +28,10 @@ class DeadWall {
         return $this->tileList->__toString();
     }
 
+    function debugSetNextReplaceTile(Tile $tile) {
+        $this->tileList->replaceByIndex(0, $tile);
+    }
+
     function openDoraIndicator($n = 1) {
         $valid = $this->openedDoraIndicatorCount + $n <= 5;
         if (!$valid) {

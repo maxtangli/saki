@@ -43,6 +43,10 @@ class Wall {
         $this->getRemainTileList()->replaceByIndex($this->getRemainTileList()->count() - 1, $tile);
     }
 
+    function debugSetNextReplaceTile(Tile $tile) {
+        $this->getDeadWall()->debugSetNextReplaceTile($tile);
+    }
+
     /**
      * @return TileSet
      */
