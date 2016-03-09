@@ -399,20 +399,46 @@ rush 37 introduce commands: first step 7.5h
 - [x] refactor and recall where am i 0.4h
 - [x] refactor: replace Symfony autoloader by Composer ones 0.2h
 
-rush all yaku: kong concerned
+rush 38 add KingTileWinYaku 1.4h
 
 - [x] analyze 0.8h
 - [x] KingTileWinYaku 0.6h
 
-- [x] analyze phase logic 2.3h // !important: requirement first, design second, coding last.
+rush 39 introduce PhaseState 5.3h
+
+- [x] analyze: phase logic 2.3h // !important: requirement first, design second, coding last.
 - [x] refactor: move RoundData.toXXPhase() into PhaseState 0.7h
 - [x] refactor: move TurnManager's roundPhase methods into PhaseState 0.6h
-
-- [ ] RobbingAQuadYaku
+- [x] refactor: handle PrivatePhaseState.isFromInit 0.1h
+- [x] refactor: move RoundData's game-over logic into OverPhaseState 0.4h
+- [x] refactor: move Round.passPublicPhase() into PublicPhaseState 0.2h
+- [x] refactor: move Round.handleFourKongDraw() into PublicPhaseState 1h
 
 rush introduce commands: second step
 
-- [ ] refactor: move Round methods into Commands
+- [x] refactor: move Round methods into RoundData except commands 1.1h
+
+- [x] review: Command system 0.5h
+- [x] refactor: move into Commands - private 0.9h
+- [x] refactor: move into Commands - public 0.6h
+- [x] refactor: rename Kong concerned commands
+- [x] refactor: move into Commands - passPublic() 0.2h
+
+- [x] CommandProcessor 0.4h
+- [ ] refactor: string-style-commands in tests 0.2h
+
+- [ ] refactor: move into Commands - debug
+- [ ] refactor: remove Round methods
+- [ ] refactor: merge Round and RoundData together
+
+rush add RobbingAQuadYaku
+
+- [ ] research: kong concerned rule 0.4h
+- [ ] test: full cases of FourKongDraw
+- [ ] RobbingAQuadYaku
+
+rush command candidates
+
 - [ ] XXXCommand::getExecutables($player) // maybe better to exist in AI class?
 
 rush all yaku: HeavenlyWin, EarthlyWin, HumanlyWin
@@ -431,9 +457,6 @@ rush public command roller
 - [ ] public command roller
 
 rush refactor
-
-- [x] refactor: move Round methods into RoundData except commands 1.1h
-- [ ] refactor: merge Round and RoundData together
 
 - [ ] refactor: TileSeries <-> MeldList.xxx
 - [ ] refactor: RoundResult

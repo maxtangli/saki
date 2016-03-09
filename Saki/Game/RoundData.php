@@ -1,7 +1,21 @@
 <?php
 namespace Saki\Game;
 
-use Saki\FinalScore\FinalScoreStrategyTarget;
+use Saki\Command\CommandContext;
+use Saki\Command\CommandParser;
+use Saki\Command\CommandProcessor;
+use Saki\Command\PrivateCommand\DiscardCommand;
+use Saki\Command\PrivateCommand\ExposedKongCommand;
+use Saki\Command\PrivateCommand\NineNineDrawCommand;
+use Saki\Command\PrivateCommand\PlusKongCommand;
+use Saki\Command\PrivateCommand\ReachCommand;
+use Saki\Command\PrivateCommand\WinBySelfCommand;
+use Saki\Command\PublicCommand\BigKongCommand;
+use Saki\Command\PublicCommand\ChowCommand;
+use Saki\Command\PublicCommand\Debug\DebugPassCommand;
+use Saki\Command\PublicCommand\PongCommand;
+use Saki\Command\PublicCommand\SmallKongCommand;
+use Saki\Command\PublicCommand\WinByOtherCommand;
 use Saki\RoundPhase\NullPhaseState;
 use Saki\RoundPhase\RoundPhaseState;
 use Saki\Win\WinAnalyzer;
@@ -22,6 +36,9 @@ class RoundData {
     /** @var RoundPhaseState */
     private $phaseState;
 
+    // special: currently immutable, future variable
+    private $processor;
+
     function __construct() {
         $gameData = new GameData();
         $this->gameData = $gameData;
@@ -37,6 +54,25 @@ class RoundData {
         });
 
         $this->phaseState = new NullPhaseState();
+
+        $classes = [
+            // private
+            DiscardCommand::class,
+            ExposedKongCommand::class,
+            PlusKongCommand::class,
+            ReachCommand::class,
+            WinBySelfCommand::class,
+            NineNineDrawCommand::class,
+            // public
+            ChowCommand::class,
+            PongCommand::class,
+            BigKongCommand::class,
+            SmallKongCommand::class,
+            WinByOtherCommand::class,
+            // public/debug
+            DebugPassCommand::class,
+        ];
+        $this->processor = new CommandProcessor(new CommandParser(new CommandContext($this), $classes));
     }
 
     function reset($keepDealer) {
@@ -114,65 +150,24 @@ class RoundData {
         $this->phaseState->enter($this);
     }
 
-    // todo move judge logic into GameData
-    function isGameOver() {
-        if (!$this->getPhaseState()->getRoundPhase()->isOver()) {
-            return false;
-        }
-
-        if ($this->getPlayerList()->hasMinusScorePlayer()) { // 有玩家被打飞，游戏结束
-            return true;
-        } elseif ($this->getRoundWindData()->isFinalRound()) { // 北入终局，游戏结束
-            return true;
-        } elseif (!$this->getRoundWindData()->isLastOrExtraRound()) { // 指定场数未达，游戏未结束
-            return false;
-        } else { // 达到指定场数
-            $topPlayers = $this->getPlayerList()->getTopPlayers();
-            if (count($topPlayers) != 1) {
-                return false; // 并列第一，游戏未结束
-            }
-
-            $topPlayer = $topPlayers[0];
-            $isTopPlayerEnoughScore = $topPlayer->getScore() >= 30000; // todo rule
-            if (!$isTopPlayerEnoughScore) { // 若首位点数未达原点，游戏未结束
-                return false;
-            } else { // 首位点数达到原点，非连庄 或 连庄者达首位，游戏结束
-                $result = $this->getPhaseState()->getRoundResult();
-                $keepDealer = $result->isKeepDealer();
-                $dealerIsTopPlayer = $this->getPlayerList()->getDealerPlayer() == $topPlayer;
-                return (!$keepDealer || $dealerIsTopPlayer);
-            }
-        }
-    }
-
-    /**
-     * @param bool $requireGameOver
-     * @return \Saki\FinalScore\FinalScoreItem[]
-     */
-    function getFinalScoreItems($requireGameOver = true) {
-        if ($requireGameOver && !$this->isGameOver()) {
-            throw new \InvalidArgumentException('Game is not over.');
-        }
-
-        $target = new FinalScoreStrategyTarget($this->getPlayerList());
-        return $this->getGameData()->getFinalScoreStrategy()->getFinalScoreItems($target);
-    }
-
     function toNextRound() {
         if (!$this->getPhaseState()->getRoundPhase()->isOver()) {
             throw new \InvalidArgumentException('Not over phase.');
         }
 
-        if ($this->isGameOver()) {
+        if ($this->getPhaseState()->isGameOver($this)) {
             throw new \InvalidArgumentException('Game is over.');
         }
 
         $keepDealer = $this->getPhaseState()->getRoundResult()->isKeepDealer();
         $this->reset($keepDealer);
 
-//        $this->toInitPhase();
-        $this->toNextPhase();
-        $this->toNextPhase();
+        $this->toNextPhase(); // into init phase
+        $this->toNextPhase(); // into private phase
+    }
+
+    function getProcessor() {
+        return $this->processor;
     }
 }
 

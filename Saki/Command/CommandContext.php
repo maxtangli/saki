@@ -2,20 +2,16 @@
 namespace Saki\Command;
 
 use Saki\Game\Round;
+use Saki\Game\RoundData;
 
 class CommandContext {
-    private $round;
+    private $roundData;
 
-    // todo remove Round
-    function __construct(Round $round) {
-        $this->round = $round;
-    }
-
-    function getRound() {
-        return $this->round;
+    function __construct(RoundData $roundData) {
+        $this->roundData = $roundData;
     }
 
     function getRoundData() {
-        return $this->getRound()->getRoundData();
+        return $this->roundData;
     }
 }

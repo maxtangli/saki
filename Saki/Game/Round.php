@@ -3,19 +3,24 @@
 namespace Saki\Game;
 
 use Saki\Command\CommandContext;
-use Saki\Command\DiscardCommand;
-use Saki\Meld\QuadMeldType;
+use Saki\Command\PrivateCommand\DiscardCommand;
+use Saki\Command\PrivateCommand\ExposedKongCommand;
+use Saki\Command\PrivateCommand\NineNineDrawCommand;
+use Saki\Command\PrivateCommand\PlusKongCommand;
+use Saki\Command\PrivateCommand\ReachCommand;
+use Saki\Command\PrivateCommand\WinBySelfCommand;
+use Saki\Command\PublicCommand\BigKongCommand;
+use Saki\Command\PublicCommand\ChowCommand;
+use Saki\Command\PublicCommand\Debug\DebugPassCommand;
+use Saki\Command\PublicCommand\PongCommand;
+use Saki\Command\PublicCommand\SmallKongCommand;
+use Saki\Command\PublicCommand\WinByOtherCommand;
 use Saki\RoundPhase\OverPhaseState;
 use Saki\RoundPhase\PrivatePhaseState;
-use Saki\RoundResult\ExhaustiveDrawRoundResult;
-use Saki\RoundResult\OnTheWayDrawRoundResult;
-use Saki\RoundResult\RoundResult;
-use Saki\RoundResult\RoundResultType;
 use Saki\RoundResult\WinRoundResult;
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 use Saki\Util\ArrayLikeObject;
-use Saki\Win\WinTarget;
 
 /*
 
@@ -108,8 +113,10 @@ class Round {
         }
 
         $isTargetTurn = function () use ($currentPlayer, $actualRoundPhase) {
-            $isTargetTurn = ($this->getCurrentPlayer() == $currentPlayer) && ($this->getRoundPhase() == $actualRoundPhase);
-            return $this->getRoundData()->isGameOver() || $isTargetTurn;
+            $phaseState = $this->getRoundData()->getPhaseState();
+            $isTargetTurn = ($this->getCurrentPlayer() == $currentPlayer) && ($phaseState->getRoundPhase() == $actualRoundPhase);
+            $isGameOver = $phaseState->getRoundPhase()->isOver() && $phaseState->isGameOver($this->getRoundData());
+            return $isGameOver || $isTargetTurn;
         };
         while (!$isTargetTurn()) {
             if ($this->getRoundPhase()->isPrivate()) {
@@ -179,259 +186,31 @@ class Round {
 
     // todo remove
     function getWinResult(Player $player) {
-        // WinTarget will assert valid player
-        return $this->getRoundData()->getWinAnalyzer()->analyzeTarget(new WinTarget($player, $this->getRoundData()));
+        return $this->getRoundData()->getWinResult($player);
     }
 
     // todo remove
     function discard(Player $player, Tile $selfTile) {
-        (new DiscardCommand(new CommandContext($this), $player->getSelfWind(), $selfTile))->execute();
+        (new DiscardCommand(new CommandContext($this->getRoundData()), $player->getSelfWind(), $selfTile))->execute();
     }
 
+    // todo remove
     function reach(Player $player, Tile $selfTile) {
-        $this->assertPrivatePhase($player);
-
-        // assert waiting after discard
-        $analyzer = $this->getRoundData()->getWinAnalyzer()->getWaitingAnalyzer();
-        $handList = $this->getRoundData()->getTileAreas()->getPrivateHand($player);
-        $futureWaitingList = $analyzer->analyzePrivate($handList, $player->getTileArea()->getDeclaredMeldListReference());
-        $isWaiting = $futureWaitingList->count() > 0;
-        if (!$isWaiting) {
-            throw new \InvalidArgumentException('Reach condition violated: is waiting.');
-        }
-
-        $isValidTile = $futureWaitingList->isForWaitingDiscardedTile($selfTile);
-        if (!$isValidTile) {
-            throw new \InvalidArgumentException(
-                sprintf('Reach condition violated: invalid discard tile [%s].', $selfTile)
-            );
-        }
-
-        // do
-        $this->getRoundData()->getTileAreas()->reach($player, $selfTile);
-
-        // switch phase
-//        $this->getRoundData()->toPublicPhase();
-        $this->getRoundData()->toNextPhase();
-
-        // todo four reach draw
+        (new ReachCommand(new CommandContext($this->getRoundData()), $player->getSelfWind(), $selfTile))->execute();
     }
 
+    // todo remove
     function kongBySelf(Player $player, Tile $selfTile) {
-        $this->assertPrivatePhase($player);
-        $this->getRoundData()->getTileAreas()->kongBySelf($player, $selfTile);
-        if (!$this->handleFourKongDraw()) {
-            // stay in private phase
-        }
+        (new ExposedKongCommand(new CommandContext($this->getRoundData()), $player->getSelfWind(), $selfTile))->execute();
     }
 
-    function plusKongBySelf(Player $player, Tile $selfTile) {
-        $this->assertPrivatePhase($player);
-        $this->getRoundData()->getTileAreas()->plusKongBySelf($player, $selfTile);
-        if (!$this->handleFourKongDraw()) {
-            // stay in private phase
-        }
-    }
-
+    // todo remove
     function winBySelf(Player $player) {
-        $this->assertPrivatePhase($player);
-        // do
-        $result = WinRoundResult::createWinBySelf($this->getPlayerList()->toArray(), $player, $this->getWinResult($player),
-            $this->getRoundData()->getTileAreas()->getAccumulatedReachCount(), $this->getRoundData()->getRoundWindData()->getSelfWindTurn());
-        // phase
-//        $this->getRoundData()->toOverPhase($roundResult);
-        $this->getRoundData()->toNextPhase(new OverPhaseState($result));
+        (new WinBySelfCommand(new CommandContext($this->getRoundData()), $player->getSelfWind()))->execute();
     }
 
-    function nineKindsOfTerminalOrHonorDraw(Player $player) {
-        // check
-        $this->assertPrivatePhase($player);
-
-        $currentTurn = $this->getRoundData()->getTurnManager()->getGlobalTurn();
-        $isFirstTurn = $currentTurn == 1;
-        $noDeclaredActions = !$this->getRoundData()->getTileAreas()->getDeclareHistory()->hasDeclare($currentTurn, Tile::fromString('E'));
-        $validTileList = $this->getRoundData()->getTileAreas()->getPrivateHand($player)->isNineKindsOfTerminalOrHonor();
-
-        $valid = $isFirstTurn && $noDeclaredActions && $validTileList;
-        if (!$valid) {
-            throw new \InvalidArgumentException();
-        }
-        // do
-        $result = new OnTheWayDrawRoundResult($this->getPlayerList()->toArray(),
-            RoundResultType::getInstance(RoundResultType::NINE_KINDS_OF_TERMINAL_OR_HONOR_DRAW));
-        // phase
-        $this->getRoundData()->toNextPhase(new OverPhaseState($result));
-    }
-
-    protected function assertPrivatePhase($player) {
-        $validPhase = $this->getRoundPhase() == RoundPhase::getPrivateInstance();
-        if (!$validPhase) {
-            throw new \InvalidArgumentException(
-                sprintf('expected [private phase] but [%s] given.', $this->getRoundPhase())
-            );
-        }
-
-        $validPlayer = $player == $this->getCurrentPlayer();
-        if (!$validPlayer) {
-            throw new \InvalidArgumentException(
-                sprintf('expected current player [%s] but player [%s] given.', $this->getCurrentPlayer(), $player)
-            );
-        }
-    }
-
+    // todo remove
     function passPublicPhase() {
-        $this->assertPublicPhase();
-
-        $isExhaustiveDraw = $this->getRoundData()->getTileAreas()->getWall()->getRemainTileCount() == 0;
-        if ($isExhaustiveDraw) {
-            $players = $this->getPlayerList()->toArray();
-            $waitingAnalyzer = $this->getRoundData()->getWinAnalyzer()->getWaitingAnalyzer();
-            $roundData = $this->getRoundData();
-            $isWaitingStates = array_map(function (Player $player) use ($waitingAnalyzer, $roundData) {
-                $a13StyleHandTileList = $roundData->getTileAreas()->getPublicHand($player);
-                $declaredMeldList = $player->getTileArea()->getDeclaredMeldListReference();
-                $waitingTileList = $waitingAnalyzer->analyzePublic($a13StyleHandTileList, $declaredMeldList);
-                $isWaiting = $waitingTileList->count() > 0;
-                return $isWaiting;
-            }, $players);
-            $result = new ExhaustiveDrawRoundResult($players, $isWaitingStates);
-            $this->getRoundData()->toNextPhase(new OverPhaseState($result));
-            return;
-        }
-
-        // fourWindDraw
-        $isFirstRound = $this->getRoundData()->getTurnManager()->getGlobalTurn() == 1;
-        if ($isFirstRound) {
-            $allDiscardTileList = $this->getRoundData()->getTileAreas()->getDiscardHistory()->getAllDiscardTileList();
-            if ($allDiscardTileList->count() == 4) {
-                $allDiscardTileList->unique();
-                $isFourSameWindDiscard = $allDiscardTileList->count() == 1 && $allDiscardTileList[0]->isWind();
-                if ($isFourSameWindDiscard) {
-                    $result = new OnTheWayDrawRoundResult($this->getPlayerList()->toArray(),
-                        RoundResultType::getInstance(RoundResultType::FOUR_WIND_DRAW));
-                    $this->getRoundData()->toNextPhase(new OverPhaseState($result));
-                    return;
-                }
-            }
-        }
-
-        // fourReachDraw
-        $isFourReachDraw = $this->getPlayerList()->all(function (Player $player) {
-            return $player->getTileArea()->isReach();
-        });
-        if ($isFourReachDraw) {
-            $result = new OnTheWayDrawRoundResult($this->getPlayerList()->toArray(),
-                RoundResultType::getInstance(RoundResultType::FOUR_REACH_DRAW));
-            $this->getRoundData()->toNextPhase(new OverPhaseState($result));
-            return;
-        }
-
-        $nextPlayer = $this->getRoundData()->getTurnManager()->getOffsetPlayer(1);
-//        $this->getRoundData()->toPrivatePhase($nextPlayer, true);
-        $this->getRoundData()->toNextPhase();
-    }
-
-    protected function handleFourKongDraw() {
-        // more than 4 declared-kong-meld by at least 2 targetList
-        $declaredKongCounts = $this->getPlayerList()->toArray(function (Player $player) {
-            return $player->getTileArea()->getDeclaredMeldListReference()->toFilteredTypesMeldList([QuadMeldType::getInstance()])->count();
-        });
-        $kongCount = array_sum($declaredKongCounts);
-        $kongPlayerCount = (new ArrayLikeObject($declaredKongCounts))->getFilteredValueCount(function ($n) {
-            return $n > 0;
-        });
-
-        $isFourKongDraw = $kongCount >= 4 && $kongPlayerCount >= 2;
-        if ($isFourKongDraw) {
-            $result = new OnTheWayDrawRoundResult($this->getPlayerList()->toArray(),
-                RoundResultType::getInstance(RoundResultType::FOUR_KONG_DRAW));
-            $this->getRoundData()->toNextPhase(new OverPhaseState($result));
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    function chowByOther(Player $player, Tile $tile1, Tile $tile2) {
-        $this->assertPublicPhase($player);
-        $this->getRoundData()->getTileAreas()->chowByOther($player, $tile1, $tile2, $this->getCurrentPlayer());
-        // switch phase
-//        $this->getRoundData()->toPrivatePhase($player, false);
-        $this->getRoundData()->getPhaseState()->setCustomNextState(
-            new PrivatePhaseState($player, false)
-        );
-        $this->getRoundData()->toNextPhase();
-    }
-
-    function pongByOther(Player $player) {
-        $this->assertPublicPhase($player);
-        $this->getRoundData()->getTileAreas()->pongByOther($player, $this->getCurrentPlayer());
-        // switch phase
-//        $this->getRoundData()->toPrivatePhase($player, false);
-        $this->getRoundData()->getPhaseState()->setCustomNextState(
-            new PrivatePhaseState($player, false)
-        );
-        $this->getRoundData()->toNextPhase();
-    }
-
-    function kongByOther(Player $player) {
-        $this->assertPublicPhase($player);
-        $this->getRoundData()->getTileAreas()->kongByOther($player, $this->getCurrentPlayer());
-
-        if (!$this->handleFourKongDraw()) {
-            // switch phase
-//            $this->getRoundData()->toPrivatePhase($player, false);
-            $this->getRoundData()->getPhaseState()->setCustomNextState(
-                new PrivatePhaseState($player, false)
-            );
-            $this->getRoundData()->toNextPhase();
-        }
-    }
-
-    function plusKongByOther(Player $player) {
-        $this->assertPublicPhase($player);
-        $this->getRoundData()->getTileAreas()->plusKongByOther($player, $this->getCurrentPlayer());
-
-        if (!$this->handleFourKongDraw()) {
-            // switch phase
-//            $this->getRoundData()->toPrivatePhase($player, false);
-            $this->getRoundData()->getPhaseState()->setCustomNextState(
-                new PrivatePhaseState($player, false)
-            );
-            $this->getRoundData()->toNextPhase();
-        }
-    }
-
-    function winByOther(Player $player) {
-        $this->assertPublicPhase($player);
-        // do
-        $result = WinRoundResult::createWinByOther($this->getPlayerList()->toArray(), $player, $this->getWinResult($player), $this->getCurrentPlayer(),
-            $this->getRoundData()->getTileAreas()->getAccumulatedReachCount(), $this->getRoundData()->getRoundWindData()->getSelfWindTurn());
-        // phase
-        $this->getRoundData()->toNextPhase(new OverPhaseState($result));
-    }
-
-    function multiWinByOther(array $players) {
-        $playerArray = new ArrayLikeObject($players);
-        $playerArray->walk(function (Player $player) {
-            $this->assertPublicPhase($player);
-        });
-        // do
-        $winResults = $playerArray->toArray(function (Player $player) {
-            return $this->getWinResult($player);
-        });
-        $result = WinRoundResult::createMultiWinByOther(
-            $this->getPlayerList()->toArray(), $players, $winResults, $this->getCurrentPlayer(),
-            $this->getRoundData()->getTileAreas()->getAccumulatedReachCount(),
-            $this->getRoundData()->getRoundWindData()->getSelfWindTurn());
-        // phase
-        $this->getRoundData()->toNextPhase(new OverPhaseState($result));
-    }
-
-    protected function assertPublicPhase($player = null) {
-        $valid = $this->getRoundPhase() == RoundPhase::getPublicInstance() && ($player != $this->getCurrentPlayer());
-        if (!$valid) {
-            throw new \InvalidArgumentException();
-        }
+        (new DebugPassCommand(new CommandContext($this->getRoundData())))->execute();
     }
 }

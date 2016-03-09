@@ -1,11 +1,13 @@
 <?php
-namespace Saki\Command;
+namespace Saki\Command\PrivateCommand;
 
+use Saki\Command\CommandContext;
 use Saki\Command\ParamDeclaration\SelfWindParamDeclaration;
 use Saki\Command\ParamDeclaration\TileParamDeclaration;
+use Saki\Command\PrivateCommand;
 use Saki\Tile\Tile;
 
-class DiscardCommand extends PrivateCommand {
+class ExposedKongCommand extends PrivateCommand {
     static function getParamDeclarations() {
         return [SelfWindParamDeclaration::class, TileParamDeclaration::class];
     }
@@ -22,13 +24,13 @@ class DiscardCommand extends PrivateCommand {
     }
 
     function matchOtherConditions() {
-        $validTile = $this->getActPlayer()->getTileArea()->canDiscard($this->getTile());
+        $validTile = $this->getActPlayer()->getTileArea()->canConcealedKong($this->getTile());
         return $validTile;
     }
 
     function executeImpl() {
-        $this->getContext()->getRoundData()->getTileAreas()->discard($this->getActPlayer(), $this->getTile());
-//        $this->getContext()->getRoundData()->toPublicPhase();
-        $this->getContext()->getRoundData()->toNextPhase();
+        $this->getContext()->getRoundData()->getTileAreas()->kongBySelf($this->getActPlayer(), $this->getTile());
+        // todo handle RobAQuadPhase
+        // stay in private phase
     }
 }

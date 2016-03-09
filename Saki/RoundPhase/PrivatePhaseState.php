@@ -8,12 +8,12 @@ use Saki\Game\RoundPhase;
 class PrivatePhaseState extends RoundPhaseState {
     private $player;
     private $shouldDrawTile;
-    private $isFromInit; // todo remove
+    private $isCurrentPlayer;
 
-    function __construct(Player $player, bool $shouldDrawTile, $isFromInit = false) {
+    function __construct(Player $player, bool $shouldDrawTile, bool $isCurrentPlayer = false) {
         $this->player = $player;
         $this->shouldDrawTile = $shouldDrawTile;
-        $this->isFromInit = $isFromInit;
+        $this->isCurrentPlayer = $isCurrentPlayer;
     }
 
     function getPlayer() {
@@ -24,6 +24,9 @@ class PrivatePhaseState extends RoundPhaseState {
         return $this->shouldDrawTile;
     }
 
+    function isCurrentPlayer() {
+        return $this->isCurrentPlayer;
+    }
     function getRoundPhase() {
         return RoundPhase::getPrivateInstance();
     }
@@ -33,9 +36,7 @@ class PrivatePhaseState extends RoundPhaseState {
     }
 
     function enter(RoundData $roundData) {
-        // todo handle exhaustive draw
-
-        if (!$this->isFromInit) {
+        if (!$this->isCurrentPlayer()) {
             $roundData->getTurnManager()->toPlayer($this->getPlayer());
         }
 

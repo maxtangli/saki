@@ -1,5 +1,6 @@
 <?php
 
+use Saki\FinalScore\FinalScoreStrategyTarget;
 use Saki\Game\RoundPhase;
 use Saki\Meld\Meld;
 use Saki\Tile\Tile;
@@ -61,7 +62,10 @@ class RoundTest extends PHPUnit_Framework_TestCase {
             [3, -18],
             [4, -28],
         ];
-        $items = $r->getRoundData()->getFinalScoreItems(false);
+
+        // todo should test on GameOver state
+        $target = new FinalScoreStrategyTarget($r->getRoundData()->getPlayerList());
+        $items = $r->getRoundData()->getGameData()->getFinalScoreStrategy()->getFinalScoreItems($target);
         foreach ($r->getPlayerList() as $k => $player) {
             $item = $items[$k];
             list($expectedRank, $expectedPoint) = [$expected[$k][0], $expected[$k][1]];
@@ -70,15 +74,18 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         }
     }
 
-    function testKongBySelf() {
+    function testExposedKong() {
         $r = $this->getInitialRound();
+        $pro = $r->getRoundData()->getProcessor();
         // setup
         $actPlayer = $r->getCurrentPlayer();
         $r->getCurrentPlayer()->getTileArea()->getHandReference()->replaceByIndex([0, 1, 2, 3],
             [Tile::fromString('1m'), Tile::fromString('1m'), Tile::fromString('1m'), Tile::fromString('1m')]);
         // execute
         $tileCountBefore = $r->getCurrentPlayer()->getTileArea()->getHandReference()->count();
-        $r->kongBySelf($r->getCurrentPlayer(), Tile::fromString('1m'));
+//        $r->kongBySelf($r->getCurrentPlayer(), Tile::fromString('1m'));
+        $pro->process('exposedKong E 1m');
+
         // phase keep
         $this->assertEquals(RoundPhase::getInstance(RoundPhase::PRIVATE_PHASE), $r->getRoundPhase());
         $this->assertEquals($actPlayer, $r->getCurrentPlayer());
@@ -87,8 +94,9 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($r->getCurrentPlayer()->getTileArea()->getDeclaredMeldListReference()->valueExist(Meld::fromString('(1111m)')), $r->getCurrentPlayer()->getTileArea()->getDeclaredMeldListReference());
     }
 
-    function testPlusKongBySelf() {
+    function testPlusKong() {
         $r = $this->getInitialRound();
+        $pro = $r->getRoundData()->getProcessor();
         // setup
         $actPlayer = $r->getCurrentPlayer();
         $r->getCurrentPlayer()->getTileArea()->getHandReference()->replaceByIndex([0],
@@ -96,7 +104,9 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         $r->getCurrentPlayer()->getTileArea()->getDeclaredMeldListReference()->push(Meld::fromString('111m'));
         // execute
         $tileCountBefore = $r->getCurrentPlayer()->getTileArea()->getHandReference()->count();
-        $r->plusKongBySelf($r->getCurrentPlayer(), Tile::fromString('1m'));
+//        $r->plusKongBySelf($r->getCurrentPlayer(), Tile::fromString('1m'));
+        $pro->process('plusKong E 1m');
+
         // phase keep
         $this->assertEquals(RoundPhase::getInstance(RoundPhase::PRIVATE_PHASE), $r->getRoundPhase());
         $this->assertEquals($actPlayer, $r->getCurrentPlayer());
@@ -105,15 +115,19 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($r->getCurrentPlayer()->getTileArea()->getDeclaredMeldListReference()->valueExist(Meld::fromString('1111m')));
     }
 
-    function testChowByOther() {
+    function testChow() {
         $r = $this->getRoundAfterDiscard1m();
+        $pro = $r->getRoundData()->getProcessor();
+
         // setup
         $prePlayer = $r->getCurrentPlayer();
         $actPlayer = $r->getRoundData()->getTurnManager()->getOffsetPlayer(1);
         $actPlayer->getTileArea()->getHandReference()->replaceByIndex([0, 1], [Tile::fromString('2m'), Tile::fromString('3m')]);
         // execute
         $tileCountBefore = $actPlayer->getTileArea()->getHandReference()->count();
-        $r->chowByOther($actPlayer, Tile::fromString('2m'), Tile::fromString('3m'));
+//        $r->chow($actPlayer, Tile::fromString('2m'), Tile::fromString('3m'));
+        $pro->process('chow S 2m 3m');
+
         // phase changed
         $this->assertEquals(RoundPhase::getInstance(RoundPhase::PRIVATE_PHASE), $r->getRoundPhase());
         $this->assertEquals($actPlayer, $r->getCurrentPlayer());
@@ -123,15 +137,17 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(0, $prePlayer->getTileArea()->getDiscardedReference()->count());
     }
 
-    function testPongByOther() {
+    function testPong() {
         $r = $this->getRoundAfterDiscard1m();
+        $pro = $r->getRoundData()->getProcessor();
         // setup
         $prePlayer = $r->getCurrentPlayer();
         $actPlayer = $r->getRoundData()->getTurnManager()->getOffsetPlayer(2);
         $actPlayer->getTileArea()->getHandReference()->replaceByIndex([0, 1], [Tile::fromString('1m'), Tile::fromString('1m')]);
         // execute
         $tileCountBefore = $actPlayer->getTileArea()->getHandReference()->count();
-        $r->pongByOther($actPlayer);
+//        $r->pong($actPlayer);
+        $pro->process('pong W');
         // phase changed
         $this->assertEquals(RoundPhase::getInstance(RoundPhase::PRIVATE_PHASE), $r->getRoundPhase());
         $this->assertEquals($actPlayer, $r->getCurrentPlayer());
@@ -141,15 +157,17 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(0, $prePlayer->getTileArea()->getDiscardedReference()->count());
     }
 
-    function testKongByOther() {
+    function testBigKong() {
         $r = $this->getRoundAfterDiscard1m();
+        $pro = $r->getRoundData()->getProcessor();
         // setup
         $prePlayer = $r->getCurrentPlayer();
         $actPlayer = $r->getRoundData()->getTurnManager()->getOffsetPlayer(2);
         $actPlayer->getTileArea()->getHandReference()->replaceByIndex([0, 1, 2], [Tile::fromString('1m'), Tile::fromString('1m'), Tile::fromString('1m')]);
         // execute
         $tileCountBefore = $actPlayer->getTileArea()->getHandReference()->count();
-        $r->kongByOther($actPlayer);
+//        $r->bigKong($actPlayer);
+        $pro->process('bigKong W');
         // phase changed
         $this->assertEquals(RoundPhase::getInstance(RoundPhase::PRIVATE_PHASE), $r->getRoundPhase());
         $this->assertEquals($actPlayer, $r->getCurrentPlayer());
@@ -159,15 +177,17 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(0, $prePlayer->getTileArea()->getDiscardedReference()->count());
     }
 
-    function testPlusKongByOther() {
+    function testSmallKong() {
         $r = $this->getRoundAfterDiscard1m();
+        $pro = $r->getRoundData()->getProcessor();
         // setup
         $prePlayer = $r->getCurrentPlayer();
         $actPlayer = $r->getRoundData()->getTurnManager()->getOffsetPlayer(2);
         $actPlayer->getTileArea()->getDeclaredMeldListReference()->push(Meld::fromString('111m'));
         // execute
         $tileCountBefore = $actPlayer->getTileArea()->getHandReference()->count();
-        $r->plusKongByOther($actPlayer);
+//        $r->smallKong($actPlayer);
+        $pro->process('smallKong W');
         // phase changed
         $this->assertEquals(RoundPhase::getInstance(RoundPhase::PRIVATE_PHASE), $r->getRoundPhase());
         $this->assertEquals($actPlayer, $r->getCurrentPlayer());

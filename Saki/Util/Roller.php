@@ -32,7 +32,7 @@ class Roller {
         $this->localTurns = $this->targetList->toArray(function () {
             return 0;
         });
-        $this->localTurns[0] = 1; // todo simplify
+        $this->localTurns[0] = 1;
     }
 
     function debugSet($currentTarget, $globalTurn) {

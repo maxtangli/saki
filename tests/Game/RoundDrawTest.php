@@ -24,8 +24,10 @@ class RoundDrawTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($validTileList->isNineKindsOfTerminalOrHonor());
 
         $r = new Round();
+        $pro = $r->getRoundData()->getProcessor();
         $r->getRoundData()->getTileAreas()->debugSetPrivate($r->getCurrentPlayer(), $validTileList);
-        $r->nineKindsOfTerminalOrHonorDraw($r->getCurrentPlayer());
+//        $r->nineKindsOfTerminalOrHonorDraw($r->getCurrentPlayer());
+        $pro->process('nineNineDraw E');
         $this->assertEquals(RoundResultType::NINE_KINDS_OF_TERMINAL_OR_HONOR_DRAW, $r->getRoundData()->getPhaseState()->getRoundResult()->getRoundResultType()->getValue());
     }
 
@@ -85,6 +87,11 @@ class RoundDrawTest extends PHPUnit_Framework_TestCase {
         $r->passPublicPhase();
 
         $r->debugKongBySelfByReplace($r->getCurrentPlayer(), $tile);
+        $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('1m'));
+        $r->passPublicPhase();
+
         $this->assertEquals(RoundResultType::FOUR_KONG_DRAW, $r->getRoundData()->getPhaseState()->getRoundResult()->getRoundResultType()->getValue());
     }
+
+    // todo test
 }

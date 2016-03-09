@@ -24,15 +24,35 @@ class CommandParser {
         $commands = $this->getClasses();
         $valid = array_key_exists($name, $commands);
         if (!$valid) {
-            throw new \InvalidArgumentException();
+            throw new \InvalidArgumentException(
+                sprintf('command name[] not exist.', $name)
+            );
         }
         $class = $commands[$name];
         return $class;
     }
 
-    function parse(string $line) {
+    /**
+     * @param string $line
+     * @return Command
+     */
+    function parseLine(string $line) {
         $name = Command::parseName($line);
         $class = $this->getClass($name);
-        return $class::fromString($this->getContext(), $line);
+        $command = $class::fromString($this->getContext(), $line);
+        return $command;
+    }
+
+    /**
+     * @param string e.x. 'discard E 1m; pass'
+     * @return Command[]
+     */
+    function parseScript(string $script) {
+        $lines = preg_split('/;\s/', $script);
+        $commands = array_map(function (string $line) {
+            return $this->parseLine($line);
+        }, $lines);
+        return $commands;
     }
 }
+

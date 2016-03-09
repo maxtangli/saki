@@ -188,17 +188,17 @@ class TileArea {
         return $targetMeld;
     }
 
-    function canKongBySelf(Tile $selfTile) {
+    function canConcealedKong(Tile $selfTile) {
         $selfTiles = [$selfTile, $selfTile, $selfTile, $selfTile];
         return $this->canDeclareMeld(QuadMeldType::getInstance(), $selfTiles, null, null);
     }
 
-    function kongBySelf(Tile $selfTile) {
+    function concealedKong(Tile $selfTile) {
         $handTiles = [$selfTile, $selfTile, $selfTile, $selfTile];
         return $this->declareMeld(QuadMeldType::getInstance(), true, $handTiles, null, null);
     }
 
-    function canPlusKongBySelf(Tile $selfTile) {
+    function canPlusKong(Tile $selfTile) {
         $declaredMeld = new Meld(new TileList([$selfTile, $selfTile, $selfTile]));
         return $this->canDeclareMeld(QuadMeldType::getInstance(), [$selfTile], null, $declaredMeld);
     }
@@ -207,7 +207,7 @@ class TileArea {
      * @param Tile $selfTile
      * @return Meld
      */
-    function plusKongBySelf(Tile $selfTile) {
+    function plusKong(Tile $selfTile) {
         $declaredMeld = new Meld(new TileList([$selfTile, $selfTile, $selfTile]));
         return $this->declareMeld(QuadMeldType::getInstance(), null, [$selfTile], null, $declaredMeld);
     }
@@ -222,7 +222,7 @@ class TileArea {
         return $this->declareMeld(RunMeldType::getInstance(), false, $handTiles, $otherTile, null);
     }
 
-    function canPongByOther(Tile $otherTile) {
+    function canPong(Tile $otherTile) {
         $handTiles = [$otherTile, $otherTile];
         return $this->canDeclareMeld(TripleMeldType::getInstance(), $handTiles, $otherTile, null);
     }
@@ -232,22 +232,22 @@ class TileArea {
         return $this->declareMeld(TripleMeldType::getInstance(), false, $handTiles, $otherTile, null);
     }
 
-    function canKongByOther(Tile $otherTile) {
+    function canBigKong(Tile $otherTile) {
         $handTiles = [$otherTile, $otherTile, $otherTile];
         return $this->canDeclareMeld(QuadMeldType::getInstance(), $handTiles, $otherTile, null);
     }
 
-    function kongByOther(Tile $otherTile) {
+    function bigKong(Tile $otherTile) {
         $handTiles = [$otherTile, $otherTile, $otherTile];
         return $this->declareMeld(QuadMeldType::getInstance(), false, $handTiles, $otherTile, null);
     }
 
-    function canPlusKongByOther(Tile $otherTile) {
+    function canSmallKong(Tile $otherTile) {
         $declaredMeld = new Meld(new TileList([$otherTile, $otherTile, $otherTile]));
         return $this->canDeclareMeld(QuadMeldType::getInstance(), null, $otherTile, $declaredMeld);
     }
 
-    function plusKongByOther(Tile $otherTile) {
+    function smallKong(Tile $otherTile) {
         $declaredMeld = new Meld(new TileList([$otherTile, $otherTile, $otherTile]));
         return $this->declareMeld(QuadMeldType::getInstance(), false, null, $otherTile, $declaredMeld);
     }

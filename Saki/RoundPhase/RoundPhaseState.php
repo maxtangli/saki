@@ -2,6 +2,7 @@
 namespace Saki\RoundPhase;
 
 use Saki\Game\RoundData;
+use Saki\Game\RoundPhase;
 
 abstract class RoundPhaseState {
     private $customNextState;
@@ -13,10 +14,17 @@ abstract class RoundPhaseState {
         return $this->customNextState;
     }
 
-    function setCustomNextState($customNextState) {
+    /**
+     * @param RoundPhaseState $customNextState
+     */
+    function setCustomNextState(RoundPhaseState $customNextState) {
         $this->customNextState = $customNextState;
     }
 
+    /**
+     * @param RoundData $roundData
+     * @return RoundPhaseState|PrivatePhaseState
+     */
     function getNextState(RoundData $roundData) {
         return $this->getCustomNextState() ?? $this->getDefaultNextState($roundData);
     }
@@ -31,7 +39,13 @@ abstract class RoundPhaseState {
      */
     abstract function getDefaultNextState(RoundData $roundData);
 
+    /**
+     * @param RoundData $roundData
+     */
     abstract function enter(RoundData $roundData);
 
+    /**
+     * @param RoundData $roundData
+     */
     abstract function leave(RoundData $roundData);
 }

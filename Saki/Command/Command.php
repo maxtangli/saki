@@ -26,6 +26,13 @@ namespace Saki\Command;
 use Saki\Command\ParamDeclaration\ParamDeclaration;
 use Saki\Util\Utils;
 
+/**
+ * goal
+ * - separate command logic into classes
+ * - provide string-style-command to support tests, terminal, replay
+ *
+ * @package Saki\Command
+ */
 abstract class Command {
     //region parser
     static function parseName(string $line) {
@@ -46,20 +53,22 @@ abstract class Command {
             );
         }
 
-        $strings = Utils::explodeSafe(' ', $line, 1);
-        array_shift($strings);
+        // 'Discard E 1m' => ['E','1m']
+        $paramStrings = Utils::explodeSafe(' ', $line);
+        array_shift($paramStrings);
 
-        $declarations = static::getParamDeclarations();
-        $validCount = count($strings) == count($declarations);
+        $paramDeclarations = static::getParamDeclarations();
+        $validCount = count($paramStrings) == count($paramDeclarations);
         if (!$validCount) {
             throw new \InvalidArgumentException();
         }
 
+        // ['E','1m'] => [Tile, Tile] which is indeed constructor-required-params
         $objects = [$context];
-        foreach ($declarations as $i => $paramDeclaration) {
-            $string = $strings[$i];
+        foreach ($paramDeclarations as $i => $paramDeclaration) {
+            $paramString = $paramStrings[$i];
             /** @var ParamDeclaration $param */
-            $param = new $paramDeclaration($context, $string);
+            $param = new $paramDeclaration($context, $paramString);
             $obj = $param->toObject();
             $objects [] = $obj;
         }
@@ -79,7 +88,7 @@ abstract class Command {
     function __toString() {
         $tokens = array_map(function ($param) {
             return is_object($param) ? $param->__toString() : $param;
-        }, $this->getParams()); // todo right?
+        }, $this->getParams());
         array_unshift($tokens, static::getName());
         return implode(' ', $tokens);
     }
@@ -87,6 +96,7 @@ abstract class Command {
     //endregion
 
     static function getParamDeclarations() {
+        // since abstract static function not allowed
         throw new \BadMethodCallException('Forgot to implemented.');
     }
 

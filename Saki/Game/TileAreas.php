@@ -316,14 +316,14 @@ class TileAreas {
     }
 
     function kongBySelf(Player $actPlayer, Tile $selfTile) {
-        $actPlayer->getTileArea()->kongBySelf($selfTile);
+        $actPlayer->getTileArea()->concealedKong($selfTile);
         $this->drawReplacement($actPlayer);
 
         $this->recordDeclare($actPlayer->getSelfWind());
     }
 
     function plusKongBySelf(Player $actPlayer, Tile $selfTile) {
-        $actPlayer->getTileArea()->plusKongBySelf($selfTile);
+        $actPlayer->getTileArea()->plusKong($selfTile);
         $this->drawReplacement($actPlayer);
 
         $this->recordDeclare($actPlayer->getSelfWind());
@@ -341,7 +341,7 @@ class TileAreas {
         $this->recordDeclare($actPlayer->getSelfWind());
     }
 
-    function pongByOther(Player $actPlayer, Player $targetPlayer) {
+    function pong(Player $actPlayer, Player $targetPlayer) {
         $this->assertDifferentPlayer($actPlayer, $targetPlayer);
         $targetPlayerArea = $targetPlayer->getTileArea();
         $actPlayerArea = $actPlayer->getTileArea();
@@ -353,26 +353,26 @@ class TileAreas {
         $this->recordDeclare($actPlayer->getSelfWind());
     }
 
-    function kongByOther(Player $actPlayer, Player $targetPlayer) {
+    function bigKong(Player $actPlayer, Player $targetPlayer) {
         $this->assertDifferentPlayer($actPlayer, $targetPlayer);
         $targetPlayerArea = $targetPlayer->getTileArea();
         $actPlayerArea = $actPlayer->getTileArea();
 
         $targetTile = $targetPlayerArea->getDiscardedReference()->getLast(); // test valid
-        $actPlayerArea->kongByOther($targetTile); // test valid
+        $actPlayerArea->bigKong($targetTile); // test valid
         $this->drawReplacement($actPlayer);
         $targetPlayerArea->getDiscardedReference()->pop();
 
         $this->recordDeclare($actPlayer->getSelfWind());
     }
 
-    function plusKongByOther(Player $actPlayer, Player $targetPlayer) {
+    function smallKong(Player $actPlayer, Player $targetPlayer) {
         $this->assertDifferentPlayer($actPlayer, $targetPlayer);
         $currentPlayerArea = $targetPlayer->getTileArea();
         $playerArea = $actPlayer->getTileArea();
 
         $targetTile = $currentPlayerArea->getDiscardedReference()->getLast(); // test valid
-        $playerArea->plusKongByOther($targetTile);
+        $playerArea->smallKong($targetTile);
         $this->drawReplacement($actPlayer);
         $currentPlayerArea->getDiscardedReference()->pop();
 

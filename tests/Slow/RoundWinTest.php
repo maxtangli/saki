@@ -9,6 +9,7 @@ class RoundWinTest extends PHPUnit_Framework_TestCase {
     function testWinBySelf() {
         // setup
         $r = new Round();
+        $pro = $r->getRoundData()->getProcessor();
         // setup
         $r->getRoundData()->getTileAreas()->debugSetPrivate($r->getCurrentPlayer(), TileList::fromString('123m456m789m123s55s'));
         // execute
@@ -40,20 +41,40 @@ class RoundWinTest extends PHPUnit_Framework_TestCase {
 
     function testWinByOther() {
         $r = new Round();
+        $pro = $r->getRoundData()->getProcessor();
         $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('4s'));
         $r->getRoundData()->getTileAreas()->debugSetPublic($r->getPlayerList()[1], TileList::fromString('123m456m789m23s55s'));
-        $r->winByOther($r->getPlayerList()[1]);
+//        $r->winByOther($r->getPlayerList()[1]);
+        $pro->process('winByOther S');
         $this->assertTrue($r->getRoundData()->getPhaseState()->getRoundResult()->getRoundResultType()->isWin());
     }
 
-    function testMultiWinByOther() {
-        $r = new Round();
-        $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('4s'));
-        $r->getRoundData()->getTileAreas()->debugSetPublic($r->getPlayerList()[1], TileList::fromString('123m456m789m23s55s'));
-        $r->getRoundData()->getTileAreas()->debugSetPublic($r->getPlayerList()[2], TileList::fromString('123m456m789m23s55s'));
-        $r->multiWinByOther([$r->getPlayerList()[1], $r->getPlayerList()[2]]);
-        $this->assertTrue($r->getRoundData()->getPhaseState()->getRoundResult()->getRoundResultType()->isWin());
-    }
+    // todo refactor MultiWin
+//    function Round.multiWinByOther(array $players) {
+//        $playerArray = new ArrayLikeObject($players);
+//        $playerArray->walk(function (Player $player) {
+//            $this->assertPublicPhase($player);
+//        });
+//        // do
+//        $winResults = $playerArray->toArray(function (Player $player) {
+//            return $this->getWinResult($player);
+//        });
+//        $result = WinRoundResult::createMultiWinByOther(
+//            $this->getPlayerList()->toArray(), $players, $winResults, $this->getCurrentPlayer(),
+//            $this->getRoundData()->getTileAreas()->getAccumulatedReachCount(),
+//            $this->getRoundData()->getRoundWindData()->getSelfWindTurn());
+//        // phase
+//        $this->getRoundData()->toNextPhase(new OverPhaseState($result));
+//    }
+//
+//    function testMultiWinByOther() {
+//        $r = new Round();
+//        $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('4s'));
+//        $r->getRoundData()->getTileAreas()->debugSetPublic($r->getPlayerList()[1], TileList::fromString('123m456m789m23s55s'));
+//        $r->getRoundData()->getTileAreas()->debugSetPublic($r->getPlayerList()[2], TileList::fromString('123m456m789m23s55s'));
+//        $r->multiWinByOther([$r->getPlayerList()[1], $r->getPlayerList()[2]]);
+//        $this->assertTrue($r->getRoundData()->getPhaseState()->getRoundResult()->getRoundResultType()->isWin());
+//    }
 
     function testGameOver() {
         // to E Round N Dealer
@@ -63,19 +84,18 @@ class RoundWinTest extends PHPUnit_Framework_TestCase {
         $rd->reset(false);
         $r = new Round($rd);
         $this->assertSame($rd, $r->getRoundData());
-        $this->assertFalse($r->getRoundData()->isGameOver());
 
         // E Player winBySelf, but score not over 30000
-        $r->getRoundData()->getTileAreas()->debugSetPrivate($r->getCurrentPlayer(), TileList::fromString('123m456m789m123s55s'), null, Tile::fromString('2m'));
+        $rd->getTileAreas()->debugSetPrivate($r->getCurrentPlayer(), TileList::fromString('123m456m789m123s55s'), null, Tile::fromString('2m'));
         $r->winBySelf($r->getCurrentPlayer());
         $r->getCurrentPlayer()->setScore('25000');
-        $this->assertFalse($r->getRoundData()->isGameOver());
+        $this->assertFalse($rd->getPhaseState()->isGameOver($rd));
 
         // score over 30000
-        $dealerPlayer = $r->getRoundData()->getPlayerList()->getDealerPlayer();
+        $dealerPlayer = $rd->getPlayerList()->getDealerPlayer();
         $dealerPlayer->setScore('29999');
-        $this->assertFalse($r->getRoundData()->isGameOver());
+        $this->assertFalse($rd->getPhaseState()->isGameOver($rd));
         $dealerPlayer->setScore('30000');
-        $this->assertTrue($r->getRoundData()->isGameOver());
+        $this->assertTrue($rd->getPhaseState()->isGameOver($rd));
     }
 }
