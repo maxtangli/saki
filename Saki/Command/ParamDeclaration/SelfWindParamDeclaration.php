@@ -6,7 +6,14 @@ use Saki\Tile\Tile;
 
 class SelfWindParamDeclaration extends ParamDeclaration {
     function toObject() {
-        $selfWind = Tile::fromString($this->getParamString());
+        $paramString = $this->getParamString();
+
+        if ($paramString == 'I') {
+            $currentPlayer = $this->getContext()->getRoundData()->getTurnManager()->getCurrentPlayer();
+            return $currentPlayer->getSelfWind();
+        }
+
+        $selfWind = Tile::fromString($paramString);
         $valid = $selfWind->isWind();
         if (!$valid) {
             throw new \InvalidArgumentException();

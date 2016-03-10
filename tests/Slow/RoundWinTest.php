@@ -13,7 +13,7 @@ class RoundWinTest extends PHPUnit_Framework_TestCase {
         // setup
         $r->getRoundData()->getTileAreas()->debugSetPrivate($r->getCurrentPlayer(), TileList::fromString('123m456m789m123s55s'));
         // execute
-        $r->winBySelf($r->getCurrentPlayer());
+        $r->getRoundData()->getProcessor()->process('winBySelf E');
         // phase changed
         $this->assertEquals(RoundPhase::getInstance(RoundPhase::OVER_PHASE), $r->getRoundPhase());
         // score changed
@@ -87,7 +87,7 @@ class RoundWinTest extends PHPUnit_Framework_TestCase {
 
         // E Player winBySelf, but score not over 30000
         $rd->getTileAreas()->debugSetPrivate($r->getCurrentPlayer(), TileList::fromString('123m456m789m123s55s'), null, Tile::fromString('2m'));
-        $r->winBySelf($r->getCurrentPlayer());
+        $r->getRoundData()->getProcessor()->process('winBySelf E');
         $r->getCurrentPlayer()->setScore('25000');
         $this->assertFalse($rd->getPhaseState()->isGameOver($rd));
 

@@ -48,19 +48,18 @@ class WinAnalyzerTest extends \PHPUnit_Framework_TestCase {
     function testFuritenReachCase() {
         // other discarded after self reach furiten
         $r = new Round();
-        $p1 = $r->getCurrentPlayer();
-        $r->debugReachByReplace($p1, Tile::fromString('E'), TileList::fromString('123m456m789m23s55sE'));
+        $pro = $r->getRoundData()->getProcessor();
 
-        $r->passPublicPhase();
-        $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('1s'));
+        $p1 = $r->getCurrentPlayer();
+        $pro->process('reach E E:s-123m456m789m23s55sE:E');
+
+        $pro->process('passAll; discard S S:s-1s:1s');
         $this->assertEquals(WinState::getInstance(WinState::WIN_BY_OTHER), $r->getWinResult($p1)->getWinState());
 
-        $r->passPublicPhase();
-        $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('1s'));
+        $pro->process('passAll; discard W W:s-1s:1s');
         $this->assertEquals(WinState::getInstance(WinState::FURITEN_FALSE_WIN), $r->getWinResult($p1)->getWinState());
 
-        $r->passPublicPhase();
-        $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('4s'));
+        $pro->process('passAll; discard N N:s-4s:4s');
         $this->assertEquals(WinState::getInstance(WinState::FURITEN_FALSE_WIN), $r->getWinResult($p1)->getWinState());
 
         // furiten even after 1 turn

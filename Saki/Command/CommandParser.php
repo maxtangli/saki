@@ -25,7 +25,7 @@ class CommandParser {
         $valid = array_key_exists($name, $commands);
         if (!$valid) {
             throw new \InvalidArgumentException(
-                sprintf('command name[] not exist.', $name)
+                sprintf('command name[%s] not exist, forgot to pass it into parser?', $name)
             );
         }
         $class = $commands[$name];
@@ -48,7 +48,7 @@ class CommandParser {
      * @return Command[]
      */
     function parseScript(string $script) {
-        $lines = preg_split('/;\s/', $script);
+        $lines = preg_split('/; /', $script);
         $commands = array_map(function (string $line) {
             return $this->parseLine($line);
         }, $lines);

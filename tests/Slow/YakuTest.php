@@ -351,29 +351,21 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         }
     }
 
-    // todo simplify testReach
     function testReach() {
         $r = YakuTestData::getInitedRound();
+        $pro = $r->getRoundData()->getProcessor();
 
         // pass first round
-        $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('E'));
-        $r->passPublicPhase();
-
-        $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('E'));
-        $r->passPublicPhase();
-
-        $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('E'));
-        $r->passPublicPhase();
-
-        $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('N'));
-        $r->passPublicPhase();
+        $pro->process('discard E E:s-E:E; passAll');
+        $pro->process('discard S S:s-E:E; passAll');
+        $pro->process('discard W W:s-E:E; passAll');
+        $pro->process('discard N N:s-N:N; passAll');
 
         // E reach
-        $r->debugReachByReplace($r->getCurrentPlayer(), Tile::fromString('E'), TileList::fromString('123456789s2355mE'));
-        $r->passPublicPhase();
+        $pro->process('reach E E:s-123456789s2355mE:E; passAll');
 
-        // W discard, E may win
-        $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('1m'));
+        // S discard, E may win
+        $pro->process('discard S S:s-1m:1m');
 
         $yakuList = $r->getWinResult($r->getPlayerList()[0])->getYakuList();
 
@@ -383,12 +375,12 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
 
     function testDoubleReach() {
         $r = YakuTestData::getInitedRound();
+        $pro = $r->getRoundData()->getProcessor();
         // E double reach
-        $r->debugReachByReplace($r->getCurrentPlayer(), Tile::fromString('E'), TileList::fromString('123456789s2355mE'));
-        $r->passPublicPhase();
+        $pro->process('reach E E:s-123456789s2355mE:E; passAll');
 
-        // W discard, E may win
-        $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('1m'));
+        // S discard, E may win
+        $pro->process('discard S S:s-1m:1m');
 
         $yakuList = $r->getWinResult($r->getPlayerList()[0])->getYakuList();
 
@@ -399,22 +391,14 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
 
     function testFirstTurnWin() {
         $r = YakuTestData::getInitedRound();
+        $pro = $r->getRoundData()->getProcessor();
 
-        $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('E'));
-        $r->passPublicPhase();
+        $pro->process('discard E E:s-E:E; passAll');
+        $pro->process('reach S S:s-123456789s2355mS:S; passAll'); // S double reach
+        $pro->process('discard W W:s-E:E; passAll');
+        $pro->process('discard N N:s-E:E; passAll');
 
-        // S double Reach
-        $r->debugReachByReplace($r->getCurrentPlayer(), Tile::fromString('S'), TileList::fromString('123456789s2355mS'));
-        $r->passPublicPhase();
-
-        // pass
-        $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('E'));
-        $r->passPublicPhase();
-
-        $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('E'));
-        $r->passPublicPhase();
-
-        $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('E'));
+        $pro->process('discard E E:s-E:E');
         $r->getRoundData()->getTileAreas()->getWall()->debugSetNextDrawTile(Tile::fromString('1m'));
         $r->passPublicPhase();
         $this->assertEquals(Tile::fromString('1m'), $r->getRoundData()->getTileAreas()->getTargetTile()->getTile());
@@ -427,9 +411,11 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
 
     function testKingSTileWin() {
         $r = YakuTestData::getInitedRound();
+        $pro = $r->getRoundData()->getProcessor();
         $r->getRoundData()->getTileAreas()->debugReplaceHand($r->getCurrentPlayer(), TileList::fromString('123s456s789s7777m5m'));
         $r->getRoundData()->getTileAreas()->getWall()->debugSetNextReplaceTile(Tile::fromString('5m'));
-        $r->kongBySelf($r->getCurrentPlayer(), Tile::fromString('7m'));
+        $pro->process('concealedKong E 7m');
+//        $r->kongBySelf($r->getCurrentPlayer(), Tile::fromString('7m'));
 
         $yakuList = $r->getWinResult($r->getCurrentPlayer())->getYakuList();
 
@@ -506,7 +492,7 @@ class YakuTestData {
         $tileAreas = $round->getRoundData()->getTileAreas();
 
         $roundPhase = $isPrivatePhase ? RoundPhase::getPrivateInstance() : RoundPhase::getPublicInstance();
-        $round->debugSkipTo($currentPlayer, $roundPhase, null, null, $targetTile);
+        $round->getRoundData()->debugSkipTo($currentPlayer, $roundPhase, null, null, $targetTile);
         if ($isPrivatePhase) {
             $handTileList = $handMeldList->toTileList();
             $tileAreas->debugSetPrivate($targetPlayer, $handTileList, $this->declareMeldList, $targetTile);

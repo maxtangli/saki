@@ -1,5 +1,7 @@
 <?php
 
+use Saki\Command\CommandContext;
+use Saki\Command\PrivateCommand\DiscardCommand;
 use Saki\Game\Round;
 use Saki\RoundResult\RoundResultType;
 use Saki\Tile\Tile;
@@ -9,11 +11,10 @@ use Saki\Game\RoundPhase;
 class RoundDrawTest extends PHPUnit_Framework_TestCase {
     function testExhaustiveDraw() {
         $r = new Round();
+        $pro = $r->getRoundData()->getProcessor();
         // 130ms = avg0.7ms/time * 200times
         for ($phase = $r->getRoundPhase(); $phase != RoundPhase::getOverInstance(); $phase = $r->getRoundPhase()) {
-            $discardTile = $r->getRoundData()->getTileAreas()->getPrivateHand($r->getCurrentPlayer())[0];
-            $r->discard($r->getCurrentPlayer(), $discardTile);
-            $r->passPublicPhase();
+            $pro->process('discard I I:s-1m:1m; passAll');
         }
         $cls = get_class(new \Saki\RoundResult\ExhaustiveDrawRoundResult(\Saki\Game\PlayerList::createStandard()->toArray(), [false, false, false, false]));
         $this->assertInstanceOf($cls, $r->getRoundData()->getPhaseState()->getRoundResult());
@@ -25,9 +26,7 @@ class RoundDrawTest extends PHPUnit_Framework_TestCase {
 
         $r = new Round();
         $pro = $r->getRoundData()->getProcessor();
-        $r->getRoundData()->getTileAreas()->debugSetPrivate($r->getCurrentPlayer(), $validTileList);
-//        $r->nineKindsOfTerminalOrHonorDraw($r->getCurrentPlayer());
-        $pro->process('nineNineDraw E');
+        $pro->process('mockHand E 19m19p15559sESWNC; nineNineDraw E');
         $this->assertEquals(RoundResultType::NINE_KINDS_OF_TERMINAL_OR_HONOR_DRAW, $r->getRoundData()->getPhaseState()->getRoundResult()->getRoundResultType()->getValue());
     }
 
@@ -35,18 +34,12 @@ class RoundDrawTest extends PHPUnit_Framework_TestCase {
 
     function testFourWindDraw() {
         $r = new Round();
-        $tileE = Tile::fromString('E');
-        $r->debugDiscardByReplace($r->getCurrentPlayer(), $tileE);
-        $r->passPublicPhase();
+        $pro = $r->getRoundData()->getProcessor();
 
-        $r->debugDiscardByReplace($r->getCurrentPlayer(), $tileE);
-        $r->passPublicPhase();
-
-        $r->debugDiscardByReplace($r->getCurrentPlayer(), $tileE);
-        $r->passPublicPhase();
-
-        $r->debugDiscardByReplace($r->getCurrentPlayer(), $tileE);
-        $r->passPublicPhase();
+        $pro->process('discard E E:s-E:E; passAll');
+        $pro->process('discard S S:s-E:E; passAll');
+        $pro->process('discard W W:s-E:E; passAll');
+        $pro->process('discard N N:s-E:E; passAll');
         $this->assertEquals(RoundResultType::FOUR_WIND_DRAW, $r->getRoundData()->getPhaseState()->getRoundResult()->getRoundResultType()->getValue());
     }
 
@@ -72,8 +65,12 @@ class RoundDrawTest extends PHPUnit_Framework_TestCase {
 
     function testFourKongDraw() { // todo handle kongPublicPhase
         $r = new Round();
+        $pro = $r->getRoundData()->getProcessor();
+
         $tile = Tile::fromString('1s');
 
+        // error for discard todo detailed error message instead of Not executable command[discard].
+//        $pro->process('concealedKong I I:s-1111s:1s; discard I I:s-1s:1s; passAll');
         $r->debugKongBySelfByReplace($r->getCurrentPlayer(), $tile);
         $r->debugDiscardByReplace($r->getCurrentPlayer(), $tile);
         $r->passPublicPhase();

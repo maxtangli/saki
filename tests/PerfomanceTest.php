@@ -59,39 +59,6 @@ class PerformanceTest extends PHPUnit_Framework_TestCase {
         $b->add(new BenchmarkItem('new Round()', function () {
             return new Round();
         }));
-
-        $r = new Round();
-
-        // E private
-        $tile = $r->getRoundData()->getTileAreas()->getPrivateHand($r->getCurrentPlayer())->getFirst();
-        $b->add(new BenchmarkItem('discard()', function () use ($r, $tile) {
-            $r->discard($r->getCurrentPlayer(), $tile);
-        }));
-
-        // E public
-        $b->add(new BenchmarkItem('passPublicPhase()', function () use ($r) {
-            $r->passPublicPhase();
-        }));
-
-        // S private
-        $b->add(new BenchmarkItem('debugDiscardByReplace()', function () use ($r) {
-            $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('E'));
-        }));
-
-        // S public
-        $notWinPlayer = $r->getPlayerList()->getSelfWindPlayer(Tile::fromString('N'));
-        $r->getRoundData()->getTileAreas()->debugSetPublic($notWinPlayer, TileList::fromString('13579m13579p135s')); // 13 tiles
-        $b->add(new BenchmarkItem('getWinResult()//notWin', function () use ($r, $notWinPlayer) {
-            return $r->getWinResult($notWinPlayer);
-        }));
-
-        // S public
-        $winPlayer = $r->getPlayerList()->getSelfWindPlayer(Tile::fromString('W'));
-        $r->getRoundData()->getTileAreas()->debugSetPublic($winPlayer, TileList::fromString('123456789m123sE')); // 13 tiles
-        $b->add(new BenchmarkItem('getWinResult()//win', function () use ($r, $winPlayer) {
-            return $r->getWinResult($winPlayer);
-        }));
-
         return $b;
     }
 

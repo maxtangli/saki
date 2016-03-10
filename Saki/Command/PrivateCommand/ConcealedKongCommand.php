@@ -7,7 +7,7 @@ use Saki\Command\ParamDeclaration\TileParamDeclaration;
 use Saki\Command\PrivateCommand;
 use Saki\Tile\Tile;
 
-class ExposedKongCommand extends PrivateCommand {
+class ConcealedKongCommand extends PrivateCommand {
     static function getParamDeclarations() {
         return [SelfWindParamDeclaration::class, TileParamDeclaration::class];
     }
@@ -29,7 +29,7 @@ class ExposedKongCommand extends PrivateCommand {
     }
 
     function executeImpl() {
-        $this->getContext()->getRoundData()->getTileAreas()->kongBySelf($this->getActPlayer(), $this->getTile());
+        $this->getContext()->getRoundData()->getTileAreas()->concealedKong($this->getActPlayer(), $this->getTile());
         // todo handle RobAQuadPhase
         // stay in private phase
     }

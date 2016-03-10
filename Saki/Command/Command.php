@@ -97,7 +97,7 @@ abstract class Command {
 
     static function getParamDeclarations() {
         // since abstract static function not allowed
-        throw new \BadMethodCallException('Forgot to implemented.');
+        throw new \BadMethodCallException('Unimplemented static::getParamDeclarations().');
     }
 
     private $context;
@@ -130,7 +130,10 @@ abstract class Command {
 
     function execute() {
         if (!$this->executable()) {
-            throw new \InvalidArgumentException('Invalid command');
+            throw new \InvalidArgumentException(
+                // todo output param strings
+                sprintf('Not executable command[%s].', static::getName())
+            );
         }
         $this->executeImpl();
     }

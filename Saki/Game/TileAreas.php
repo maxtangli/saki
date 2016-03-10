@@ -315,21 +315,21 @@ class TileAreas {
         $this->recordDiscard($this->getRoundTurn()->getGlobalTurn(), $player->getSelfWind(), $selfTile); // todo reach flag
     }
 
-    function kongBySelf(Player $actPlayer, Tile $selfTile) {
+    function concealedKong(Player $actPlayer, Tile $selfTile) {
         $actPlayer->getTileArea()->concealedKong($selfTile);
         $this->drawReplacement($actPlayer);
 
         $this->recordDeclare($actPlayer->getSelfWind());
     }
 
-    function plusKongBySelf(Player $actPlayer, Tile $selfTile) {
+    function plusKong(Player $actPlayer, Tile $selfTile) {
         $actPlayer->getTileArea()->plusKong($selfTile);
         $this->drawReplacement($actPlayer);
 
         $this->recordDeclare($actPlayer->getSelfWind());
     }
 
-    function chowByOther(Player $actPlayer, Tile $tile1, Tile $tile2, Player $targetPlayer) {
+    function chow(Player $actPlayer, Tile $tile1, Tile $tile2, Player $targetPlayer) {
         $this->assertNextPlayer($actPlayer, $targetPlayer);
         $targetPlayerArea = $targetPlayer->getTileArea();
         $actPlayerArea = $actPlayer->getTileArea();

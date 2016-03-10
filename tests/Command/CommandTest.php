@@ -49,12 +49,13 @@ class HelloCommand extends Command {
 class CommandTest extends \PHPUnit_Framework_TestCase {
     function testParse() {
         $context = new CommandContext(new RoundData());
+        $parser = new CommandParser($context, [HelloCommand::class]);
+
+        // parseLine
         $line = 'hello E 1p';
         $obj = HelloCommand::fromString($context, $line);
         $this->assertEquals($obj->__toString(), $line);
 
-        // parseLine
-        $parser = new CommandParser($context, [HelloCommand::class]);
         $obj2 = $parser->parseLine($line);
         $this->assertEquals($obj2->__toString(), $line);
 

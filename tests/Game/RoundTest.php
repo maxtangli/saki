@@ -74,7 +74,7 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         }
     }
 
-    function testExposedKong() {
+    function testConcealedKong() {
         $r = $this->getInitialRound();
         $pro = $r->getRoundData()->getProcessor();
         // setup
@@ -83,8 +83,7 @@ class RoundTest extends PHPUnit_Framework_TestCase {
             [Tile::fromString('1m'), Tile::fromString('1m'), Tile::fromString('1m'), Tile::fromString('1m')]);
         // execute
         $tileCountBefore = $r->getCurrentPlayer()->getTileArea()->getHandReference()->count();
-//        $r->kongBySelf($r->getCurrentPlayer(), Tile::fromString('1m'));
-        $pro->process('exposedKong E 1m');
+        $pro->process('concealedKong E 1m');
 
         // phase keep
         $this->assertEquals(RoundPhase::getInstance(RoundPhase::PRIVATE_PHASE), $r->getRoundPhase());
@@ -204,7 +203,7 @@ class RoundTest extends PHPUnit_Framework_TestCase {
 
         // phase not changed
         $targetTile = $r->getRoundData()->getTileAreas()->getTargetTile()->getTile()->toNextTile();
-        $r->debugSkipTo($playerE, null, null, null);
+        $r->getRoundData()->debugSkipTo($playerE, null, null, null);
         $this->assertEquals($playerE, $r->getCurrentPlayer());
         $this->assertEquals(RoundPhase::getPrivateInstance(), $r->getRoundPhase());
 

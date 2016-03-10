@@ -29,7 +29,7 @@ class PlusKongCommand extends PrivateCommand {
     }
 
     function executeImpl() {
-        $this->getContext()->getRoundData()->getTileAreas()->plusKongBySelf($this->getActPlayer(), $this->getTile());
+        $this->getContext()->getRoundData()->getTileAreas()->plusKong($this->getActPlayer(), $this->getTile());
         // todo handle RobAQuadPhase
         // stay in private phase
     }

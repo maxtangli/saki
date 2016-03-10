@@ -4,20 +4,22 @@ namespace Saki\Game;
 use Saki\Command\CommandContext;
 use Saki\Command\CommandParser;
 use Saki\Command\CommandProcessor;
+use Saki\Command\Debug\MockHandCommand;
+use Saki\Command\Debug\PassAllCommand;
 use Saki\Command\PrivateCommand\DiscardCommand;
-use Saki\Command\PrivateCommand\ExposedKongCommand;
+use Saki\Command\PrivateCommand\ConcealedKongCommand;
 use Saki\Command\PrivateCommand\NineNineDrawCommand;
 use Saki\Command\PrivateCommand\PlusKongCommand;
 use Saki\Command\PrivateCommand\ReachCommand;
 use Saki\Command\PrivateCommand\WinBySelfCommand;
 use Saki\Command\PublicCommand\BigKongCommand;
 use Saki\Command\PublicCommand\ChowCommand;
-use Saki\Command\PublicCommand\Debug\DebugPassCommand;
 use Saki\Command\PublicCommand\PongCommand;
 use Saki\Command\PublicCommand\SmallKongCommand;
 use Saki\Command\PublicCommand\WinByOtherCommand;
 use Saki\RoundPhase\NullPhaseState;
 use Saki\RoundPhase\RoundPhaseState;
+use Saki\Tile\Tile;
 use Saki\Win\WinAnalyzer;
 use Saki\Win\WinTarget;
 
@@ -58,7 +60,7 @@ class RoundData {
         $classes = [
             // private
             DiscardCommand::class,
-            ExposedKongCommand::class,
+            ConcealedKongCommand::class,
             PlusKongCommand::class,
             ReachCommand::class,
             WinBySelfCommand::class,
@@ -69,8 +71,9 @@ class RoundData {
             BigKongCommand::class,
             SmallKongCommand::class,
             WinByOtherCommand::class,
-            // public/debug
-            DebugPassCommand::class,
+            // debug
+            MockHandCommand::class,
+            PassAllCommand::class,
         ];
         $this->processor = new CommandProcessor(new CommandParser(new CommandContext($this), $classes));
     }
@@ -102,6 +105,60 @@ class RoundData {
         $this->getTileAreas()->reset();
 
         $this->phaseState = new NullPhaseState();
+    }
+
+    function debugSkipTo(Player $actualCurrentPlayer, RoundPhase $roundPhase = null, $globalTurn = null,
+                         Tile $mockDiscardTile = null) {
+        if ($this->getTurnManager()->getGlobalTurn() != 1) {
+            throw new \LogicException('Not implemented.');
+        }
+
+        $validCurrentState = $this->getPhaseState()->getRoundPhase()->isPrivateOrPublic();
+        if (!$validCurrentState) {
+            throw new \InvalidArgumentException();
+        }
+
+        $actualRoundPhase = $roundPhase ?? RoundPhase::getPrivateInstance();
+        $validRoundPhase = $actualRoundPhase->isPrivateOrPublic();
+        if (!$validRoundPhase) {
+            throw new \InvalidArgumentException();
+        }
+
+        $actualGlobalTurn = $globalTurn ?? 1;
+        $validActualGlobalTurn = ($actualGlobalTurn == 1);
+        if (!$validActualGlobalTurn) {
+            throw new \InvalidArgumentException('Not implemented.');
+        }
+
+        $actualMockDiscardTile = $mockDiscardTile ?? Tile::fromString('C');
+        $validMockDiscardTile = !$actualMockDiscardTile->isWind();
+        if (!$validMockDiscardTile) {
+            throw new \InvalidArgumentException('Not implemented: consider FourWindDiscardedDraw issue.');
+        }
+
+        $isTargetTurn = function () use ($actualCurrentPlayer, $actualRoundPhase) {
+            $currentPhaseState = $this->getPhaseState();
+            $currentRoundPhase = $currentPhaseState->getRoundPhase();
+            $currentPlayer = $this->getTurnManager()->getCurrentPlayer();
+
+            $isTargetTurn = ($currentPlayer == $actualCurrentPlayer) && ($currentRoundPhase == $actualRoundPhase);
+            $isGameOver = $currentRoundPhase->isOver() && $currentPhaseState->isGameOver($this);
+            return $isGameOver || $isTargetTurn;
+        };
+
+        $pro = $this->getProcessor();
+        $tileString = $actualMockDiscardTile->__toString();
+        $discardScript = sprintf('discard I I:s-%s:%s', $tileString, $tileString);
+        while (!$isTargetTurn()) {
+            $currentRoundPhase = $this->getPhaseState()->getRoundPhase();
+            if ($currentRoundPhase->isPrivate()) {
+                $pro->process($discardScript);
+            } elseif ($currentRoundPhase->isPublic()) {
+                $pro->process('passAll');
+            } else {
+                throw new \LogicException();
+            }
+        }
     }
 
     function getGameData() {

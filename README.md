@@ -425,9 +425,13 @@ rush introduce commands: second step
 - [x] refactor: move into Commands - passPublic() 0.2h
 
 - [x] CommandProcessor 0.4h
-- [ ] refactor: string-style-commands in tests 0.2h
+- [x] MockHandCommand 0.5h
+- [x] advanced TileParamDeclaration 1.3h // agile: not do until currently actual required!
+- [x] refactor: try string-style-commands in tests 0.4h
 
-- [ ] refactor: move into Commands - debug
+- [x] I option for SelfWindParamDeclaration 0.2h
+- [ ] refactor: move into Commands - debug 1h
+
 - [ ] refactor: remove Round methods
 - [ ] refactor: merge Round and RoundData together
 
