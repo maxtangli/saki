@@ -25,12 +25,12 @@ class BigKongCommand extends PublicCommand {
     }
 
     function executeImpl() {
-        $roundData = $this->getContext()->getRoundData();
+        $round = $this->getContext()->getRoundData();
 
-        $roundData->getTileAreas()->bigKong(
+        $round->getTileAreas()->bigKong(
             $this->getActPlayer(), $this->getCurrentPlayer()
         );
-        $roundData->toNextPhase(
+        $round->toNextPhase(
             new PrivatePhaseState($this->getActPlayer(), false)
         );
     }

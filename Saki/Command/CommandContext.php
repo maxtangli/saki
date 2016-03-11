@@ -2,13 +2,12 @@
 namespace Saki\Command;
 
 use Saki\Game\Round;
-use Saki\Game\RoundData;
 
 class CommandContext {
-    private $roundData;
+    private $round;
 
-    function __construct(RoundData $roundData) {
-        $this->roundData = $roundData;
+    function __construct(Round $round) {
+        $this->roundData = $round;
     }
 
     function getRoundData() {

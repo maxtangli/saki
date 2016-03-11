@@ -44,15 +44,12 @@ class CommandParser {
     }
 
     /**
-     * @param string e.x. 'discard E 1m; pass'
-     * @return Command[]
+     * @param string $script
+     * @return string[]
      */
-    function parseScript(string $script) {
+    function scriptToLines(string $script) {
         $lines = preg_split('/; /', $script);
-        $commands = array_map(function (string $line) {
-            return $this->parseLine($line);
-        }, $lines);
-        return $commands;
+        return $lines;
     }
 }
 

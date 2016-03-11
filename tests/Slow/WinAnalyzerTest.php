@@ -1,31 +1,22 @@
 <?php
 
 use Saki\Game\Round;
-use Saki\Game\RoundData;
-use Saki\Game\RoundPhase;
-use Saki\Game\TileArea;
-use Saki\Tile\Tile;
-use Saki\Tile\TileList;
-use Saki\Tile\TileSortedList;
 use Saki\Win\WinState;
-use Saki\Game\Player;
 use Saki\Win\WinTarget;
 
 class WinAnalyzerTest extends \PHPUnit_Framework_TestCase {
     function testPublicPhaseTarget() {
         $r = new Round();
-        $targetTile = Tile::fromString('5s');
-        $replaceHand = TileList::fromString('123m456m789m123s5s'); // 13 tiels
-        $r->debugDiscardByReplace($r->getCurrentPlayer(), $targetTile);
-        $r->getRoundData()->getTileAreas()->debugSetPublic($r->getCurrentPlayer(), $replaceHand);
+        $pro = $r->getProcessor();
+        $pro->process('discard E E:s-5s:5s; mockHand E 123m456m789m123s5s'); // mock 13 tiles
 
-        $target = new WinTarget($r->getCurrentPlayer(), $r->getRoundData());
+        $target = new WinTarget($r->getTurnManager()->getCurrentPlayer(), $r);
 
         $dataProvider = [
             ['123456789m12355s', $target->getPrivateHand()->__toString()],
             ['123456789m1235s', $target->getPublicHand()->__toString()],
         ];
-        foreach($dataProvider as list($expected, $actual)) {
+        foreach ($dataProvider as list($expected, $actual)) {
             $this->assertEquals($expected, $actual, sprintf('expected[%s] but actual[%s]', $expected, $actual));
         }
     }
@@ -33,24 +24,24 @@ class WinAnalyzerTest extends \PHPUnit_Framework_TestCase {
     function testFuritenSelfDiscardedCase() {
         // self discarded furiten
         $r = new Round();
-        $p1 = $r->getCurrentPlayer();
-        $r->debugDiscardByReplace($p1, Tile::fromString('1s'), TileList::fromString('123m456m789m123s55s'));
+        $pro = $r->getProcessor();
 
-        $r->passPublicPhase();
-        $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('1s'));
+        $p1 = $r->getTurnManager()->getCurrentPlayer();
+        $pro->process('discard E E:s-123m456m789m123s55s:1s');
+
+        $pro->process('passAll; discard S S:s-1s:1s');
         $this->assertEquals(WinState::getInstance(WinState::FURITEN_FALSE_WIN), $r->getWinResult($p1)->getWinState());
 
-        $r->passPublicPhase();
-        $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('4s'));
+        $pro->process('passAll; discard W W:s-4s:4s');
         $this->assertEquals(WinState::getInstance(WinState::FURITEN_FALSE_WIN), $r->getWinResult($p1)->getWinState());
     }
 
     function testFuritenReachCase() {
         // other discarded after self reach furiten
         $r = new Round();
-        $pro = $r->getRoundData()->getProcessor();
+        $pro = $r->getProcessor();
 
-        $p1 = $r->getCurrentPlayer();
+        $p1 = $r->getTurnManager()->getCurrentPlayer();
         $pro->process('reach E E:s-123m456m789m23s55sE:E');
 
         $pro->process('passAll; discard S S:s-1s:1s');
@@ -63,16 +54,12 @@ class WinAnalyzerTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(WinState::getInstance(WinState::FURITEN_FALSE_WIN), $r->getWinResult($p1)->getWinState());
 
         // furiten even after 1 turn
-        $r->getRoundData()->getTileAreas()->getWall()->debugSetNextDrawTile(Tile::fromString('E'));
-        $r->passPublicPhase();
-        $r->discard($p1, Tile::fromString('E'));
+        $pro->process('mockWall E; passAll; discard E E');
 
-        $r->passPublicPhase();
-        $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('1s'));
+        $pro->process('passAll; discard S S:s-1s:1s');
         $this->assertEquals(WinState::getInstance(WinState::FURITEN_FALSE_WIN), $r->getWinResult($p1)->getWinState());
 
-        $r->passPublicPhase();
-        $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('4s'));
+        $pro->process('passAll; discard W W:s-4s:4s');
         $this->assertEquals(WinState::getInstance(WinState::FURITEN_FALSE_WIN), $r->getWinResult($p1)->getWinState());
     }
 
@@ -80,31 +67,26 @@ class WinAnalyzerTest extends \PHPUnit_Framework_TestCase {
         // other discarded in one turn
         // other discarded after self reach furiten
         $r = new Round();
-        $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('E'));
+        $pro = $r->getProcessor();
+        $pSouth = $r->getPlayerList()[1];
+        $pro->process(
+            'discard E E:s-E:E'
+            , 'passAll; discard S S:s-123m456m789m23s55sE:E'
+            , 'passAll; discard W W:s-1s:1s'
+        );
+        $this->assertEquals(WinState::getInstance(WinState::WIN_BY_OTHER), $r->getWinResult($pSouth)->getWinState());
 
-        $r->passPublicPhase();
-        $p2 = $r->getCurrentPlayer();
-        $r->debugDiscardByReplace($p2, Tile::fromString('E'), TileList::fromString('123m456m789m23s55sE'));
+        $pro->process('passAll; discard N N:s-1s:1s');
+        $this->assertEquals(WinState::getInstance(WinState::FURITEN_FALSE_WIN), $r->getWinResult($pSouth)->getWinState());
 
-        $r->passPublicPhase();
-        $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('1s'));
-        $this->assertEquals(WinState::getInstance(WinState::WIN_BY_OTHER), $r->getWinResult($p2)->getWinState());
-
-        $r->passPublicPhase();
-        $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('1s'));
-        $this->assertEquals(WinState::getInstance(WinState::FURITEN_FALSE_WIN), $r->getWinResult($p2)->getWinState());
-
-        $r->passPublicPhase();
-        $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('4s'));
-        $this->assertEquals(WinState::getInstance(WinState::FURITEN_FALSE_WIN), $r->getWinResult($p2)->getWinState());
+        $pro->process('passAll; discard E E:s-4s:4s');
+        $this->assertEquals(WinState::getInstance(WinState::FURITEN_FALSE_WIN), $r->getWinResult($pSouth)->getWinState());
 
         // not furiten after 1 turn
-        $r->getRoundData()->getTileAreas()->getWall()->debugSetNextDrawTile(Tile::fromString('E'));
-        $r->passPublicPhase();
-        $r->discard($p2, Tile::fromString('E'));
-
-        $r->passPublicPhase();
-        $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('1s'));
-        $this->assertEquals(WinState::getInstance(WinState::WIN_BY_OTHER), $r->getWinResult($p2)->getWinState()); // passed
+        $pro->process(
+            'mockWall E; passAll; discard S E'
+            , 'passAll; discard W W:s-1s:1s'
+        );
+        $this->assertEquals(WinState::getInstance(WinState::WIN_BY_OTHER), $r->getWinResult($pSouth)->getWinState()); // passed
     }
 }

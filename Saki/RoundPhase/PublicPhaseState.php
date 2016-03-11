@@ -2,7 +2,7 @@
 namespace Saki\RoundPhase;
 
 use Saki\Game\Player;
-use Saki\Game\RoundData;
+use Saki\Game\Round;
 use Saki\Game\RoundPhase;
 use Saki\Meld\QuadMeldType;
 use Saki\RoundResult\ExhaustiveDrawRoundResult;
@@ -16,40 +16,40 @@ class PublicPhaseState extends RoundPhaseState {
         return RoundPhase::getPublicInstance();
     }
 
-    function getDefaultNextState(RoundData $roundData) {
-        $nextPlayer = $roundData->getTurnManager()->getOffsetPlayer(1);
+    function getDefaultNextState(Round $round) {
+        $nextPlayer = $round->getTurnManager()->getOffsetPlayer(1);
         $shouldDrawTile = true;
         return new PrivatePhaseState($nextPlayer, $shouldDrawTile);
     }
 
-    function enter(RoundData $roundData) {
+    function enter(Round $round) {
         // do nothing
     }
 
-    function leave(RoundData $roundData) {
-        $this->handleDraw($roundData);
+    function leave(Round $round) {
+        $this->handleDraw($round);
     }
 
-    protected function handleDraw(RoundData $roundData) {
-        $drawResult = $this->getDrawResult($roundData);
+    protected function handleDraw(Round $round) {
+        $drawResult = $this->getDrawResult($round);
         if ($drawResult) {
             $this->setCustomNextState(new OverPhaseState($drawResult));
         }
     }
 
-    protected function getDrawResult(RoundData $roundData) {
+    protected function getDrawResult(Round $round) {
         // todo move to DrawRuler
 
         // ExhaustiveDraw todo test shouldDrawTile==false case
-        $nextState = $this->getNextState($roundData);
+        $nextState = $this->getNextState($round);
         $isExhaustiveDraw = $nextState->getRoundPhase()->isPrivate()
             && $nextState->shouldDrawTile()
-            && $roundData->getTileAreas()->getWall()->getRemainTileCount() == 0;
+            && $round->getTileAreas()->getWall()->getRemainTileCount() == 0;
         if ($isExhaustiveDraw) {
-            $players = $roundData->getPlayerList()->toArray();
-            $waitingAnalyzer = $roundData->getWinAnalyzer()->getWaitingAnalyzer();
-            $isWaitingStates = array_map(function (Player $player) use ($waitingAnalyzer, $roundData) {
-                $a13StyleHandTileList = $roundData->getTileAreas()->getPublicHand($player);
+            $players = $round->getPlayerList()->toArray();
+            $waitingAnalyzer = $round->getWinAnalyzer()->getWaitingAnalyzer();
+            $isWaitingStates = array_map(function (Player $player) use ($waitingAnalyzer, $round) {
+                $a13StyleHandTileList = $round->getTileAreas()->getPublicHand($player);
                 $declaredMeldList = $player->getTileArea()->getDeclaredMeldListReference();
                 $waitingTileList = $waitingAnalyzer->analyzePublic($a13StyleHandTileList, $declaredMeldList);
                 $isWaiting = $waitingTileList->count() > 0;
@@ -60,14 +60,14 @@ class PublicPhaseState extends RoundPhaseState {
         }
 
         // FourWindDraw
-        $isFirstRound = $roundData->getTurnManager()->getGlobalTurn() == 1;
+        $isFirstRound = $round->getTurnManager()->getGlobalTurn() == 1;
         if ($isFirstRound) {
-            $allDiscardTileList = $roundData->getTileAreas()->getDiscardHistory()->getAllDiscardTileList();
+            $allDiscardTileList = $round->getTileAreas()->getDiscardHistory()->getAllDiscardTileList();
             if ($allDiscardTileList->count() == 4) {
                 $allDiscardTileList->unique();
                 $isFourSameWindDiscard = $allDiscardTileList->count() == 1 && $allDiscardTileList[0]->isWind();
                 if ($isFourSameWindDiscard) {
-                    $result = new OnTheWayDrawRoundResult($roundData->getPlayerList()->toArray(),
+                    $result = new OnTheWayDrawRoundResult($round->getPlayerList()->toArray(),
                         RoundResultType::getInstance(RoundResultType::FOUR_WIND_DRAW));
                     return $result;
                 }
@@ -75,17 +75,17 @@ class PublicPhaseState extends RoundPhaseState {
         }
 
         // FourReachDraw
-        $isFourReachDraw = $roundData->getPlayerList()->all(function (Player $player) {
+        $isFourReachDraw = $round->getPlayerList()->all(function (Player $player) {
             return $player->getTileArea()->isReach();
         });
         if ($isFourReachDraw) {
-            $result = new OnTheWayDrawRoundResult($roundData->getPlayerList()->toArray(),
+            $result = new OnTheWayDrawRoundResult($round->getPlayerList()->toArray(),
                 RoundResultType::getInstance(RoundResultType::FOUR_REACH_DRAW));
             return $result;
         }
 
         // FourKongDraw: more than 4 declared-kong-meld by at least 2 targetList todo test
-        $declaredKongCounts = $roundData->getPlayerList()->toArray(function (Player $player) {
+        $declaredKongCounts = $round->getPlayerList()->toArray(function (Player $player) {
             return $player->getTileArea()->getDeclaredMeldListReference()->toFilteredTypesMeldList([QuadMeldType::getInstance()])->count();
         });
         $kongCount = array_sum($declaredKongCounts);
@@ -94,7 +94,7 @@ class PublicPhaseState extends RoundPhaseState {
         });
         $isFourKongDraw = $kongCount >= 4 && $kongPlayerCount >= 2;
         if ($isFourKongDraw) {
-            $result = new OnTheWayDrawRoundResult($roundData->getPlayerList()->toArray(),
+            $result = new OnTheWayDrawRoundResult($round->getPlayerList()->toArray(),
                 RoundResultType::getInstance(RoundResultType::FOUR_KONG_DRAW));
             return $result;
         }

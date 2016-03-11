@@ -6,7 +6,7 @@ use Saki\Tile\TileList;
 
 class TileParamDeclaration extends ParamDeclaration {
     function toObject() {
-        $roundData = $this->getContext()->getRoundData();
+        $round = $this->getContext()->getRoundData();
         $paramString = $this->getParamString();
 
         /**
@@ -26,9 +26,9 @@ class TileParamDeclaration extends ParamDeclaration {
 
             $selfWind = (new SelfWindParamDeclaration($this->getContext(), $selfWindString))->toObject();
 
-            $player = $roundData->getPlayerList()->getSelfWindPlayer($selfWind);
+            $player = $round->getPlayerList()->getSelfWindPlayer($selfWind);
             $hand = $player->getTileArea()->getHandReference();
-            $tileAreas = $roundData->getTileAreas();
+            $tileAreas = $round->getTileAreas();
 
             if (preg_match('/s-(.+):(.+)/', $remainParamString, $matches)) {
                 list(, $mockTileListString, $tileString) = $matches;

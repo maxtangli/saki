@@ -23,15 +23,15 @@ class WinBySelfCommand extends PrivateCommand {
     }
 
     function executeImpl() {
-        $roundData = $this->getContext()->getRoundData();
+        $round = $this->getContext()->getRoundData();
 
         $result = WinRoundResult::createWinBySelf(
-            $roundData->getPlayerList()->toArray(),
+            $round->getPlayerList()->toArray(),
             $this->getActPlayer(),
-            $roundData->getWinResult($this->getActPlayer()),
-            $roundData->getTileAreas()->getAccumulatedReachCount(),
-            $roundData->getRoundWindData()->getSelfWindTurn()
+            $round->getWinResult($this->getActPlayer()),
+            $round->getTileAreas()->getAccumulatedReachCount(),
+            $round->getRoundWindData()->getSelfWindTurn()
         );
-        $roundData->toNextPhase(new OverPhaseState($result));
+        $round->toNextPhase(new OverPhaseState($result));
     }
 }

@@ -2,7 +2,7 @@
 namespace Saki\RoundPhase;
 
 use Saki\Game\Player;
-use Saki\Game\RoundData;
+use Saki\Game\Round;
 use Saki\Game\RoundPhase;
 
 class PrivatePhaseState extends RoundPhaseState {
@@ -31,21 +31,21 @@ class PrivatePhaseState extends RoundPhaseState {
         return RoundPhase::getPrivateInstance();
     }
 
-    function getDefaultNextState(RoundData $roundData) {
+    function getDefaultNextState(Round $round) {
         return new PublicPhaseState();
     }
 
-    function enter(RoundData $roundData) {
+    function enter(Round $round) {
         if (!$this->isCurrentPlayer()) {
-            $roundData->getTurnManager()->toPlayer($this->getPlayer());
+            $round->getTurnManager()->toPlayer($this->getPlayer());
         }
 
         if ($this->shouldDrawTile()) {
-            $roundData->getTileAreas()->draw($this->getPlayer());
+            $round->getTileAreas()->draw($this->getPlayer());
         }
     }
 
-    function leave(RoundData $roundData) {
+    function leave(Round $round) {
         // do nothing
     }
 }

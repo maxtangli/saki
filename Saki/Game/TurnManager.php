@@ -44,6 +44,9 @@ class TurnManager {
         return $this->selfWindToPlayer($wind);
     }
 
+    /**
+     * @return RoundTurn
+     */
     function getRoundTurn() {
         $globalTurn = $this->playerWindRoller->getGlobalTurn();
         $wind = $this->playerWindRoller->getCurrentTarget();

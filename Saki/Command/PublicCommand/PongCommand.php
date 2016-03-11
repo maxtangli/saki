@@ -25,12 +25,12 @@ class PongCommand extends PublicCommand {
     }
 
     function executeImpl() {
-        $roundData = $this->getContext()->getRoundData();
+        $round = $this->getContext()->getRoundData();
 
-        $roundData->getTileAreas()->pong(
+        $round->getTileAreas()->pong(
             $this->getActPlayer(), $this->getCurrentPlayer()
         );
-        $roundData->toNextPhase(
+        $round->toNextPhase(
             new PrivatePhaseState($this->getActPlayer(), false)
         );
     }

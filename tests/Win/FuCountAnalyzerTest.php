@@ -19,11 +19,10 @@ class FuCountAnalyzerTest extends PHPUnit_Framework_TestCase {
         $handMeldList = MeldList::fromString('123p,CC,(FFF)');
 
         $r = new Round();
-        $roundData = $r->getRoundData();
-        $player = $r->getCurrentPlayer();
-        $roundData->getTileAreas()->debugSetPrivate($player, $hand, $declareMeldList, $targetTile);
+        $player = $r->getTurnManager()->getCurrentPlayer();
+        $r->getTileAreas()->debugSetPrivate($player, $hand, $declareMeldList, $targetTile);
 
-        $subTarget = new WinSubTarget($handMeldList, $player, $roundData);
+        $subTarget = new WinSubTarget($handMeldList, $player, $r);
         $yakuList = new YakuList([], true);
         $waitingType = WaitingType::getInstance(WaitingType::ONE_SIDE_RUN_WAITING);
         $target = new FuCountTarget($subTarget, $yakuList, $waitingType);

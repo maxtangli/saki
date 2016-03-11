@@ -2,15 +2,15 @@
 namespace Saki\Win;
 
 use Saki\Game\Player;
-use Saki\Game\RoundData;
+use Saki\Game\Round;
 use Saki\Meld\MeldList;
 use Saki\Tile\Tile;
 
 class WinSubTarget extends WinTarget {
     private $handMeldList;
 
-    function __construct(MeldList $handMeldList, Player $player, RoundData $roundData) {
-        parent::__construct($player, $roundData);
+    function __construct(MeldList $handMeldList, Player $player, Round $round) {
+        parent::__construct($player, $round);
         $this->handMeldList = $handMeldList;
     }
 

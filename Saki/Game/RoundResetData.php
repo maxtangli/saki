@@ -4,7 +4,7 @@ namespace Saki\Game;
 
 use Saki\Tile\Tile;
 
-class RoundDebugResetData {
+class RoundResetData {
     // RoundWindData
     private $roundWind;
     private $roundWindTurnData;

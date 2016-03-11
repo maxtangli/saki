@@ -1,9 +1,9 @@
 <?php
 
+use Saki\Meld\Meld;
 use Saki\Tile\Tile;
 use Saki\Tile\TileSortedList;
 use Saki\Win\WaitingType;
-use Saki\Meld\Meld;
 
 class MeldTypeTest extends PHPUnit_Framework_TestCase {
 

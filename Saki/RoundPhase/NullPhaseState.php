@@ -1,7 +1,7 @@
 <?php
 namespace Saki\RoundPhase;
 
-use Saki\Game\RoundData;
+use Saki\Game\Round;
 use Saki\Game\RoundPhase;
 
 class NullPhaseState extends RoundPhaseState {
@@ -9,15 +9,15 @@ class NullPhaseState extends RoundPhaseState {
         return RoundPhase::getNullInstance();
     }
 
-    function getDefaultNextState(RoundData $roundData) {
+    function getDefaultNextState(Round $round) {
         return new InitPhaseState();
     }
 
-    function enter(RoundData $roundData) {
+    function enter(Round $round) {
         // todo
     }
 
-    function leave(RoundData $roundData) {
+    function leave(Round $round) {
         // do nothing
     }
 

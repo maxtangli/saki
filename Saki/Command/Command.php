@@ -60,7 +60,10 @@ abstract class Command {
         $paramDeclarations = static::getParamDeclarations();
         $validCount = count($paramStrings) == count($paramDeclarations);
         if (!$validCount) {
-            throw new \InvalidArgumentException();
+            throw new \InvalidArgumentException(
+                sprintf('Invalid param count, expect[%s] in command[%s] but given[%s] in line[%s].',
+                    count($paramDeclarations), static::getName(), count($paramStrings), $line)
+            );
         }
 
         // ['E','1m'] => [Tile, Tile] which is indeed constructor-required-params

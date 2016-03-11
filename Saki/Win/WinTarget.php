@@ -2,20 +2,20 @@
 namespace Saki\Win;
 
 use Saki\Game\Player;
-use Saki\Game\RoundData;
+use Saki\Game\Round;
 use Saki\Game\RoundPhase;
 use Saki\Meld\MeldList;
 use Saki\Tile\Tile;
 
 class WinTarget {
     private $player;
-    private $roundData;
+    private $round;
 
-    function __construct(Player $player, RoundData $roundData) {
+    function __construct(Player $player, Round $round) {
         $this->player = $player;
-        $this->roundData = $roundData;
+        $this->roundData = $round;
 
-        $roundPhase = $roundData->getPhaseState()->getRoundPhase();
+        $roundPhase = $round->getPhaseState()->getRoundPhase();
         if (!$roundPhase->isPrivateOrPublic()) {
             throw new \InvalidArgumentException();
         }

@@ -17,7 +17,7 @@ naming conventions
 ## rush cost
 
 rush       | hours
---------- | -----
+---------- | -----
 rush  0-5  | 34h
 rush  6-10 | 23.8h
 rush 11-15 | 15.8h
@@ -25,8 +25,9 @@ rush 16-20 | 25.6h
 rush 21-25 | 26.7h
 rush 26-30 | 24.1h
 rush 31-35 | 17.4h
-rush 36-40 | ing
-     total | 167.4h + ing
+rush 36-40 | 24.6h
+rush 41-45 | ?
+     total | 192h + ing
 
 ## rush history
 
@@ -414,7 +415,7 @@ rush 39 introduce PhaseState 5.3h
 - [x] refactor: move Round.passPublicPhase() into PublicPhaseState 0.2h
 - [x] refactor: move Round.handleFourKongDraw() into PublicPhaseState 1h
 
-rush introduce commands: second step
+rush 40 introduce commands: second step 8.1h
 
 - [x] refactor: move Round methods into RoundData except commands 1.1h
 
@@ -430,10 +431,23 @@ rush introduce commands: second step
 - [x] refactor: try string-style-commands in tests 0.4h
 
 - [x] I option for SelfWindParamDeclaration 0.2h
-- [ ] refactor: move into Commands - debug 1h
+- [x] refactor: move into Commands - debug 2h
 
-- [ ] refactor: remove Round methods
-- [ ] refactor: merge Round and RoundData together
+rush 41 merge Round and RoundData together 1.3h
+
+- [x] modify RoundData init logic: forward to private 0.5h
+- [x] test
+
+- [x] add same name methods into RoundData
+- [x] replace 'new Round()' by 'new RoundData()' 0.4h
+- [x] test
+- [x] remove not used Round class
+
+- [x] rename RoundData -> Round 0.1h
+- [x] replace 'roundData'->'round', 'rd'->'r' 0.1h
+- [x] test
+
+- [x] refactor: remove getCurrentPlayer(), getRoundPhase() 0.2h
 
 rush add RobbingAQuadYaku
 
@@ -465,6 +479,7 @@ rush refactor
 - [ ] refactor: TileSeries <-> MeldList.xxx
 - [ ] refactor: RoundResult
 - [ ] refactor: move DrawScore logic into separate class
+- [ ] refactor: simplify reset(),debugReset(),toNextPhase() 0.2h
 
 rush optimize tests
 

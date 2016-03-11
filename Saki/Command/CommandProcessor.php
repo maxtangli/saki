@@ -12,9 +12,16 @@ class CommandProcessor {
         return $this->parser;
     }
 
-    function process(string $script) {
-        $commands = $this->getParser()->parseScript($script);
-        foreach ($commands as $command) {
+    /**
+     * @param ...$scripts
+     */
+    function process(... $scripts) {
+        $parser = $this->getParser();
+
+        $script = implode('; ', $scripts);
+        $lines = $parser->scriptToLines($script);
+        foreach ($lines as $line) {
+            $command = $parser->parseLine($line);
             $command->execute();
         }
     }

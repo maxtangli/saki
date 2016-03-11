@@ -3,27 +3,27 @@ namespace Saki\RoundPhase;
 
 use Saki\Game\RoundPhase;
 use Saki\RoundPhase\PrivatePhaseState;
-use Saki\Game\RoundData;
+use Saki\Game\Round;
 
 class InitPhaseState extends RoundPhaseState {
     function getRoundPhase() {
         return RoundPhase::getInitInstance();
     }
 
-    function getDefaultNextState(RoundData $roundData) {
-        $nextPlayer = $roundData->getPlayerList()->getDealerPlayer();
+    function getDefaultNextState(Round $round) {
+        $nextPlayer = $round->getPlayerList()->getDealerPlayer();
         $shouldDrawTile = true;
         return new PrivatePhaseState($nextPlayer, $shouldDrawTile, true);
     }
 
-    function enter(RoundData $roundData) {
+    function enter(Round $round) {
         // each player draw initial tiles
-        $roundData->getTileAreas()->drawInitForAll();
+        $round->getTileAreas()->drawInitForAll();
         // go to dealer player's private phase todo right?
-//        $roundData->getTurnManager()->start();
+//        $round->getTurnManager()->start();
     }
 
-    function leave(RoundData $roundData) {
+    function leave(Round $round) {
         // do nothing
     }
 }

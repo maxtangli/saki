@@ -2,7 +2,7 @@
 
 use Saki\Game\GameData;
 use Saki\Game\PlayerList;
-use Saki\Game\RoundData;
+use Saki\Game\Round;
 use Saki\Game\RoundWindData;
 use Saki\Game\TileAreas;
 use Saki\Game\TurnManager;
@@ -22,7 +22,6 @@ use Saki\Win\Fu\FuCountAnalyzer;
 use Saki\Win\Fu\FuCountTarget;
 use Saki\Win\WinTarget;
 use Saki\Win\Yaku\Yaku;
-use Saki\Game\Round;
 
 class PerformanceTest extends PHPUnit_Framework_TestCase {
     function testNot() {
@@ -63,43 +62,9 @@ class PerformanceTest extends PHPUnit_Framework_TestCase {
     }
 
     protected function getRoundDataBenchmark() {
-        $b = new Benchmark('RoundData');
-        $b->add(new BenchmarkItem('new RoundData()', function () {
-            return new RoundData();
-        }));
-
-        $roundData = new RoundData();
-        $b->add(new BenchmarkItem('RoundData.reset(false)', function () use ($roundData) {
-            return $roundData->reset(false);
-        }));
-
-        $b->add(new BenchmarkItem('new GameData()', function () {
-            return new GameData();
-        }));
-
-        $gameData = $roundData->getGameData();
-        $b->add(new BenchmarkItem('new RoundWindData(...)', function () use ($gameData) {
-            return new RoundWindData($gameData->getPlayerCount(), $gameData->getTotalRoundType());
-        }));
-        $b->add(new BenchmarkItem('new PlayerList(...)', function () use ($gameData) {
-            return new PlayerList($gameData->getPlayerCount(), $gameData->getInitialScore());
-        }));
-
-        $playerList = new PlayerList($gameData->getPlayerCount(), $gameData->getInitialScore());
-        $b->add(new BenchmarkItem('new TurnManager(...)', function () use ($playerList) {
-            return new TurnManager($playerList);
-        }));
-
-        $b->add(new BenchmarkItem('new Wall(...)', function () use ($gameData) {
-            return new Wall($gameData->getTileSet());
-        }));
-
-        $wall = $roundData->getTileAreas()->getWall();
-        $turnManager = $roundData->getTurnManager();
-        $b->add(new BenchmarkItem('new TileAreas(...)', function () use ($wall, $playerList, $turnManager) {
-            new TileAreas($wall, $playerList, function () use ($turnManager) {
-                return $turnManager->getRoundTurn();
-            });
+        $b = new Benchmark('Round');
+        $b->add(new BenchmarkItem('new Round()', function () {
+            return new Round();
         }));
         return $b;
     }
@@ -108,15 +73,15 @@ class PerformanceTest extends PHPUnit_Framework_TestCase {
         $b = new Benchmark('WinAnalyzer');
 
         $r = new Round();
-        $r->getRoundData()->getTileAreas()->debugSetPrivate($r->getCurrentPlayer(),
+        $r->getTileAreas()->debugSetPrivate($r->getTurnManager()->getCurrentPlayer(),
             TileSortedList::fromString('123456789m234sWW'), null, Tile::fromString('2s'));
 
         $b->add(new BenchmarkItem('Round.getWinResult()', function () use ($r) {
-            $r->getWinResult($r->getCurrentPlayer());
+            $r->getWinResult($r->getTurnManager()->getCurrentPlayer());
         }));
 
-        $analyzer = $r->getRoundData()->getWinAnalyzer();
-        $target = new WinTarget($r->getCurrentPlayer(), $r->getRoundData());
+        $analyzer = $r->getWinAnalyzer();
+        $target = new WinTarget($r->getTurnManager()->getCurrentPlayer(), $r);
         $b->add(new BenchmarkItem('analyzeTarget()', function () use ($analyzer, $target) {
             $analyzer->analyzeTarget($target);
         }));
@@ -163,10 +128,10 @@ class PerformanceTest extends PHPUnit_Framework_TestCase {
         $b = new Benchmark('WaitingAnalyzer');
 
         $r = new Round();
-        $r->getRoundData()->getTileAreas()->debugSetPrivate($r->getCurrentPlayer(),
+        $r->getTileAreas()->debugSetPrivate($r->getTurnManager()->getCurrentPlayer(),
             TileSortedList::fromString('123456789m234sWW'), null, Tile::fromString('2s'));
-        $analyzer = $r->getRoundData()->getWinAnalyzer();
-        $target = new WinTarget($r->getCurrentPlayer(), $r->getRoundData());
+        $analyzer = $r->getWinAnalyzer();
+        $target = new WinTarget($r->getTurnManager()->getCurrentPlayer(), $r);
         $waitingAnalyzer = $analyzer->getWaitingAnalyzer();
 
         $b->add(new BenchmarkItem('analyzeMeldCompositions', function () use ($waitingAnalyzer, $target) {
@@ -194,10 +159,10 @@ class PerformanceTest extends PHPUnit_Framework_TestCase {
         $b = new Benchmark('YakuAnalyzer');
 
         $r = new Round();
-        $r->getRoundData()->getTileAreas()->debugSetPrivate($r->getCurrentPlayer(),
+        $r->getTileAreas()->debugSetPrivate($r->getTurnManager()->getCurrentPlayer(),
             TileSortedList::fromString('123456789m234sWW'), null, Tile::fromString('2s'));
-        $analyzer = $r->getRoundData()->getWinAnalyzer();
-        $target = new WinTarget($r->getCurrentPlayer(), $r->getRoundData());
+        $analyzer = $r->getWinAnalyzer();
+        $target = new WinTarget($r->getTurnManager()->getCurrentPlayer(), $r);
         $handMeldList = MeldList::fromString('(123m),(456m),(789m),(234s),(WW)');
         $subTarget = $target->toSubTarget($handMeldList);
         $yakuAnalyzer = $analyzer->getYakuAnalyzer();

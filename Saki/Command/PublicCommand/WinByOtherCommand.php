@@ -23,16 +23,16 @@ class WinByOtherCommand extends PublicCommand {
     }
 
     function executeImpl() {
-        $roundData = $this->getContext()->getRoundData();
+        $round = $this->getContext()->getRoundData();
 
         $result = WinRoundResult::createWinByOther(
-            $roundData->getPlayerList()->toArray(),
+            $round->getPlayerList()->toArray(),
             $this->getActPlayer(),
-            $roundData->getWinResult($this->getActPlayer()),
+            $round->getWinResult($this->getActPlayer()),
             $this->getCurrentPlayer(),
-            $roundData->getTileAreas()->getAccumulatedReachCount(),
-            $roundData->getRoundWindData()->getSelfWindTurn());
-        $roundData->toNextPhase(
+            $round->getTileAreas()->getAccumulatedReachCount(),
+            $round->getRoundWindData()->getSelfWindTurn());
+        $round->toNextPhase(
             new OverPhaseState($result)
         );
     }

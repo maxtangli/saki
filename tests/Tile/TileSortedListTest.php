@@ -1,7 +1,6 @@
 <?php
 
 use Saki\Tile\Tile;
-use Saki\Tile\TileSortedList;
 
 class TileSortedListTest extends PHPUnit_Framework_TestCase {
     function testOverall() {

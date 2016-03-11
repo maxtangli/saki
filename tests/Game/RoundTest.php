@@ -1,10 +1,10 @@
 <?php
 
 use Saki\FinalScore\FinalScoreStrategyTarget;
+use Saki\Game\Round;
 use Saki\Game\RoundPhase;
 use Saki\Meld\Meld;
 use Saki\Tile\Tile;
-use Saki\Game\Round;
 
 class RoundTest extends PHPUnit_Framework_TestCase {
     protected function getInitialRound() {
@@ -13,7 +13,8 @@ class RoundTest extends PHPUnit_Framework_TestCase {
 
     protected function getRoundAfterDiscard1m() {
         $r = new Round();
-        $r->debugDiscardByReplace($r->getCurrentPlayer(), Tile::fromString('1m'));
+        $pro = $r->getProcessor();
+        $pro->process('discard I I:s-1m:1m');
         return $r;
     }
 
@@ -21,13 +22,13 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         $r = $this->getInitialRound();
 
         // phase
-        $this->assertEquals(RoundPhase::getPrivateInstance(), $r->getRoundPhase());
+        $this->assertEquals(RoundPhase::getPrivateInstance(), $r->getPhaseState()->getRoundPhase());
         // initial current player
-        $dealerPlayer = $r->getRoundData()->getPlayerList()->getDealerPlayer();
-        $this->assertSame($dealerPlayer, $r->getCurrentPlayer());
+        $dealerPlayer = $r->getPlayerList()->getDealerPlayer();
+        $this->assertSame($dealerPlayer, $r->getTurnManager()->getCurrentPlayer());
         // initial candidate tile
         $this->assertCount(14, $dealerPlayer->getTileArea()->getHandReference());
-        $this->assertTrue($r->getRoundData()->getTileAreas()->hasTargetTile()); // $this->assertTrue($dealerPlayer->getTileArea()->hasPrivateTargetTile());
+        $this->assertTrue($r->getTileAreas()->hasTargetTile()); // $this->assertTrue($dealerPlayer->getTileArea()->hasPrivateTargetTile());
 
         // initial on-hand tile count
         foreach ($r->getPlayerList() as $player) {
@@ -38,13 +39,13 @@ class RoundTest extends PHPUnit_Framework_TestCase {
     }
 
     function testRoundWindData() {
-        $rd = $this->getInitialRound()->getRoundData();
+        $r = $this->getInitialRound();
         for ($nTodo = 3; $nTodo > 0; --$nTodo) {
-            $rd->reset(false);
+            $r->reset(false);
         }
-        $this->assertEquals(4, $rd->getRoundWindData()->getRoundWindTurn());
-        $this->assertTrue($rd->getRoundWindData()->isLastOrExtraRound());
-        $this->assertFalse($rd->getRoundWindData()->isFinalRound());
+        $this->assertEquals(4, $r->getRoundWindData()->getRoundWindTurn());
+        $this->assertTrue($r->getRoundWindData()->isLastOrExtraRound());
+        $this->assertFalse($r->getRoundWindData()->isFinalRound());
     }
 
     function testGetFinalScoreItems() {
@@ -64,8 +65,8 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         ];
 
         // todo should test on GameOver state
-        $target = new FinalScoreStrategyTarget($r->getRoundData()->getPlayerList());
-        $items = $r->getRoundData()->getGameData()->getFinalScoreStrategy()->getFinalScoreItems($target);
+        $target = new FinalScoreStrategyTarget($r->getPlayerList());
+        $items = $r->getGameData()->getFinalScoreStrategy()->getFinalScoreItems($target);
         foreach ($r->getPlayerList() as $k => $player) {
             $item = $items[$k];
             list($expectedRank, $expectedPoint) = [$expected[$k][0], $expected[$k][1]];
@@ -76,51 +77,51 @@ class RoundTest extends PHPUnit_Framework_TestCase {
 
     function testConcealedKong() {
         $r = $this->getInitialRound();
-        $pro = $r->getRoundData()->getProcessor();
+        $pro = $r->getProcessor();
         // setup
-        $actPlayer = $r->getCurrentPlayer();
-        $r->getCurrentPlayer()->getTileArea()->getHandReference()->replaceByIndex([0, 1, 2, 3],
+        $actPlayer = $r->getTurnManager()->getCurrentPlayer();
+        $r->getTurnManager()->getCurrentPlayer()->getTileArea()->getHandReference()->replaceByIndex([0, 1, 2, 3],
             [Tile::fromString('1m'), Tile::fromString('1m'), Tile::fromString('1m'), Tile::fromString('1m')]);
         // execute
-        $tileCountBefore = $r->getCurrentPlayer()->getTileArea()->getHandReference()->count();
+        $tileCountBefore = $r->getTurnManager()->getCurrentPlayer()->getTileArea()->getHandReference()->count();
         $pro->process('concealedKong E 1m');
 
         // phase keep
-        $this->assertEquals(RoundPhase::getInstance(RoundPhase::PRIVATE_PHASE), $r->getRoundPhase());
-        $this->assertEquals($actPlayer, $r->getCurrentPlayer());
+        $this->assertEquals(RoundPhase::getInstance(RoundPhase::PRIVATE_PHASE), $r->getPhaseState()->getRoundPhase());
+        $this->assertEquals($actPlayer, $r->getTurnManager()->getCurrentPlayer());
         // tiles moved to created meld
-        $this->assertEquals($tileCountBefore - 3, $r->getCurrentPlayer()->getTileArea()->getHandReference()->count());
-        $this->assertTrue($r->getCurrentPlayer()->getTileArea()->getDeclaredMeldListReference()->valueExist(Meld::fromString('(1111m)')), $r->getCurrentPlayer()->getTileArea()->getDeclaredMeldListReference());
+        $this->assertEquals($tileCountBefore - 3, $r->getTurnManager()->getCurrentPlayer()->getTileArea()->getHandReference()->count());
+        $this->assertTrue($r->getTurnManager()->getCurrentPlayer()->getTileArea()->getDeclaredMeldListReference()->valueExist(Meld::fromString('(1111m)')), $r->getTurnManager()->getCurrentPlayer()->getTileArea()->getDeclaredMeldListReference());
     }
 
     function testPlusKong() {
         $r = $this->getInitialRound();
-        $pro = $r->getRoundData()->getProcessor();
+        $pro = $r->getProcessor();
         // setup
-        $actPlayer = $r->getCurrentPlayer();
-        $r->getCurrentPlayer()->getTileArea()->getHandReference()->replaceByIndex([0],
+        $actPlayer = $r->getTurnManager()->getCurrentPlayer();
+        $r->getTurnManager()->getCurrentPlayer()->getTileArea()->getHandReference()->replaceByIndex([0],
             [Tile::fromString('1m')]);
-        $r->getCurrentPlayer()->getTileArea()->getDeclaredMeldListReference()->push(Meld::fromString('111m'));
+        $r->getTurnManager()->getCurrentPlayer()->getTileArea()->getDeclaredMeldListReference()->push(Meld::fromString('111m'));
         // execute
-        $tileCountBefore = $r->getCurrentPlayer()->getTileArea()->getHandReference()->count();
-//        $r->plusKongBySelf($r->getCurrentPlayer(), Tile::fromString('1m'));
+        $tileCountBefore = $r->getTurnManager()->getCurrentPlayer()->getTileArea()->getHandReference()->count();
+//        $r->plusKongBySelf($r->getTurnManager()->getCurrentPlayer(), Tile::fromString('1m'));
         $pro->process('plusKong E 1m');
 
         // phase keep
-        $this->assertEquals(RoundPhase::getInstance(RoundPhase::PRIVATE_PHASE), $r->getRoundPhase());
-        $this->assertEquals($actPlayer, $r->getCurrentPlayer());
+        $this->assertEquals(RoundPhase::getInstance(RoundPhase::PRIVATE_PHASE), $r->getPhaseState()->getRoundPhase());
+        $this->assertEquals($actPlayer, $r->getTurnManager()->getCurrentPlayer());
         // tiles moved to created meld
-        $this->assertEquals($tileCountBefore, $r->getCurrentPlayer()->getTileArea()->getHandReference()->count());
-        $this->assertTrue($r->getCurrentPlayer()->getTileArea()->getDeclaredMeldListReference()->valueExist(Meld::fromString('1111m')));
+        $this->assertEquals($tileCountBefore, $r->getTurnManager()->getCurrentPlayer()->getTileArea()->getHandReference()->count());
+        $this->assertTrue($r->getTurnManager()->getCurrentPlayer()->getTileArea()->getDeclaredMeldListReference()->valueExist(Meld::fromString('1111m')));
     }
 
     function testChow() {
         $r = $this->getRoundAfterDiscard1m();
-        $pro = $r->getRoundData()->getProcessor();
+        $pro = $r->getProcessor();
 
         // setup
-        $prePlayer = $r->getCurrentPlayer();
-        $actPlayer = $r->getRoundData()->getTurnManager()->getOffsetPlayer(1);
+        $prePlayer = $r->getTurnManager()->getCurrentPlayer();
+        $actPlayer = $r->getTurnManager()->getOffsetPlayer(1);
         $actPlayer->getTileArea()->getHandReference()->replaceByIndex([0, 1], [Tile::fromString('2m'), Tile::fromString('3m')]);
         // execute
         $tileCountBefore = $actPlayer->getTileArea()->getHandReference()->count();
@@ -128,84 +129,84 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         $pro->process('chow S 2m 3m');
 
         // phase changed
-        $this->assertEquals(RoundPhase::getInstance(RoundPhase::PRIVATE_PHASE), $r->getRoundPhase());
-        $this->assertEquals($actPlayer, $r->getCurrentPlayer());
+        $this->assertEquals(RoundPhase::getInstance(RoundPhase::PRIVATE_PHASE), $r->getPhaseState()->getRoundPhase());
+        $this->assertEquals($actPlayer, $r->getTurnManager()->getCurrentPlayer());
         // tiles moved to created meld
-        $this->assertTrue($r->getCurrentPlayer()->getTileArea()->getDeclaredMeldListReference()->valueExist(Meld::fromString('123m')));
-        $this->assertEquals($tileCountBefore - 2, $r->getCurrentPlayer()->getTileArea()->getHandReference()->count());
+        $this->assertTrue($r->getTurnManager()->getCurrentPlayer()->getTileArea()->getDeclaredMeldListReference()->valueExist(Meld::fromString('123m')));
+        $this->assertEquals($tileCountBefore - 2, $r->getTurnManager()->getCurrentPlayer()->getTileArea()->getHandReference()->count());
         $this->assertEquals(0, $prePlayer->getTileArea()->getDiscardedReference()->count());
     }
 
     function testPong() {
         $r = $this->getRoundAfterDiscard1m();
-        $pro = $r->getRoundData()->getProcessor();
+        $pro = $r->getProcessor();
         // setup
-        $prePlayer = $r->getCurrentPlayer();
-        $actPlayer = $r->getRoundData()->getTurnManager()->getOffsetPlayer(2);
+        $prePlayer = $r->getTurnManager()->getCurrentPlayer();
+        $actPlayer = $r->getTurnManager()->getOffsetPlayer(2);
         $actPlayer->getTileArea()->getHandReference()->replaceByIndex([0, 1], [Tile::fromString('1m'), Tile::fromString('1m')]);
         // execute
         $tileCountBefore = $actPlayer->getTileArea()->getHandReference()->count();
 //        $r->pong($actPlayer);
         $pro->process('pong W');
         // phase changed
-        $this->assertEquals(RoundPhase::getInstance(RoundPhase::PRIVATE_PHASE), $r->getRoundPhase());
-        $this->assertEquals($actPlayer, $r->getCurrentPlayer());
+        $this->assertEquals(RoundPhase::getInstance(RoundPhase::PRIVATE_PHASE), $r->getPhaseState()->getRoundPhase());
+        $this->assertEquals($actPlayer, $r->getTurnManager()->getCurrentPlayer());
         // tiles moved to created meld
-        $this->assertTrue($r->getCurrentPlayer()->getTileArea()->getDeclaredMeldListReference()->valueExist(Meld::fromString('111m')));
-        $this->assertEquals($tileCountBefore - 2, $r->getCurrentPlayer()->getTileArea()->getHandReference()->count());
+        $this->assertTrue($r->getTurnManager()->getCurrentPlayer()->getTileArea()->getDeclaredMeldListReference()->valueExist(Meld::fromString('111m')));
+        $this->assertEquals($tileCountBefore - 2, $r->getTurnManager()->getCurrentPlayer()->getTileArea()->getHandReference()->count());
         $this->assertEquals(0, $prePlayer->getTileArea()->getDiscardedReference()->count());
     }
 
     function testBigKong() {
         $r = $this->getRoundAfterDiscard1m();
-        $pro = $r->getRoundData()->getProcessor();
+        $pro = $r->getProcessor();
         // setup
-        $prePlayer = $r->getCurrentPlayer();
-        $actPlayer = $r->getRoundData()->getTurnManager()->getOffsetPlayer(2);
+        $prePlayer = $r->getTurnManager()->getCurrentPlayer();
+        $actPlayer = $r->getTurnManager()->getOffsetPlayer(2);
         $actPlayer->getTileArea()->getHandReference()->replaceByIndex([0, 1, 2], [Tile::fromString('1m'), Tile::fromString('1m'), Tile::fromString('1m')]);
         // execute
         $tileCountBefore = $actPlayer->getTileArea()->getHandReference()->count();
 //        $r->bigKong($actPlayer);
         $pro->process('bigKong W');
         // phase changed
-        $this->assertEquals(RoundPhase::getInstance(RoundPhase::PRIVATE_PHASE), $r->getRoundPhase());
-        $this->assertEquals($actPlayer, $r->getCurrentPlayer());
+        $this->assertEquals(RoundPhase::getInstance(RoundPhase::PRIVATE_PHASE), $r->getPhaseState()->getRoundPhase());
+        $this->assertEquals($actPlayer, $r->getTurnManager()->getCurrentPlayer());
         // tiles moved to created meld
-        $this->assertTrue($r->getCurrentPlayer()->getTileArea()->getDeclaredMeldListReference()->valueExist(Meld::fromString('1111m')));
-        $this->assertEquals($tileCountBefore - 2, $r->getCurrentPlayer()->getTileArea()->getHandReference()->count());
+        $this->assertTrue($r->getTurnManager()->getCurrentPlayer()->getTileArea()->getDeclaredMeldListReference()->valueExist(Meld::fromString('1111m')));
+        $this->assertEquals($tileCountBefore - 2, $r->getTurnManager()->getCurrentPlayer()->getTileArea()->getHandReference()->count());
         $this->assertEquals(0, $prePlayer->getTileArea()->getDiscardedReference()->count());
     }
 
     function testSmallKong() {
         $r = $this->getRoundAfterDiscard1m();
-        $pro = $r->getRoundData()->getProcessor();
+        $pro = $r->getProcessor();
         // setup
-        $prePlayer = $r->getCurrentPlayer();
-        $actPlayer = $r->getRoundData()->getTurnManager()->getOffsetPlayer(2);
+        $prePlayer = $r->getTurnManager()->getCurrentPlayer();
+        $actPlayer = $r->getTurnManager()->getOffsetPlayer(2);
         $actPlayer->getTileArea()->getDeclaredMeldListReference()->push(Meld::fromString('111m'));
         // execute
         $tileCountBefore = $actPlayer->getTileArea()->getHandReference()->count();
 //        $r->smallKong($actPlayer);
         $pro->process('smallKong W');
         // phase changed
-        $this->assertEquals(RoundPhase::getInstance(RoundPhase::PRIVATE_PHASE), $r->getRoundPhase());
-        $this->assertEquals($actPlayer, $r->getCurrentPlayer());
+        $this->assertEquals(RoundPhase::getInstance(RoundPhase::PRIVATE_PHASE), $r->getPhaseState()->getRoundPhase());
+        $this->assertEquals($actPlayer, $r->getTurnManager()->getCurrentPlayer());
         // tiles moved to created meld
-        $this->assertFalse($r->getCurrentPlayer()->getTileArea()->getDeclaredMeldListReference()->valueExist(Meld::fromString('111m')));
-        $this->assertTrue($r->getCurrentPlayer()->getTileArea()->getDeclaredMeldListReference()->valueExist(Meld::fromString('1111m')));
-        $this->assertEquals($tileCountBefore + 1, $r->getCurrentPlayer()->getTileArea()->getHandReference()->count());
+        $this->assertFalse($r->getTurnManager()->getCurrentPlayer()->getTileArea()->getDeclaredMeldListReference()->valueExist(Meld::fromString('111m')));
+        $this->assertTrue($r->getTurnManager()->getCurrentPlayer()->getTileArea()->getDeclaredMeldListReference()->valueExist(Meld::fromString('1111m')));
+        $this->assertEquals($tileCountBefore + 1, $r->getTurnManager()->getCurrentPlayer()->getTileArea()->getHandReference()->count());
         $this->assertEquals(0, $prePlayer->getTileArea()->getDiscardedReference()->count());
     }
 
     function testDebugSkipTo() {
         $r = new Round();
-        $playerE = $r->getCurrentPlayer();
+        $playerE = $r->getTurnManager()->getCurrentPlayer();
 
         // phase not changed
-        $targetTile = $r->getRoundData()->getTileAreas()->getTargetTile()->getTile()->toNextTile();
-        $r->getRoundData()->debugSkipTo($playerE, null, null, null);
-        $this->assertEquals($playerE, $r->getCurrentPlayer());
-        $this->assertEquals(RoundPhase::getPrivateInstance(), $r->getRoundPhase());
+        $targetTile = $r->getTileAreas()->getTargetTile()->getTile()->toNextTile();
+        $r->debugSkipTo($playerE, null, null, null);
+        $this->assertEquals($playerE, $r->getTurnManager()->getCurrentPlayer());
+        $this->assertEquals(RoundPhase::getPrivateInstance(), $r->getPhaseState()->getRoundPhase());
 
         // to public phase
         // todo
