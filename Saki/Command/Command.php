@@ -95,12 +95,17 @@ abstract class Command {
         array_unshift($tokens, static::getName());
         return implode(' ', $tokens);
     }
-
     //endregion
 
     static function getParamDeclarations() {
         // since abstract static function not allowed
         throw new \BadMethodCallException('Unimplemented static::getParamDeclarations().');
+    }
+
+    static function isDebug() {
+        $cls = get_called_class();
+        $hasDebugToken = strpos($cls, 'Debug') !== false;
+        return $hasDebugToken;
     }
 
     private $context;
@@ -135,7 +140,7 @@ abstract class Command {
         if (!$this->executable()) {
             throw new \InvalidArgumentException(
                 // todo output param strings
-                sprintf('Not executable command[%s].', static::getName())
+                sprintf('Not executable command[%s].', $this->__toString())
             );
         }
         $this->executeImpl();

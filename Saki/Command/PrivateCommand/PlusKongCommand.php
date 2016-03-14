@@ -5,6 +5,8 @@ use Saki\Command\CommandContext;
 use Saki\Command\ParamDeclaration\SelfWindParamDeclaration;
 use Saki\Command\ParamDeclaration\TileParamDeclaration;
 use Saki\Command\PrivateCommand;
+use Saki\RoundPhase\PrivatePhaseState;
+use Saki\RoundPhase\PublicPhaseState;
 use Saki\Tile\Tile;
 
 class PlusKongCommand extends PrivateCommand {
@@ -29,8 +31,21 @@ class PlusKongCommand extends PrivateCommand {
     }
 
     function executeImpl() {
-        $this->getContext()->getRoundData()->getTileAreas()->plusKong($this->getActPlayer(), $this->getTile());
-        // todo handle RobAQuadPhase
-        // stay in private phase
+        $r = $this->getContext()->getRoundData();
+
+        // to RobAQuadPhase
+        $robQuadPhase = new PublicPhaseState();
+
+        $robQuadPhase->setRobAQuad(true);
+
+        $postLeave = function () use ($r) {
+            $r->getTileAreas()->plusKong($this->getActPlayer(), $this->getTile());
+        };
+        $robQuadPhase->setPostLeave($postLeave);
+
+        $retPrivatePhase = new PrivatePhaseState($this->getActPlayer(), false, true);
+        $robQuadPhase->setCustomNextState($retPrivatePhase);
+
+        $r->toNextPhase($robQuadPhase);
     }
 }

@@ -451,9 +451,11 @@ rush 41 merge Round and RoundData together 1.3h
 
 rush add RobbingAQuadYaku
 
-- [ ] research: kong concerned rule 0.4h
-- [ ] test: full cases of FourKongDraw
-- [ ] RobbingAQuadYaku
+- [x] research: kong concerned rule 0.6h // smallKong not exist in Japanese Mahjong!
+- [x] refactor: move kong test cases into KongConcernedTest, etc 0.3h
+- [x] test: full cases of FourKongDraw 0.6h
+- [x] RobbingAQuadPhase 0.4h
+- [ ] targetTile of plusKong, RobbingAQuadYaku
 
 rush command candidates
 

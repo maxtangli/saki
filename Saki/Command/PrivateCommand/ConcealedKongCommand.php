@@ -29,8 +29,8 @@ class ConcealedKongCommand extends PrivateCommand {
     }
 
     function executeImpl() {
-        $this->getContext()->getRoundData()->getTileAreas()->concealedKong($this->getActPlayer(), $this->getTile());
-        // todo handle RobAQuadPhase
+        $r = $this->getContext()->getRoundData();
+        $r->getTileAreas()->concealedKong($this->getActPlayer(), $this->getTile());
         // stay in private phase
     }
 }

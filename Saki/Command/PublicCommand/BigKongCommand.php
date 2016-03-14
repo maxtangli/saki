@@ -25,13 +25,17 @@ class BigKongCommand extends PublicCommand {
     }
 
     function executeImpl() {
-        $round = $this->getContext()->getRoundData();
+        $r = $this->getContext()->getRoundData();
 
-        $round->getTileAreas()->bigKong(
-            $this->getActPlayer(), $this->getCurrentPlayer()
-        );
-        $round->toNextPhase(
-            new PrivatePhaseState($this->getActPlayer(), false)
-        );
+        // avoid FourKongDraw by postLeave
+        $postLeave = function () use ($r) {
+            $r->getTileAreas()->bigKong(
+                $this->getActPlayer(), $this->getCurrentPlayer()
+            );
+        };
+        $r->getPhaseState()->setPostLeave($postLeave);
+
+        $actPlayerPrivateState = new PrivatePhaseState($this->getActPlayer(), false);
+        $r->toNextPhase($actPlayerPrivateState);
     }
 }

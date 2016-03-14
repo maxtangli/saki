@@ -12,6 +12,30 @@ use Saki\Util\ArrayLikeObject;
 
 class PublicPhaseState extends RoundPhaseState {
 
+    private $robAQuad;
+    private $postLeave;
+
+    function __construct() {
+        $this->robAQuad = false;
+        $this->postLeave = function() {};
+    }
+
+    function isRobAQuad() {
+        return $this->robAQuad;
+    }
+
+    function setRobAQuad(bool $robAQuad) {
+        $this->robAQuad = $robAQuad;
+    }
+
+    function getPostLeave() {
+        return $this->postLeave;
+    }
+
+    function setPostLeave(callable $postLeave) {
+        $this->postLeave = $postLeave;
+    }
+
     function getRoundPhase() {
         return RoundPhase::getPublicInstance();
     }
@@ -28,6 +52,7 @@ class PublicPhaseState extends RoundPhaseState {
 
     function leave(Round $round) {
         $this->handleDraw($round);
+        call_user_func($this->getPostLeave());
     }
 
     protected function handleDraw(Round $round) {
@@ -84,7 +109,7 @@ class PublicPhaseState extends RoundPhaseState {
             return $result;
         }
 
-        // FourKongDraw: more than 4 declared-kong-meld by at least 2 targetList todo test
+        // FourKongDraw: more than 4 declared-kong-meld by at least 2 targetList
         $declaredKongCounts = $round->getPlayerList()->toArray(function (Player $player) {
             return $player->getTileArea()->getDeclaredMeldListReference()->toFilteredTypesMeldList([QuadMeldType::getInstance()])->count();
         });

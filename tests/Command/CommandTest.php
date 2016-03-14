@@ -5,6 +5,7 @@ namespace tests\Command;
 use Saki\Command\Command;
 use Saki\Command\CommandContext;
 use Saki\Command\CommandParser;
+use Saki\Command\Debug\MockHandCommand;
 use Saki\Command\ParamDeclaration\SelfWindParamDeclaration;
 use Saki\Command\ParamDeclaration\TileParamDeclaration;
 use Saki\Command\PrivateCommand\DiscardCommand;
@@ -67,18 +68,8 @@ class CommandTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals($lines[1], 'hello E 1p');
     }
 
-    function testDiscardCommand() {
-        $r = new Round();
-        $r->getTileAreas()->debugReplaceHand($r->getTurnManager()->getCurrentPlayer(), TileList::fromString('123456789m12344s'));
-
-        $context = new CommandContext($r);
-        $invalidCommand = DiscardCommand::fromString($context, 'discard E 9p');
-        $this->assertFalse($invalidCommand->executable());
-
-        $validCommand = DiscardCommand::fromString($context, 'discard E 4s');
-        $this->assertTrue($validCommand->executable());
-
-        $validCommand->execute();
-        $this->assertEquals(RoundPhase::getPublicInstance(), $r->getPhaseState()->getRoundPhase());
+    function testIsDebug() {
+        $this->assertFalse(DiscardCommand::isDebug());
+        $this->assertTrue(MockHandCommand::isDebug());
     }
 }

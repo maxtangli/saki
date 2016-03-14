@@ -20,6 +20,8 @@ use Saki\Command\PublicCommand\PongCommand;
 use Saki\Command\PublicCommand\SmallKongCommand;
 use Saki\Command\PublicCommand\WinByOtherCommand;
 use Saki\RoundPhase\NullPhaseState;
+use Saki\RoundPhase\PrivatePhaseState;
+use Saki\RoundPhase\PublicPhaseState;
 use Saki\RoundPhase\RoundPhaseState;
 use Saki\Tile\Tile;
 use Saki\Win\WinAnalyzer;
@@ -71,7 +73,6 @@ class Round {
             ChowCommand::class,
             PongCommand::class,
             BigKongCommand::class,
-            SmallKongCommand::class,
             WinByOtherCommand::class,
             // debug
             MockDeadWallCommand::class,
@@ -80,7 +81,8 @@ class Round {
             PassAllCommand::class,
         ];
         $this->processor = new CommandProcessor(new CommandParser(new CommandContext($this), $classes));
-        $this->toNextPhase();$this->toNextPhase(); // todo better way?
+        $this->toNextPhase();
+        $this->toNextPhase(); // todo better way?
     }
 
     function reset($keepDealer) {
@@ -99,7 +101,8 @@ class Round {
         $this->getTileAreas()->reset();
 
         $this->phaseState = new NullPhaseState();
-        $this->toNextPhase();$this->toNextPhase(); // todo better way?
+        $this->toNextPhase();
+        $this->toNextPhase(); // todo better way?
     }
 
     function debugReset(RoundResetData $resetData) {
@@ -112,7 +115,8 @@ class Round {
         $this->getTileAreas()->reset();
 
         $this->phaseState = new NullPhaseState();
-        $this->toNextPhase();$this->toNextPhase(); // todo better way?
+        $this->toNextPhase();
+        $this->toNextPhase(); // todo better way?
     }
 
     function debugSkipTo(Player $actualCurrentPlayer, RoundPhase $roundPhase = null, $globalTurn = null,
@@ -199,7 +203,7 @@ class Round {
     }
 
     /**
-     * @return \Saki\RoundPhase\RoundPhaseState|\Saki\RoundPhase\OverPhaseState
+     * @return RoundPhaseState|PrivatePhaseState|PublicPhaseState|OverPhaseState
      */
     function getPhaseState() {
         return $this->phaseState;

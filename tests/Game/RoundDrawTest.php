@@ -60,18 +60,5 @@ class RoundDrawTest extends PHPUnit_Framework_TestCase {
 //        $this->assertEquals(RoundResultType::FOUR_REACH_DRAW, $r->getRoundData()->getTurnManager()->getRoundResult()->getRoundResultType()->getValue());
 //    }
 
-    function testFourKongDraw() { // todo handle kongPublicPhase
-        $r = new Round();
-        $pro = $r->getProcessor();
-
-        $pro->process('concealedKong I I:s-1111s:1s; discard I I:s-1s:1s; passAll');
-        $pro->process('concealedKong I I:s-1111s:1s; discard I I:s-1s:1s; passAll');
-        $pro->process('concealedKong I I:s-1111s:1s; discard I I:s-1s:1s; passAll');
-        $pro->process('concealedKong I I:s-1111s:1s; discard I I:s-1s:1s; passAll');
-
-        $this->assertEquals(RoundResultType::FOUR_KONG_DRAW,
-            $r->getPhaseState()->getRoundResult()->getRoundResultType()->getValue());
-    }
-
-    // todo test others
+    // fourKongDraw tested in KongConcernedTest
 }
