@@ -15,6 +15,7 @@ use Saki\Win\Yaku\Fan1\GreenValueTilesYaku;
 use Saki\Win\Yaku\Fan1\KingSTileWinYaku;
 use Saki\Win\Yaku\Fan1\ReachYaku;
 use Saki\Win\Yaku\Fan1\RedValueTilesYaku;
+use Saki\Win\Yaku\Fan1\RobbingAQuadYaku;
 use Saki\Win\Yaku\Fan1\RoundWindValueTilesYaku;
 use Saki\Win\Yaku\Fan1\SelfWindValueTilesYaku;
 use Saki\Win\Yaku\Fan1\WhiteValueTilesYaku;
@@ -413,6 +414,22 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         $yakuList = $r->getWinResult($r->getTurnManager()->getCurrentPlayer())->getYakuList();
         $this->assertGreaterThan(0, $yakuList->count());
         $this->assertContains(KingSTileWinYaku::getInstance(), $yakuList, $yakuList);
+    }
+
+    function testRobbingAQuadYaku() {
+        $r = YakuTestData::getInitedRound();
+        $pro = $r->getProcessor();
+
+        $pro->process(
+            'mockHand W 23m123456789s11p',
+            'discard E E:s-1m:1m',
+            'mockHand S 11m; pong S; plusKong S S:s-1m:1m'
+        );
+
+        $playerW = $r->getPlayerList()->getSelfWindPlayer(Tile::fromString('W'));
+        $yakuList = $r->getWinResult($playerW)->getYakuList();
+        $this->assertGreaterThan(0, $yakuList->count());
+        $this->assertContains(RobbingAQuadYaku::getInstance(), $yakuList, $yakuList);
     }
 
     function testFinalTileWinMoon() {

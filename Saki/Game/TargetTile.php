@@ -6,12 +6,12 @@ use Saki\Tile\Tile;
 class TargetTile {
     private $tile;
     private $isKingSTile;
-    private $isRobbingQuadTile;
+    private $isRobQuadTile;
 
-    function __construct(Tile $tile, bool $isKingSTile = false, bool $isRobbingQuadTile = false) {
+    function __construct(Tile $tile, bool $isKingSTile = false, bool $isRobQuadTile = false) {
         $this->tile = $tile;
         $this->isKingSTile = $isKingSTile;
-        $this->isRobbingQuadTile = $isRobbingQuadTile;
+        $this->isRobQuadTile = $isRobQuadTile;
     }
 
     function getTile() {
@@ -22,7 +22,7 @@ class TargetTile {
         return $this->isKingSTile;
     }
 
-    function isRobbingQuadTile() {
-        return $this->isRobbingQuadTile;
+    function isRobQuadTile() {
+        return $this->isRobQuadTile;
     }
 }

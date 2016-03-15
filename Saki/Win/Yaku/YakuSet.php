@@ -11,6 +11,7 @@ use Saki\Win\Yaku\Fan1\GreenValueTilesYaku;
 use Saki\Win\Yaku\Fan1\KingSTileWinYaku;
 use Saki\Win\Yaku\Fan1\ReachYaku;
 use Saki\Win\Yaku\Fan1\RedValueTilesYaku;
+use Saki\Win\Yaku\Fan1\RobbingAQuadYaku;
 use Saki\Win\Yaku\Fan1\RoundWindValueTilesYaku;
 use Saki\Win\Yaku\Fan1\SelfWindValueTilesYaku;
 use Saki\Win\Yaku\Fan1\WhiteValueTilesYaku;
@@ -53,6 +54,7 @@ class YakuSet extends ArrayLikeObject {
                 KingSTileWinYaku::getInstance(),
                 ReachYaku::getInstance(),
                 RedValueTilesYaku::getInstance(),
+                RobbingAQuadYaku::getInstance(),
                 RoundWindValueTilesYaku::getInstance(),
                 SelfWindValueTilesYaku::getInstance(),
                 WhiteValueTilesYaku::getInstance(),

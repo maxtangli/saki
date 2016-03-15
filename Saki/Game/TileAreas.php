@@ -322,6 +322,12 @@ class TileAreas {
         $this->recordDeclare($actPlayer->getSelfWind());
     }
 
+    function plusKongBefore(Player $actPlayer, Tile $selfTile) {
+        $this->setTargetTile(
+            new TargetTile($selfTile, false, true)
+        );
+    }
+
     function plusKong(Player $actPlayer, Tile $selfTile) {
         $actPlayer->getTileArea()->plusKong($selfTile);
         $this->drawReplacement($actPlayer);

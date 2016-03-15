@@ -455,7 +455,15 @@ rush add RobbingAQuadYaku
 - [x] refactor: move kong test cases into KongConcernedTest, etc 0.3h
 - [x] test: full cases of FourKongDraw 0.6h
 - [x] RobbingAQuadPhase 0.4h
-- [ ] targetTile of plusKong, RobbingAQuadYaku
+
+- [x] analyze 0.1h
+- [x] robAQuadPhase: winByOtherCommand only 0.1h
+
+- [x] robAQuadPhase: target tile, robAQuadYaku 0.5h
+- [ ] test: targetTile
+
+- [ ] refactor reach: FuritenTileList
+- [ ] robAQuad and Furiten, tests
 
 rush command candidates
 
@@ -478,6 +486,7 @@ rush public command roller
 
 rush refactor
 
+- [ ] fix: mockHand target tile vs robQuadPhase target tile
 - [ ] refactor: TileSeries <-> MeldList.xxx
 - [ ] refactor: RoundResult
 - [ ] refactor: move DrawScore logic into separate class

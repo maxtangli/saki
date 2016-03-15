@@ -13,41 +13,43 @@ class WinTarget {
 
     function __construct(Player $player, Round $round) {
         $this->player = $player;
-        $this->roundData = $round;
+        $this->round = $round;
 
         $roundPhase = $round->getPhaseState()->getRoundPhase();
         if (!$roundPhase->isPrivateOrPublic()) {
-            throw new \InvalidArgumentException();
+            throw new \InvalidArgumentException(
+                sprintf('Invalid round phase, expect[private or public phase] but given[%s].', $roundPhase)
+            );
         }
 
         // todo validate hand count, target tile
     }
 
     function toSubTarget(MeldList $handMeldList) {
-        return new WinSubTarget($handMeldList, $this->player, $this->roundData);
+        return new WinSubTarget($handMeldList, $this->player, $this->round);
     }
 
     // about round/global
 
     function getRoundWind() {
-        return $this->roundData->getRoundWindData()->getRoundWind();
+        return $this->round->getRoundWindData()->getRoundWind();
     }
 
     function getTileSet() {
-        return $this->roundData->getGameData()->getTileSet();
+        return $this->round->getGameData()->getTileSet();
     }
 
     // about round/current
     function getGlobalTurn() {
-        return $this->roundData->getTurnManager()->getGlobalTurn();
+        return $this->round->getTurnManager()->getGlobalTurn();
     }
 
     function isPrivatePhase() {
-        return $this->roundData->getPhaseState()->getRoundPhase()->isPrivate();
+        return $this->round->getPhaseState()->getRoundPhase()->isPrivate();
     }
 
     function isPubicPhase() {
-        return $this->roundData->getPhaseState()->getRoundPhase()->isPublic();
+        return $this->round->getPhaseState()->getRoundPhase()->isPublic();
     }
 
     function getActPlayer() {
@@ -55,36 +57,36 @@ class WinTarget {
     }
 
     function getCurrentPlayer() {
-        return $this->roundData->getTurnManager()->getCurrentPlayer();
+        return $this->round->getTurnManager()->getCurrentPlayer();
     }
 
     function getTileOfTargetTile() {
-        return $this->roundData->getTileAreas()->getTargetTile()->getTile();
+        return $this->round->getTileAreas()->getTargetTile()->getTile();
     }
 
     function getDiscardHistory() {
-        return $this->roundData->getTileAreas()->getDiscardHistory();
+        return $this->round->getTileAreas()->getDiscardHistory();
     }
 
     function getOutsideRemainTileAmount(Tile $tile) {
-        return $this->roundData->getTileAreas()->getOutsideRemainTileAmount($tile);
+        return $this->round->getTileAreas()->getOutsideRemainTileAmount($tile);
     }
 
     function getWallRemainTileAmount() {
-        return $this->roundData->getTileAreas()->getWall()->getRemainTileCount();
+        return $this->round->getTileAreas()->getWall()->getRemainTileCount();
     }
 
     // about target player
     function getPublicHand() {
-        return $this->roundData->getTileAreas()->getPublicHand($this->player);
+        return $this->round->getTileAreas()->getPublicHand($this->player);
     }
 
     function getPrivateHand() {
-        return $this->roundData->getTileAreas()->getPrivateHand($this->player);
+        return $this->round->getTileAreas()->getPrivateHand($this->player);
     }
 
     function getPrivateFull() {
-        return $this->roundData->getTileAreas()->getPrivateFull($this->player);
+        return $this->round->getTileAreas()->getPrivateFull($this->player);
     }
 
     function getDeclaredMeldList() {
@@ -108,11 +110,15 @@ class WinTarget {
     }
 
     function isFirstTurnWin() {
-        return $this->roundData->getTileAreas()->isFirstTurnWin($this->player);
+        return $this->round->getTileAreas()->isFirstTurnWin($this->player);
     }
 
     function isKingSTileWin() {
-        return $this->roundData->getTileAreas()->getTargetTile()->isKingSTile();
+        return $this->round->getTileAreas()->getTargetTile()->isKingSTile();
+    }
+
+    function isRobbingAQuadWin() {
+        return $this->round->getTileAreas()->getTargetTile()->isRobQuadTile();
     }
 
     function getReachTurn() {

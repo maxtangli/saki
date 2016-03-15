@@ -9,6 +9,8 @@ use Saki\Command\Debug\MockHandCommand;
 use Saki\Command\ParamDeclaration\SelfWindParamDeclaration;
 use Saki\Command\ParamDeclaration\TileParamDeclaration;
 use Saki\Command\PrivateCommand\DiscardCommand;
+use Saki\Command\PrivateCommand\WinBySelfCommand;
+use Saki\Command\PublicCommand\WinByOtherCommand;
 use Saki\Game\Round;
 use Saki\Game\RoundPhase;
 use Saki\Tile\Tile;
@@ -71,5 +73,10 @@ class CommandTest extends \PHPUnit_Framework_TestCase {
     function testIsDebug() {
         $this->assertFalse(DiscardCommand::isDebug());
         $this->assertTrue(MockHandCommand::isDebug());
+    }
+
+    function testIsWinByOther() {
+        $this->assertFalse(WinBySelfCommand::isWinByOther());
+        $this->assertTrue(WinByOtherCommand::isWinByOther());
     }
 }

@@ -108,6 +108,12 @@ abstract class Command {
         return $hasDebugToken;
     }
 
+    static function isWinByOther() {
+        $cls = get_called_class();
+        $hasWinByOtherToken = strpos($cls, 'WinByOther') !== false;
+        return $hasWinByOtherToken;
+    }
+
     private $context;
     private $params = [];
 

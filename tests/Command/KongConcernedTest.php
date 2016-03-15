@@ -49,9 +49,9 @@ class KongConcernedTest extends PHPUnit_Framework_TestCase {
 
         $pro->process('plusKong S S:s-1m:1m');
 
-        // robAQuad phase
+        // robQuad phase
         $this->assertEquals(RoundPhase::getPublicInstance(), $r->getPhaseState()->getRoundPhase());
-        $this->assertTrue($r->getPhaseState()->isRobAQuad());
+        $this->assertTrue($r->getPhaseState()->isRobQuad());
         $pro->process('passAll');
 
         // after robQuadPhase
@@ -68,6 +68,8 @@ class KongConcernedTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($tileArea->getDeclaredMeldListReference()->valueExist(Meld::fromString('1111m')),
             $tileArea->getDeclaredMeldListReference());
     }
+
+    // todo testPlusKongTargetTile
 
     function testBigKong() {
         $r = new Round();

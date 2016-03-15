@@ -12,20 +12,20 @@ use Saki\Util\ArrayLikeObject;
 
 class PublicPhaseState extends RoundPhaseState {
 
-    private $robAQuad;
+    private $robQuad;
     private $postLeave;
 
     function __construct() {
-        $this->robAQuad = false;
+        $this->robQuad = false;
         $this->postLeave = function() {};
     }
 
-    function isRobAQuad() {
-        return $this->robAQuad;
+    function isRobQuad() {
+        return $this->robQuad;
     }
 
-    function setRobAQuad(bool $robAQuad) {
-        $this->robAQuad = $robAQuad;
+    function setRobQuad(bool $robQuad) {
+        $this->robQuad = $robQuad;
     }
 
     function getPostLeave() {
