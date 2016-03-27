@@ -20,6 +20,7 @@ class TileListTest extends PHPUnit_Framework_TestCase {
             ['11sE12s123123sESWNCN', true],
             ['', true],
             ['1m1', false],
+            ['0m', true],
         ];
     }
 
@@ -35,6 +36,8 @@ class TileListTest extends PHPUnit_Framework_TestCase {
             ['1m', [Tile::fromString('1m')]],
             ['11m', [Tile::fromString('1m'), Tile::fromString('1m')]],
             ['E11mE', [Tile::fromString('E'), Tile::fromString('1m'), Tile::fromString('1m'), Tile::fromString('E')]],
+            ['0m', [Tile::fromString('0m')]],
+            ['05m', [Tile::fromString('0m'), Tile::fromString('5m')]],
         ];
     }
 
@@ -74,6 +77,16 @@ class TileListTest extends PHPUnit_Framework_TestCase {
             [['1m', '1m', '1m',], '111m'], // short write
             [['1m', '1m', '1m', 'E'], '111mE'],  // short write with Honor
         ];
+    }
+
+    function testSort() {
+        $s = '1234056789m1234056789p1234056789sESWNCPF';
+        $l = TileList::fromString($s);
+        $this->assertEquals($s, $l->__toString());
+
+        $l->shuffle();
+        $l->sort();
+        $this->assertEquals($s, $l->__toString());
     }
 
     function testAdd() {

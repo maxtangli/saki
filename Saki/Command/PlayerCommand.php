@@ -12,11 +12,11 @@ abstract class PlayerCommand extends Command {
     }
 
     function getActPlayer() {
-        return $this->getContext()->getRoundData()->getPlayerList()->getSelfWindPlayer($this->getActPlayerSelfWind());
+        return $this->getContext()->getRound()->getPlayerList()->getSelfWindPlayer($this->getActPlayerSelfWind());
     }
 
     function getCurrentPlayer() {
-        return $this->getContext()->getRoundData()->getTurnManager()->getCurrentPlayer();
+        return $this->getContext()->getRound()->getTurnManager()->getCurrentPlayer();
     }
 
     function isCurrentPlayer() {
@@ -24,7 +24,7 @@ abstract class PlayerCommand extends Command {
     }
 
     function getRoundPhase() {
-        return $this->getContext()->getRoundData()->getPhaseState()->getRoundPhase();
+        return $this->getContext()->getRound()->getPhaseState()->getRoundPhase();
     }
 
     function executable() {

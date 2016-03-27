@@ -7,10 +7,10 @@ class CommandContext {
     private $round;
 
     function __construct(Round $round) {
-        $this->roundData = $round;
+        $this->round = $round;
     }
 
-    function getRoundData() {
-        return $this->roundData;
+    function getRound() {
+        return $this->round;
     }
 }

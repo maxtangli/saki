@@ -13,7 +13,7 @@ use Saki\Util\ArrayLikeObject;
 use Saki\Win\Fu\FuCountAnalyzer;
 use Saki\Win\Fu\FuCountTarget;
 use Saki\Win\Yaku\YakuAnalyzer;
-use Saki\Win\Yaku\YakuList;
+use Saki\Win\Yaku\YakuItemList;
 use Saki\Win\Yaku\YakuSet;
 
 class WinAnalyzer {
@@ -55,7 +55,7 @@ class WinAnalyzer {
         ];
         $handMeldCompositions = $analyzer->analyzeMeldCompositions($handTileList, $handMeldTypes);
         if (empty($handMeldCompositions)) {
-            return new WinResult(WinState::getInstance(WinState::NOT_WIN), new YakuList([], $target->isConcealed()), 0, new TileSortedList([]));
+            return new WinResult(WinState::getInstance(WinState::NOT_WIN), new YakuItemList([]), 0, new TileSortedList([]));
         }
 
         // get winResult[] of each subTarget
@@ -104,12 +104,12 @@ class WinAnalyzer {
     function analyzeSubTarget(WinSubTarget $subTarget) {
         $tileSeries = $this->getTileSeriesAnalyzer()->analyzeTileSeries($subTarget->getAllMeldList());
         if (!$tileSeries->exist()) {
-            return new WinSubResult(WinState::getInstance(WinState::NOT_WIN), new YakuList([], $subTarget->isConcealed()), 0);
+            return new WinSubResult(WinState::getInstance(WinState::NOT_WIN), new YakuItemList([]), 0);
         }
 
         $yakuList = $this->getYakuAnalyzer()->analyzeYakuList($subTarget);
         if ($yakuList->count() == 0) {
-            return new WinSubResult(WinState::getInstance(WinState::NO_YAKU_FALSE_WIN), new YakuList([], $subTarget->isConcealed()), 0);
+            return new WinSubResult(WinState::getInstance(WinState::NO_YAKU_FALSE_WIN), new YakuItemList([]), 0);
         }
 
         $winStateValue = $subTarget->isPrivatePhase() ? WinState::WIN_BY_SELF : WinState::WIN_BY_OTHER;
@@ -124,6 +124,7 @@ class WinAnalyzer {
     }
 
     /**
+     * precondition: match other win conditions. Otherwise, return value may be wrong.
      * @param WinTarget $target
      * @param TileList $waitingTileList
      * @return bool
@@ -133,23 +134,17 @@ class WinAnalyzer {
             return false;
         }
 
-        /**
-         * public phase furiten judge algorithm
-         * ngTiles = merge(selfDiscardedTileList, otherThisTurnDiscardedTileList, otherDiscardedTileListAfterSelfReach)
-         *  where otherThisTurnDiscardTileList means:
-         * isFuriten = waitingTiles any waitingTile in ngTiles
-         */
+        $finalNgList = new TileList([]);
+        $openHistory = $target->getOpenHistory();
 
-        // ng: self discarded tiles
-        $ngTileList = new TileList($target->getDiscardedTileList()->toArray());
+        // ng case 1: self discarded tiles
+        $selfNgList = $openHistory->getSelf($target->getSelfWind());
+        $finalNgList->merge($selfNgList);
 
-        $discardHistory = $target->getDiscardHistory();
-        if ($target->isReach()) { // ng: all other player's discarded tiles since self reach
+        // ng case 2: all other player's opened tiles since
+        if ($target->isReach()) { // ng case 2: since self reach
             $fromTurn = $target->getReachTurn();
-        } else { // ng: all other player's discarded tiles since last turn self discarded
-            // https://ja.wikipedia.org/wiki/%E6%8C%AF%E8%81%B4#.E5.90.8C.E5.B7.A1.E5.86.85.E3.83.95.E3.83.AA.E3.83.86.E3.83.B3
-            // 同巡内の定義は、「次の自分の摸打を経るまで」とするのが一般的である。
-            // 自分が副露した場合も解消
+        } else { // ng case 3: since last turn where self discarded
             $globalTurn = $target->getGlobalTurn();
             if ($globalTurn == 1) {
                 $fromTurn = 1;
@@ -158,17 +153,16 @@ class WinAnalyzer {
                 $currentSelfWind = $target->getCurrentPlayer()->getSelfWind();
                 $selfTurnPassed = $targetSelfWind->getWindOffset($currentSelfWind) <= 0;
                 $fromTurn = $selfTurnPassed ? $globalTurn : $globalTurn - 1;
-            }
+            }// todo more simpler logic possible?
         }
+        $excludedLastTile = true; // remember to exclude current target tile
+        $otherNgList = $openHistory->getOther($target->getSelfWind(), $fromTurn, $target->getSelfWind(), $excludedLastTile);
+        $finalNgList->merge($otherNgList);
 
-        // remember to exclude current turn discarded tile
-        $otherDiscardedNGTileList = $discardHistory->getOtherDiscardTileList($target->getSelfWind(), $fromTurn, $target->getSelfWind(), true);
-        $ngTileList->merge($otherDiscardedNGTileList);
-
-        $isDiscardedTileFalseWin = $ngTileList->any(function (Tile $ngTile) use ($waitingTileList) {
+        $isFuriten = $finalNgList->any(function (Tile $ngTile) use ($waitingTileList) {
             return $waitingTileList->valueExist($ngTile);
         });
-        return $isDiscardedTileFalseWin;
+        return $isFuriten;
     }
 }
 

@@ -8,7 +8,7 @@ use Saki\Util\Singleton;
 use Saki\Win\WaitingType;
 use Saki\Win\Yaku\Fan1\AllRunsYaku;
 use Saki\Win\Yaku\Fan2\SevenPairsYaku;
-use Saki\Win\Yaku\YakuList;
+use Saki\Win\Yaku\YakuItemList;
 
 /**
  * ref: http://ja.wikipedia.org/wiki/%E9%BA%BB%E9%9B%80%E3%81%AE%E5%BE%97%E7%82%B9%E8%A8%88%E7%AE%97#.E7.AC.A6.E3.81.AE.E8.A8.88.E7.AE.97
@@ -34,8 +34,8 @@ class FuCountAnalyzer extends Singleton {
         }
     }
 
-    function getSpecialYakuTotalFuCount(YakuList $yakuList, $winBySelf) {
-        if ($yakuList->getFanCount() > 4) {
+    function getSpecialYakuTotalFuCount(YakuItemList $yakuList, $winBySelf) {
+        if ($yakuList->getTotalFanCount() > 4) {
             return 0;
         }
 

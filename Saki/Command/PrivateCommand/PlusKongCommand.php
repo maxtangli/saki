@@ -31,7 +31,7 @@ class PlusKongCommand extends PrivateCommand {
     }
 
     function executeImpl() {
-        $r = $this->getContext()->getRoundData();
+        $r = $this->getContext()->getRound();
 
         // set target tile
         $r->getTileAreas()->plusKongBefore($this->getActPlayer(), $this->getTile());

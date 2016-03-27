@@ -27,8 +27,8 @@ class ReachCommand extends PrivateCommand {
         // todo not accurate now
 
         // assert waiting after discard
-        $analyzer = $this->getContext()->getRoundData()->getWinAnalyzer()->getWaitingAnalyzer();
-        $handList = $this->getContext()->getRoundData()->getTileAreas()->getPrivateHand($this->getActPlayer());
+        $analyzer = $this->getContext()->getRound()->getWinAnalyzer()->getWaitingAnalyzer();
+        $handList = $this->getContext()->getRound()->getTileAreas()->getPrivateHand($this->getActPlayer());
         $futureWaitingList = $analyzer->analyzePrivate($handList, $this->getActPlayer()->getTileArea()->getDeclaredMeldListReference());
         $isWaiting = $futureWaitingList->count() > 0;
         if (!$isWaiting) {
@@ -48,7 +48,7 @@ class ReachCommand extends PrivateCommand {
     }
 
     function executeImpl() {
-        $this->getContext()->getRoundData()->getTileAreas()->reach($this->getActPlayer(), $this->getTile());
-        $this->getContext()->getRoundData()->toNextPhase();
+        $this->getContext()->getRound()->getTileAreas()->reach($this->getActPlayer(), $this->getTile());
+        $this->getContext()->getRound()->toNextPhase();
     }
 }

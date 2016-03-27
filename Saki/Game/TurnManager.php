@@ -45,6 +45,14 @@ class TurnManager {
     }
 
     /**
+     * @return Tile
+     */
+    function getCurrentPlayerWind() {
+        $wind = $this->playerWindRoller->getCurrentTarget();
+        return $wind;
+    }
+
+    /**
      * @return RoundTurn
      */
     function getRoundTurn() {

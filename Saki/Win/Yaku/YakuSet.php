@@ -5,15 +5,18 @@ use Saki\Util\ArrayLikeObject;
 use Saki\Win\Yaku\Fan1\AllRunsYaku;
 use Saki\Win\Yaku\Fan1\AllSimplesYaku;
 use Saki\Win\Yaku\Fan1\ConcealedSelfDrawYaku;
+use Saki\Win\Yaku\Fan1\DoraYaku;
 use Saki\Win\Yaku\Fan1\DoubleRunYaku;
 use Saki\Win\Yaku\Fan1\FirstTurnWinYaku;
 use Saki\Win\Yaku\Fan1\GreenValueTilesYaku;
 use Saki\Win\Yaku\Fan1\KingSTileWinYaku;
 use Saki\Win\Yaku\Fan1\ReachYaku;
+use Saki\Win\Yaku\Fan1\RedDoraYaku;
 use Saki\Win\Yaku\Fan1\RedValueTilesYaku;
 use Saki\Win\Yaku\Fan1\RobbingAQuadYaku;
 use Saki\Win\Yaku\Fan1\RoundWindValueTilesYaku;
 use Saki\Win\Yaku\Fan1\SelfWindValueTilesYaku;
+use Saki\Win\Yaku\Fan1\UraDoraYaku;
 use Saki\Win\Yaku\Fan1\WhiteValueTilesYaku;
 use Saki\Win\Yaku\Fan2\AllTerminalsAndHonorsYaku;
 use Saki\Win\Yaku\Fan2\AllTriplesYaku;
@@ -48,15 +51,18 @@ class YakuSet extends ArrayLikeObject {
                 AllRunsYaku::getInstance(),
                 AllSimplesYaku::getInstance(),
                 ConcealedSelfDrawYaku::getInstance(),
+                DoraYaku::getInstance(),
                 DoubleRunYaku::getInstance(),
                 FirstTurnWinYaku::getInstance(),
                 GreenValueTilesYaku::getInstance(),
                 KingSTileWinYaku::getInstance(),
                 ReachYaku::getInstance(),
+                RedDoraYaku::getInstance(),
                 RedValueTilesYaku::getInstance(),
                 RobbingAQuadYaku::getInstance(),
                 RoundWindValueTilesYaku::getInstance(),
                 SelfWindValueTilesYaku::getInstance(),
+                UraDoraYaku::getInstance(),
                 WhiteValueTilesYaku::getInstance(),
                 // Fan2
                 AllTerminalsAndHonorsYaku::getInstance(),

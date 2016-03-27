@@ -5,7 +5,7 @@ use Saki\RoundResult\ScoreLevel;
 use Saki\RoundResult\ScoreTable;
 use Saki\Util\ArrayLikeObject;
 use Saki\Util\Utils;
-use Saki\Win\Yaku\YakuList;
+use Saki\Win\Yaku\YakuItemList;
 
 class WinSubResult {
 
@@ -39,10 +39,10 @@ class WinSubResult {
 
     /**
      * @param WinState $winState
-     * @param YakuList $yakuList
+     * @param YakuItemList $yakuList
      * @param int $fuCount
      */
-    function __construct(WinState $winState, YakuList $yakuList, $fuCount) {
+    function __construct(WinState $winState, YakuItemList $yakuList, $fuCount) {
         $this->winState = $winState;
         $this->yakuList = $yakuList;
         $this->fuCount = $fuCount;
@@ -61,7 +61,7 @@ class WinSubResult {
     }
 
     function getFanCount() {
-        return $this->getYakuList()->getFanCount();
+        return $this->getYakuList()->getTotalFanCount();
     }
 
     function getScoreLevel() {

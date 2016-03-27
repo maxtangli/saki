@@ -6,7 +6,7 @@ use Saki\Command\CommandContext;
 use Saki\Command\ParamDeclaration\TileParamDeclaration;
 use Saki\Tile\Tile;
 
-class MockWallCommand extends Command {
+class MockNextDrawCommand extends Command {
     static function getParamDeclarations() {
         return [TileParamDeclaration::class];
     }
@@ -20,12 +20,12 @@ class MockWallCommand extends Command {
     }
 
     function executable() {
-        $wall = $this->getContext()->getRoundData()->getTileAreas()->getWall();
+        $wall = $this->getContext()->getRound()->getTileAreas()->getWall();
         return $wall->getRemainTileCount() > 0;
     }
 
     function executeImpl() {
-        $wall = $this->getContext()->getRoundData()->getTileAreas()->getWall();
+        $wall = $this->getContext()->getRound()->getTileAreas()->getWall();
         $wall->debugSetNextDrawTile($this->getMockTile());
     }
 }

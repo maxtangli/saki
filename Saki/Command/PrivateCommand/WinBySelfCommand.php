@@ -23,7 +23,7 @@ class WinBySelfCommand extends PrivateCommand {
     }
 
     function executeImpl() {
-        $round = $this->getContext()->getRoundData();
+        $round = $this->getContext()->getRound();
 
         $result = WinRoundResult::createWinBySelf(
             $round->getPlayerList()->toArray(),

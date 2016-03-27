@@ -5,8 +5,12 @@ use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 
 class DeadWall {
-    // 0 2 |4 6 8 10 12
-    // 1 3 |5 7 9 11 13
+    /**
+     * replacement * 4
+     * 0 2 | 4 6 8 10 12 <- doraIndicator    * 5
+     * 1 3 | 5 7 9 11 13 <- uraDoraIndicator * 5
+     */
+    /** @var  TileList */
     private $tileList;
     private $doraIndicators;
     private $openedDoraIndicatorCount;
@@ -14,14 +18,18 @@ class DeadWall {
     private $uraDoraOpened;
 
     function __construct(TileList $tileList) {
+        $this->reset($tileList);
+    }
+
+    function reset(TileList $tileList, int $openedDoraIndicatorCount = 1, bool $uraDoraOpened = false) {
         if (count($tileList) != 14) {
             throw new \InvalidArgumentException();
         }
         $this->tileList = $tileList;
         $this->doraIndicators = [$tileList[4], $tileList[6], $tileList[8], $tileList[10], $tileList[12]];
         $this->uraDoraIndicators = [$tileList[5], $tileList[7], $tileList[9], $tileList[11], $tileList[13]];
-        $this->openedDoraIndicatorCount = 1;
-        $this->uraDoraOpened = false;
+        $this->openedDoraIndicatorCount = $openedDoraIndicatorCount;
+        $this->uraDoraOpened = $uraDoraOpened;
     }
 
     function __toString() {
@@ -29,7 +37,24 @@ class DeadWall {
     }
 
     function debugSetNextReplaceTile(Tile $tile) {
+        $this->assertShiftAble();
         $this->tileList->replaceByIndex(0, $tile);
+    }
+
+    // todo opened count
+
+    /**
+     * @return \Saki\Tile\Tile[]
+     */
+    function getOpenedDoraIndicators() {
+        return array_slice($this->doraIndicators, 0, $this->openedDoraIndicatorCount);
+    }
+
+    /**
+     * @return \Saki\Tile\Tile[]
+     */
+    function getOpenedUraDoraIndicators() {
+        return $this->uraDoraOpened ? array_slice($this->uraDoraIndicators, 0, $this->openedDoraIndicatorCount) : [];
     }
 
     function openDoraIndicator($n = 1) {
@@ -40,51 +65,26 @@ class DeadWall {
         $this->openedDoraIndicatorCount += $n;
     }
 
-    /**
-     * @return \Saki\Tile\Tile[]
-     */
-    function getOpenedDoraIndicators() {
-        return array_slice($this->doraIndicators, $this->openedDoraIndicatorCount);
-    }
-
-    /**
-     * @return \Saki\Tile\Tile[]
-     */
-    function getOpenedUraDoraIndicators() {
-        return $this->uraDoraOpened ? array_slice($this->uraDoraIndicators, $this->openedDoraIndicatorCount) : [];
-    }
-
-    /**
-     * @return \Saki\Tile\Tile[]
-     */
-    function getOpenedAllDoraIndicators() {
-        return array_merge($this->getOpenedDoraIndicators(), $this->getOpenedUraDoraIndicators());
-    }
-
     function openUraDoraIndicator() {
         $this->uraDoraOpened = true;
     }
 
-    /**
-     * @param Tile $tile
-     * @return int
-     */
-    function getDoraYakuCount(Tile $tile) {
-        $yakuCount = 0;
-        foreach ($this->getOpenedAllDoraIndicators() as $doraIndicator) {
-            if ($doraIndicator->toNextTile() == $tile) {
-                ++$yakuCount;
-            }
-        }
-        return $yakuCount;
-    }
-
     function shift() {
-        if ($this->tileList->count() <= 10) {
-            throw new \InvalidArgumentException();
-        }
+        $this->assertShiftAble();
         $tile = $this->tileList->getFirst();
         $this->tileList->shift();
         return $tile;
+    }
+
+    function shiftAble() {
+        return $this->tileList->count() >= 10;
+    }
+
+    protected function assertShiftAble() {
+        if (!$this->shiftAble()) {
+            throw new \InvalidArgumentException(
+                sprintf('failed to assert [%s] <= 10.', $this->tileList->count())
+            );
+        }
     }
 }

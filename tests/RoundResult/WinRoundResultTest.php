@@ -1,16 +1,25 @@
 <?php
 
+use Saki\Game\PlayerList;
 use Saki\RoundResult\WinRoundResult;
+use Saki\Win\Yaku\Fan1\AllRunsYaku;
+use Saki\Win\Yaku\Fan1\GreenValueTilesYaku;
+use Saki\Win\Yaku\Fan1\RedValueTilesYaku;
+use Saki\Win\Yaku\YakuItem;
+use Saki\Win\Yaku\YakuItemList;
 
+// todo refactor to kiss
 class WinRoundResultTest extends PHPUnit_Framework_TestCase {
     function testWinBySelf() {
-        $playerList = \Saki\Game\PlayerList::createStandard();
+        $playerList = PlayerList::createStandard();
         $players = $playerList->toArray();
-        $yakuList = new \Saki\Win\Yaku\YakuList(
-            [\Saki\Win\Yaku\Fan1\AllRunsYaku::getInstance(),
-                \Saki\Win\Yaku\Fan1\RedValueTilesYaku::getInstance(),
-                \Saki\Win\Yaku\Fan1\GreenValueTilesYaku::getInstance()],
-            true);
+        $yakuList = new YakuItemList(
+            [
+                new YakuItem(AllRunsYaku::getInstance(), 1),
+                new YakuItem(RedValueTilesYaku::getInstance(), 1),
+                new YakuItem(GreenValueTilesYaku::getInstance(), 1)
+            ]
+        );
         $winResult = new \Saki\Win\WinResult(\Saki\Win\WinState::getInstance(\Saki\Win\WinState::WIN_BY_SELF), $yakuList, 40);
 
         $this->assertEquals(3, $winResult->getFanCount());
@@ -54,13 +63,15 @@ class WinRoundResultTest extends PHPUnit_Framework_TestCase {
     }
 
     function testWinByOther() {
-        $playerList = \Saki\Game\PlayerList::createStandard();
+        $playerList = PlayerList::createStandard();
         $players = $playerList->toArray();
-        $yakuList = new \Saki\Win\Yaku\YakuList(
-            [\Saki\Win\Yaku\Fan1\AllRunsYaku::getInstance(),
-                \Saki\Win\Yaku\Fan1\RedValueTilesYaku::getInstance(),
-                \Saki\Win\Yaku\Fan1\GreenValueTilesYaku::getInstance()],
-            true);
+        $yakuList = new YakuItemList(
+            [
+                new YakuItem(AllRunsYaku::getInstance(), 1),
+                new YakuItem(RedValueTilesYaku::getInstance(), 1),
+                new YakuItem(GreenValueTilesYaku::getInstance(), 1)
+            ]
+        );
         $winResult = new \Saki\Win\WinResult(\Saki\Win\WinState::getInstance(\Saki\Win\WinState::WIN_BY_OTHER), $yakuList, 40);
 
         $this->assertEquals(3, $winResult->getFanCount());
@@ -104,13 +115,15 @@ class WinRoundResultTest extends PHPUnit_Framework_TestCase {
     }
 
     function testMultiWinByOther() {
-        $playerList = \Saki\Game\PlayerList::createStandard();
+        $playerList =PlayerList::createStandard();
         $players = $playerList->toArray();
-        $yakuList = new \Saki\Win\Yaku\YakuList(
-            [\Saki\Win\Yaku\Fan1\AllRunsYaku::getInstance(),
-                \Saki\Win\Yaku\Fan1\RedValueTilesYaku::getInstance(),
-                \Saki\Win\Yaku\Fan1\GreenValueTilesYaku::getInstance()],
-            true);
+        $yakuList = new YakuItemList(
+            [
+                new YakuItem(AllRunsYaku::getInstance(), 1),
+                new YakuItem(RedValueTilesYaku::getInstance(), 1),
+                new YakuItem(GreenValueTilesYaku::getInstance(), 1)
+            ]
+        );
         $winResult = new \Saki\Win\WinResult(\Saki\Win\WinState::getInstance(\Saki\Win\WinState::WIN_BY_OTHER), $yakuList, 40);
 
         $this->assertEquals(3, $winResult->getFanCount());

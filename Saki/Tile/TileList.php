@@ -25,15 +25,20 @@ class TileList extends ArrayLikeObject {
         }
 
         $tiles = [];
-        $tileType = null;
+        /** @var TileType $lastNumberTileType */
+        $lastNumberTileType = null;
         for ($i = strlen($s) - 1; $i >= 0; --$i) {
             $c = $s[$i];
             if (is_numeric($c)) {
-                array_unshift($tiles, Tile::getInstance($tileType, intval($c)));
+                $numberTile = Tile::fromString($c.$lastNumberTileType->__toString());
+                array_unshift($tiles, $numberTile);
             } else {
-                $tileType = TileType::fromString($c);
-                if ($tileType->isHonor()) {
-                    array_unshift($tiles, Tile::getInstance($tileType));
+                $cType = TileType::fromString($c);
+                if ($cType->isHonor()) {
+                    $honorTile = Tile::getInstance($cType);
+                    array_unshift($tiles, $honorTile);
+                } else {
+                    $lastNumberTileType = $cType;
                 }
             }
         }
@@ -46,7 +51,7 @@ class TileList extends ArrayLikeObject {
     }
 
     function sort() {
-        // &getInnerArrayReferenceUnsafe() won't make it faster, but results in shorter code.
+        // &getInnerArrayReferenceUnsafe() brings shorter code, though won't be faster.
         usort($this->getInnerArrayReferenceUnsafe(), function (Tile $a, Tile $b) {
             return $a->getDisplayValueID() - $b->getDisplayValueID();
         });
@@ -54,15 +59,18 @@ class TileList extends ArrayLikeObject {
     }
 
     function __toString() {
-        // 123m456p789sEEECC
+        // e.x. 123m456p789sEEECC
         $s = "";
         $tiles = $this->toArray();
         $len = count($tiles);
         for ($i = 0; $i < $len; ++$i) {
             $tile = $tiles[$i];
             if ($tile->getTileType()->isSuit()) {
-                $doNotPrintSuit = isset($tiles[$i + 1]) && $tiles[$i + 1]->getTileType()->isSuit() && $tiles[$i + 1]->getTileType() == $tile->getTileType();
-                $s .= $doNotPrintSuit ? $tile->getNumber() : $tile;
+                $tileString = $tile->__toString();
+                $doNotPrintSuit = isset($tiles[$i + 1])
+                    && $tiles[$i + 1]->getTileType()->isSuit()
+                    && $tiles[$i + 1]->getTileType() == $tile->getTileType();
+                $s .= $doNotPrintSuit ? $tileString[0] : $tileString;
             } else {
                 $s .= $tile;
             }

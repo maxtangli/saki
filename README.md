@@ -449,7 +449,7 @@ rush 41 merge Round and RoundData together 1.3h
 
 - [x] refactor: remove getCurrentPlayer(), getRoundPhase() 0.2h
 
-rush add RobbingAQuadYaku
+rush 42 add RobbingAQuadYaku 5.1h
 
 - [x] research: kong concerned rule 0.6h // smallKong not exist in Japanese Mahjong!
 - [x] refactor: move kong test cases into KongConcernedTest, etc 0.3h
@@ -460,10 +460,55 @@ rush add RobbingAQuadYaku
 - [x] robAQuadPhase: winByOtherCommand only 0.1h
 
 - [x] robAQuadPhase: target tile, robAQuadYaku 0.5h
-- [ ] test: targetTile
+- [x] test: targetTile,robAQuad
 
-- [ ] refactor reach: FuritenTileList
-- [ ] robAQuad and Furiten, tests
+- [x] refactor: FuritenTileList 0.6h
+- [x] test: furiten 1.9h
+
+rush 43 dora yaku 5h
+
+- [x] design 0.3h
+- [x] doraFacade 1.3h
+- [x] test doraFacade 0.5h
+
+- [x] refactor Yaku 0.2h
+- [x] refactor YakuItemList 1h
+- [x] adapt yakuAnalyzer 1h
+- [x] DoraYaku 0.6h
+- [x] UraDoraYaku 0.1h
+
+rush 44 red dora 1.7h
+
+- [x] Tile.getInstance() 0.3h
+- [x] Tile.isRed() 0.2h
+- [x] Tile.getID() 0.3h
+
+- [x] Tile.fromString(), regex 0.2h
+- [x] TileList.fromString() 0.2h
+- [x] RedDoraYaku 0.2h
+
+- [x] Tile.toString() 0m,0p,0s: 0.1h
+- [x] TileList.toString()
+- [x] TileList sort: 1234056789m 0.2h
+
+rush 45 red dora: meld issue
+
+- [ ] adapt discard/createMeld logic
+
+rush refactor ArrayLikeObject
+
+- [ ] 
+
+rush public command roller
+
+- [ ] public command roller
+
+rush rule.md doc
+
+- [ ] rule 0.6h
+- [ ] tile 0.6h
+- [ ] yaku 1.2h
+- [ ] furiten 0.8h
 
 rush command candidates
 
@@ -471,6 +516,7 @@ rush command candidates
 
 rush all yaku: HeavenlyWin, EarthlyWin, HumanlyWin
 
+- [ ] fix YakuTest where Triple declared
 - [ ] fix FinalTileWin Fish/Moon 0.1h // ? what's wrong
 - [ ] HeavenlyWin
 - [ ] EarthlyWin
@@ -480,14 +526,11 @@ rush all yaku: thirteen orphans
 
 - [ ] thirteen orphan meld
 
-rush public command roller
-
-- [ ] public command roller
-
 rush refactor
 
+- [ ] refactor Tile factory
 - [ ] fix: mockHand target tile vs robQuadPhase target tile
-- [ ] refactor: TileSeries <-> MeldList.xxx
+- [ ] refactor: TileSeries <-> MeldList.xxx, remove needless TileSeries
 - [ ] refactor: RoundResult
 - [ ] refactor: move DrawScore logic into separate class
 - [ ] refactor: simplify reset(),debugReset(),toNextPhase() 0.2h
@@ -499,24 +542,3 @@ rush optimize tests
 - [ ] optimize: YakuTest 0.1h // 120ms  1 test case 40ms -> debugReplaceHand() slow?
 - [ ] optimize: RoundWinTest 80ms
 - [ ] optimize: RoundDrawTest/testFourReachDraw // 40ms
-
-rush rule.md doc
-
-- [ ] rule 0.6h
-- [ ] tile 0.6h
-- [ ] yaku 1.1h
-
-rush dora yaku
-
-- [ ] design 0.1h
-- [ ] doraYaku
-- [ ] uraDoraYaku
-- [ ] redDoraYaku
-
-rush red dora
-
-- [x] Tile.getInstance() 0.3h
-- [x] Tile.isRed() 0.2h
-- [x] Tile.getID() 0.3h
-- [ ] toString issues
-- [ ] adapt discard/createMeld logic

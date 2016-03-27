@@ -196,9 +196,12 @@ class MeldList extends ArrayLikeObject {
         $this->assertCompletePrivateHandCount();
 
         $tripleOrQuadList = $this->toFilteredTypesMeldList([TripleMeldType::getInstance(), QuadMeldType::getInstance()]);
+        $numberTripleOrQuadList = $tripleOrQuadList->toFilteredMeldList(function (Meld $meld) {
+            return $meld->isAllSuit();
+        });
 
         $map = []; // [1 => ['s' => true] ...]
-        foreach ($tripleOrQuadList as $tripleOrQuad) {
+        foreach ($numberTripleOrQuadList as $tripleOrQuad) {
             $tile = $tripleOrQuad[0];
             $map[$tile->getNumber()][$tile->getTileType()->__toString()] = true;
             if (count($map[$tile->getNumber()]) == 3) {

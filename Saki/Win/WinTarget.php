@@ -7,6 +7,7 @@ use Saki\Game\RoundPhase;
 use Saki\Meld\MeldList;
 use Saki\Tile\Tile;
 
+// todo move yaku specific logic into XXXYaku
 class WinTarget {
     private $player;
     private $round;
@@ -64,8 +65,8 @@ class WinTarget {
         return $this->round->getTileAreas()->getTargetTile()->getTile();
     }
 
-    function getDiscardHistory() {
-        return $this->round->getTileAreas()->getDiscardHistory();
+    function getOpenHistory() {
+        return $this->round->getTileAreas()->getOpenHistory();
     }
 
     function getOutsideRemainTileAmount(Tile $tile) {
@@ -127,5 +128,9 @@ class WinTarget {
 
     function getSelfWind() {
         return $this->player->getSelfWind();
+    }
+
+    function getDoraFacade() {
+        return $this->round->getTileAreas()->getWall()->getDoraFacade();
     }
 }

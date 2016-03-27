@@ -4,14 +4,14 @@ namespace Saki\Win\Fu;
 use Saki\Meld\Meld;
 use Saki\Win\WaitingType;
 use Saki\Win\WinSubTarget;
-use Saki\Win\Yaku\YakuList;
+use Saki\Win\Yaku\YakuItemList;
 
 class FuCountTarget {
     private $subTarget;
     private $yakuList;
     private $waitingType;
 
-    function __construct(WinSubTarget $subTarget, YakuList $yakuList, WaitingType $waitingType) {
+    function __construct(WinSubTarget $subTarget, YakuItemList $yakuList, WaitingType $waitingType) {
         $this->subTarget = $subTarget;
         $this->yakuList = $yakuList;
         $this->waitingType = $waitingType;

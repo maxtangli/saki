@@ -4,17 +4,16 @@ namespace Saki\Tile;
 
 use Saki\Util\ArrayLikeObject;
 use Saki\Util\Factory;
-use Saki\Util\Utils;
 use Saki\Util\ValueObject;
 
 class Tile implements ValueObject {
-    const REGEX_SUIT_NUMBER = '[1-9]';
+    const REGEX_SUIT_NUMBER = '[0-9]'; // 0 means red dora 5
     const REGEX_SUIT_TILE = '(' . self::REGEX_SUIT_NUMBER . TileType::REGEX_SUIT_TYPE . ')';
     const REGEX_HONOR_TILE = TileType::REGEX_HONOR_TYPE;
     const REGEX_TILE = '(' . self::REGEX_SUIT_TILE . '|' . self::REGEX_HONOR_TILE . ')';
 
     static function valid(TileType $tileType, $number, $isRedDora) {
-        return ($tileType->isSuit() && self::validNumber($number) && ($isRedDora == false || $number == 5))
+        return ($tileType->isSuit() && self::validNumber($number) && ($isRedDora === false || $number === 5))
         || ($tileType->isHonor() && $number === null && $isRedDora == false);
     }
 
@@ -22,18 +21,28 @@ class Tile implements ValueObject {
         return is_int($number) && 1 <= $number && $number <= 9;
     }
 
-//    static function validString($s) {
-//        $regex = '/^' . self::REGEX_TILE . '$/';
-//        return preg_match($regex, $s) === 1;
-//    }
+    static function validString($s) {
+        $regex = '/^' . self::REGEX_TILE . '$/';
+        return preg_match($regex, $s) === 1;
+    }
 
     static function fromString($s) {
+        if (!self::validString($s)) {
+            throw new \InvalidArgumentException();
+        }
+
         // will be validated in getInstance()
         if (strlen($s) == 1) {
             return Tile::getInstance(TileType::fromString($s));
-        } else {
-            return Tile::getInstance(TileType::fromString($s[1]), intval($s[0]));
+        } elseif (strlen($s) == 2) {
+            if ($s[0] == '0') {
+                return Tile::getInstance(TileType::fromString($s[1]), 5, true);
+            } else {
+                return Tile::getInstance(TileType::fromString($s[1]), intval($s[0]));
+            }
         }
+
+        throw new \LogicException();
     }
 
     static function getNumberTiles(TileType $tileType) {
@@ -70,6 +79,7 @@ class Tile implements ValueObject {
         TileType::WHITE_P => 36,
         TileType::GREEN_F => 37,
     ];
+
     /**
      * @param TileType $tileType
      * @param int|null $number
@@ -94,10 +104,12 @@ class Tile implements ValueObject {
      * @param TileType $tileType
      * @param null $number
      * @param bool|false $isRedDora
-     * @return int same with toValueID(), except red dora-5 is treated same as 5
+     * @return int
      */
     private static function toDisplayValueID(TileType $tileType, $number = null, $isRedDora = false) {
-        return self::toValueID($tileType, $number, false);
+        $ignoreRedDoraID = self::toValueID($tileType, $number, false);
+        $finalID = $ignoreRedDoraID * 10 - ($isRedDora ? 1 : 0);
+        return $finalID;
     }
 
     /**
@@ -151,8 +163,9 @@ class Tile implements ValueObject {
     }
 
     function __toString() {
-        $tileType = $this->getTileType();
-        return $tileType->isSuit() ? $this->getNumber() . $tileType->__toString() : $tileType->__toString();
+        $numberString = $this->isSuit() ? ($this->isRedDora() ? 0 : $this->getNumber()) : '';
+        $typeString = $this->getTileType()->__toString();
+        return sprintf('%s%s', $numberString, $typeString);
     }
 
     function getTileType() {

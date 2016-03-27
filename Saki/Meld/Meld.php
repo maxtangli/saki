@@ -165,6 +165,10 @@ class Meld extends ArrayLikeObject implements ValueObject {
         });
     }
 
+    function isAllSuit() {
+        return $this->tileSortedList->isAllSuit();
+    }
+
     function isAllTerminal() {
         return $this->tileSortedList->isAllTerminal();
     }

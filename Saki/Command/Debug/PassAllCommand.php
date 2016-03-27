@@ -14,10 +14,10 @@ class PassAllCommand extends Command {
     }
 
     function executable() {
-        return $this->getContext()->getRoundData()->getPhaseState()->getRoundPhase()->isPublic();
+        return $this->getContext()->getRound()->getPhaseState()->getRoundPhase()->isPublic();
     }
 
     function executeImpl() {
-        $this->getContext()->getRoundData()->toNextPhase();
+        $this->getContext()->getRound()->toNextPhase();
     }
 }

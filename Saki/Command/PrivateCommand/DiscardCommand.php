@@ -29,7 +29,7 @@ class DiscardCommand extends PrivateCommand {
     }
 
     function executeImpl() {
-        $this->getContext()->getRoundData()->getTileAreas()->discard($this->getActPlayer(), $this->getTile());
-        $this->getContext()->getRoundData()->toNextPhase();
+        $this->getContext()->getRound()->getTileAreas()->discard($this->getActPlayer(), $this->getTile());
+        $this->getContext()->getRound()->toNextPhase();
     }
 }

@@ -18,14 +18,14 @@ class BigKongCommand extends PublicCommand {
     }
 
     function matchOtherConditions() {
-        $tileAreas = $this->getContext()->getRoundData()->getTileAreas();
+        $tileAreas = $this->getContext()->getRound()->getTileAreas();
         return $this->getActPlayer()->getTileArea()->canBigKong(
             $tileAreas->getTargetTile()->getTile()
         );
     }
 
     function executeImpl() {
-        $r = $this->getContext()->getRoundData();
+        $r = $this->getContext()->getRound();
 
         // avoid FourKongDraw by postLeave
         $postLeave = function () use ($r) {

@@ -9,15 +9,18 @@ use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\Fan1\AllRunsYaku;
 use Saki\Win\Yaku\Fan1\AllSimplesYaku;
 use Saki\Win\Yaku\Fan1\ConcealedSelfDrawYaku;
+use Saki\Win\Yaku\Fan1\DoraYaku;
 use Saki\Win\Yaku\Fan1\DoubleRunYaku;
 use Saki\Win\Yaku\Fan1\FirstTurnWinYaku;
 use Saki\Win\Yaku\Fan1\GreenValueTilesYaku;
 use Saki\Win\Yaku\Fan1\KingSTileWinYaku;
 use Saki\Win\Yaku\Fan1\ReachYaku;
+use Saki\Win\Yaku\Fan1\RedDoraYaku;
 use Saki\Win\Yaku\Fan1\RedValueTilesYaku;
 use Saki\Win\Yaku\Fan1\RobbingAQuadYaku;
 use Saki\Win\Yaku\Fan1\RoundWindValueTilesYaku;
 use Saki\Win\Yaku\Fan1\SelfWindValueTilesYaku;
+use Saki\Win\Yaku\Fan1\UraDoraYaku;
 use Saki\Win\Yaku\Fan1\WhiteValueTilesYaku;
 use Saki\Win\Yaku\Fan2\AllTerminalsAndHonorsYaku;
 use Saki\Win\Yaku\Fan2\AllTriplesYaku;
@@ -206,6 +209,8 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
             [new YakuTestData('333m,333s,NN', '(333p),234s'), ThreeColorTriplesYaku::getInstance(), true],
             // not same number
             [new YakuTestData('333m,444s,NN', '3333p,234s'), ThreeColorTriplesYaku::getInstance(), false],
+            // not same number, with honor
+            [new YakuTestData('333m,444s,NN', '3333p,CCCC'), ThreeColorTriplesYaku::getInstance(), false],
             // not different color(though not practical)
             [new YakuTestData('333m,333m,NN', '3333p,234s'), ThreeColorTriplesYaku::getInstance(), false],
 
@@ -366,9 +371,8 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         // S discard, E may win
         $pro->process('discard S S:s-1m:1m');
 
-        $yakuList = $r->getWinResult($r->getPlayerList()[0])->getYakuList();
+        $yakuList = $r->getWinResult($r->getPlayerList()[0])->getYakuList()->toYakuList();
 
-        $this->assertGreaterThan(0, $yakuList->count());
         $this->assertContains(ReachYaku::getInstance(), $yakuList, $yakuList);
     }
 
@@ -381,9 +385,8 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         // S discard, E may win
         $pro->process('discard S S:s-1m:1m');
 
-        $yakuList = $r->getWinResult($r->getPlayerList()[0])->getYakuList();
+        $yakuList = $r->getWinResult($r->getPlayerList()[0])->getYakuList()->toYakuList();
 
-        $this->assertGreaterThan(0, $yakuList->count());
         $this->assertNotContains(ReachYaku::getInstance(), $yakuList, $yakuList);
         $this->assertContains(DoubleReachYaku::getInstance(), $yakuList, $yakuList);
     }
@@ -397,12 +400,11 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         $pro->process('discard W W:s-E:E; passAll');
         $pro->process('discard N N:s-E:E; passAll');
 
-        $pro->process('discard E E:s-E:E; mockWall 1m; passAll');
+        $pro->process('discard E E:s-E:E; mockNextDraw 1m; passAll');
         $this->assertEquals(Tile::fromString('1m'), $r->getTileAreas()->getTargetTile()->getTile());
 
         // S winBySelf FirstTurnWin
-        $yakuList = $r->getWinResult($r->getTurnManager()->getCurrentPlayer())->getYakuList();
-        $this->assertGreaterThan(0, $yakuList->count());
+        $yakuList = $r->getWinResult($r->getTurnManager()->getCurrentPlayer())->getYakuList()->toYakuList();
         $this->assertContains(FirstTurnWinYaku::getInstance(), $yakuList, $yakuList);
     }
 
@@ -410,9 +412,8 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         $r = YakuTestData::getInitedRound();
         $pro = $r->getProcessor();
 
-        $pro->process('mockDeadWall 5m; concealedKong E E:s-123s456s789s7777m5m:7m');
-        $yakuList = $r->getWinResult($r->getTurnManager()->getCurrentPlayer())->getYakuList();
-        $this->assertGreaterThan(0, $yakuList->count());
+        $pro->process('mockNextReplace 5m; concealedKong E E:s-123s456s789s7777m5m:7m');
+        $yakuList = $r->getWinResult($r->getTurnManager()->getCurrentPlayer())->getYakuList()->toYakuList();
         $this->assertContains(KingSTileWinYaku::getInstance(), $yakuList, $yakuList);
     }
 
@@ -426,9 +427,12 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
             'mockHand S 11m; pong S; plusKong S S:s-1m:1m'
         );
 
+        // target tile changed
+        $this->assertEquals(Tile::fromString('1m'), $r->getTileAreas()->getTargetTile()->getTile());
+
+        // robAQuad exist
         $playerW = $r->getPlayerList()->getSelfWindPlayer(Tile::fromString('W'));
-        $yakuList = $r->getWinResult($playerW)->getYakuList();
-        $this->assertGreaterThan(0, $yakuList->count());
+        $yakuList = $r->getWinResult($playerW)->getYakuList()->toYakuList();
         $this->assertContains(RobbingAQuadYaku::getInstance(), $yakuList, $yakuList);
     }
 
@@ -438,6 +442,63 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
 
     function testFinalTileWinFish() {
         // todo
+    }
+
+    function testDoraYaku() {
+        $r = YakuTestData::getInitedRound();
+        $pro = $r->getProcessor();
+        $pro->process('mockDeadWall EEEE1919293949s 5 false; mockHand E 222789s789m12345m');
+
+        // rely other yakus
+        $playerE = $r->getPlayerList()->getSelfWindPlayer(Tile::fromString('E'));
+        $yakuList = $r->getWinResult($playerE)->getYakuList()->toYakuList();
+        $this->assertEmpty($yakuList);
+
+        // fan count
+        $pro->process('mockHand E 222789s789m12355m');
+        $yakuItemList = $r->getWinResult($playerE)->getYakuList();
+        $yakuList = $yakuItemList->toYakuList();
+        $this->assertContains(DoraYaku::getInstance(), $yakuList, $yakuList);
+        $expectFanCount = 1 + 6; // selfDraw + 6 dora
+        $this->assertEquals($expectFanCount, $yakuItemList->getTotalFanCount(), $yakuItemList);
+    }
+
+    function testUraDoraYaku() {
+        $r = YakuTestData::getInitedRound();
+        $pro = $r->getProcessor();
+        $pro->process('mockDeadWall EEEE9191929394s 5 true; mockHand E 222789s789m12345m');
+
+        // rely other yakus
+        $playerE = $r->getPlayerList()->getSelfWindPlayer(Tile::fromString('E'));
+        $yakuList = $r->getWinResult($playerE)->getYakuList()->toYakuList();
+        $this->assertEmpty($yakuList);
+
+        // fan count
+        $pro->process('mockHand E 222789s789m12355m');
+        $yakuItemList = $r->getWinResult($playerE)->getYakuList();
+        $yakuList = $yakuItemList->toYakuList();
+        $this->assertContains(UraDoraYaku::getInstance(), $yakuList, $yakuList);
+        $expectFanCount = 1 + 6; // selfDraw + 6 uraDora
+        $this->assertEquals($expectFanCount, $yakuItemList->getTotalFanCount(), $yakuItemList);
+    }
+
+    function testRedDoraYaku() {
+        $r = YakuTestData::getInitedRound();
+        $pro = $r->getProcessor();
+        $pro->process('mockDeadWall EEEE9999999999s 1 false; mockHand E 222789s789m12340m');
+
+        // rely other yakus
+        $playerE = $r->getPlayerList()->getSelfWindPlayer(Tile::fromString('E'));
+        $yakuList = $r->getWinResult($playerE)->getYakuList()->toYakuList();
+        $this->assertEmpty($yakuList);
+
+        // fan count
+        $pro->process('mockHand E 222789s789m12300m');
+        $yakuItemList = $r->getWinResult($playerE)->getYakuList();
+        $yakuList = $yakuItemList->toYakuList();
+        $this->assertContains(RedDoraYaku::getInstance(), $yakuList, $yakuList);
+        $expectFanCount = 1 + 2; // selfDraw + 6 uraDora
+        $this->assertEquals($expectFanCount, $yakuItemList->getTotalFanCount(), $yakuItemList);
     }
 }
 

@@ -6,7 +6,7 @@ use Saki\Tile\TileList;
 
 class TileParamDeclaration extends ParamDeclaration {
     function toObject() {
-        $round = $this->getContext()->getRoundData();
+        $round = $this->getContext()->getRound();
         $paramString = $this->getParamString();
 
         /**

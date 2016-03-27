@@ -19,8 +19,8 @@ class NineNineDrawCommand extends PrivateCommand {
     }
 
     function matchOtherConditions() {
-        $tileAreas = $this->getContext()->getRoundData()->getTileAreas();
-        $currentTurn = $this->getContext()->getRoundData()->getTurnManager()->getGlobalTurn();
+        $tileAreas = $this->getContext()->getRound()->getTileAreas();
+        $currentTurn = $this->getContext()->getRound()->getTurnManager()->getGlobalTurn();
 
         $isFirstTurn = $currentTurn == 1;
         $noDeclaredActions = !$tileAreas->getDeclareHistory()->hasDeclare($currentTurn, Tile::fromString('E'));
@@ -29,8 +29,8 @@ class NineNineDrawCommand extends PrivateCommand {
     }
 
     function executeImpl() {
-        $result = new OnTheWayDrawRoundResult($this->getContext()->getRoundData()->getPlayerList()->toArray(),
+        $result = new OnTheWayDrawRoundResult($this->getContext()->getRound()->getPlayerList()->toArray(),
             RoundResultType::getInstance(RoundResultType::NINE_KINDS_OF_TERMINAL_OR_HONOR_DRAW));
-        $this->getContext()->getRoundData()->toNextPhase(new OverPhaseState($result));
+        $this->getContext()->getRound()->toNextPhase(new OverPhaseState($result));
     }
 }

@@ -18,6 +18,7 @@ class CommandProcessor {
     function process(... $scripts) {
         $parser = $this->getParser();
 
+        // todo validate command errors e.x. 'discard E E;' or ' discard E E'
         $script = implode('; ', $scripts);
         $lines = $parser->scriptToLines($script);
         foreach ($lines as $line) {

@@ -4,11 +4,12 @@ namespace Saki\Game;
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 use Saki\Tile\TileSet;
-use Saki\Util\ArrayLikeObject;
+use Saki\Game\DoraFacade;
 
 class Wall {
     private $tileSet;
     private $deadWall;
+    private $doraFacade;
     private $remainTileList;
 
     function __construct(TileSet $tileSet) {
@@ -31,7 +32,8 @@ class Wall {
             $baseTileList->shuffle();
         }
         list($deadWallTileLists, $currentTileList) = $baseTileList->toTwoPart(14);
-        $this->deadWall = new DeadWall($deadWallTileLists);
+        $this->deadWall = new DeadWall($deadWallTileLists); // todo remove new
+        $this->doraFacade = new DoraFacade($this->deadWall);
         $this->remainTileList = $currentTileList;
     }
 
@@ -59,6 +61,13 @@ class Wall {
      */
     function getDeadWall() {
         return $this->deadWall;
+    }
+
+    /**
+     * @return DoraFacade
+     */
+    function getDoraFacade() {
+        return $this->doraFacade;
     }
 
     /**

@@ -6,7 +6,7 @@ use Saki\Tile\Tile;
 /**
  * Implementation class
  */
-class DiscardHistoryItem {
+class OpenHistoryItem {
     private $globalTurn;
     private $selfWind;
     private $discardedTile;
@@ -44,7 +44,7 @@ class DiscardHistoryItem {
         return $this->discardedTile;
     }
 
-    function validLaterItemOf(DiscardHistoryItem $priorItem, $allowSameTurnAndSelfWind = false) {
+    function validLaterItemOf(OpenHistoryItem $priorItem, $allowSameTurnAndSelfWind) {
         if ($this->getGlobalTurn() > $priorItem->getGlobalTurn()) {
             return true;
         }

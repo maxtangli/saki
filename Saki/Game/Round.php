@@ -4,10 +4,12 @@ namespace Saki\Game;
 use Saki\Command\CommandContext;
 use Saki\Command\CommandParser;
 use Saki\Command\CommandProcessor;
+use Saki\Command\Debug\MockNextReplaceCommand;
 use Saki\Command\Debug\MockDeadWallCommand;
 use Saki\Command\Debug\MockHandCommand;
-use Saki\Command\Debug\MockWallCommand;
+use Saki\Command\Debug\MockNextDrawCommand;
 use Saki\Command\Debug\PassAllCommand;
+use Saki\Command\Debug\SkipCommand;
 use Saki\Command\PrivateCommand\ConcealedKongCommand;
 use Saki\Command\PrivateCommand\DiscardCommand;
 use Saki\Command\PrivateCommand\NineNineDrawCommand;
@@ -75,10 +77,12 @@ class Round {
             BigKongCommand::class,
             WinByOtherCommand::class,
             // debug
+            MockNextReplaceCommand::class,
             MockDeadWallCommand::class,
             MockHandCommand::class,
-            MockWallCommand::class,
+            MockNextDrawCommand::class,
             PassAllCommand::class,
+            SkipCommand::class,
         ];
         $this->processor = new CommandProcessor(new CommandParser(new CommandContext($this), $classes));
         $this->toNextPhase();

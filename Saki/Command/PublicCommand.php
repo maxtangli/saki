@@ -3,7 +3,7 @@ namespace Saki\Command;
 
 abstract class PublicCommand extends PlayerCommand {
     function matchRequiredPhases() {
-        $phaseState = $this->getContext()->getRoundData()->getPhaseState();
+        $phaseState = $this->getContext()->getRound()->getPhaseState();
         if (!$phaseState->getRoundPhase()->isPublic()) {
             return false;
         }

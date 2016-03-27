@@ -16,12 +16,13 @@ class YakuAnalyzer {
     }
 
     function analyzeYakuList(WinSubTarget $subTarget) {
-        $yakuList = new YakuList([], $subTarget->isConcealed());
+        $yakuList = new YakuItemList([]);
         /** @var Yaku[] $yakus */
         $yakus = $this->getYakuSet()->toArray();
         foreach ($yakus as $yaku) {
-            if ($yaku->existIn($subTarget)) {
-                $yakuList->push($yaku);
+            $actualFanCount = $yaku->getFanCount($subTarget);
+            if ($actualFanCount > 0) {
+                $yakuList->push(new YakuItem($yaku, $actualFanCount));
             }
         }
         $yakuList->normalize(); // remove mutually-excluded yaku

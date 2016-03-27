@@ -9,7 +9,7 @@ class SelfWindParamDeclaration extends ParamDeclaration {
         $paramString = $this->getParamString();
 
         if ($paramString == 'I') {
-            $currentPlayer = $this->getContext()->getRoundData()->getTurnManager()->getCurrentPlayer();
+            $currentPlayer = $this->getContext()->getRound()->getTurnManager()->getCurrentPlayer();
             return $currentPlayer->getSelfWind();
         }
 

@@ -18,14 +18,14 @@ class PongCommand extends PublicCommand {
     }
 
     function matchOtherConditions() {
-        $tileAreas = $this->getContext()->getRoundData()->getTileAreas();
+        $tileAreas = $this->getContext()->getRound()->getTileAreas();
         return $this->getActPlayer()->getTileArea()->canPong(
             $tileAreas->getTargetTile()->getTile()
         );
     }
 
     function executeImpl() {
-        $round = $this->getContext()->getRoundData();
+        $round = $this->getContext()->getRound();
 
         $round->getTileAreas()->pong(
             $this->getActPlayer(), $this->getCurrentPlayer()

@@ -163,6 +163,13 @@ class ArrayLikeObject implements \IteratorAggregate, \Countable, \ArrayAccess {
         return array_reduce($this->innerArray, $reduceCallback, $initialValue);
     }
 
+    function sum(callable $selector, $initialValue = 0) {
+        $reduceCallback = function ($carry, $item) use($selector) {
+            return $carry + $selector($item);
+        };
+        return array_reduce($this->innerArray, $reduceCallback, $initialValue);
+    }
+
     // implement interfaces
 
     function getIterator() {

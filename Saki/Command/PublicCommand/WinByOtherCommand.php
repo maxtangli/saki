@@ -23,7 +23,7 @@ class WinByOtherCommand extends PublicCommand {
     }
 
     function executeImpl() {
-        $round = $this->getContext()->getRoundData();
+        $round = $this->getContext()->getRound();
 
         $result = WinRoundResult::createWinByOther(
             $round->getPlayerList()->toArray(),

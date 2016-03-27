@@ -5,6 +5,7 @@ namespace Saki\Game;
 use Saki\Meld\MeldList;
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
+use Saki\Util\ArrayLikeObject;
 
 /**
  * Provide collaborate operations on 1 Wall and 2-4 TileArea.
@@ -21,7 +22,7 @@ class TileAreas {
     // variable for each round
     private $wall;
     private $targetTile;
-    private $discardHistory;
+    private $openHistory;
     private $declareHistory;
 
     function __construct(Wall $wall, PlayerList $playerList, callable $roundTurnProvider) {
@@ -32,14 +33,14 @@ class TileAreas {
 
         $this->wall = $wall;
         $this->targetTile = null;
-        $this->discardHistory = new DiscardHistory();
+        $this->openHistory = new OpenHistory();
         $this->declareHistory = new DeclareHistory();
     }
 
     function reset() {
         $this->wall->reset(true);
         $this->targetTile = null;
-        $this->discardHistory->reset();
+        $this->openHistory->reset();
         $this->declareHistory->reset();
     }
 
@@ -154,12 +155,15 @@ class TileAreas {
         $this->targetTile = $targetTile;
     }
 
-    function getDiscardHistory() {
-        return $this->discardHistory;
+    /**
+     * @return OpenHistory
+     */
+    function getOpenHistory() {
+        return $this->openHistory;
     }
 
-    protected function recordDiscard($currentTurn, Tile $mySelfWind, Tile $tile) {
-        $this->discardHistory->recordDiscardTile($currentTurn, $mySelfWind, $tile);
+    protected function recordOpen($currentTurn, Tile $mySelfWind, Tile $tile) {
+        $this->openHistory->record($currentTurn, $mySelfWind, $tile);
     }
 
     function getDeclareHistory() {
@@ -267,7 +271,7 @@ class TileAreas {
         $player->getTileArea()->discard($selfTile);
         $this->setTargetTile(new TargetTile($selfTile));
 
-        $this->recordDiscard($this->getRoundTurn()->getGlobalTurn(), $player->getSelfWind(), $selfTile);
+        $this->recordOpen($this->getRoundTurn()->getGlobalTurn(), $player->getSelfWind(), $selfTile);
     }
 
     /**
@@ -312,7 +316,7 @@ class TileAreas {
         $player->setScore($player->getScore() - 1000);
         $this->setAccumulatedReachCount($this->getAccumulatedReachCount() + 1);
 
-        $this->recordDiscard($this->getRoundTurn()->getGlobalTurn(), $player->getSelfWind(), $selfTile); // todo reach flag
+        $this->recordOpen($this->getRoundTurn()->getGlobalTurn(), $player->getSelfWind(), $selfTile); // todo reach flag
     }
 
     function concealedKong(Player $actPlayer, Tile $selfTile) {
@@ -331,6 +335,8 @@ class TileAreas {
     function plusKong(Player $actPlayer, Tile $selfTile) {
         $actPlayer->getTileArea()->plusKong($selfTile);
         $this->drawReplacement($actPlayer);
+
+        $this->recordOpen($this->getRoundTurn()->getGlobalTurn(), $actPlayer->getSelfWind(), $selfTile);
 
         $this->recordDeclare($actPlayer->getSelfWind());
     }
