@@ -3,29 +3,33 @@ namespace Saki\Meld;
 
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
-use Saki\Tile\TileSortedList;
+use Saki\Util\ArrayList;
 
 class RunMeldType extends MeldType {
     function getTileCount() {
         return 3;
     }
 
-    protected function validFaces(TileSortedList $tileSortedList) {
-        $sameSuit = $tileSortedList[0]->getTileType()->isSuit() &&
-            $tileSortedList[0]->getTileType() == $tileSortedList[1]->getTileType() && $tileSortedList[1]->getTileType() == $tileSortedList[2]->getTileType();
+    protected function validFaces(TileList $tileList) {
+        $sameSuit = $tileList[0]->getTileType()->isSuit() &&
+            $tileList[0]->getTileType() == $tileList[1]->getTileType() && $tileList[1]->getTileType() == $tileList[2]->getTileType();
         if (!$sameSuit) {
             return false;
         }
 
-        $numbers = [$tileSortedList[0]->getNumber(), $tileSortedList[1]->getNumber(), $tileSortedList[2]->getNumber()];
-        $isConsecutiveNumber = $numbers[0] + 1 == $numbers[1] && $numbers[1] + 1 == $numbers[2];
+        $expectedDiffs = [0, 0, 0, 1, 1, 1, 1, 2, 2];
+        $diffList = (new ArrayList())->fromZipped($tileList, $tileList, function(Tile $t1, Tile $t2) {
+            return abs($t1->getNumber() - $t2->getNumber());
+        });
+        $isConsecutiveNumber = $diffList->valueExist($expectedDiffs);
+
         return $isConsecutiveNumber;
     }
 
     function getPossibleTileLists(Tile $firstTile) {
         if ($firstTile->isSuit() && $firstTile->getNumber() <= 7) {
-            $nextTile = $firstTile->toNextTile();
-            $nextNextTile = $nextTile->toNextTile();
+            $nextTile = $firstTile->getNextTile();
+            $nextNextTile = $nextTile->getNextTile();
             return [new TileList([$firstTile, $nextTile, $nextNextTile])];
         } else {
             return [];

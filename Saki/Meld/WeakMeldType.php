@@ -2,9 +2,7 @@
 
 namespace Saki\Meld;
 
-use Saki\Tile\Tile;
 use Saki\Tile\TileList;
-use Saki\Tile\TileSortedList;
 
 abstract class WeakMeldType extends MeldType {
     function hasTargetMeldType() {
@@ -13,42 +11,35 @@ abstract class WeakMeldType extends MeldType {
 
     abstract function getTargetMeldType();
 
-    final function getWaitingTiles(TileSortedList $meldTileSortedList) {
+    final function getWaitingTiles(TileList $meldTileList) {
         if (!$this->hasTargetMeldType()) {
             throw new \InvalidArgumentException(
                 sprintf('Invalid call on no-target-meld-type MeldType[%s]', get_called_class())
             );
         }
 
-        if (!$this->valid($meldTileSortedList)) {
+        if (!$this->valid($meldTileList)) {
             throw new \InvalidArgumentException();
         }
 
-        return $this->getWaitingTilesImpl($meldTileSortedList);
+        return $this->getWaitingTilesImpl($meldTileList);
     }
 
-    abstract protected function getWaitingTilesImpl(TileSortedList $validMeldTileSortedList);
+    abstract protected function getWaitingTilesImpl(TileList $validMeldTileList);
 
-    final function getWaitingType(TileSortedList $meldTileSortedList) {
+    final function getWaitingType(TileList $meldTileList) {
         if (!$this->hasTargetMeldType()) {
             throw new \InvalidArgumentException(
                 sprintf('Invalid call on no-target-meld-type MeldType[%s]', get_called_class())
             );
         }
 
-        if (!$this->valid($meldTileSortedList)) {
+        if (!$this->valid($meldTileList)) {
             throw new \InvalidArgumentException();
         }
 
-        return $this->getWaitingTypeImpl($meldTileSortedList);
+        return $this->getWaitingTypeImpl($meldTileList);
     }
 
-    abstract protected function getWaitingTypeImpl(TileSortedList $validMeldTileSortedList);
-
-    /**
-     * @return WeakMeldType
-     */
-    static function getInstance() {
-        return parent::getInstance();
-    }
+    abstract protected function getWaitingTypeImpl(TileList $validMeldTileList);
 }

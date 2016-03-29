@@ -7,6 +7,7 @@ namespace Saki\Tile;
 class TileSet extends TileList {
 
     private static $standTileSet;
+
     static function getStandardTileSet() {
         self::$standTileSet = self::$standTileSet ?? new self(
                 TileList::fromString(
@@ -20,10 +21,10 @@ class TileSet extends TileList {
     }
 
     function __construct(TileList $baseTileList) {
-        parent::__construct($baseTileList->toArray());
-        $this->setWritable(false);
+        parent::__construct($baseTileList->toArray(), false);
     }
 
+    // note not used currently
     function getUniqueTiles() {
         return array_unique($this->toArray());
     }

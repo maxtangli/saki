@@ -8,7 +8,7 @@ use Saki\Meld\QuadMeldType;
 use Saki\RoundResult\ExhaustiveDrawRoundResult;
 use Saki\RoundResult\OnTheWayDrawRoundResult;
 use Saki\RoundResult\RoundResultType;
-use Saki\Util\ArrayLikeObject;
+use Saki\Util\ArrayList;
 
 class PublicPhaseState extends RoundPhaseState {
 
@@ -17,7 +17,8 @@ class PublicPhaseState extends RoundPhaseState {
 
     function __construct() {
         $this->robQuad = false;
-        $this->postLeave = function() {};
+        $this->postLeave = function () {
+        };
     }
 
     function isRobQuad() {
@@ -89,7 +90,7 @@ class PublicPhaseState extends RoundPhaseState {
         if ($isFirstRound) {
             $allDiscardTileList = $round->getTileAreas()->getOpenHistory()->getAll();
             if ($allDiscardTileList->count() == 4) {
-                $allDiscardTileList->unique();
+                $allDiscardTileList->distinct();
                 $isFourSameWindDiscard = $allDiscardTileList->count() == 1 && $allDiscardTileList[0]->isWind();
                 if ($isFourSameWindDiscard) {
                     $result = new OnTheWayDrawRoundResult($round->getPlayerList()->toArray(),
@@ -100,7 +101,7 @@ class PublicPhaseState extends RoundPhaseState {
         }
 
         // FourReachDraw
-        $isFourReachDraw = $round->getPlayerList()->all(function (Player $player) {
+        $isFourReachDraw = $round->getPlayerList()->isAll(function (Player $player) {
             return $player->getTileArea()->isReach();
         });
         if ($isFourReachDraw) {
@@ -110,13 +111,14 @@ class PublicPhaseState extends RoundPhaseState {
         }
 
         // FourKongDraw: more than 4 declared-kong-meld by at least 2 targetList
-        $declaredKongCounts = $round->getPlayerList()->toArray(function (Player $player) {
+        $declaredKongCountList = (new ArrayList())->fromSelected($round->getPlayerList(), function (Player $player) {
             return $player->getTileArea()->getDeclaredMeldListReference()->toFilteredTypesMeldList([QuadMeldType::getInstance()])->count();
         });
-        $kongCount = array_sum($declaredKongCounts);
-        $kongPlayerCount = (new ArrayLikeObject($declaredKongCounts))->getFilteredValueCount(function ($n) {
+        $kongCount = $declaredKongCountList->getSum();
+        $kongPlayerCount = (new ArrayList())->fromSelected($declaredKongCountList)->where(function ($n) {
             return $n > 0;
-        });
+        })->count();
+
         $isFourKongDraw = $kongCount >= 4 && $kongPlayerCount >= 2;
         if ($isFourKongDraw) {
             $result = new OnTheWayDrawRoundResult($round->getPlayerList()->toArray(),

@@ -2,7 +2,7 @@
 namespace Saki\Meld;
 
 use Saki\Tile\Tile;
-use Saki\Tile\TileSortedList;
+use Saki\Tile\TileList;
 use Saki\Win\WaitingType;
 
 class WeakPairMeldType extends WeakMeldType {
@@ -10,7 +10,7 @@ class WeakPairMeldType extends WeakMeldType {
         return 1;
     }
 
-    protected function validFaces(TileSortedList $tileSortedList) {
+    protected function validFaces(TileList $tileList) {
         return true;
     }
 
@@ -22,11 +22,11 @@ class WeakPairMeldType extends WeakMeldType {
         return PairMeldType::getInstance();
     }
 
-    protected function getWaitingTilesImpl(TileSortedList $validMeldTileSortedList) {
-        return [$validMeldTileSortedList[0]];
+    protected function getWaitingTilesImpl(TileList $validMeldTileList) {
+        return [$validMeldTileList[0]];
     }
 
-    protected function getWaitingTypeImpl(TileSortedList $validMeldTileSortedList) {
+    protected function getWaitingTypeImpl(TileList $validMeldTileList) {
         return WaitingType::getInstance(WaitingType::PAIR_WAITING);
     }
 

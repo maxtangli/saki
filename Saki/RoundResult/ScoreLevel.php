@@ -76,14 +76,4 @@ class ScoreLevel extends Enum {
         ];
         return in_array($this->getValue(), $targetValues);
     }
-
-    /**
-     * @param $value
-     * @return ScoreLevel
-     */
-    static function getInstance($value) {
-        return parent::getInstance($value);
-    }
-
-
 }

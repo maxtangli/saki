@@ -4,7 +4,6 @@ namespace Saki\Win;
 use Saki\Game\Player;
 use Saki\Game\Round;
 use Saki\Meld\MeldList;
-use Saki\Tile\Tile;
 
 class WinSubTarget extends WinTarget {
     private $handMeldList;
@@ -20,8 +19,8 @@ class WinSubTarget extends WinTarget {
 
     function getAllMeldList() {
         $allMeldList = MeldList::fromString('');
-        $allMeldList->push($this->getHandMeldList()->toArray());
-        $allMeldList->push($this->getDeclaredMeldList()->toArray());
+        $allMeldList->insertLast($this->getHandMeldList()->toArray());
+        $allMeldList->insertLast($this->getDeclaredMeldList()->toArray());
         return $allMeldList;
     }
 }

@@ -67,10 +67,10 @@ class OverPhaseState extends RoundPhaseState {
     function enter(Round $round) {
         $result = $this->getRoundResult();
         // modify scores
-        $round->getPlayerList()->walk(function (Player $player) use ($result) {
+        foreach($round->getPlayerList() as $player) {
             $afterScore = $result->getScoreDelta($player)->getAfter();
             $player->setScore($afterScore);
-        });
+        }
         // clear accumulatedReachCount if isWin
         if ($result->getRoundResultType()->isWin()) {
             $round->getTileAreas()->setAccumulatedReachCount(0);

@@ -1,9 +1,8 @@
 <?php
 namespace Saki\RoundPhase;
 
-use Saki\Game\RoundPhase;
-use Saki\RoundPhase\PrivatePhaseState;
 use Saki\Game\Round;
+use Saki\Game\RoundPhase;
 
 class InitPhaseState extends RoundPhaseState {
     function getRoundPhase() {

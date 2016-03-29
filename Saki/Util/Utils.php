@@ -3,35 +3,11 @@
 namespace Saki\Util;
 
 class Utils {
-    /**
-     * todo bad smell. any better ways?
-     * @param array $descBestOnes
-     * @return \Closure
-     */
-    static function getComparatorByBestArray(array $descBestOnes) {
-        $comparator = function ($a, $b) use ($descBestOnes) {
-            $ia = array_search($a, $descBestOnes);
-            $ib = array_search($b, $descBestOnes);
-            if ($ia === false || $ib === false) {
-                throw new \InvalidArgumentException(
-                    sprintf('Invalid compare targetList [%s] and [%s] for $descBestOnes[%s]', $a, $b, implode(',', $descBestOnes))
-                );
-            }
-            if ($ia == $ib) {
-                return 0;
-            } else {
-                return $ia < $ib ? 1 : -1;
-            }
-        };
-        return $comparator;
-    }
-
-    static function sgn($n) {
-        return $n == 0 ? 0 : ($n > 0 ? 1 : -1);
-    }
-
-    static function getNormalizedModValue($v, $n) {
-        return (($v) % $n + $n) % $n;
+    static function getNormalizedModValue(int $v, int $n) {
+        if ($n < 0) {
+            throw new \InvalidArgumentException();
+        }
+        return $n == 0 ? 0 : ($v % $n + $n) % $n;
     }
 
     static function inRange($v, $lowerLimit, $upperLimit) {
@@ -44,6 +20,12 @@ class Utils {
             throw new \InvalidArgumentException();
         }
         return $tokens;
+    }
+
+    static function toPredicate($targetValue, bool $strict = false) {
+        return function ($v) use ($targetValue, $strict) {
+            return $strict ? $v === $targetValue : $v == $targetValue;
+        };
     }
 
     private function __construct() {

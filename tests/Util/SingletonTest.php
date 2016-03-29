@@ -3,24 +3,12 @@
 namespace SingletonTest;
 
 class SingletonMockClass1 extends \Saki\Util\Singleton {
-    static function getInstance() {
-        return parent::getInstance();
-    }
-
 }
 
 class SingletonMockClass2 extends SingletonMockClass1 {
-    static function getInstance() {
-        return parent::getInstance();
-    }
-
 }
 
 class SingletonMockClass3 extends SingletonMockClass2 {
-    static function getInstance() {
-        return parent::getInstance();
-    }
-
 }
 
 class SingletonTest extends \PHPUnit_Framework_TestCase {

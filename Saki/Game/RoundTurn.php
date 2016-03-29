@@ -27,7 +27,7 @@ class RoundTurn {
     }
 
     function compare(RoundTurn $other) {
-        $globalTurnDiff = Utils::sgn($this->globalTurn, $other->globalTurn);
+        $globalTurnDiff = $this->globalTurn <=> $other->globalTurn;
         if ($globalTurnDiff != 0) {
             return $globalTurnDiff;
         }

@@ -7,31 +7,27 @@ use Saki\Meld\PairMeldType;
 use Saki\Meld\WeakPairMeldType;
 use Saki\Meld\WeakRunMeldType;
 use Saki\Tile\Tile;
-use Saki\Tile\TileSortedList;
-use Saki\Util\ArrayLikeObject;
+use Saki\Tile\TileList;
+use Saki\Util\ArrayList;
 use Saki\Util\Enum;
-use Saki\Util\Utils;
+use Saki\Util\PriorityComparable;
 
 /**
- *
  * @package Saki\Win
  */
 class TileSeries extends Enum {
-    static function getComparator() {
-        $descBestArray = [
-            TileSeries::getInstance(self::FOUR_RUN_AND_ONE_PAIR),
-            TileSeries::getInstance(self::FOUR_CONCEALED_TRIPLE_OR_QUAD_AND_ONE_PAIR),
-            TileSeries::getInstance(self::FOUR_TRIPLE_OR_QUAD_AND_ONE_PAIR),
-            TileSeries::getInstance(self::FOUR_WIN_SET_AND_ONE_PAIR),
-            TileSeries::getInstance(self::SEVEN_PAIRS),
-            TileSeries::getInstance(self::NOT_TILE_SERIES),
-        ];
-        return Utils::getComparatorByBestArray($descBestArray);
-    }
+    use PriorityComparable;
 
-    function compareTo(TileSeries $other) {
-        $f = self::getComparator();
-        return $f($this, $other);
+    function getPriority() {
+        $m = [
+            self::FOUR_RUN_AND_ONE_PAIR => 6,
+            self::FOUR_CONCEALED_TRIPLE_OR_QUAD_AND_ONE_PAIR => 5,
+            self::FOUR_TRIPLE_OR_QUAD_AND_ONE_PAIR => 4,
+            self::FOUR_WIN_SET_AND_ONE_PAIR => 3,
+            self::SEVEN_PAIRS => 2,
+            self::NOT_TILE_SERIES => 1,
+        ];
+        return $m[$this->getValue()];
     }
 
     const NOT_TILE_SERIES = 0;
@@ -70,7 +66,9 @@ class TileSeries extends Enum {
         $this->assertValidAllMeldList($allMeldList);
 
         $handMeldList = new MeldList($allMeldList->toArray());
-        $handMeldList->removeByValue($declaredMeldList->toArray());
+        if (!$declaredMeldList->isEmpty()) {
+            $handMeldList->remove($declaredMeldList->toArray());
+        }
         if (!$handMeldList->tileExist($winTile)) {
             return WaitingType::getInstance(WaitingType::NOT_WAITING);
         } elseif (!$this->existIn($allMeldList)) {
@@ -79,10 +77,10 @@ class TileSeries extends Enum {
             $winTileMeldList = $handMeldList->toFilteredMeldList(function (Meld $meld) use ($winTile) {
                 return $meld->canToWeakMeld($winTile);
             });
-            $waitingTypes = $winTileMeldList->toArray(function (Meld $meld) use ($winTile) {
+            $waitingTypeList = (new ArrayList())->fromSelected($winTileMeldList, function (Meld $meld) use ($winTile) {
                 return $meld->toWeakMeld($winTile)->getWaitingType();
             });
-            $waitingType = (new ArrayLikeObject($waitingTypes))->getMax(WaitingType::getComparator());
+            $waitingType = $waitingTypeList->getMax(WaitingType::getComparator());
             return $waitingType;
         }
     }
@@ -91,11 +89,13 @@ class TileSeries extends Enum {
         $this->assertValidAllMeldList($allMeldList);
 
         $handMeldList = new MeldList($allMeldList->toArray());
-        $handMeldList->removeByValue($declaredMeldList->toArray());
+        if (!$declaredMeldList->isEmpty()) {
+            $handMeldList->remove($declaredMeldList->toArray());
+        }
         if (!$handMeldList->tileExist($winTile)) {
-            return new TileSortedList([]);
+            return new TileList();
         } elseif (!$this->existIn($allMeldList)) {
-            return new TileSortedList([]);
+            return new TileList();
         } else {
             $winTileMeldList = $handMeldList->toFilteredMeldList(function (Meld $meld) use ($winTile) {
                 return $meld->canToWeakMeld($winTile);
@@ -105,7 +105,7 @@ class TileSeries extends Enum {
             foreach ($winTileMeldList as $winTileMeld) {
                 $weakWinTileMeld = $winTileMeld->toWeakMeld($winTile);
                 $publicHandMeldList = new MeldList($handMeldList->toArray());
-                $publicHandMeldList->replaceByValue($winTileMeld, $weakWinTileMeld);
+                $publicHandMeldList->replace($winTileMeld, $weakWinTileMeld);
 
                 $pairList = $publicHandMeldList->toFilteredTypesMeldList([PairMeldType::getInstance()]);
                 $weakList = $publicHandMeldList->toFilteredTypesMeldList([WeakPairMeldType::getInstance(), WeakRunMeldType::getInstance()]);
@@ -124,8 +124,7 @@ class TileSeries extends Enum {
                 }
             }
 
-            $tileList = new TileSortedList($waitingTiles);
-            $tileList->unique();
+            $tileList = (new TileList($waitingTiles))->distinct()->sort();
             return $tileList;
         }
     }
@@ -137,13 +136,5 @@ class TileSeries extends Enum {
                 sprintf('Invalid $allMeldList[%s].', $allMeldList)
             );
         }
-    }
-
-    /**
-     * @param $value
-     * @return TileSeries
-     */
-    static function getInstance($value) {
-        return parent::getInstance($value);
     }
 }

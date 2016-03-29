@@ -2,7 +2,8 @@
 namespace Saki\RoundResult;
 
 use Saki\Game\Player;
-use Saki\Util\ArrayLikeObject;
+use Saki\Util\ArrayList;
+use Saki\Util\Utils;
 
 class ExhaustiveDrawRoundResult extends RoundResult {
     private $players;
@@ -61,8 +62,9 @@ class ExhaustiveDrawRoundResult extends RoundResult {
     }
 
     function getIsWaitingCount() {
-        $isWaitingList = new ArrayLikeObject($this->isWaitings);
-        return $isWaitingList->getEqualValueCount(true);
+        $isWaitingList = new ArrayList($this->isWaitings);
+        $targetValue = true;
+        return $isWaitingList->getCount(Utils::toPredicate($targetValue));
     }
 
     function getNotWaitingCount() {

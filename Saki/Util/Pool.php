@@ -2,13 +2,13 @@
 
 namespace Saki\Util;
 
-class Factory {
-    private static $factoryOfFactories;
+class Pool {
+    private static $poolOfPools;
 
     static function getInstance($factoryKey) {
-        self::$factoryOfFactories = self::$factoryOfFactories ?? new Factory();
-        return self::$factoryOfFactories->getOrGenerate($factoryKey, function () {
-            return new Factory();
+        self::$poolOfPools = self::$poolOfPools ?? new Pool();
+        return self::$poolOfPools->getOrGenerate($factoryKey, function () {
+            return new Pool();
         });
     }
 
@@ -37,5 +37,6 @@ class Factory {
             throw new \InvalidArgumentException();
         }
         $this->instances[$key] = $value;
+        return $value;
     }
 }

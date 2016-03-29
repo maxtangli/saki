@@ -3,7 +3,6 @@ namespace Saki\Win\Yaku\Fan2;
 
 use Saki\Win\TileSeries;
 use Saki\Win\WinSubTarget;
-use Saki\Win\Yaku\Fan3\PureOutsideHandYaku;
 use Saki\Win\Yaku\Yaku;
 
 /**

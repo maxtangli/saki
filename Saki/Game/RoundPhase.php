@@ -65,20 +65,4 @@ class RoundPhase extends Enum {
     function isPrivateOrPublic() {
         return $this->isPrivate() || $this->isPublic();
     }
-
-    /**
-     * @param $value
-     * @return RoundPhase
-     */
-    static function getInstance($value) {
-        return parent::getInstance($value);
-    }
-
-    /**
-     * @param string $s
-     * @return RoundPhase
-     */
-    static function fromString($s) {
-        return parent::fromString($s);
-    }
 }

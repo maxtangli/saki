@@ -1,7 +1,6 @@
 <?php
 namespace Saki\Game;
 
-use Saki\RoundResult\RoundResult;
 use Saki\Tile\Tile;
 use Saki\Util\Roller;
 
@@ -17,7 +16,7 @@ class TurnManager {
     private $playerWindRoller;
 
     function __construct(PlayerList $playerList) {
-        $windTiles = Tile::getWindTiles($playerList->count()); // validate
+        $windTiles = Tile::getWindList($playerList->count())->toArray(); // validate
         $this->playerList = $playerList;
         $this->playerWindRoller = new Roller($windTiles);
     }

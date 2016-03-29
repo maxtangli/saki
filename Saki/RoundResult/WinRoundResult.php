@@ -2,7 +2,7 @@
 namespace Saki\RoundResult;
 
 use Saki\Game\Player;
-use Saki\Util\ArrayLikeObject;
+use Saki\Util\ArrayList;
 use Saki\Win\WinResult;
 use Saki\Win\WinState;
 
@@ -206,8 +206,8 @@ class WinRoundResult extends RoundResult {
      * @return Player
      */
     function isKeepDealer() {
-        $winPlayers = new ArrayLikeObject($this->getWinPlayers());
-        return $winPlayers->any(function (Player $player) {
+        $winPlayers = new ArrayList($this->getWinPlayers());
+        return $winPlayers->isAny(function (Player $player) {
             return $player->isDealer();
         });
     }

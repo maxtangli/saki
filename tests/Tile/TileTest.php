@@ -5,6 +5,17 @@ use Saki\Tile\TileType;
 
 class TileTest extends PHPUnit_Framework_TestCase {
 
+    function testCompare() {
+        $t5m = Tile::fromString('5m');
+        $t0m = Tile::fromString('0m');
+        $this->assertEquals(1, $t0m->compareTo($t5m));
+        $this->assertEquals(-1, $t5m->compareTo($t0m));
+
+        $f = Tile::getComparator();
+        $this->assertEquals(1, $f($t0m, $t5m));
+        $this->assertEquals(-1, $f($t5m, $t0m));
+    }
+
     function testOverall() {
         $m = Tile::getInstance(TileType::fromString('m'), 1);
         $this->assertEquals(1, $m->getNumber());
@@ -67,7 +78,7 @@ class TileTest extends PHPUnit_Framework_TestCase {
     function testNextTile($tileString, $offset, $nextTileString) {
         $tile = Tile::fromString($tileString);
         $nextTile = Tile::fromString($nextTileString);
-        $result = $tile->toNextTile($offset);
+        $result = $tile->getNextTile($offset);
         $this->assertEquals($nextTile, $result, sprintf('%s->toNextTile(%s) expected %s but actual %s', $tile, $offset, $nextTile, $result));
     }
 

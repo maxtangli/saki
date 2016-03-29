@@ -2,7 +2,6 @@
 namespace Saki\Game;
 
 use Saki\Tile\Tile;
-use Saki\Util\Utils;
 
 /**
  * History of chow, pong, kong declarations.

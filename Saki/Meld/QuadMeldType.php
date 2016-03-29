@@ -2,15 +2,15 @@
 namespace Saki\Meld;
 
 use Saki\Tile\Tile;
-use Saki\Tile\TileSortedList;
+use Saki\Tile\TileList;
 
 class QuadMeldType extends MeldType {
     function getTileCount() {
         return 4;
     }
 
-    protected function validFaces(TileSortedList $tileSortedList) {
-        return $tileSortedList[0] == $tileSortedList[1] && $tileSortedList[1] == $tileSortedList[2] && $tileSortedList[2] == $tileSortedList[3];
+    protected function validFaces(TileList $tileList) {
+        return $tileList[0] == $tileList[1] && $tileList[1] == $tileList[2] && $tileList[2] == $tileList[3];
     }
 
     function getPossibleTileLists(Tile $firstTile) {

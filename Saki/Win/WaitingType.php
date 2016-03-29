@@ -1,25 +1,22 @@
 <?php
 namespace Saki\Win;
 
+use Saki\Util\PriorityComparable;
 use Saki\Util\Enum;
-use Saki\Util\Utils;
 
 class WaitingType extends Enum {
-    static function getComparator() {
-        $descBestOnes = [ // todo adjust orders
-            WaitingType::getInstance(self::TWO_SIDE_RUN_WAITING),
-            WaitingType::getInstance(self::ONE_SIDE_RUN_WAITING),
-            WaitingType::getInstance(self::MIDDLE_RUN_WAITING),
-            WaitingType::getInstance(self::PAIR_WAITING),
-            WaitingType::getInstance(self::TRIPLE_WAITING),
-            WaitingType::getInstance(self::NOT_WAITING),
-        ];
-        return Utils::getComparatorByBestArray($descBestOnes);
-    }
+    use PriorityComparable;
 
-    function compareTo(WaitingType $other) {
-        $f = $this->getComparator();
-        return $f($this, $other);
+    function getPriority() {
+        $m = [ // todo adjust orders
+            self::TWO_SIDE_RUN_WAITING => 6,
+            self::ONE_SIDE_RUN_WAITING => 5,
+            self::MIDDLE_RUN_WAITING => 4,
+            self::PAIR_WAITING => 3,
+            self::TRIPLE_WAITING => 2,
+            self::NOT_WAITING => 1,
+        ];
+        return $m[$this->getValue()];
     }
 
     const NOT_WAITING = 0; // ノー聴
@@ -31,13 +28,5 @@ class WaitingType extends Enum {
 
     function exist() {
         return $this->getValue() != self::NOT_WAITING;
-    }
-
-    /**
-     * @param $value
-     * @return WaitingType
-     */
-    static function getInstance($value) {
-        return parent::getInstance($value);
     }
 }

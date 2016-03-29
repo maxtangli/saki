@@ -1,7 +1,6 @@
 <?php
 namespace Saki\Win\Yaku\Fan1;
 
-use Saki\Tile\Tile;
 use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\Yaku;
 

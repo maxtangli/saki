@@ -2,7 +2,6 @@
 
 use Saki\Game\Round;
 use Saki\Game\RoundPhase;
-use Saki\Game\RoundResetData;
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 
@@ -49,7 +48,7 @@ class RoundWinTest extends PHPUnit_Framework_TestCase {
 
     // todo refactor MultiWin
 //    function Round.multiWinByOther(array $players) {
-//        $playerArray = new ArrayLikeObject($players);
+//        $playerArray = new ArrayList($players);
 //        $playerArray->walk(function (Player $player) {
 //            $this->assertPublicPhase($player);
 //        });

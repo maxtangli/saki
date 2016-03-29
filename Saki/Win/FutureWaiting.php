@@ -2,15 +2,15 @@
 namespace Saki\Win;
 
 use Saki\Tile\Tile;
-use Saki\Tile\TileSortedList;
+use Saki\Tile\TileList;
 
 class FutureWaiting {
     private $discardedTile;
     private $waitingTileList;
 
-    function __construct(Tile $discardedTile, TileSortedList $waitingTileList) {
+    function __construct(Tile $discardedTile, TileList $waitingTileList) {
         $this->discardedTile = $discardedTile;
-        $this->waitingTileList = $waitingTileList;
+        $this->waitingTileList = $waitingTileList->getCopy()->sort();
     }
 
     function getDiscardedTile() {

@@ -1,10 +1,10 @@
 <?php
 namespace Saki\Game;
-use Saki\FinalScore\RankingHorseFinalScoreStrategy;
+use Saki\FinalScore\CompositeFinalScoreStrategy;
 use Saki\FinalScore\MoundFinalScoreStrategy;
+use Saki\FinalScore\RankingHorseFinalScoreStrategy;
 use Saki\FinalScore\RankingHorseType;
 use Saki\Tile\TileSet;
-use Saki\FinalScore\CompositeFinalScoreStrategy;
 use Saki\Win\Yaku\YakuSet;
 
 /**

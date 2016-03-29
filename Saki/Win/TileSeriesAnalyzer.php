@@ -3,8 +3,7 @@
 namespace Saki\Win;
 
 use Saki\Meld\MeldList;
-use Saki\Tile\Tile;
-use Saki\Util\ArrayLikeObject;
+use Saki\Util\ArrayList;
 use Saki\Util\Singleton;
 
 class TileSeriesAnalyzer extends Singleton {
@@ -55,7 +54,7 @@ class TileSeriesAnalyzer extends Singleton {
             }
         }
         if (!empty($candidates)) {
-            $l = new ArrayLikeObject($candidates);
+            $l = new ArrayList($candidates);
             return $l->getMax(TileSeries::getComparator());
         } else {
             return TileSeries::getInstance(TileSeries::NOT_TILE_SERIES);

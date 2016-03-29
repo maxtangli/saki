@@ -31,9 +31,9 @@ class TileArea {
     }
 
     function reset() {
-        $this->handTileList->setInnerArray([]);
-        $this->discardedTileList->clear();
-        $this->declaredMeldList->setInnerArray([]);
+        $this->handTileList->fromArray([]);
+        $this->discardedTileList->removeAll();
+        $this->declaredMeldList->fromArray([]);
         $this->reachGlobalTurn = false;
     }
 
@@ -94,17 +94,17 @@ class TileArea {
      */
     function drawInit($otherTiles) {
         // always valid
-        $this->getHandReference()->push($otherTiles);
+        $this->getHandReference()->insertLast($otherTiles);
     }
 
     function draw(Tile $newTile) {
         // always valid
-        $this->getHandReference()->push($newTile);
+        $this->getHandReference()->insertLast($newTile);
     }
 
     function drawReplacement(Tile $newTile) {
         // always valid
-        $this->getHandReference()->push($newTile);
+        $this->getHandReference()->insertLast($newTile);
     }
 
     function canDiscard(Tile $selfTile) {
@@ -112,8 +112,8 @@ class TileArea {
     }
 
     function discard(Tile $selfTile) {
-        $this->getHandReference()->removeByValue($selfTile); // validate
-        $this->getDiscardedReference()->push($selfTile);
+        $this->getHandReference()->remove($selfTile); // validate
+        $this->getDiscardedReference()->insertLast($selfTile);
     }
 
     /*
@@ -166,11 +166,11 @@ class TileArea {
 
         // remove origin tiles and meld
         if ($handTiles) {
-            $this->getHandReference()->removeByValue($handTiles);
+            $this->getHandReference()->remove($handTiles);
         }
 
         if ($declaredMeld) {
-            $this->getDeclaredMeldListReference()->removeByValue($declaredMeld, function (Meld $a, Meld $b) {
+            $this->getDeclaredMeldListReference()->remove($declaredMeld, function (Meld $a, Meld $b) {
                 return $a->equals($b, false);
             });
         }
@@ -184,7 +184,7 @@ class TileArea {
         } else {
             $targetMeld = $fromMeld->toConcealed($targetConcealed);
         }
-        $this->getDeclaredMeldListReference()->push($targetMeld);
+        $this->getDeclaredMeldListReference()->insertLast($targetMeld);
         return $targetMeld;
     }
 

@@ -4,9 +4,23 @@ A japanese-mahjong server.
 
 ## good practice
 
-agile = tdd + kiss + refactor
+goal
 
-measure performance at dev-phase for complex functions
+- good learning: reinvent all wheels without reference to exist algorithm and libraries, 
+though reuse wheels is an important ability that should be mastered via other projects.
+
+before coding
+
+- time management: todo list, time-input statistics.
+- requirement control: kiss, important first.
+- it should be easy: feeling hard means abnormal, ex.x unclear requirement? bad design? 
+
+coding
+
+- agile development: incremental + kiss + tdd + refactor + design. e.x. notImplementedException.
+- three and out design: if bad smells come at 3rd times, redesign by refactoring. 
+- test as code: kiss, refactor, design. e.x. dataProvider, customAssert, TestUtils. ng. copy-paste everywhere.
+- performance: avoid early optimization, optimize when tests are slow, use a profiler.
 
 naming conventions
 
@@ -14,10 +28,10 @@ naming conventions
 - init(): set members to default state, without constructor()'s new operations cost.
 - reset($params): set members to specified state defined by $params and current members state.
 
-## rush cost
+## rush statistics
 
 rush       | hours
----------- | -----
+--------- | -----
 rush  0-5  | 34h
 rush  6-10 | 23.8h
 rush 11-15 | 15.8h
@@ -26,8 +40,9 @@ rush 21-25 | 26.7h
 rush 26-30 | 24.1h
 rush 31-35 | 17.4h
 rush 36-40 | 24.6h
-rush 41-45 | ?
-     total | 192h + ing
+rush 41-45 | 15.3h
+rush 46-50 | ing
+     total | 207.3h + ing
 
 ## rush history
 
@@ -491,13 +506,68 @@ rush 44 red dora 1.7h
 - [x] TileList.toString()
 - [x] TileList sort: 1234056789m 0.2h
 
-rush 45 red dora: meld issue
+rush 45 refactor: remove TileSortedList 1.7h
+
+- [x] MeldType.valid 0.5h
+
+- [x] refactor MeldTypeTest 0.3h
+- [x] summary 0.2h
+- [x] WeakMeldType.getWaitingTiles 0.4h
+
+- [x] furuteWaiting 
+- [x] tileSeries 0.1h
+
+- [x] remove 0.2h
+
+rush 46 refactor ArrayList 7.6h
+
+- [x] scratch Linq-style functions 0.6h
+- [x] introduce phpdoc: static 0.2h // see how foolish I was all these times!
+- [x] adapt getAggregated 0.2h
+- [x] adapt all,any
+
+- [x] remove toArray.select, toFilteredArray -> fromSelected 1.5h
+- [x] remove needless hook 0.1h
+- [x] remove boring Benchmark
+
+- [x] adapt distinct 0.2h
+- [x] add getCounts 0.3h
+- [x] remove getEqualValueCount 0.2h
+
+- [x] adapt orderBy 0.4h
+
+- [x] adapt getMin,getMax 0.3h
+- [x] trait Comparable 0.7h
+- [x] adapt concat 0.1h
+- [x] remove walk, etc. 0.1h
+- [x] adapt shiftLeft 0.1h
+- [x] remove toEquals 0.1h
+- [x] adapt fromArray 0.1h
+- [x] adapt remove etc 0.3h
+- [x] adapt insert etc 0.1h
+- [x] adapt replace etc 0.2h 
+- [x] adapt getIndex,getValueAt etc 0.8h
+- [x] format 1h
+
+rush 47 refactor Saki/Tile/ 4.4h
+
+- [x] refactor Tile 0.9h
+- [x] refactor Tile.ID 1.5h // WARNING: be careful of over-refactoring!
+- [x] TileFactory 0.5h
+
+- [x] refactor TileList 0.8h
+- [x] refactor TileSet 0.1h
+- [x] optimize: by profiler 0.6h
+
+rush refactor Saki/Meld/
+
+- [ ] MeldType
+- [ ] Meld
+- [ ] MeldList
+
+rush red dora: meld issue
 
 - [ ] adapt discard/createMeld logic
-
-rush refactor ArrayLikeObject
-
-- [ ] 
 
 rush public command roller
 
@@ -528,7 +598,8 @@ rush all yaku: thirteen orphans
 
 rush refactor
 
-- [ ] refactor Tile factory
+- [ ] remove redDora tricks
+- [ ] Hand = HandTileList + DeclareMeldList
 - [ ] fix: mockHand target tile vs robQuadPhase target tile
 - [ ] refactor: TileSeries <-> MeldList.xxx, remove needless TileSeries
 - [ ] refactor: RoundResult

@@ -5,7 +5,7 @@ namespace Saki\Game;
 use Saki\Meld\MeldList;
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
-use Saki\Util\ArrayLikeObject;
+use Saki\Util\Utils;
 
 /**
  * Provide collaborate operations on 1 Wall and 2-4 TileArea.
@@ -48,45 +48,46 @@ class TileAreas {
      * note: the function is protected since
      * - client should be clearly about current phase and hand count by calling setPrivate or setPublic rather than this function.
      * @param Player $player
-     * @param TileList $hand
+     * @param TileList $newHand
      * @param MeldList|null $declareMeldList
      * @param Tile|null $targetTile
      */
-    protected function debugSetHandImpl(Player $player, TileList $hand, MeldList $declareMeldList = null, Tile $targetTile = null) {
+    protected function debugSetHandImpl(Player $player, TileList $newHand, MeldList $declareMeldList = null, Tile $targetTile = null) {
         $currentHand = $player->getTileArea()->getHandReference();
-        $validHandPhase = $hand->getHandCount()->equalsPhase($currentHand->getHandCount());
+        $newHandSize = $newHand->getHandSize();
+        $validHandPhase = $newHandSize->equalsPhase($currentHand->getHandSize());
         if (!$validHandPhase) {
             throw new \InvalidArgumentException(
                 sprintf('Invalid $hand[%s(%s)], expected same phase one with current hand[%s(%s)].',
-                    $hand, $hand->getHandCount(), $currentHand, $currentHand->getHandCount())
+                    $newHand, $newHandSize, $currentHand, $currentHand->getHandSize())
             );
         }
 
         $actualDeclareMeldList = $declareMeldList ?? MeldList::fromString('');
 
-        if ($hand->isPrivateHand() && $targetTile && $hand->valueExist($targetTile)) {
+        if ($newHandSize->isPrivate() && $targetTile && $newHand->valueExist($targetTile)) {
             $actualTargetTile = $targetTile;
-        } elseif ($hand->isPrivateHand() && !$targetTile) {
-            $actualTargetTile = $hand[0];
-        } elseif ($hand->isPublicHand() && !$targetTile && $this->hasTargetTile()) {
+        } elseif ($newHandSize->isPrivate() && !$targetTile) {
+            $actualTargetTile = $newHand[0];
+        } elseif ($newHandSize->isPublic() && !$targetTile && $this->hasTargetTile()) {
             $actualTargetTile = $this->getTargetTile()->getTile();
         } else {
             throw new \InvalidArgumentException(
-                sprintf('Invalid combination of $hand[%s], $targetTile[%s].', $hand, $targetTile)
+                sprintf('Invalid combination of $hand[%s], $targetTile[%s].', $newHand, $targetTile)
             );
         }
 
-        $privateFullCount = $hand->count() + ($hand->isPublicHand() ? 1 : 0) + $actualDeclareMeldList->getHandCount();
+        $privateFullCount = $newHand->count() + ($newHandSize->isPublic() ? 1 : 0) + $actualDeclareMeldList->getHandCount();
         $validPrivateFullCount = $privateFullCount == 14;
         if (!$validPrivateFullCount) {
             throw new \InvalidArgumentException(
                 sprintf('Invalid privateFullCount[%s] of $hand[%s], $actualDeclareMeldList[%s], $targetTile[%s].'
-                    , $privateFullCount, $hand, $actualDeclareMeldList, $targetTile)
+                    , $privateFullCount, $newHand, $actualDeclareMeldList, $targetTile)
             );
         }
 
-        $player->getTileArea()->getHandReference()->setInnerArray($hand->toArray());
-        $player->getTileArea()->getDeclaredMeldListReference()->setInnerArray($actualDeclareMeldList->toArray());
+        $player->getTileArea()->getHandReference()->fromArray($newHand->toArray());
+        $player->getTileArea()->getDeclaredMeldListReference()->fromArray($actualDeclareMeldList->toArray());
         $this->setTargetTile(new TargetTile($actualTargetTile));
     }
 
@@ -106,7 +107,7 @@ class TileAreas {
         }
 
         $replaceIndexes = range(0, $replaceTileList->count() - 1);
-        $newHand = $handReference->toTileList()->replaceByIndex($replaceIndexes, $replaceTileList->toArray());
+        $newHand = $handReference->getCopy()->replaceAt($replaceIndexes, $replaceTileList->toArray());
         $declaredMeldList = $player->getTileArea()->getDeclaredMeldListReference();
 
         // call to handle targetTile
@@ -181,9 +182,9 @@ class TileAreas {
      * @return TileList
      */
     function getPublicHand(Player $player) {
-        $originHand = $player->getTileArea()->getHandReference()->toTileList();
-        return $originHand->isPublicHand() ? $originHand
-            : $originHand->removeByValue($this->getTargetTile()->getTile());
+        $originHand = $player->getTileArea()->getHandReference()->getCopy();
+        return $originHand->getHandSize()->isPublic() ? $originHand
+            : $originHand->remove($this->getTargetTile()->getTile());
     }
 
     /**
@@ -191,9 +192,9 @@ class TileAreas {
      * @return TileList
      */
     function getPrivateHand(Player $player) {
-        $originHand = $player->getTileArea()->getHandReference()->toTileList();
-        return $originHand->isPrivateHand() ? $originHand :
-            $originHand->push($this->getTargetTile()->getTile());
+        $originHand = $player->getTileArea()->getHandReference()->getCopy();
+        return $originHand->getHandSize()->isPrivate() ? $originHand :
+            $originHand->insertLast($this->getTargetTile()->getTile());
     }
 
     /**
@@ -203,25 +204,25 @@ class TileAreas {
     function getPrivateFull(Player $player) {
         $privateHand = $this->getPrivateHand($player);
         $declared = $player->getTileArea()->getDeclaredMeldListReference()->toTileList();
-        return $privateHand->merge($declared);
+        return $privateHand->concat($declared);
     }
 
     /**
      * @return TileList
      */
     protected function getDiscarded() {
-        return $this->playerList->toReducedValue(function (TileList $l, Player $player) {
-            return $l->push($player->getTileArea()->getDiscardedReference()->toArray());
-        }, TileList::fromString(''));
+        return $this->playerList->getAggregated(TileList::fromString(''), function (TileList $l, Player $player) {
+            return $l->insertLast($player->getTileArea()->getDiscardedReference()->toArray());
+        });
     }
 
     // data
 
     function getOutsideRemainTileAmount(Tile $tile) {
-        $total = $this->getWall()->getTileSet()->getEqualValueCount($tile);
-        $discarded = $this->getDiscarded()->getEqualValueCount($tile);
-        $remain = $total - $discarded;
-        return $remain;
+        $totalCount = $this->getWall()->getTileSet()->getCount(Utils::toPredicate($tile));
+        $discardCount = $this->getDiscarded()->getCount(Utils::toPredicate($tile));
+        $remainCount = $totalCount - $discardCount;
+        return $remainCount;
     }
 
     function isFirstTurnWin(Player $targetPlayer) {
@@ -348,7 +349,7 @@ class TileAreas {
 
         $targetTile = $targetPlayerArea->getDiscardedReference()->getLast(); // test valid
         $actPlayerArea->chowByOther($targetTile, $tile1, $tile2); // test valid
-        $targetPlayerArea->getDiscardedReference()->pop();
+        $targetPlayerArea->getDiscardedReference()->removeLast();
 
         $this->recordDeclare($actPlayer->getSelfWind());
     }
@@ -360,7 +361,7 @@ class TileAreas {
 
         $targetTile = $targetPlayerArea->getDiscardedReference()->getLast(); // test valid
         $actPlayerArea->pongByOther($targetTile); // test valid
-        $targetPlayerArea->getDiscardedReference()->pop();
+        $targetPlayerArea->getDiscardedReference()->removeLast();
 
         $this->recordDeclare($actPlayer->getSelfWind());
     }
@@ -373,7 +374,7 @@ class TileAreas {
         $targetTile = $targetPlayerArea->getDiscardedReference()->getLast(); // test valid
         $actPlayerArea->bigKong($targetTile); // test valid
         $this->drawReplacement($actPlayer);
-        $targetPlayerArea->getDiscardedReference()->pop();
+        $targetPlayerArea->getDiscardedReference()->removeLast();
 
         $this->recordDeclare($actPlayer->getSelfWind());
     }
@@ -386,13 +387,13 @@ class TileAreas {
         $targetTile = $currentPlayerArea->getDiscardedReference()->getLast(); // test valid
         $playerArea->smallKong($targetTile);
         $this->drawReplacement($actPlayer);
-        $currentPlayerArea->getDiscardedReference()->pop();
+        $currentPlayerArea->getDiscardedReference()->removeLast();
 
         $this->recordDeclare($actPlayer->getSelfWind());
     }
 
     protected function assertNextPlayer(Player $nextPlayer, Player $prePlayer) {
-        list($iNext, $iPre) = $this->playerList->valueToIndex([$nextPlayer, $prePlayer]);
+        list($iNext, $iPre) = $this->playerList->getIndex([$nextPlayer, $prePlayer]);
         $valid = ($iNext == ($iPre + 1));
         if (!$valid) {
             throw new \InvalidArgumentException(

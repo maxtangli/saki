@@ -4,7 +4,7 @@ namespace Saki\Game;
 
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
-use Saki\Util\ArrayLikeObject;
+use Saki\Util\ArrayList;
 
 /**
  * Record discard and plusKong tiles for furiten judge.
@@ -13,12 +13,12 @@ use Saki\Util\ArrayLikeObject;
 class OpenHistory {
 
     /**
-     * @var ArrayLikeObject
+     * @var ArrayList
      */
     private $a;
 
     function __construct() {
-        $this->a = new ArrayLikeObject([]);
+        $this->a = new ArrayList();
     }
 
     function __toString() {
@@ -26,7 +26,7 @@ class OpenHistory {
     }
 
     function reset() {
-        $this->a->clear();
+        $this->a->removeAll();
     }
 
     /**
@@ -53,10 +53,9 @@ class OpenHistory {
      * @return TileList
      */
     function getAll() {
-        $tiles = $this->a->toArray(function(OpenHistoryItem $item) {
+        return (new TileList())->fromSelected($this->a, function (OpenHistoryItem $item) {
             return $item->getDiscardedTile();
         });
-        return new TileList($tiles);
     }
 
     /**
@@ -72,22 +71,22 @@ class OpenHistory {
 
         $notUsedParam = $actualFromSelfWind;
         $compareItem = new OpenHistoryItem($fromTurn, $actualFromSelfWind, $notUsedParam); // validate
-        $match = function(OpenHistoryItem $item) use ($isSelf, $mySelfWind, $compareItem) {
+        $match = function (OpenHistoryItem $item) use ($isSelf, $mySelfWind, $compareItem) {
             $matchIsSelf = $isSelf ? $item->getSelfWind() == $mySelfWind : $item->getSelfWind() != $mySelfWind;
             $matchOrder = $item->validLaterItemOf($compareItem, true);
             return $matchIsSelf && $matchOrder;
         };
 
         /** @var TileList $openTileList */
-        $openTileList = $this->a->toReducedValue(function (TileList $targetDiscardTileList, OpenHistoryItem $item) use ($match) {
+        $openTileList = $this->a->getAggregated(new TileList(), function (TileList $targetDiscardTileList, OpenHistoryItem $item) use ($match) {
             if ($match($item)) {
-                $targetDiscardTileList->push($item->getDiscardedTile());
+                $targetDiscardTileList->insertLast($item->getDiscardedTile());
             }
             return $targetDiscardTileList;
-        }, new TileList([]));
+        });
 
         if ($excludedLastTile && $openTileList->count() > 0) {
-            $openTileList->pop();
+            $openTileList->removeLast();
         }
 
         return $openTileList;
@@ -107,6 +106,6 @@ class OpenHistory {
             }
         }
 
-        $this->a->push($newItem);
+        $this->a->insertLast($newItem);
     }
 }

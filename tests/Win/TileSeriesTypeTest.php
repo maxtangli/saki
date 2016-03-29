@@ -13,7 +13,7 @@ class TileSeriesTypeTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(1, $greater->compareTo($smaller));
         $this->assertEquals(-1, $smaller->compareTo($greater));
 
-        $l = new \Saki\Util\ArrayLikeObject([$greater, $smaller]);
+        $l = new \Saki\Util\ArrayList([$greater, $smaller]);
         $this->assertEquals($greater, $l->getMax());
     }
 
@@ -25,7 +25,7 @@ class TileSeriesTypeTest extends PHPUnit_Framework_TestCase {
         $allMeldList = MeldList::fromString($meldListString);
         $this->assertTrue($s->existIn($allMeldList), sprintf('[%s],[%s].', $allMeldList, $s));
 
-        $declaredMeldList = new MeldList([]);
+        $declaredMeldList = new MeldList();
 
         $winTile = Tile::fromString($tileString);
 

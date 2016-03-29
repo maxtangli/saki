@@ -4,19 +4,15 @@ namespace Saki\Util;
 abstract class Enum {
     private static $instances;
 
-    static function validValue($value) {
+    static function validValue(int $value) {
         return isset(static::getValue2StringMap()[$value]);
     }
 
-    static function validString($s) {
-        return array_search($s, static::getValue2StringMap()) !== false;
-    }
-
     /**
-     * @param $value
-     * @return Enum
+     * @param int $value
+     * @return static
      */
-    static function getInstance($value) {
+    static function getInstance(int $value) {
         $class = static::getClassName();
         if (!isset(self::$instances[$class][$value])) {
             self::$instances[$class][$value] = new $class($value);
@@ -25,20 +21,10 @@ abstract class Enum {
     }
 
     /**
-     * @return Enum[]
-     */
-    static function getAllInstances() {
-        $allValues = array_keys(static::getValue2StringMap());
-        return array_map(function ($v) {
-            return static::getInstance($v);
-        }, $allValues);
-    }
-
-    /**
      * @param string $s
-     * @return Enum
+     * @return static
      */
-    static function fromString($s) {
+    static function fromString(string $s) {
         $v = array_search($s, static::getValue2StringMap());
         if ($v === false) {
             throw new \InvalidArgumentException("Invalid argument \$s[$s].");

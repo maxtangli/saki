@@ -29,7 +29,7 @@ class RoundWindTurnData {
     }
 
     function getDealerWind() {
-        return Tile::fromString('E')->toNextTile($this->getTurn() - 1);
+        return Tile::fromString('E')->getNextTile($this->getTurn() - 1);
     }
 
     function setDealerWind(Tile $wind) {

@@ -1,7 +1,6 @@
 <?php
 namespace Saki\Win\Yaku\Yakuman;
 
-use Saki\Win\TileSeries;
 use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\Yaku;
 

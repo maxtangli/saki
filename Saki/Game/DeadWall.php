@@ -38,10 +38,8 @@ class DeadWall {
 
     function debugSetNextReplaceTile(Tile $tile) {
         $this->assertShiftAble();
-        $this->tileList->replaceByIndex(0, $tile);
+        $this->tileList->replaceAt(0, $tile);
     }
-
-    // todo opened count
 
     /**
      * @return \Saki\Tile\Tile[]
@@ -72,7 +70,7 @@ class DeadWall {
     function shift() {
         $this->assertShiftAble();
         $tile = $this->tileList->getFirst();
-        $this->tileList->shift();
+        $this->tileList->removeFirst();
         return $tile;
     }
 

@@ -17,32 +17,28 @@ class Roller {
         }
 
         $this->targets = $targets;
-        $this->targetList = new ArrayLikeObject($targets);
+        $this->targetList = new ArrayList($targets);
 
         $initialTarget = $initialTarget !== null ? $initialTarget : $this->targetList[0];
         $this->reset($initialTarget);
     }
 
     function reset($initialTarget) {
-        $initialIndex = $this->targetList->valueToIndex($initialTarget);  // validate
+        $initialIndex = $this->targetList->getIndex($initialTarget);  // validate
 
-        $this->targetList->leftShift($initialIndex);
+        $this->targetList->shiftCyclicLeft($initialIndex);
         $this->currentIndex = 0;
         $this->globalTurn = 1;
-        $this->localTurns = $this->targetList->toArray(function () {
-            return 0;
-        });
+        $this->localTurns = array_fill(0, $this->targetList->count(), 0);
         $this->localTurns[0] = 1;
     }
 
     function debugSet($currentTarget, $globalTurn) {
-        $currentIndex = $this->targetList->valueToIndex($currentTarget);
+        $currentIndex = $this->targetList->getIndex($currentTarget);
 
         $this->currentIndex = $currentIndex;
         $this->globalTurn = $globalTurn;
-        $this->localTurns = $this->targetList->toArray(function () {
-            return 0;
-        });
+        $this->localTurns = array_fill(0, $this->targetList->count(), 0);
         $this->localTurns[0] = 1;
     }
 
@@ -59,7 +55,7 @@ class Roller {
     }
 
     function getOffsetTarget($offset, $baseTarget = null) {
-        $baseIndex = $baseTarget !== null ? $this->targetList->valueToIndex($baseTarget) // validate
+        $baseIndex = $baseTarget !== null ? $this->targetList->getIndex($baseTarget) // validate
             : $this->currentIndex;
 
         $targetIndex = Utils::getNormalizedModValue($baseIndex + $offset, $this->getTargetsCount());
@@ -71,12 +67,12 @@ class Roller {
     }
 
     function getTargetLocalTurn($target) {
-        $i = $this->targetList->valueToIndex($target); // validate
+        $i = $this->targetList->getIndex($target); // validate
         return $this->localTurns[$i];
     }
 
     function toTarget($target) {
-        $targetIndex = $this->targetList->valueToIndex($target); // validate
+        $targetIndex = $this->targetList->getIndex($target); // validate
 
         if ($targetIndex == $this->currentIndex) {
             throw new \InvalidArgumentException('target should not be same with current. Logic maybe confusing.');

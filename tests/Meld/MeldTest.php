@@ -3,7 +3,7 @@
 use Saki\Meld\Meld;
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
-use Saki\Util\ArrayLikeObject;
+use Saki\Util\ArrayList;
 
 class MeldTest extends PHPUnit_Framework_TestCase {
 
@@ -55,7 +55,7 @@ class MeldTest extends PHPUnit_Framework_TestCase {
 
         // array
 
-        $meldArray = new ArrayLikeObject([$mNotConcealed]);
+        $meldArray = new ArrayList([$mNotConcealed]);
         $this->assertTrue($meldArray->valueExist($mNotConcealed));
         $this->assertTrue($meldArray->valueExist($mNotConcealed, Meld::getEqualsCallback(true)));
         $this->assertTrue($meldArray->valueExist($mNotConcealed, Meld::getEqualsCallback(false)));

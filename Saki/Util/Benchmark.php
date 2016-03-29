@@ -7,7 +7,7 @@ class Benchmark {
 
     function __construct($name) {
         $this->name = $name;
-        $this->items = new ArrayLikeObject([]);
+        $this->items = new ArrayList();
     }
 
     function __toString() {
@@ -23,6 +23,6 @@ class Benchmark {
      * @param BenchmarkItem $item
      */
     function add(BenchmarkItem $item) {
-        $this->items->push($item);
+        $this->items->insertLast($item);
     }
 }

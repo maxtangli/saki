@@ -1,7 +1,7 @@
 <?php
 namespace Saki\Win\Yaku;
 
-use Saki\Util\ArrayLikeObject;
+use Saki\Util\ArrayList;
 use Saki\Win\Yaku\Fan1\AllRunsYaku;
 use Saki\Win\Yaku\Fan1\AllSimplesYaku;
 use Saki\Win\Yaku\Fan1\ConcealedSelfDrawYaku;
@@ -43,7 +43,7 @@ use Saki\Win\Yaku\Yakuman\FourQuadsYaku;
 use Saki\Win\Yaku\Yakuman\SmallFourWindsYaku;
 use Saki\Win\Yaku\Yakuman2\FourConcealedTriplesOnePairWaitingYaku;
 
-class YakuSet extends ArrayLikeObject {
+class YakuSet extends ArrayList {
     private static $standardYakusSet;
     static function getStandardYakuSet() {
         self::$standardYakusSet = self::$standardYakusSet ?? new self([

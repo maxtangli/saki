@@ -34,7 +34,7 @@ class RoundWindData {
             $this->selfWindTurn += 1;
         } else { // not keep dealer
             if ($this->isCurrentRoundWindLastTurn()) {
-                $this->roundWind = $this->roundWind->toNextTile();
+                $this->roundWind = $this->roundWind->getNextTile();
                 $this->roundWindTurn = 1;
                 $this->selfWindTurn = 0;
             } else {
@@ -121,7 +121,7 @@ class RoundWindData {
         if ($this->getTotalRoundType()->getValue() == GameLengthType::FULL) {
             throw new \LogicException('un implemented.');
         }
-        $finalRoundWind = $this->getTotalRoundType()->getLastRoundWind()->toNextTile();
+        $finalRoundWind = $this->getTotalRoundType()->getLastRoundWind()->getNextTile();
         $isFinalRoundWind = $this->getRoundWind() == $finalRoundWind;
         return $isFinalRoundWind && $this->isCurrentRoundWindLastTurn();
     }

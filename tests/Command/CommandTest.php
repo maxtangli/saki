@@ -12,9 +12,7 @@ use Saki\Command\PrivateCommand\DiscardCommand;
 use Saki\Command\PrivateCommand\WinBySelfCommand;
 use Saki\Command\PublicCommand\WinByOtherCommand;
 use Saki\Game\Round;
-use Saki\Game\RoundPhase;
 use Saki\Tile\Tile;
-use Saki\Tile\TileList;
 
 class HelloCommand extends Command {
     static function getParamDeclarations() {

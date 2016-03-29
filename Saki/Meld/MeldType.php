@@ -3,7 +3,6 @@ namespace Saki\Meld;
 
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
-use Saki\Tile\TileSortedList;
 use Saki\Util\Singleton;
 
 abstract class MeldType extends Singleton {
@@ -18,15 +17,15 @@ abstract class MeldType extends Singleton {
 
     abstract function getTileCount();
 
-    final function valid(TileSortedList $tileSortedList) {
-        return $this->validCount($tileSortedList) && $this->validFaces($tileSortedList);
+    final function valid(TileList $tileList) {
+        return $this->validCount($tileList) && $this->validFaces($tileList);
     }
 
-    final protected function validCount(TileSortedList $tileSortedList) {
-        return count($tileSortedList) == $this->getTileCount();
+    final protected function validCount(TileList $tileList) {
+        return count($tileList) == $this->getTileCount();
     }
 
-    abstract protected function validFaces(TileSortedList $tileSortedList);
+    abstract protected function validFaces(TileList $tileList);
 
     /**
      * @param Tile $firstTile
@@ -52,12 +51,5 @@ abstract class MeldType extends Singleton {
      * @return WinSetType
      */
     abstract function getWinSetType();
-
-    /**
-     * @return MeldType
-     */
-    static function getInstance() {
-        return parent::getInstance();
-    }
 }
 

@@ -4,7 +4,6 @@ namespace Saki\Game;
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 use Saki\Tile\TileSet;
-use Saki\Game\DoraFacade;
 
 class Wall {
     private $tileSet;
@@ -42,7 +41,7 @@ class Wall {
     }
 
     function debugSetNextDrawTile(Tile $tile) {
-        $this->getRemainTileList()->replaceByIndex($this->getRemainTileList()->count() - 1, $tile);
+        $this->getRemainTileList()->replaceAt($this->getRemainTileList()->count() - 1, $tile);
     }
 
     function debugSetNextReplaceTile(Tile $tile) {
@@ -90,7 +89,7 @@ class Wall {
      */
     function drawInit($n) {
         $tiles = $this->getRemainTileList()->getLastMany($n);
-        $this->getRemainTileList()->pop($n);
+        $this->getRemainTileList()->removeLast($n);
         return $tiles;
     }
 
@@ -99,7 +98,7 @@ class Wall {
      */
     function draw() {
         $tile = $this->getRemainTileList()->getLast();
-        $this->getRemainTileList()->pop();
+        $this->getRemainTileList()->removeLast();
         return $tile;
     }
 

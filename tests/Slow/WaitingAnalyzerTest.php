@@ -3,6 +3,7 @@
 use Saki\Meld\MeldList;
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
+use Saki\Util\ArrayList;
 use Saki\Win\FutureWaiting;
 use Saki\Win\WaitingAnalyzer;
 use Saki\Win\WinAnalyzer;
@@ -20,9 +21,9 @@ class WaitingAnalyzerTest extends \PHPUnit_Framework_TestCase {
         $declaredMeldList = MeldList::fromString($declaredMeldListString);
 
         $waitingTileList = $waitingTileAnalyzer->analyzePublic($handTileList, $declaredMeldList);
-        $waitingTileStrings = $waitingTileList->toArray(function (Tile $waitingTile) {
+        $waitingTileStrings = (new ArrayList())->fromSelected($waitingTileList, function (Tile $waitingTile) {
             return $waitingTile->__toString();
-        });
+        })->toArray();
         $this->assertEquals($expected, $waitingTileStrings,
             sprintf('[%s],[%s],[%s],[%s]',
                 $onHandTileListString, $declaredMeldListString, implode(',', $expected), implode(',', $waitingTileStrings)));
@@ -51,9 +52,9 @@ class WaitingAnalyzerTest extends \PHPUnit_Framework_TestCase {
         $declaredMeldList = MeldList::fromString($declaredMeldListString);
 
         $futureWaitingList = $waitingTileAnalyzer->analyzePrivate($handTileList, $declaredMeldList);
-        $discardedTileStrings = $futureWaitingList->toArray(function (FutureWaiting $futureWaiting) {
+        $discardedTileStrings = (new ArrayList())->fromSelected($futureWaitingList, function (FutureWaiting $futureWaiting) {
             return $futureWaiting->getDiscardedTile()->__toString();
-        });
+        })->toArray();
         $this->assertEquals($expected, $discardedTileStrings,
             sprintf('[%s],[%s],[%s],[%s]',
                 $onHandTileListString, $declaredMeldListString, implode(',', $expected), implode(',', $discardedTileStrings)));

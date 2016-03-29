@@ -1,81 +1,99 @@
 <?php
 
 use Saki\Meld\Meld;
+use Saki\Meld\MeldType;
+use Saki\Meld\PairMeldType;
+use Saki\Meld\QuadMeldType;
+use Saki\Meld\RunMeldType;
+use Saki\Meld\TripleMeldType;
+use Saki\Meld\WeakPairMeldType;
+use Saki\Meld\WeakRunMeldType;
 use Saki\Tile\Tile;
-use Saki\Tile\TileSortedList;
+use Saki\Tile\TileList;
+use Saki\Util\ArrayList;
 use Saki\Win\WaitingType;
 
 class MeldTypeTest extends PHPUnit_Framework_TestCase {
-
     function testToString() {
-        $this->assertSame('PairMeldType', \Saki\Meld\PairMeldType::getInstance()->__toString());
-    }
-
-    function testPair() {
-        $mt = \Saki\Meld\PairMeldType::getInstance();
-        $this->assertTrue($mt->valid(TileSortedList::fromString('11m')));
-        $this->assertFalse($mt->valid(TileSortedList::fromString('111m')));
-    }
-
-    function testRun() {
-        $mt = \Saki\Meld\RunMeldType::getInstance();
-        $this->assertTrue($mt->valid(TileSortedList::fromString('123m')));
-        $this->assertTrue($mt->valid(TileSortedList::fromString('132m')));
-        $this->assertTrue($mt->valid(TileSortedList::fromString('213m')));
-        $this->assertTrue($mt->valid(TileSortedList::fromString('231m')));
-        $this->assertTrue($mt->valid(TileSortedList::fromString('312m')));
-        $this->assertTrue($mt->valid(TileSortedList::fromString('321m')));
-        $this->assertFalse($mt->valid(TileSortedList::fromString('12m3s')));
-        $this->assertFalse($mt->valid(TileSortedList::fromString('121m')));
-    }
-
-    function testTriple() {
-        $mt = \Saki\Meld\TripleMeldType::getInstance();
-        $this->assertTrue($mt->valid(TileSortedList::fromString('111m')));
-        $this->assertFalse($mt->valid(TileSortedList::fromString('11m1s')));
-        $this->assertFalse($mt->valid(TileSortedList::fromString('11m')));
+        $this->assertSame('PairMeldType', PairMeldType::getInstance()->__toString());
     }
 
     function testWinSetType() {
-        $this->assertTrue(\Saki\Meld\RunMeldType::getInstance()->getWinSetType()->isWinSet());
-        $this->assertTrue(\Saki\Meld\RunMeldType::getInstance()->getWinSetType()->isHandWinSet());
+        $this->assertTrue(RunMeldType::getInstance()->getWinSetType()->isWinSet());
+        $this->assertTrue(RunMeldType::getInstance()->getWinSetType()->isHandWinSet());
 
-        $this->assertTrue(\Saki\Meld\QuadMeldType::getInstance()->getWinSetType()->isWinSet());
-        $this->assertFalse(\Saki\Meld\QuadMeldType::getInstance()->getWinSetType()->isHandWinSet());
+        $this->assertTrue(QuadMeldType::getInstance()->getWinSetType()->isWinSet());
+        $this->assertFalse(QuadMeldType::getInstance()->getWinSetType()->isHandWinSet());
     }
 
-    // --- weak ---
+    /**
+     * @dataProvider validProvider
+     */
+    function testValid(bool $valid, MeldType $mt, string $tileListString) {
+        $l = TileList::fromString($tileListString);
+        if ($valid) {
+            $this->assertTrue($mt->valid($l), sprintf('%s,%s', $mt, $tileListString));
+        } else {
+            $this->assertFalse($mt->valid($l), sprintf('%s,%s', $mt, $l));
+        }
+    }
 
-    function testWeakPair() {
-        $mt = \Saki\Meld\WeakPairMeldType::getInstance();
-        $this->assertTrue($mt->valid(TileSortedList::fromString('1m')));
-        $this->assertFalse($mt->valid(TileSortedList::fromString('11m')));
+    function validProvider() {
+        $pair = PairMeldType::getInstance();
+        $run = RunMeldType::getInstance();
+        $triple = TripleMeldType::getInstance();
+        $weakPair = WeakPairMeldType::getInstance();
+        $weakRun = WeakRunMeldType::getInstance();
+        return [
+            [true, $pair, '11m'],
+            [false, $pair, '111m'],
+
+            [true, $triple, '111m'],
+            [false, $triple, '11m1s'],
+            [false, $triple, '11m'],
+
+            [true, $run, '123m'],
+            [true, $run, '132m'],
+            [true, $run, '213m'],
+            [true, $run, '231m'],
+            [true, $run, '312m'],
+            [true, $run, '321m'],
+            [false, $run, '12m3s'],
+            [false, $run, '121m'],
+
+            [true, $weakPair, '1m'],
+            [false, $weakPair, '11m'],
+
+            [true, $weakRun, '12m'],
+            [true, $weakRun, '89m'],
+            [true, $weakRun, '13m'],
+            [true, $weakRun, '23m'],
+            [false, $weakRun, '14m'],
+        ];
     }
 
     /**
      * @dataProvider weakRunProvider
      */
     function testWeakRun($tileListString, array $waitingTileStrings, $waitingTypeValue) {
-        $mt = \Saki\Meld\WeakRunMeldType::getInstance();
-        $tileSortedList = \Saki\Tile\TileSortedList::fromString($tileListString);
-        $waitingTiles = array_map(function ($s) {
+        $weakRun = WeakRunMeldType::getInstance();
+        $tileList = TileList::fromString($tileListString);
+        $waitingTileList = (new ArrayList($waitingTileStrings))->select(function ($s) {
             return Tile::fromString($s);
-        }, $waitingTileStrings);
-        if (!empty($waitingTiles)) {
-            $this->assertTrue($mt->valid($tileSortedList));
-            $this->assertEquals($waitingTiles, $mt->getWaitingTiles($tileSortedList));
-            $waitingType = WaitingType::getInstance($waitingTypeValue);
-            $this->assertEquals($waitingType, $mt->getWaitingType($tileSortedList), $mt->getWaitingType($tileSortedList));
+        });
+        $waitingType = WaitingType::getInstance($waitingTypeValue);
 
-            $weakRunMeld = Meld::fromString($tileListString);
-            foreach($waitingTiles as $waitingTile) {
-                $this->assertTrue($weakRunMeld->canToTargetMeld($waitingTile));
-                $targetMeld = $weakRunMeld->toTargetMeld($waitingTile);
-                $this->assertTrue($targetMeld->canToWeakMeld($waitingTile));
-                $this->assertEquals($weakRunMeld, $targetMeld->toWeakMeld($waitingTile));
-            }
-        } else {
-            $this->assertFalse($mt->valid($tileSortedList));
+        // test waitingTiles, waitingType
+        $this->assertEquals($waitingTileList->toArray(), $weakRun->getWaitingTiles($tileList));
+        $this->assertEquals($waitingType, $weakRun->getWaitingType($tileList), $weakRun->getWaitingType($tileList));
+
+        // test toTargetMeld todo
+        $weakRunMeld = Meld::fromString($tileListString);
+        foreach ($waitingTileList as $waitingTile) {
+            $this->assertTrue($weakRunMeld->canToTargetMeld($waitingTile));
+            $targetMeld = $weakRunMeld->toTargetMeld($waitingTile);
+            $this->assertTrue($targetMeld->canToWeakMeld($waitingTile));
+            $this->assertEquals($weakRunMeld, $targetMeld->toWeakMeld($waitingTile));
         }
     }
 
@@ -85,7 +103,6 @@ class MeldTypeTest extends PHPUnit_Framework_TestCase {
             ['89m', ['7m'], WaitingType::ONE_SIDE_RUN_WAITING],
             ['13m', ['2m'], WaitingType::MIDDLE_RUN_WAITING],
             ['23m', ['1m', '4m'], WaitingType::TWO_SIDE_RUN_WAITING],
-            ['14m', [], null],
         ];
     }
 }

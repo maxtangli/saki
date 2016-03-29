@@ -32,12 +32,4 @@ class GameLengthType extends Enum {
         }
         throw new \LogicException();
     }
-
-    /**
-     * @param $value
-     * @return GameLengthType
-     */
-    static function getInstance($value) {
-        return parent::getInstance($value);
-    }
 }

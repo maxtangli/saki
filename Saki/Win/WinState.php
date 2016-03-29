@@ -2,24 +2,21 @@
 namespace Saki\Win;
 
 use Saki\Util\Enum;
-use Saki\Util\Utils;
+use Saki\Util\PriorityComparable;
 
 class WinState extends Enum {
-    static function getComparator() {
-        $descBestOnes = [
-            WinState::getInstance(self::FURITEN_FALSE_WIN),
-            WinState::getInstance(self::WIN_BY_SELF),
-            WinState::getInstance(self::WIN_BY_OTHER),
-            WinState::getInstance(self::NO_YAKU_FALSE_WIN),
-            WinState::getInstance(self::WAITING_BUY_NOT_WIN),
-            WinState::getInstance(self::NOT_WIN),
-        ];
-        return Utils::getComparatorByBestArray($descBestOnes);
-    }
+    use PriorityComparable;
 
-    function compareTo($other) {
-        $f = $this->getComparator();
-        return $f($this, $other);
+    function getPriority() {
+        $m = [
+            self::FURITEN_FALSE_WIN => 6,
+            self::WIN_BY_SELF => 5,
+            self::WIN_BY_OTHER => 4,
+            self::NO_YAKU_FALSE_WIN => 3,
+            self::WAITING_BUY_NOT_WIN => 2,
+            self::NOT_WIN => 1,
+        ];
+        return $m[$this->getValue()];
     }
 
     const NOT_WIN = 1; // なし
@@ -28,14 +25,6 @@ class WinState extends Enum {
     const NO_YAKU_FALSE_WIN = 4; // 役なし
     const WIN_BY_SELF = 5; // ツモ
     const WIN_BY_OTHER = 6; // ロン
-
-    /**
-     * @param $value
-     * @return WinState
-     */
-    static function getInstance($value) {
-        return parent::getInstance($value);
-    }
 
     function isWaiting() {
         return $this->getValue() != self::NOT_WIN;

@@ -37,12 +37,4 @@ class RoundResultType extends Enum {
         return $this->isTargetValue([
             self::NINE_KINDS_OF_TERMINAL_OR_HONOR_DRAW, self::FOUR_WIND_DRAW, self::FOUR_KONG_DRAW, self::FOUR_REACH_DRAW]);
     }
-
-    /**
-     * @param $value
-     * @return RoundResultType
-     */
-    static function getInstance($value) {
-        return parent::getInstance($value);
-    }
 }

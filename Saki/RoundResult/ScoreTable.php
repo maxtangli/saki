@@ -33,11 +33,4 @@ class ScoreTable extends Singleton {
         }
         return new ScoreTableItem($baseScore);
     }
-
-    /**
-     * @return ScoreTable
-     */
-    static function getInstance() {
-        return parent::getInstance();
-    }
 }

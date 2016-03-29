@@ -2,7 +2,7 @@
 
 namespace Saki\Win\Yaku;
 
-use Saki\Util\ArrayLikeObject;
+use Saki\Util\ArrayList;
 use Saki\Util\Singleton;
 use Saki\Win\TileSeries;
 use Saki\Win\WinSubTarget;
@@ -75,7 +75,7 @@ abstract class Yaku extends Singleton {
         }
 
         $allMeldList = $subTarget->getAllMeldList();
-        return (new ArrayLikeObject($requiredTileSeries))->any(function (TileSeries $tileSeries) use ($allMeldList) {
+        return (new ArrayList($requiredTileSeries))->isAny(function (TileSeries $tileSeries) use ($allMeldList) {
             return $tileSeries->existIn($allMeldList);
         });
     }
@@ -86,12 +86,5 @@ abstract class Yaku extends Singleton {
 
     function getExcludedYakus() {
         return [];
-    }
-
-    /**
-     * @return Yaku
-     */
-    static function getInstance() {
-        return parent::getInstance();
     }
 }

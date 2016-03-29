@@ -3,34 +3,30 @@ namespace Saki\Win;
 
 use Saki\RoundResult\ScoreLevel;
 use Saki\RoundResult\ScoreTable;
-use Saki\Util\ArrayLikeObject;
+use Saki\Util\Comparable;
 use Saki\Util\Utils;
 use Saki\Win\Yaku\YakuItemList;
 
 class WinSubResult {
 
-    static function getComparator() {
-        $f = function(WinSubResult $a, WinSubResult $b) {
-            // compare by winState, yakuCount, fuCount
-            $winStateDiff = $a->getWinState()->compareTo($b->getWinState());
-            if ($winStateDiff != 0) {
-                return $winStateDiff;
-            }
+    use Comparable;
 
-            $yakuCountDiff = Utils::sgn($a->getFanCount() - $b->getFanCount());
-            if ($yakuCountDiff != 0) {
-                return $yakuCountDiff;
-            }
+    function compareTo($other) {
+        /** @var WinSubResult $other */
+        $other = $other;
 
-            $fuCountDiff = Utils::sgn($a->getFuCount() - $b->getFuCount());
-            return $fuCountDiff;
-        };
-        return $f;
-    }
+        $winStateDiff = $this->getWinState()->compareTo($other->getWinState());
+        if ($winStateDiff != 0) {
+            return $winStateDiff;
+        }
 
-    function compareTo(WinSubResult $other) {
-        $f = $this->getComparator();
-        return $f($this, $other);
+        $yakuCountDiff = $this->getFanCount() <=> $other->getFanCount();
+        if ($yakuCountDiff != 0) {
+            return $yakuCountDiff;
+        }
+
+        $fuCountDiff = $this->getFuCount() <=> $other->getFuCount();
+        return $fuCountDiff;
     }
 
     private $winState;

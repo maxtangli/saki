@@ -149,11 +149,4 @@ class FuCountAnalyzer extends Singleton {
     function roughToTotal($roughFuCount) {
         return intval(ceil($roughFuCount / 10) * 10); // 各項目をすべて加算し、その合計を10符単位に切り上げたものである
     }
-
-    /**
-     * @return FuCountAnalyzer
-     */
-    static function getInstance() {
-        return parent::getInstance();
-    }
 }

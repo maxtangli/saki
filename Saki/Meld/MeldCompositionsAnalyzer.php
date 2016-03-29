@@ -3,8 +3,6 @@
 namespace Saki\Meld;
 
 use Saki\Tile\TileList;
-use Saki\Tile\TileSortedList;
-use Saki\Util\MsTimer;
 
 class MeldCompositionsAnalyzer {
 
@@ -16,7 +14,7 @@ class MeldCompositionsAnalyzer {
      * @return MeldList[]
      */
     function analyzeMeldCompositions(TileList $tileList, array $meldTypes, $allowPureWeakCount = 0, $toConcealed = true) {
-        $tileSortedList = $tileList instanceof TileSortedList ? $tileList : new TileSortedList($tileList->toArray(), false);
+        $tileSortedList = $tileList->getCopy()->sort();
         $meldLists = $this->analyzeMeldCompositionsImpl($tileSortedList, $meldTypes, $allowPureWeakCount, $toConcealed);
         return $meldLists;
     }
@@ -62,7 +60,7 @@ class MeldCompositionsAnalyzer {
 
                     // with first meld, success to turn all remain tiles into melds
                     foreach ($thisMeldLists as $meldList) {
-                        $meldList->unShift($firstMeld);
+                        $meldList->insertFirst($firstMeld);
                     }
                 }
 
@@ -90,7 +88,7 @@ class MeldCompositionsAnalyzer {
             $meldTiles = $meldTileList->toArray();
             if ($tileList->valueExist($meldTiles)) {
                 $remainTileSortedList = (new TileList($tileList->toArray()))
-                    ->removeByValue($meldTiles);
+                    ->remove($meldTiles);
                 $result[] = [$meldTileList, $remainTileSortedList];
             }
         }

@@ -1,7 +1,6 @@
 <?php
 namespace Saki\Win\Yaku;
 
-use Saki\Meld\Meld;
 use Saki\Tile\Tile;
 use Saki\Win\WinSubTarget;
 

@@ -21,11 +21,4 @@ class MeldTypesFactory extends \Saki\Util\Singleton {
             WeakRunMeldType::getInstance(),
         ];
     }
-
-    /**
-     * @return MeldTypesFactory
-     */
-    static function getInstance() {
-        return parent::getInstance();
-    }
 }

@@ -3,7 +3,6 @@ namespace Saki\Meld;
 
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
-use Saki\Tile\TileSortedList;
 use Saki\Win\WaitingType;
 
 class TripleMeldType extends WeakMeldType {
@@ -11,8 +10,8 @@ class TripleMeldType extends WeakMeldType {
         return 3;
     }
 
-    protected function validFaces(TileSortedList $tileSortedList) {
-        return $tileSortedList[0] == $tileSortedList[1] && $tileSortedList[1] == $tileSortedList[2];
+    protected function validFaces(TileList $tileList) {
+        return $tileList[0] == $tileList[1] && $tileList[1] == $tileList[2];
     }
 
     function getPossibleTileLists(Tile $firstTile) {
@@ -23,11 +22,11 @@ class TripleMeldType extends WeakMeldType {
         return QuadMeldType::getInstance();
     }
 
-    protected function getWaitingTilesImpl(TileSortedList $validMeldTileSortedList) {
-        return [$validMeldTileSortedList[0]];
+    protected function getWaitingTilesImpl(TileList $validMeldTileList) {
+        return [$validMeldTileList[0]];
     }
 
-    protected function getWaitingTypeImpl(TileSortedList $validMeldTileSortedList) {
+    protected function getWaitingTypeImpl(TileList $validMeldTileList) {
         return WaitingType::getInstance(WaitingType::NOT_WAITING);
     }
 

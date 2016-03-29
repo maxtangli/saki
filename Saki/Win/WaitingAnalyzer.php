@@ -9,9 +9,6 @@ use Saki\Meld\TripleMeldType;
 use Saki\Meld\WeakPairMeldType;
 use Saki\Meld\WeakRunMeldType;
 use Saki\Tile\TileList;
-use Saki\Tile\TileSortedList;
-use Saki\Util\MsTimer;
-use Saki\Util\Utils;
 
 /**
  * cases
@@ -49,7 +46,7 @@ class WaitingAnalyzer {
      * @return FutureWaitingList
      */
     function analyzePrivate(TileList $handTileList, MeldList $declaredMeldList) {
-        if (!$handTileList->isPrivateHand()) {
+        if (!$handTileList->getHandSize()->isPrivate()) {
             throw new \InvalidArgumentException();
         }
 
@@ -60,12 +57,12 @@ class WaitingAnalyzer {
         $handTileListAfterDiscard = TileList::fromString('');
         foreach ($uniqueHandTiles as $discardedTile) { // 7ms a loop
             $handTileListAfterDiscard
-                ->setInnerArray($handTileList->toArray())
-                ->removeByValue($discardedTile);
+                ->fromArray($handTileList->toArray())
+                ->remove($discardedTile);
 
             $waitingTileList = $this->analyzePublic($handTileListAfterDiscard, $declaredMeldList);
             if ($waitingTileList->count() > 0) {
-                $futureWaitingList->push(new FutureWaiting($discardedTile, $waitingTileList));
+                $futureWaitingList->insertLast(new FutureWaiting($discardedTile, $waitingTileList));
             }
         }
 
@@ -76,12 +73,11 @@ class WaitingAnalyzer {
      * use case: exhaustiveDraw, furiten.
      * @param TileList $tileList 17-like tile list
      * @param MeldList $declaredMeldList
-     * @return TileSortedList unique waiting tile list
+     * @return TileList unique sorted waiting tile list
      */
     function analyzePublic(TileList $tileList, MeldList $declaredMeldList) {
-        $handTileList = $tileList instanceof TileSortedList ? $tileList : new TileSortedList($tileList->toArray(), false);
-
-        if (!$handTileList->isPublicHand()) {
+        $handTileList = $tileList->getCopy()->sort();
+        if (!$handTileList->getHandSize()->isPublic()) {
             throw new \InvalidArgumentException(
                 sprintf('Invalid handTileList[%s] with count[%s] for WaitingAnalyzer public phase analyze.', $handTileList, $handTileList->count())
             );
@@ -97,7 +93,7 @@ class WaitingAnalyzer {
 
         // step2. for each handMeldList,
         $tileSeriesAnalyzer = $this->getTileSeriesAnalyzer();
-        $waitingTileList = new TileSortedList([]);
+        $waitingTileList = new TileList();
         foreach ($handMeldLists as $handMeldList) {
             // step2. given a handMeldList, if waitingTiles exist, they must come from melds that matches:
             //  case1. two pairs' waitingTiles
@@ -126,17 +122,18 @@ class WaitingAnalyzer {
 
                     $futureHandMeld = $handSourceMeld->toTargetMeld($potentialWaitingTile);
                     $futureAllMeldList = $handMeldList->toMeldList()
-                        ->replaceByValue($handSourceMeld, $futureHandMeld)
-                        ->merge($declaredMeldList);
+                        ->replace($handSourceMeld, $futureHandMeld)
+                        ->concat($declaredMeldList);
 
                     $tileSeries = $tileSeriesAnalyzer->analyzeTileSeries($futureAllMeldList);
                     if ($tileSeries->exist()) {
-                        $waitingTileList->push($potentialWaitingTile);
+                        $waitingTileList->insertLast($potentialWaitingTile);
                     }
                 }
             }
         }
 
+        $waitingTileList->sort();
         return $waitingTileList;
     }
 }

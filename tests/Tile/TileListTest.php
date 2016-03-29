@@ -80,40 +80,15 @@ class TileListTest extends PHPUnit_Framework_TestCase {
     }
 
     function testSort() {
-        $s = '1234056789m1234056789p1234056789sESWNCPF';
-        $l = TileList::fromString($s);
-        $this->assertEquals($s, $l->__toString());
+        $expected = '1234506789m1234506789p1234506789sESWNCPF';
+        $l = TileList::fromString($expected);
+        $this->assertEquals($expected, $l->__toString());
 
-        $l->shuffle();
+        $this->assertEquals('50m50p50s', TileList::fromString('05p50m05s')->sort()->__toString());
+
+        $shuffled = 'WNC1206783459m1234578069p1234578069sESPF';
+        $l = TileList::fromString($shuffled);
         $l->sort();
-        $this->assertEquals($s, $l->__toString());
-    }
-
-    function testAdd() {
-        $l = TileList::fromString('1m', false);
-        $l->push(Tile::fromString('2m'));
-        $this->assertSame('12m', $l->__toString());
-    }
-
-    function testReplace() {
-        $l = TileList::fromString('11m', false);
-        $l->replaceByValue(Tile::fromString('1m'), Tile::fromString('2m'));
-        $this->assertSame('21m', $l->__toString());
-    }
-
-    function testRemove() {
-        $l = TileList::fromString('12322m', false);
-        $l->removeByValue(Tile::fromString('2m'));
-        $this->assertEquals('1322m', $l->__toString());
-        $expectedKey = 0;
-        foreach ($l as $k => $v) {
-            $this->assertEquals($expectedKey++, $k);
-        }
-    }
-
-    function testRemoveMany() {
-        $l = TileList::fromString('123242m', false);
-        $l->removeByValue([Tile::fromString('2m'), Tile::fromString('2m')]);
-        $this->assertEquals('1342m', $l->__toString());
+        $this->assertEquals($expected, $l->__toString());
     }
 }

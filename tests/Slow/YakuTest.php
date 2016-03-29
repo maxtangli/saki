@@ -1,8 +1,8 @@
 <?php
 
 use Saki\Game\Round;
-use Saki\Game\RoundResetData;
 use Saki\Game\RoundPhase;
+use Saki\Game\RoundResetData;
 use Saki\Meld\MeldList;
 use Saki\Tile\Tile;
 use Saki\Win\WinSubTarget;
@@ -564,7 +564,7 @@ class YakuTestData {
             $handTileList = $handMeldList->toTileList();
             $tileAreas->debugSetPrivate($targetPlayer, $handTileList, $this->declareMeldList, $targetTile);
         } else {
-            $handTileList = $handMeldList->toTileList()->removeByValue($targetTile);
+            $handTileList = $handMeldList->toTileList()->remove($targetTile);
             $tileAreas->debugSetPublic($targetPlayer, $handTileList, $this->declareMeldList);
         }
 

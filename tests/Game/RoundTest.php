@@ -72,7 +72,7 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         // setup
         $prePlayer = $r->getTurnManager()->getCurrentPlayer();
         $actPlayer = $r->getTurnManager()->getOffsetPlayer(1);
-        $actPlayer->getTileArea()->getHandReference()->replaceByIndex([0, 1], [Tile::fromString('2m'), Tile::fromString('3m')]);
+        $actPlayer->getTileArea()->getHandReference()->replaceAt([0, 1], [Tile::fromString('2m'), Tile::fromString('3m')]);
         // execute
         $tileCountBefore = $actPlayer->getTileArea()->getHandReference()->count();
 //        $r->chow($actPlayer, Tile::fromString('2m'), Tile::fromString('3m'));
@@ -94,7 +94,7 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         // setup
         $prePlayer = $r->getTurnManager()->getCurrentPlayer();
         $actPlayer = $r->getTurnManager()->getOffsetPlayer(2);
-        $actPlayer->getTileArea()->getHandReference()->replaceByIndex([0, 1], [Tile::fromString('1m'), Tile::fromString('1m')]);
+        $actPlayer->getTileArea()->getHandReference()->replaceAt([0, 1], [Tile::fromString('1m'), Tile::fromString('1m')]);
         // execute
         $tileCountBefore = $actPlayer->getTileArea()->getHandReference()->count();
 //        $r->pong($actPlayer);
@@ -113,7 +113,7 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         $playerE = $r->getTurnManager()->getCurrentPlayer();
 
         // phase not changed
-        $targetTile = $r->getTileAreas()->getTargetTile()->getTile()->toNextTile();
+        $targetTile = $r->getTileAreas()->getTargetTile()->getTile()->getNextTile();
         $r->debugSkipTo($playerE, null, null, null);
         $this->assertEquals($playerE, $r->getTurnManager()->getCurrentPlayer());
         $this->assertEquals(RoundPhase::getPrivateInstance(), $r->getPhaseState()->getRoundPhase());

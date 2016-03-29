@@ -8,8 +8,7 @@ use Saki\Meld\RunMeldType;
 use Saki\Meld\TripleMeldType;
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
-use Saki\Tile\TileSortedList;
-use Saki\Util\ArrayLikeObject;
+use Saki\Util\ArrayList;
 use Saki\Win\Fu\FuCountAnalyzer;
 use Saki\Win\Fu\FuCountTarget;
 use Saki\Win\Yaku\YakuAnalyzer;
@@ -55,7 +54,11 @@ class WinAnalyzer {
         ];
         $handMeldCompositions = $analyzer->analyzeMeldCompositions($handTileList, $handMeldTypes);
         if (empty($handMeldCompositions)) {
-            return new WinResult(WinState::getInstance(WinState::NOT_WIN), new YakuItemList([]), 0, new TileSortedList([]));
+            return new WinResult(
+                WinState::getInstance(WinState::NOT_WIN),
+                new YakuItemList([]),
+                0
+            );
         }
 
         // get winResult[] of each subTarget
@@ -76,7 +79,7 @@ class WinAnalyzer {
 
         // get best winSubResult as final result
         /** @var WinSubResult $targetSubResult */
-        $targetSubResult = (new ArrayLikeObject($subResults))->getMax(WinSubResult::getComparator());
+        $targetSubResult = (new ArrayList($subResults))->getMax(WinSubResult::getComparator());
         $finalWinState = $targetSubResult->getWinState();
 
         // handle furiten
@@ -134,12 +137,12 @@ class WinAnalyzer {
             return false;
         }
 
-        $finalNgList = new TileList([]);
+        $finalNgList = new TileList();
         $openHistory = $target->getOpenHistory();
 
         // ng case 1: self discarded tiles
         $selfNgList = $openHistory->getSelf($target->getSelfWind());
-        $finalNgList->merge($selfNgList);
+        $finalNgList->concat($selfNgList);
 
         // ng case 2: all other player's opened tiles since
         if ($target->isReach()) { // ng case 2: since self reach
@@ -157,9 +160,9 @@ class WinAnalyzer {
         }
         $excludedLastTile = true; // remember to exclude current target tile
         $otherNgList = $openHistory->getOther($target->getSelfWind(), $fromTurn, $target->getSelfWind(), $excludedLastTile);
-        $finalNgList->merge($otherNgList);
+        $finalNgList->concat($otherNgList);
 
-        $isFuriten = $finalNgList->any(function (Tile $ngTile) use ($waitingTileList) {
+        $isFuriten = $finalNgList->isAny(function (Tile $ngTile) use ($waitingTileList) {
             return $waitingTileList->valueExist($ngTile);
         });
         return $isFuriten;

@@ -36,11 +36,4 @@ class MsTimer extends Singleton{
         $f();
         return $this->restart();
     }
-
-    /**
-     * @return MsTimer
-     */
-    static function getInstance() {
-        return parent::getInstance();
-    }
 }

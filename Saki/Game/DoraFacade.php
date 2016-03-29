@@ -31,7 +31,9 @@ class DoraFacade {
     protected function getTileDoraFanCountImpl(Tile $tile, array $openedIndicators) {
         $count = 0;
         foreach ($openedIndicators as $doraIndicator) {
-            if ($tile == $doraIndicator->toNextTile(1)) {
+            /** @var Tile $doraIndicator */
+            $doraIndicator = $doraIndicator;
+            if ($tile == $doraIndicator->getNextTile(1)) {
                 ++$count;
             }
         }
@@ -63,7 +65,7 @@ class DoraFacade {
     }
 
     protected function getHandDoraFanCountImpl(TileList $allTileList, callable $getDoraFanCountCallback) {
-        if (!$allTileList->isCompletePrivateHand()) {
+        if (!$allTileList->getHandSize()->isCompletePrivate()) {
             throw new \InvalidArgumentException();
         }
 

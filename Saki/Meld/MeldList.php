@@ -3,12 +3,9 @@ namespace Saki\Meld;
 
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
-use Saki\Tile\TileSortedList;
-use Saki\Tile\TileType;
-use Saki\Util\ArrayLikeObject;
-use Saki\Util\Singleton;
+use Saki\Util\ArrayList;
 
-class MeldList extends ArrayLikeObject {
+class MeldList extends ArrayList {
     static function validString($s) {
         $meldStrings = !empty($s) ? explode(',', $s) : [];
         foreach ($meldStrings as $meldString) {
@@ -34,10 +31,6 @@ class MeldList extends ArrayLikeObject {
         return new static($melds);
     }
 
-    function __construct(array $melds) {
-        parent::__construct($melds);
-    }
-
     /**
      * @param int $offset
      * @return Meld
@@ -53,10 +46,13 @@ class MeldList extends ArrayLikeObject {
         return implode(',', $meldStrings);
     }
 
+    /**
+     * @return TileList
+     */
     function toTileList() {
-        return $this->toReducedValue(function(TileList $l, Meld $meld) {
-            return $l->push($meld->toArray());
-        }, TileList::fromString(''));
+        return $this->getAggregated(TileList::fromString(''), function (TileList $l, Meld $meld) {
+            return $l->insertLast($meld->toArray());
+        });
     }
 
     function toMeldList() {
@@ -64,7 +60,7 @@ class MeldList extends ArrayLikeObject {
     }
 
     function toFilteredMeldList(callable $filter) {
-        return new self($this->toFilteredArray($filter));
+        return $this->getCopy()->where($filter);
     }
 
     function toFilteredTypesMeldList(array $targetMeldTypes, $concealedFlag = null) {
@@ -75,13 +71,13 @@ class MeldList extends ArrayLikeObject {
     }
 
     function toConcealed($concealedFlag) {
-        return new self($this->toArray(function (Meld $meld) use ($concealedFlag) {
+        return (new self)->fromSelected($this, function (Meld $meld) use ($concealedFlag) {
             return $meld->toConcealed($concealedFlag);
-        }));
+        });
     }
 
     function isConcealed() {
-        return $this->all(function (Meld $meld) {
+        return $this->isAll(function (Meld $meld) {
             return $meld->isConcealed();
         });
     }
@@ -89,9 +85,9 @@ class MeldList extends ArrayLikeObject {
     function getHandCount() {
         // each quad introduces 1 extra Tile
         $quadMeldCount = $this->toFilteredTypesMeldList([QuadMeldType::getInstance()])->count();
-        $tileCount = $this->toReducedValue(function($tileCount, Meld $meld) {
+        $tileCount = $this->getAggregated(0, function ($tileCount, Meld $meld) {
             return $tileCount + $meld->count();
-        },0);
+        });
         $n = $tileCount - $quadMeldCount;
         return $n;
     }
@@ -107,7 +103,7 @@ class MeldList extends ArrayLikeObject {
     }
 
     function tileExist(Tile $tile) {
-        return $this->any(function (Meld $meld) use ($tile) {
+        return $this->isAny(function (Meld $meld) use ($tile) {
             return $meld->valueExist($tile);
         });
     }
@@ -145,13 +141,13 @@ class MeldList extends ArrayLikeObject {
 
         $tripleOrQuadList = $this->toFilteredTypesMeldList([TripleMeldType::getInstance(), QuadMeldType::getInstance()]);
         $pairList = $this->toFilteredTypesMeldList([PairMeldType::getInstance()]);
-        $matchConcealed = !$requireConcealedTripleOrQuad || $tripleOrQuadList->all(function (Meld $meld) {
+        $matchConcealed = !$requireConcealedTripleOrQuad || $tripleOrQuadList->isAll(function (Meld $meld) {
                 return $meld->isConcealed();
             });
         return $tripleOrQuadList->count() == 4 && $pairList->count() == 1 && $matchConcealed;
     }
 
-    // WARNING: be careful about Meld.$concealed , especially for ArrayLikeObject search operations.
+    // WARNING: be careful about Meld.$concealed , especially for ArrayList search operations.
 
     // yaku: run concerned
 
@@ -161,14 +157,17 @@ class MeldList extends ArrayLikeObject {
         $requiredDoubleRunCount = $isTwoDoubleRun ? 2 : 1;
 
         $runMeldList = $this->toFilteredTypesMeldList([RunMeldType::getInstance()]);
-
-        $uniqueRunMeldList = new MeldList($runMeldList->toArray());
-        $uniqueRunMeldList->unique(Meld::getEqualsCallback(false));
-
-        $isDoubleRun = function (Meld $runMeld) use ($runMeldList) {
-            return $runMeldList->getEqualValueCount($runMeld, Meld::getEqualsCallback(false)) >= 2;
+        $keySelector = function (Meld $runMeld) {
+            /** @var Tile $firstTile */
+            $firstTile = $runMeld[0];
+            return $firstTile->getNumber() . $firstTile->getTileType();// ignore red dora
         };
-        return $uniqueRunMeldList->getFilteredValueCount($isDoubleRun) >= $requiredDoubleRunCount;
+        $counts = $runMeldList->getCounts($keySelector);
+        $doubleRunCount = (new ArrayList(array_values($counts)))->where(function (int $n) {
+            return $n >= 2;
+        })->count();
+
+        return $doubleRunCount >= $requiredDoubleRunCount;
     }
 
     function isThreeColorRuns() {
@@ -214,13 +213,13 @@ class MeldList extends ArrayLikeObject {
     function isFullStraight() {
         $this->assertCompletePrivateHandCount();
 
-        $targetMeldsArray = new ArrayLikeObject([
+        $targetMeldsArray = new ArrayList([
             [Meld::fromString('123m'), Meld::fromString('456m'), Meld::fromString('789m')],
             [Meld::fromString('123p'), Meld::fromString('456p'), Meld::fromString('789p')],
             [Meld::fromString('123s'), Meld::fromString('456s'), Meld::fromString('789s')],
         ]);
 
-        return $targetMeldsArray->any(function (array $targetMelds) {
+        return $targetMeldsArray->isAny(function (array $targetMelds) {
             return $this->valueExist($targetMelds, Meld::getEqualsCallback(false));
         });
     }
@@ -231,7 +230,7 @@ class MeldList extends ArrayLikeObject {
         $this->assertCompletePrivateHandCount();
         $tripleOrQuadList = $this->toFilteredTypesMeldList([TripleMeldType::getInstance(), QuadMeldType::getInstance()]);
 
-        return $tripleOrQuadList->any(function (Meld $tripleOrQuad) use ($valueTile) {
+        return $tripleOrQuadList->isAny(function (Meld $tripleOrQuad) use ($valueTile) {
             return $tripleOrQuad[0] == $valueTile;
         });
     }
@@ -269,7 +268,7 @@ class MeldList extends ArrayLikeObject {
             return false;
         }
 
-        return $this->all(function (Meld $meld) use ($isPure) {
+        return $this->isAll(function (Meld $meld) use ($isPure) {
             return $meld->isAnyTerminalOrHonor($isPure);
         });
     }
@@ -277,7 +276,7 @@ class MeldList extends ArrayLikeObject {
     function isAllTerminals() {
         $this->assertCompletePrivateHandCount();
 
-        return $this->all(function (Meld $meld) {
+        return $this->isAll(function (Meld $meld) {
             return $meld->isAllTerminal();
         });
     }
@@ -285,7 +284,7 @@ class MeldList extends ArrayLikeObject {
     function isAllHonors() {
         $this->assertCompletePrivateHandCount();
 
-        return $this->all(function (Meld $meld) {
+        return $this->isAll(function (Meld $meld) {
             return $meld->isAllHonor();
         });
     }
@@ -293,7 +292,7 @@ class MeldList extends ArrayLikeObject {
     function isAllTerminalsAndHonors() {
         $this->assertCompletePrivateHandCount();
 
-        return $this->all(function (Meld $meld) {
+        return $this->isAll(function (Meld $meld) {
             return $meld->isAllTerminalOrHonor();
         });
     }
@@ -315,9 +314,10 @@ class MeldList extends ArrayLikeObject {
     function isFourWinds($isBig) {
         $this->assertCompletePrivateHandCount();
 
-        $windMeldList = $this->toFilteredMeldList(function (Meld $meld) {
+        $windMeldList = $this->where(function (Meld $meld) {
             return $meld[0]->getTileType()->isWind();
         });
+
         $pairCount = $windMeldList->toFilteredTypesMeldList([PairMeldType::getInstance()])->count();
         $tripleOrQuadCount = $windMeldList->toFilteredTypesMeldList([TripleMeldType::getInstance(), QuadMeldType::getInstance()])->count();
 

@@ -21,7 +21,7 @@ class OpenHistoryTest extends PHPUnit_Framework_TestCase {
     }
 
     function itemProvider() {
-        list($e, $s, $w, $n) = Tile::getWindTiles();
+        list($e, $s, $w, $n) = Tile::getWindList();
         $notUsed = $e;
         return [
             // same turn

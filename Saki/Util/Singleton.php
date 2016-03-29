@@ -10,7 +10,7 @@ abstract class Singleton {
     private static $instances;
 
     /**
-     * @return object the singleton instance of class
+     * @return static the singleton instance of class
      */
     static function getInstance() {
         $class = static::getClassName();

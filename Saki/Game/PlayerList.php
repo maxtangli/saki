@@ -2,10 +2,10 @@
 namespace Saki\Game;
 
 use Saki\Tile\Tile;
-use Saki\Util\ArrayLikeObject;
+use Saki\Util\ArrayList;
 use Saki\Util\Utils;
 
-class PlayerList extends ArrayLikeObject {
+class PlayerList extends ArrayList {
 
     static function createStandard() {
         return new PlayerList(4, 25000);
@@ -41,19 +41,19 @@ class PlayerList extends ArrayLikeObject {
     }
 
     function reset(Player $dealerPlayer) {
-        $dealerIndex = $this->valueToIndex($dealerPlayer); // assert valid
+        $dealerIndex = $this->getIndex($dealerPlayer); // assert valid
 
         // roll each player's selfWind by its offset to dealerPlayer
         $dealerSelfWind = Tile::fromString('E');
         foreach ($this->players as $index => $player) {
             $offsetToDealer = $index - $dealerIndex;
-            $playerSelfWind = $dealerSelfWind->toNextTile($offsetToDealer);
+            $playerSelfWind = $dealerSelfWind->getNextTile($offsetToDealer);
             $player->reset($playerSelfWind);
         }
     }
 
     function hasMinusScorePlayer() {
-        return $this->any(function (Player $player) {
+        return $this->isAny(function (Player $player) {
             return $player->getScore() < 0;
         });
     }
@@ -105,23 +105,5 @@ class PlayerList extends ArrayLikeObject {
             throw new \LogicException('not one and only one selfWind.');
         }
         return $result[0];
-    }
-
-    // ArrayLikeObject signature override
-
-    /**
-     * @param callable|null $selector
-     * @return Player[]
-     */
-    function toArray(callable $selector = null) {
-        return parent::toArray($selector);
-    }
-
-    /**
-     * @param int $offset
-     * @return Player
-     */
-    function offsetGet($offset) {
-        return parent::offsetGet($offset);
     }
 }

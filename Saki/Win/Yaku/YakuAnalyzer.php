@@ -22,7 +22,7 @@ class YakuAnalyzer {
         foreach ($yakus as $yaku) {
             $actualFanCount = $yaku->getFanCount($subTarget);
             if ($actualFanCount > 0) {
-                $yakuList->push(new YakuItem($yaku, $actualFanCount));
+                $yakuList->insertLast(new YakuItem($yaku, $actualFanCount));
             }
         }
         $yakuList->normalize(); // remove mutually-excluded yaku

@@ -3,16 +3,14 @@ namespace Saki\Meld;
 
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
-use Saki\Tile\TileSortedList;
 use Saki\Tile\TileType;
-use Saki\Util\ArrayLikeObject;
+use Saki\Util\ArrayList;
 use Saki\Util\ValueObject;
 
 /**
- * ValueObject
  * @package Saki\Meld
  */
-class Meld extends ArrayLikeObject implements ValueObject {
+class Meld extends ArrayList implements ValueObject {
     private static $meldTypeAnalyzer;
 
     /**
@@ -66,13 +64,15 @@ class Meld extends ArrayLikeObject implements ValueObject {
      * @param bool $concealed
      */
     function __construct(TileList $tileList, MeldType $meldType = null, $concealed = false) {
-        $tileSortedList = $tileList instanceof TileSortedList ? $tileList : new TileSortedList($tileList->toArray());
-        if ($meldType !== null && !$meldType->valid($tileSortedList)) {
-            throw new \InvalidArgumentException();
+        if ($meldType !== null && !$meldType->valid($tileList)) {
+            throw new \InvalidArgumentException(
+                sprintf('%s,%s', $meldType, $tileList)
+            );
         }
 
-        $actualMeldType = $meldType !== null ? $meldType : self::getMeldTypeAnalyzer()->analyzeMeldType($tileSortedList);
+        $actualMeldType = $meldType !== null ? $meldType : self::getMeldTypeAnalyzer()->analyzeMeldType($tileList);
 
+        $tileSortedList = $tileList->getCopy()->sort();
         parent::__construct($tileSortedList->toArray());
         $this->tileSortedList = $tileSortedList;
         $this->meldType = $actualMeldType;
@@ -89,8 +89,8 @@ class Meld extends ArrayLikeObject implements ValueObject {
         && (!$compareConcealed || ($this->concealed == $other->concealed));
     }
 
-    function toTileSortedList() {
-        return new TileSortedList($this->tileSortedList->toArray());
+    function toTileList() {
+        return new TileList($this->toArray());
     }
 
     function toConcealed($concealedFlag = null) {
@@ -114,10 +114,9 @@ class Meld extends ArrayLikeObject implements ValueObject {
     }
 
     function toAllSuitTypes() {
-        $suitTypeArray = new ArrayLikeObject(TileType::getSuitTypes());
-        return $suitTypeArray->toArray(function (TileType $suitType) {
+        return (new ArrayList(TileType::getSuitTypes()))->select(function (TileType $suitType) {
             return $this->toOtherSuitType($suitType);
-        });
+        })->toArray();
     }
 
     function getMeldType() {
@@ -132,8 +131,7 @@ class Meld extends ArrayLikeObject implements ValueObject {
         return $concealedFlag === null || $this->isConcealed() === $concealedFlag;
     }
 
-    // basic MeldType
-
+    //region basic MeldType
     function isPair() {
         return $this->getMeldType() instanceof PairMeldType;
     }
@@ -157,10 +155,11 @@ class Meld extends ArrayLikeObject implements ValueObject {
     function getWinSetType() {
         return $this->getMeldType()->getWinSetType();
     }
+    //endregion
 
-    // yaku concerned
+    //region yaku concerned
     function isAnyTerminalOrHonor($isPure) {
-        return $this->any(function (Tile $tile) use ($isPure) {
+        return $this->isAny(function (Tile $tile) use ($isPure) {
             return $isPure ? $tile->isTerminal() : $tile->isTerminalOrHonor();
         });
     }
@@ -180,22 +179,21 @@ class Meld extends ArrayLikeObject implements ValueObject {
     function isAllTerminalOrHonor() {
         return $this->tileSortedList->isAllTerminalOrHonor();
     }
+    //endregion
 
-    // target of a weak MeldType
-
+    //region source of weak MeldType
     function canToWeakMeld(Tile $waitingTile) {
         if (!$this->valueExist($waitingTile)) {
             return false;
         }
 
-        $weakMeldTileSortedList = $this->toTileSortedList();
-        $weakMeldTileSortedList->removeByValue($waitingTile);
-        $weakMeldType = $this->getMeldTypeAnalyzer()->analyzeMeldType($weakMeldTileSortedList, true);
+        $weakMeldTileList = $this->toTileList()->remove($waitingTile);
+        $weakMeldType = $this->getMeldTypeAnalyzer()->analyzeMeldType($weakMeldTileList, true);
         if (!$weakMeldType) {
             return false;
         }
 
-        $weakMeld = new Meld($weakMeldTileSortedList, $weakMeldType, $this->isConcealed());
+        $weakMeld = new Meld($weakMeldTileList, $weakMeldType, $this->isConcealed());
         return $weakMeld->getMeldType()->hasTargetMeldType()
         && $weakMeld->canToTargetMeld($waitingTile, $this->getMeldType());
     }
@@ -205,18 +203,17 @@ class Meld extends ArrayLikeObject implements ValueObject {
             throw new \InvalidArgumentException();
         }
 
-        $weakMeldTileSortedList = $this->toTileSortedList();
-        $weakMeldTileSortedList->removeByValue($waitingTile);
-        $weakMeld = new Meld($weakMeldTileSortedList, null, $this->isConcealed());
+        $weakMeldTileList = $this->toTileList()->remove($waitingTile);
+        $weakMeld = new Meld($weakMeldTileList, null, $this->isConcealed());
         return $weakMeld;
     }
 
     function getFromWeakMeldWaitingType(Tile $waitingTile) {
         return $this->toWeakMeld($waitingTile)->getWaitingType();
     }
+    //endregion
 
-    // weak MeldType
-
+    //region weak MeldType
     function isWeakPair() {
         return $this->getMeldType() instanceof WeakPairMeldType;
     }
@@ -252,7 +249,7 @@ class Meld extends ArrayLikeObject implements ValueObject {
             throw new \InvalidArgumentException();
         }
 
-        $targetTileList = new TileSortedList(array_merge($this->tileSortedList->toArray(), [$tile]));
+        $targetTileList = $this->tileSortedList->getCopy()->insertLast($tile)->sort();
         $actualTargetMeldType = $this->getActualTargetMeldType($targetMeldType);
         $targetConcealed = $concealedFlag !== null ? $concealedFlag : $this->isConcealed();
         return new Meld($targetTileList, $actualTargetMeldType, $targetConcealed);
@@ -265,22 +262,6 @@ class Meld extends ArrayLikeObject implements ValueObject {
     function getWaitingType() {
         return $this->getMeldType()->getWaitingType($this->tileSortedList);
     }
-
-    // ArrayLikeObject issues
-    /**
-     * @param callable|null $selector
-     * @return Tile[]
-     */
-    function toArray(callable $selector = null) {
-        return parent::toArray($selector);
-    }
-
-    /**
-     * @param int $offset
-     * @return \Saki\Tile\Tile
-     */
-    function offsetGet($offset) {
-        return parent::offsetGet($offset);
-    }
+    //endregion
 }
 

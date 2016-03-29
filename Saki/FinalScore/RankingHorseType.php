@@ -28,12 +28,4 @@ class RankingHorseType extends Enum {
         ];
         return $a[$this->getValue()];
     }
-
-    /**
-     * @param $value
-     * @return RankingHorseType
-     */
-    static function getInstance($value) {
-        return parent::getInstance($value);
-    }
 }

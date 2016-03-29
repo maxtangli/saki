@@ -1,9 +1,9 @@
 <?php
 namespace Saki\Tile;
 
-use Saki\Util\ArrayLikeObject;
+use Saki\Util\ArrayList;
 
-class TileList extends ArrayLikeObject {
+class TileList extends ArrayList {
     const REGEX_EMPTY_LIST = '()';
     const REGEX_SUIT_TOKEN = '(' . Tile::REGEX_SUIT_NUMBER . '+' . TileType::REGEX_SUIT_TYPE . ')';
     const REGEX_HONOR_TOKEN = Tile::REGEX_HONOR_TILE;
@@ -30,7 +30,7 @@ class TileList extends ArrayLikeObject {
         for ($i = strlen($s) - 1; $i >= 0; --$i) {
             $c = $s[$i];
             if (is_numeric($c)) {
-                $numberTile = Tile::fromString($c.$lastNumberTileType->__toString());
+                $numberTile = Tile::fromString($c . $lastNumberTileType->__toString());
                 array_unshift($tiles, $numberTile);
             } else {
                 $cType = TileType::fromString($c);
@@ -43,19 +43,7 @@ class TileList extends ArrayLikeObject {
             }
         }
 
-        return new static($tiles);
-    }
-
-    function __construct(array $tiles, $writable = true) {
-        parent::__construct($tiles, $writable);
-    }
-
-    function sort() {
-        // &getInnerArrayReferenceUnsafe() brings shorter code, though won't be faster.
-        usort($this->getInnerArrayReferenceUnsafe(), function (Tile $a, Tile $b) {
-            return $a->getDisplayValueID() - $b->getDisplayValueID();
-        });
-        return $this;
+        return new self($tiles);
     }
 
     function __toString() {
@@ -78,60 +66,66 @@ class TileList extends ArrayLikeObject {
         return $s;
     }
 
-    function toTileList() {
-        return new TileList($this->toArray());
+    function toTileTypeList() {
+        return (new ArrayList())->fromSelected($this, function (Tile $tile) {
+            return $tile->getTileType();
+        });
     }
 
-    function getHandCount() {
-        return new HandCount($this->count());
+    function toTileNumberList() {
+        return (new ArrayList())->fromSelected($this, function (Tile $tile) {
+            return $tile->getNumber(); // validate
+        });
     }
 
-    function isCompletePrivateHand() {
-        return $this->count() >= 14; // todo remove
+    /**
+     * @param int $firstPartLength
+     * @return TileList[] list($beginTileList, $remainTileList)
+     */
+    function toTwoPart(int $firstPartLength) {
+        $l1 = $this->getCopy()->take(0, $firstPartLength);
+        $l2 = $this->getCopy()->take($firstPartLength);
+        return [$l1, $l2];
+    }
+
+    function getHandSize() {
+        return new HandSize($this->count());
     }
 
     protected function assertCompletePrivateHand() {
-        if (!$this->isCompletePrivateHand()) {
+        if (!$this->getHandSize()->isCompletePrivate()) {
             throw new \LogicException(
                 sprintf('Assertion Failed. Require complete-private-hand but [%s] given.', $this->__toString())
             );
         }
     }
 
-    function isPrivateHand() {
-        return $this->count() % 3 == 2;
-    }
-
-    function isPublicHand() {
-        return $this->count() % 3 == 1;
-    }
-
     function isAllSuit() {
-        return $this->all(function (Tile $tile) {
+        return $this->isAll(function (Tile $tile) {
             return $tile->isSuit();
         });
     }
 
     function isAllSimple() {
-        return $this->all(function (Tile $tile) {
+        return $this->isAll(function (Tile $tile) {
             return $tile->isSimple();
         });
     }
 
     function isAllTerminal() {
-        return $this->all(function (Tile $tile) {
+        return $this->isAll(function (Tile $tile) {
             return $tile->isTerminal();
         });
     }
 
     function isAllTerminalOrHonor() {
-        return $this->all(function (Tile $tile) {
+        return $this->isAll(function (Tile $tile) {
             return $tile->isTerminalOrHonor();
         });
     }
 
     function isAllHonor() {
-        return $this->all(function (Tile $tile) {
+        return $this->isAll(function (Tile $tile) {
             return $tile->isHonor();
         });
     }
@@ -139,73 +133,70 @@ class TileList extends ArrayLikeObject {
     function isNineKindsOfTerminalOrHonor() {
         $this->assertCompletePrivateHand();
 
-        $uniqueTerminalOrHonorList = $this->toFilteredTileList(function (Tile $tile) {
+        $uniqueTerminalOrHonorCount = $this->getCopy()->where(function (Tile $tile) {
             return $tile->isTerminalOrHonor();
-        });
-        $uniqueTerminalOrHonorList->unique();
-        return $uniqueTerminalOrHonorList->count() >= 9;
+        })->distinct()->count();
+        return $uniqueTerminalOrHonorCount >= 9;
     }
 
-    function isThirteenOrphan($isPairWaiting, Tile $targetTileForIsPairWaitingCase = null) {
-        $valid = $isPairWaiting || $targetTileForIsPairWaitingCase;
+    function isThirteenOrphan(bool $isPairWaiting, Tile $targetTile = null) {
+        $this->assertCompletePrivateHand();
+
+        $valid = !$isPairWaiting || $targetTile;
         if (!$valid) {
             throw new \InvalidArgumentException();
         }
-        $this->assertCompletePrivateHand();
 
-        $requiredPartTileList = TileList::fromString('19m19p19sESWNCFP');
-        // this works because for a full terminalOrHonor hand, the remain one tile will be terminalOrHonor.
-        if (!$isPairWaiting) {
-            return $this->valueExist($requiredPartTileList->toArray());
-        } else {
-            $publicPhaseTileList = new TileList($this->toArray());
-            $publicPhaseTileList->removeByValue($targetTileForIsPairWaitingCase);
-            return $publicPhaseTileList->valueExist($requiredPartTileList);
-        }
-    }
-
-    function isFlush($isFull) {
-        $this->assertCompletePrivateHand();
-
-        $suitList = $this->toFilteredTileList(function (Tile $tile) {
-            return $tile->isSuit();
-        });
-        if ($suitList->count() == 0) {
+        if (!$this->isAllTerminalOrHonor()) {
             return false;
         }
 
-        $uniqueSuitColorList = new ArrayLikeObject($suitList->toArray(function (Tile $tile) {
-            return $tile->getTileType();
-        }));
-        $uniqueSuitColorList->unique();
-        $isSuitSameColor = $uniqueSuitColorList->count() == 1;
-
-        $hasHonor = $suitList->count() != $this->count();
-
-        return $isFull ? $isSuitSameColor && !$hasHonor : $isSuitSameColor && $hasHonor;
+        $requiredPartTileList = TileList::fromString('19m19p19sESWNCFP');
+        // note: for a all terminalOrHonor hand, the remain one tile must be terminalOrHonor.
+        if (!$isPairWaiting) {
+            return $this->valueExist($requiredPartTileList->toArray());
+        } else {
+            return $this->getCopy()->remove($targetTile)->valueExist($requiredPartTileList);
+        }
     }
 
-    function isNineGates($isPure, Tile $targetTileForIsPureCase = null) {
-        $valid = !$isPure || $targetTileForIsPureCase;
+    function isFlush(bool $isFull) {
+        $this->assertCompletePrivateHand();
+
+        $suitList = $this->getCopy()->where(function (Tile $tile) {
+            return $tile->isSuit();
+        });
+        if ($suitList->isEmpty()) {
+            return false;
+        }
+
+        $isSuitSameColor = $suitList->getCopy()->select(function (Tile $tile) {
+                return $tile->getTileType();
+            })->distinct()->count() == 1;
+        $hasHonor = $suitList->count() != $this->count();
+        return $isSuitSameColor && ($isFull ? !$hasHonor : $hasHonor);
+    }
+
+    function isNineGates(bool $isPure, Tile $targetTile = null) {
+        $this->assertCompletePrivateHand();
+
+        $valid = !$isPure || $targetTile;
         if (!$valid) {
             throw new \InvalidArgumentException();
         }
-
-        $this->assertCompletePrivateHand();
 
         if (!$this->isFlush(true)) {
             return false;
         }
-
-        $tileTypeString = $this[0]->getTileType()->__toString();
+        /** @var Tile $firstTile */
+        $firstTile = $this[0];
+        $tileTypeString = $firstTile->getTileType()->__toString();
         $requiredPartTileList = TileList::fromString('1112345678999' . $tileTypeString);
-        // this works because for a full flush hand, the remain one tile will be same color.
+        // note : for a full flush hand, the remain one tile must be same color.
         if (!$isPure) {
             return $this->valueExist($requiredPartTileList->toArray());
         } else {
-            $publicPhaseTileList = new TileList($this->toArray());
-            $publicPhaseTileList->removeByValue($targetTileForIsPureCase);
-            return $publicPhaseTileList->valueExist($requiredPartTileList);
+            return $this->getCopy()->remove($targetTile)->valueExist($requiredPartTileList);
         }
     }
 
@@ -216,39 +207,14 @@ class TileList extends ArrayLikeObject {
         $isAllGreenTile = function (Tile $tile) use ($greenTileList) {
             return $greenTileList->valueExist($tile);
         };
-
-        return $this->all($isAllGreenTile);
+        return $this->isAll($isAllGreenTile);
     }
 
     /**
-     * @param int $firstPartLength
-     * @return TileList[] list($beginTileList, $remainTileList)
+     * @return $this
      */
-    function toTwoPart($firstPartLength) {
-        $tiles = $this->toArray();
-        $tiles1 = array_slice($tiles, 0, $firstPartLength);
-        $tiles2 = array_slice($tiles, $firstPartLength);
-        return [new TileList($tiles1), new TileList($tiles2)];
-    }
-
-    function toFilteredTileList(callable $filter) {
-        return new TileList($this->toFilteredArray($filter));
-    }
-
-    /**
-     * @param callable|null $selector
-     * @return Tile[]
-     */
-    function toArray(callable $selector = null) {
-        return parent::toArray($selector);
-    }
-
-    /**
-     * @param int $offset
-     * @return Tile
-     */
-    function offsetGet($offset) {
-        return parent::offsetGet($offset);
+    function sort() {
+        return $this->orderByAscending(Tile::getComparator());
     }
 }
 
