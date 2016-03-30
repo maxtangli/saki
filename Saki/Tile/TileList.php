@@ -3,6 +3,10 @@ namespace Saki\Tile;
 
 use Saki\Util\ArrayList;
 
+/**
+ * A sequence of Tile.
+ * @package Saki\Tile
+ */
 class TileList extends ArrayList {
     const REGEX_EMPTY_LIST = '()';
     const REGEX_SUIT_TOKEN = '(' . Tile::REGEX_SUIT_NUMBER . '+' . TileType::REGEX_SUIT_TYPE . ')';
@@ -10,7 +14,11 @@ class TileList extends ArrayList {
     const REGEX_NOT_EMPTY_LIST = '(' . self::REGEX_SUIT_TOKEN . '|' . self::REGEX_HONOR_TOKEN . ')+';
     const REGEX_LIST = '(' . self::REGEX_EMPTY_LIST . '|' . self::REGEX_NOT_EMPTY_LIST . ')';
 
-    static function validString($s) {
+    /**
+     * @param string $s
+     * @return bool
+     */
+    static function validString(string $s) {
         $regex = '/^' . self::REGEX_LIST . '$/';
         return preg_match($regex, $s) === 1;
     }
@@ -19,7 +27,7 @@ class TileList extends ArrayList {
      * @param string $s
      * @return TileList
      */
-    static function fromString($s) {
+    static function fromString(string $s) {
         if (!static::validString($s)) {
             throw new \InvalidArgumentException("Invalid \$s[$s].");
         }
@@ -46,6 +54,14 @@ class TileList extends ArrayList {
         return new self($tiles);
     }
 
+    static function fromNumbers(array $numbers, TileType $suitType) {
+        if (!$suitType->isSuit()) {
+            throw new \InvalidArgumentException();
+        }
+        $s = implode($numbers) . $suitType;
+        return self::fromString($s);
+    }
+
     function __toString() {
         // e.x. 123m456p789sEEECC
         $s = "";
@@ -66,12 +82,18 @@ class TileList extends ArrayList {
         return $s;
     }
 
+    /**
+     * @return ArrayList
+     */
     function toTileTypeList() {
         return (new ArrayList())->fromSelected($this, function (Tile $tile) {
             return $tile->getTileType();
         });
     }
 
+    /**
+     * @return ArrayList
+     */
     function toTileNumberList() {
         return (new ArrayList())->fromSelected($this, function (Tile $tile) {
             return $tile->getNumber(); // validate
@@ -88,6 +110,9 @@ class TileList extends ArrayList {
         return [$l1, $l2];
     }
 
+    /**
+     * @return HandSize
+     */
     function getHandSize() {
         return new HandSize($this->count());
     }
@@ -104,6 +129,10 @@ class TileList extends ArrayList {
         return $this->isAll(function (Tile $tile) {
             return $tile->isSuit();
         });
+    }
+
+    function isAllSameSuit() {
+        return $this->isAllSuit() && $this->toTileTypeList()->isSame();
     }
 
     function isAllSimple() {
@@ -127,6 +156,18 @@ class TileList extends ArrayList {
     function isAllHonor() {
         return $this->isAll(function (Tile $tile) {
             return $tile->isHonor();
+        });
+    }
+
+    function isAnyTerminalOrHonor() {
+        return $this->isAny(function (Tile $tile) {
+            return $tile->isTerminalOrHonor();
+        });
+    }
+
+    function isAnyTerminal() {
+        return $this->isAny(function (Tile $tile) {
+            return $tile->isTerminal();
         });
     }
 
@@ -213,7 +254,7 @@ class TileList extends ArrayList {
     /**
      * @return $this
      */
-    function sort() {
+    function orderByTileID() {
         return $this->orderByAscending(Tile::getComparator());
     }
 }

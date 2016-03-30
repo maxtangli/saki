@@ -10,7 +10,7 @@ class FutureWaiting {
 
     function __construct(Tile $discardedTile, TileList $waitingTileList) {
         $this->discardedTile = $discardedTile;
-        $this->waitingTileList = $waitingTileList->getCopy()->sort();
+        $this->waitingTileList = $waitingTileList->getCopy()->orderByTileID();
     }
 
     function getDiscardedTile() {

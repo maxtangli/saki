@@ -47,11 +47,11 @@ class MeldListTest extends PHPUnit_Framework_TestCase {
     }
 
     function testOutsideHand() {
-        $this->assertTrue(Meld::fromString('123m')->isAnyTerminalOrHonor(false));
-        $this->assertTrue(Meld::fromString('789s')->isAnyTerminalOrHonor(false));
-        $this->assertTrue(Meld::fromString('EE')->isAnyTerminalOrHonor(false));
-        $this->assertTrue(Meld::fromString('EEE')->isAnyTerminalOrHonor(false));
-        $this->assertTrue(Meld::fromString('EEEE')->isAnyTerminalOrHonor(false));
+        $this->assertTrue(Meld::fromString('123m')->isAnyTerminalOrHonor());
+        $this->assertTrue(Meld::fromString('789s')->isAnyTerminalOrHonor());
+        $this->assertTrue(Meld::fromString('EE')->isAnyTerminalOrHonor());
+        $this->assertTrue(Meld::fromString('EEE')->isAnyTerminalOrHonor());
+        $this->assertTrue(Meld::fromString('EEEE')->isAnyTerminalOrHonor());
         $this->assertTrue(MeldList::fromString('123m,789m,123s,789s,EE')->isOutsideHand(false));
     }
 

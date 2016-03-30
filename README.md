@@ -561,8 +561,8 @@ rush 47 refactor Saki/Tile/ 4.4h
 
 rush refactor Saki/Meld/
 
-- [ ] MeldType
-- [ ] Meld
+- [x] MeldType 1.2h
+- [x] Meld 1.2h
 - [ ] MeldList
 
 rush red dora: meld issue

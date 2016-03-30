@@ -10,8 +10,8 @@ class TripleMeldType extends WeakMeldType {
         return 3;
     }
 
-    protected function validFaces(TileList $tileList) {
-        return $tileList[0] == $tileList[1] && $tileList[1] == $tileList[2];
+    protected function validFaces(TileList $validCountTileList) {
+        return $validCountTileList[0] == $validCountTileList[1] && $validCountTileList[1] == $validCountTileList[2];
     }
 
     function getPossibleTileLists(Tile $firstTile) {
@@ -22,8 +22,8 @@ class TripleMeldType extends WeakMeldType {
         return QuadMeldType::getInstance();
     }
 
-    protected function getWaitingTilesImpl(TileList $validMeldTileList) {
-        return [$validMeldTileList[0]];
+    protected function getWaitingTileListImpl(TileList $validMeldTileList) {
+        return new TileList([$validMeldTileList[0]]);
     }
 
     protected function getWaitingTypeImpl(TileList $validMeldTileList) {

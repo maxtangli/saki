@@ -10,14 +10,9 @@ class WeakRunMeldType extends WeakMeldType {
         return 2;
     }
 
-    protected function validFaces(TileList $tileList) {
-        $sameSuit = $tileList[0]->getTileType()->isSuit() && $tileList[0]->getTileType() == $tileList[1]->getTileType();
-        if (!$sameSuit) {
-            return false;
-        }
-
-        $numberDiff = abs($tileList[0]->getNumber() - $tileList[1]->getNumber());
-        return in_array($numberDiff, [1, 2]);
+    protected function validFaces(TileList $validCountTileList) {
+        list($diff, ,) = $this->getNumbers($validCountTileList);
+        return $validCountTileList->isAllSameSuit() && in_array($diff, [1, 2]);
     }
 
     function getPossibleTileLists(Tile $firstTile) {
@@ -38,43 +33,53 @@ class WeakRunMeldType extends WeakMeldType {
         return RunMeldType::getInstance();
     }
 
-    protected function getWaitingTilesImpl(TileList $validMeldTileList) {
-        $numberList = $validMeldTileList->toTileNumberList();
-        $numbers = [$numberList->getMin(), $numberList->getMax()];
-        $waitingTypeValue = $this->getWaitingTypeImpl($validMeldTileList)->getValue();
-        if ($waitingTypeValue == WaitingType::MIDDLE_RUN_WAITING) {
-            $waitingNumbers = [$numbers[0] + 1];
-        } elseif ($waitingTypeValue == WaitingType::ONE_SIDE_RUN_WAITING) {
-            $waitingNumbers = $numbers[0] == 1 ? [3] : [7];
-        } elseif ($waitingTypeValue == WaitingType::TWO_SIDE_RUN_WAITING) {
-            $waitingNumbers = [$numbers[0] - 1, $numbers[1] + 1];
+    protected function getWaitingTileListImpl(TileList $validMeldTileList) {
+        list(, $min, $max) = $this->getNumbers($validMeldTileList);
+        $v = $this->getWaitingTypeImpl($validMeldTileList)->getValue();
+        if ($v == WaitingType::MIDDLE_RUN_WAITING) {
+            $waitingNumbers = [$min + 1];
+        } elseif ($v == WaitingType::ONE_SIDE_RUN_WAITING) {
+            $waitingNumbers = $min == 1 ? [3] : [7];
+        } elseif ($v == WaitingType::TWO_SIDE_RUN_WAITING) {
+            $waitingNumbers = [$min - 1, $max + 1];
         } else {
             throw new \LogicException();
         }
 
-        $type = $validMeldTileList[0]->getTileType();
-        $tiles = array_map(function ($number) use ($type) {
-            return Tile::getInstance($type, $number);
-        }, $waitingNumbers);
-        return $tiles;
+        /** @var Tile $firstTile */
+        $firstTile = $validMeldTileList[0];
+        return TileList::fromNumbers($waitingNumbers, $firstTile->getTileType());
     }
 
     protected function getWaitingTypeImpl(TileList $validMeldTileList) {
-        $numbers = [$validMeldTileList[0]->getNumber(), $validMeldTileList[1]->getNumber()];
-        $numberDiff = abs($numbers[1] - $numbers[0]);
-        if ($numberDiff == 2) {
-            $waitingTypeValue = WaitingType::MIDDLE_RUN_WAITING;
-        } elseif ($numbers[0] == 1) {
-            $waitingTypeValue = WaitingType::ONE_SIDE_RUN_WAITING;
-        } elseif ($numbers[1] == 9) {
-            $waitingTypeValue = WaitingType::ONE_SIDE_RUN_WAITING;
+        list($diff, $min, $max) = $this->getNumbers($validMeldTileList);
+        if ($diff == 2) {
+            $v = WaitingType::MIDDLE_RUN_WAITING;
+        } elseif ($diff == 1) {
+            if ($min == 1) {
+                $v = WaitingType::ONE_SIDE_RUN_WAITING;
+            } elseif ($max == 9) {
+                $v = WaitingType::ONE_SIDE_RUN_WAITING;
+            } else {
+                $v = WaitingType::TWO_SIDE_RUN_WAITING;
+            }
         } else {
-            $waitingTypeValue = WaitingType::TWO_SIDE_RUN_WAITING;
+            throw new \LogicException();
         }
-        return WaitingType::getInstance($waitingTypeValue);
+        return WaitingType::getInstance($v);
     }
 
     function getWinSetType() {
         return WinSetType::getInstance(WinSetType::PURE_WEAK);
+    }
+
+    /**
+     * @param TileList $validCountTileList
+     * @return int[] list($diff, $min, $max)
+     */
+    protected function getNumbers(TileList $validCountTileList) {
+        $numberList = $validCountTileList->toTileNumberList(); // validate
+        $diff = abs($numberList[0] - $numberList[1]);
+        return [$diff, $numberList->getMin(), $numberList->getMax()];
     }
 }

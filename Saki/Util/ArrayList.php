@@ -24,9 +24,9 @@ namespace Saki\Util;
 class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
     //region fields
     private $innerArray;
-    private $writable; // todo remove?
+    private $writable;
 
-    function __construct(array $innerArray = null, $writable = true) {
+    function __construct(array $innerArray = null, bool $writable = true) {
         $this->writable = true;
         $this->fromArray($innerArray ?? []);
         $this->writable = $writable;
@@ -50,6 +50,11 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
 
     function isWritable() {
         return $this->writable;
+    }
+
+    protected function setWritable(bool $writable) {
+        $this->writable = $writable;
+        return $this;
     }
 
     protected function assertWritable() {
@@ -160,7 +165,7 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
      * @param int $n
      * @return array
      */
-    function getLastMany($n) {
+    function getLastMany(int $n) {
         $count = $this->count();
         return $this->getValueAt(range($count - 1, $count - $n)); // validate
     }
@@ -396,14 +401,14 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
     }
 
     /**
-     * @param ArrayList $source
+     * @param ArrayList $list
      * @param callable|null $selector
      * @return $this
      */
-    function fromSelected(ArrayList $source, callable $selector = null) {
+    function fromSelected(ArrayList $list, callable $selector = null) {
         $this->assertWritable();
-        $this->innerArray = $selector === null ? $source->innerArray
-            : array_map($selector, $source->innerArray);
+        $this->innerArray = $selector === null ? $list->innerArray
+            : array_map($selector, $list->innerArray);
         return $this;
     }
 

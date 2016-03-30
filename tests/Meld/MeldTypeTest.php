@@ -84,7 +84,7 @@ class MeldTypeTest extends PHPUnit_Framework_TestCase {
         $waitingType = WaitingType::getInstance($waitingTypeValue);
 
         // test waitingTiles, waitingType
-        $this->assertEquals($waitingTileList->toArray(), $weakRun->getWaitingTiles($tileList));
+        $this->assertEquals($waitingTileList->toArray(), $weakRun->getWaitingTileList($tileList)->toArray());
         $this->assertEquals($waitingType, $weakRun->getWaitingType($tileList), $weakRun->getWaitingType($tileList));
 
         // test toTargetMeld todo

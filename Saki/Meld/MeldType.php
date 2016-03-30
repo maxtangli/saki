@@ -5,6 +5,10 @@ use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 use Saki\Util\Singleton;
 
+/**
+ * A specific pattern of Tile sequence..
+ * @package Saki\Meld
+ */
 abstract class MeldType extends Singleton {
     function __toString() {
         // Saki\Meld\MeldType -> MeldType
@@ -13,10 +17,15 @@ abstract class MeldType extends Singleton {
         return substr($actualClass, $lastSeparatorPos + 1);
     }
 
-    // valid
-
+    /**
+     * @return int
+     */
     abstract function getTileCount();
 
+    /**
+     * @param TileList $tileList
+     * @return bool
+     */
     final function valid(TileList $tileList) {
         return $this->validCount($tileList) && $this->validFaces($tileList);
     }
@@ -25,7 +34,7 @@ abstract class MeldType extends Singleton {
         return count($tileList) == $this->getTileCount();
     }
 
-    abstract protected function validFaces(TileList $tileList);
+    abstract protected function validFaces(TileList $validCountTileList);
 
     /**
      * @param Tile $firstTile
@@ -39,7 +48,6 @@ abstract class MeldType extends Singleton {
     }
 
     /**
-     * note: convenient call for $meldType instanceof WeakMeldType
      * @return bool
      */
     function hasTargetMeldType() {
@@ -47,7 +55,6 @@ abstract class MeldType extends Singleton {
     }
 
     /**
-     * note: A持有B，B的某些信息方法，A也需要直接暴露-》将这些信息打包为单个类以便于共享。
      * @return WinSetType
      */
     abstract function getWinSetType();

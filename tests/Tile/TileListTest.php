@@ -2,6 +2,7 @@
 
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
+use Saki\Tile\TileType;
 
 class TileListTest extends PHPUnit_Framework_TestCase {
 
@@ -39,6 +40,10 @@ class TileListTest extends PHPUnit_Framework_TestCase {
             ['0m', [Tile::fromString('0m')]],
             ['05m', [Tile::fromString('0m'), Tile::fromString('5m')]],
         ];
+    }
+
+    function testFromNumbers() {
+        $this->assertEquals('123s', TileList::fromNumbers([1, 2, 3], TileType::fromString('s'))->__toString());
     }
 
     function testConstructor() {
@@ -84,11 +89,11 @@ class TileListTest extends PHPUnit_Framework_TestCase {
         $l = TileList::fromString($expected);
         $this->assertEquals($expected, $l->__toString());
 
-        $this->assertEquals('50m50p50s', TileList::fromString('05p50m05s')->sort()->__toString());
+        $this->assertEquals('50m50p50s', TileList::fromString('05p50m05s')->orderByTileID()->__toString());
 
         $shuffled = 'WNC1206783459m1234578069p1234578069sESPF';
         $l = TileList::fromString($shuffled);
-        $l->sort();
+        $l->orderByTileID();
         $this->assertEquals($expected, $l->__toString());
     }
 }

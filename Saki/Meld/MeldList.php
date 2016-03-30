@@ -6,7 +6,11 @@ use Saki\Tile\TileList;
 use Saki\Util\ArrayList;
 
 class MeldList extends ArrayList {
-    static function validString($s) {
+    /**
+     * @param string $s
+     * @return bool
+     */
+    static function validString(string $s) {
         $meldStrings = !empty($s) ? explode(',', $s) : [];
         foreach ($meldStrings as $meldString) {
             if (!Meld::validString($meldString)) {
@@ -184,11 +188,6 @@ class MeldList extends ArrayList {
             }
         }
         return false; // 0.6s
-
-//        $equals = Meld::getEqualsCallback(false);
-//        return $runList->any(function (Meld $meld)use($runList, $equals) {
-//            return $runList->valueExist($meld->toAllSuitTypes(), $equals);
-//        }); // 1.9s
     }
 
     function isThreeColorTripleOrQuads() {
@@ -269,7 +268,7 @@ class MeldList extends ArrayList {
         }
 
         return $this->isAll(function (Meld $meld) use ($isPure) {
-            return $meld->isAnyTerminalOrHonor($isPure);
+            return $isPure ? $meld->isAnyTerminal() : $meld->isAnyTerminalOrHonor();
         });
     }
 

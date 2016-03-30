@@ -132,7 +132,7 @@ class TileArea {
         }
 
         if ($declaredMeld && !$this->getDeclaredMeldListReference()->valueExist($declaredMeld, function (Meld $a, Meld $b) {
-                return $a->equals($b, false);
+                return $a->equalTo($b, false);
             })
         ) {
             return false;
@@ -140,7 +140,7 @@ class TileArea {
 
         // exist tiles can form a fromMeld
         try {
-            $fromMeld = $declaredMeld ?? new Meld(new TileList($handTiles));
+            $fromMeld = $declaredMeld ?? new Meld($handTiles);
         } catch (\InvalidArgumentException $e) {
             return false;
         }
@@ -171,12 +171,12 @@ class TileArea {
 
         if ($declaredMeld) {
             $this->getDeclaredMeldListReference()->remove($declaredMeld, function (Meld $a, Meld $b) {
-                return $a->equals($b, false);
+                return $a->equalTo($b, false);
             });
         }
 
         // push target meld
-        $fromMeld = $declaredMeld ?? new Meld(new TileList($handTiles));
+        $fromMeld = $declaredMeld ?? new Meld($handTiles);
         $hasWaitingTile = !($handTiles && !$otherTile && !$declaredMeld);
         if ($hasWaitingTile) {
             $waitingTile = $otherTile ?? $handTiles[0];
@@ -199,7 +199,7 @@ class TileArea {
     }
 
     function canPlusKong(Tile $selfTile) {
-        $declaredMeld = new Meld(new TileList([$selfTile, $selfTile, $selfTile]));
+        $declaredMeld = new Meld([$selfTile, $selfTile, $selfTile]);
         return $this->canDeclareMeld(QuadMeldType::getInstance(), [$selfTile], null, $declaredMeld);
     }
 
@@ -208,7 +208,7 @@ class TileArea {
      * @return Meld
      */
     function plusKong(Tile $selfTile) {
-        $declaredMeld = new Meld(new TileList([$selfTile, $selfTile, $selfTile]));
+        $declaredMeld = new Meld([$selfTile, $selfTile, $selfTile]);
         return $this->declareMeld(QuadMeldType::getInstance(), null, [$selfTile], null, $declaredMeld);
     }
 
@@ -243,12 +243,12 @@ class TileArea {
     }
 
     function canSmallKong(Tile $otherTile) {
-        $declaredMeld = new Meld(new TileList([$otherTile, $otherTile, $otherTile]));
+        $declaredMeld = new Meld([$otherTile, $otherTile, $otherTile]);
         return $this->canDeclareMeld(QuadMeldType::getInstance(), null, $otherTile, $declaredMeld);
     }
 
     function smallKong(Tile $otherTile) {
-        $declaredMeld = new Meld(new TileList([$otherTile, $otherTile, $otherTile]));
+        $declaredMeld = new Meld([$otherTile, $otherTile, $otherTile]);
         return $this->declareMeld(QuadMeldType::getInstance(), false, null, $otherTile, $declaredMeld);
     }
 }

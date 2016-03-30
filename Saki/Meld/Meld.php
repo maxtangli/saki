@@ -3,28 +3,31 @@ namespace Saki\Meld;
 
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
-use Saki\Tile\TileType;
-use Saki\Util\ArrayList;
 use Saki\Util\ValueObject;
 
 /**
+ * A TileList which match with one MeldType.
  * @package Saki\Meld
  */
-class Meld extends ArrayList implements ValueObject {
+class Meld extends TileList implements ValueObject {
     private static $meldTypeAnalyzer;
 
     /**
      * @return MeldTypeAnalyzer
      */
     static function getMeldTypeAnalyzer() {
-        if (!isset(self::$meldTypeAnalyzer)) {
+        if (self::$meldTypeAnalyzer === null) {
             $meldTypes = MeldTypesFactory::getInstance()->getAllMeldTypes();
             self::$meldTypeAnalyzer = new MeldTypeAnalyzer($meldTypes);
         }
         return self::$meldTypeAnalyzer;
     }
 
-    static function validString($s) {
+    /**
+     * @param string $s
+     * @return bool
+     */
+    static function validString(string $s) {
         try {
             static::fromString($s);
         } catch (\InvalidArgumentException $e) {
@@ -37,151 +40,167 @@ class Meld extends ArrayList implements ValueObject {
      * @param string $s
      * @return Meld
      */
-    static function fromString($s) {
+    static function fromString(string $s) {
         $regex = sprintf('/^%s|(\(%s\))$/', TileList::REGEX_NOT_EMPTY_LIST, TileList::REGEX_NOT_EMPTY_LIST);
         if (preg_match($regex, $s) !== 1) {
             throw new \InvalidArgumentException(sprintf('Invalid $s[%s] for Meld.', $s));
         }
         $concealed = $s[0] === '(';
         $tileListString = $concealed ? substr($s, 1, strlen($s) - 2) : $s;
-        $tileList = TileList::fromString($tileListString);
-        return new static($tileList, null, $concealed);
+        $tileList = TileList::fromString($tileListString); // validate
+        return new static($tileList->toArray(), null, $concealed); // validate
     }
 
-    static function getEqualsCallback($compareConcealed) {
+    /**
+     * @param bool $compareConcealed
+     * @return \Closure
+     */
+    static function getEqualsCallback(bool $compareConcealed) {
         return function (Meld $a, Meld $b) use ($compareConcealed) {
-            return $a->equals($b, $compareConcealed);
+            return $a->equalTo($b, $compareConcealed);
         };
     }
 
-    private $tileSortedList;
     private $meldType;
     private $concealed;
 
-    /**
-     * @param TileList $tileList
-     * @param MeldType $meldType
-     * @param bool $concealed
-     */
-    function __construct(TileList $tileList, MeldType $meldType = null, $concealed = false) {
-        if ($meldType !== null && !$meldType->valid($tileList)) {
+    function __construct(array $tiles, MeldType $meldType = null, bool $concealed = false) {
+        parent::__construct($tiles);
+        $this->orderByTileID();
+
+        $actualMeldType = $meldType ?? self::getMeldTypeAnalyzer()->analyzeMeldType($this); // validate
+        if (!$actualMeldType->valid($this)) {
             throw new \InvalidArgumentException(
-                sprintf('%s,%s', $meldType, $tileList)
+                sprintf('%s,%s', $meldType, implode(',', $tiles))
             );
         }
 
-        $actualMeldType = $meldType !== null ? $meldType : self::getMeldTypeAnalyzer()->analyzeMeldType($tileList);
-
-        $tileSortedList = $tileList->getCopy()->sort();
-        parent::__construct($tileSortedList->toArray());
-        $this->tileSortedList = $tileSortedList;
+        $this->setWritable(false);
         $this->meldType = $actualMeldType;
         $this->concealed = $concealed;
     }
 
+    function getCopy() {
+        return new Meld($this->toArray(), $this->meldType, $this->concealed);
+    }
+
+    /**
+     * @param Meld $other
+     * @param bool|true $compareConcealed
+     * @return bool
+     */
+    function equalTo(Meld $other, bool $compareConcealed = true) {
+        return $this->toArray() == $other->toArray()
+        && $this->meldType == $other->meldType
+        && (!$compareConcealed || $this->concealed == $other->concealed);
+    }
+
     function __toString() {
-        $s = $this->tileSortedList->__toString();
+        $s = parent::__toString();
         return $this->isConcealed() ? "($s)" : $s;
     }
 
-    function equals(Meld $other, $compareConcealed = true) {
-        return $this->tileSortedList == $other->tileSortedList
-        && (!$compareConcealed || ($this->concealed == $other->concealed));
-    }
-
+    /**
+     * @return TileList
+     */
     function toTileList() {
         return new TileList($this->toArray());
     }
 
-    function toConcealed($concealedFlag = null) {
+    /**
+     * @param null $concealedFlag
+     * @return Meld
+     */
+    function toConcealed(bool $concealedFlag = null) {
         return $this->matchConcealed($concealedFlag) ? $this :
-            new Meld($this->tileSortedList, $this->getMeldType(), $concealedFlag);
+            new Meld($this->toArray(), $this->getMeldType(), $concealedFlag);
     }
 
-    protected function toOtherSuitType(TileType $suitType) {
-        $valid = $this->tileSortedList->isAllSuit();
-        if (!$valid) {
-            throw new \InvalidArgumentException(
-                sprintf('Not-all-suit Meld[%s] is unable to convert into $suitType[%s].', $this, $suitType)
-            );
-        }
-
-        $currentTileTypeString = $this[0]->getTileType()->__toString();
-        $targetTileTypeString = $suitType->__toString();
-        $currentMeldString = $this->__toString();
-        $targetMeldString = str_replace($currentTileTypeString, $targetTileTypeString, $currentMeldString);
-        return Meld::fromString($targetMeldString);
-    }
-
-    function toAllSuitTypes() {
-        return (new ArrayList(TileType::getSuitTypes()))->select(function (TileType $suitType) {
-            return $this->toOtherSuitType($suitType);
-        })->toArray();
-    }
-
+    /**
+     * @return MeldType|WeakMeldType
+     */
     function getMeldType() {
         return $this->meldType;
     }
 
+    /**
+     * @return bool
+     */
     function isConcealed() {
         return $this->concealed;
     }
 
-    protected function matchConcealed($concealedFlag = null) {
+    /**
+     * @param bool|null $concealedFlag
+     * @return bool
+     */
+    protected function matchConcealed(bool $concealedFlag = null) {
         return $concealedFlag === null || $this->isConcealed() === $concealedFlag;
     }
 
-    //region basic MeldType
+    //region MeldType delegates
+    /**
+     * @return bool
+     */
     function isPair() {
         return $this->getMeldType() instanceof PairMeldType;
     }
 
+    /**
+     * @return bool
+     */
     function isRun() {
         return $this->getMeldType() instanceof RunMeldType;
     }
 
-    function isTriple($concealedFlag = null) {
+    /**
+     * @return bool
+     */
+    function isTriple(bool $concealedFlag = null) {
         return $this->getMeldType() instanceof TripleMeldType && $this->matchConcealed($concealedFlag);
     }
 
-    function isQuad($concealedFlag = null) {
+    /**
+     * @return bool
+     */
+    function isQuad(bool $concealedFlag = null) {
         return $this->getMeldType() instanceof QuadMeldType && $this->matchConcealed($concealedFlag);
     }
 
-    function isTripleOrQuad($concealedFlag = null) {
+    /**
+     * @return bool
+     */
+    function isTripleOrQuad(bool $concealedFlag = null) {
         return $this->isTriple($concealedFlag) || $this->isQuad($concealedFlag);
     }
 
+    /**
+     * @return bool
+     */
+    function isWeakPair() {
+        return $this->getMeldType() instanceof WeakPairMeldType;
+    }
+
+    /**
+     * @return bool
+     */
+    function isWeakRun() {
+        return $this->getMeldType() instanceof WeakRunMeldType;
+    }
+
+    /**
+     * @return WinSetType
+     */
     function getWinSetType() {
         return $this->getMeldType()->getWinSetType();
     }
     //endregion
 
-    //region yaku concerned
-    function isAnyTerminalOrHonor($isPure) {
-        return $this->isAny(function (Tile $tile) use ($isPure) {
-            return $isPure ? $tile->isTerminal() : $tile->isTerminalOrHonor();
-        });
-    }
-
-    function isAllSuit() {
-        return $this->tileSortedList->isAllSuit();
-    }
-
-    function isAllTerminal() {
-        return $this->tileSortedList->isAllTerminal();
-    }
-
-    function isAllHonor() {
-        return $this->tileSortedList->isAllHonor();
-    }
-
-    function isAllTerminalOrHonor() {
-        return $this->tileSortedList->isAllTerminalOrHonor();
-    }
-    //endregion
-
-    //region source of weak MeldType
+    //region target of weak meld type
+    /**
+     * @param Tile $waitingTile
+     * @return bool
+     */
     function canToWeakMeld(Tile $waitingTile) {
         if (!$this->valueExist($waitingTile)) {
             return false;
@@ -189,78 +208,79 @@ class Meld extends ArrayList implements ValueObject {
 
         $weakMeldTileList = $this->toTileList()->remove($waitingTile);
         $weakMeldType = $this->getMeldTypeAnalyzer()->analyzeMeldType($weakMeldTileList, true);
-        if (!$weakMeldType) {
+        if ($weakMeldType === false) {
             return false;
         }
 
-        $weakMeld = new Meld($weakMeldTileList, $weakMeldType, $this->isConcealed());
-        return $weakMeld->getMeldType()->hasTargetMeldType()
-        && $weakMeld->canToTargetMeld($waitingTile, $this->getMeldType());
+        $weakMeld = new Meld($weakMeldTileList->toArray(), $weakMeldType, $this->isConcealed());
+        return $weakMeld->canToTargetMeld($waitingTile, $this->getMeldType());
     }
 
+    /**
+     * @param Tile $waitingTile
+     * @return Meld
+     */
     function toWeakMeld(Tile $waitingTile) {
         if (!$this->canToWeakMeld($waitingTile)) {
             throw new \InvalidArgumentException();
         }
 
         $weakMeldTileList = $this->toTileList()->remove($waitingTile);
-        $weakMeld = new Meld($weakMeldTileList, null, $this->isConcealed());
+        $weakMeld = new Meld($weakMeldTileList->toArray(), null, $this->isConcealed());
         return $weakMeld;
-    }
-
-    function getFromWeakMeldWaitingType(Tile $waitingTile) {
-        return $this->toWeakMeld($waitingTile)->getWaitingType();
     }
     //endregion
 
-    //region weak MeldType
-    function isWeakPair() {
-        return $this->getMeldType() instanceof WeakPairMeldType;
-    }
-
-    function isWeakRun() {
-        return $this->getMeldType() instanceof WeakRunMeldType;
-    }
-
-    protected function getActualTargetMeldType(MeldType $targetMeldType = null) {
-        if ($targetMeldType !== null) {
-            $actualTargetMeldType = $targetMeldType;
-        } else {
-            if (!$this->getMeldType()->hasTargetMeldType()) {
-                throw new \InvalidArgumentException();
-            }
-            $actualTargetMeldType = $this->getMeldType()->getTargetMeldType();
-        }
-        return $actualTargetMeldType;
-    }
-
-    function canToTargetMeld(Tile $tile, MeldType $targetMeldType = null) {
-        $actualTargetMeldType = $this->getActualTargetMeldType($targetMeldType);
-        if ($actualTargetMeldType != $this->getMeldType()->getTargetMeldType()) {
+    //region weak meld type
+    /**
+     * @param Tile $newTile
+     * @param MeldType|null $targetMeldType
+     * @return bool
+     */
+    function canToTargetMeld(Tile $newTile, MeldType $targetMeldType = null) {
+        if (!$this->getMeldType()->hasTargetMeldType()) {
             return false;
         }
 
-        $waitingTiles = $this->getMeldType()->getWaitingTiles($this->tileSortedList);
-        return in_array($tile, $waitingTiles);
+        if ($targetMeldType !== null
+            && $targetMeldType != $this->getMeldType()->getTargetMeldType()
+        ) {
+            return false;
+        }
+
+        $waitingTileList = $this->getMeldType()->getWaitingTileList($this);
+        return $waitingTileList->valueExist($newTile);
     }
 
-    function toTargetMeld(Tile $tile, MeldType $targetMeldType = null, $concealedFlag = null) {
-        if (!$this->canToTargetMeld($tile, $targetMeldType)) {
+    /**
+     * @param Tile $newTile
+     * @param MeldType|null $targetMeldType
+     * @param bool|null $concealedFlag
+     * @return Meld
+     */
+    function toTargetMeld(Tile $newTile, MeldType $targetMeldType = null, bool $concealedFlag = null) {
+        if (!$this->canToTargetMeld($newTile, $targetMeldType)) {
             throw new \InvalidArgumentException();
         }
 
-        $targetTileList = $this->tileSortedList->getCopy()->insertLast($tile)->sort();
-        $actualTargetMeldType = $this->getActualTargetMeldType($targetMeldType);
-        $targetConcealed = $concealedFlag !== null ? $concealedFlag : $this->isConcealed();
-        return new Meld($targetTileList, $actualTargetMeldType, $targetConcealed);
+        $targetTileList = $this->toTileList()->insertLast($newTile)->orderByTileID();
+        $actualTargetMeldType = $targetMeldType ?? $this->getMeldType()->getTargetMeldType();
+        $targetConcealed = $concealedFlag ?? $this->isConcealed();
+        return new Meld($targetTileList->toArray(), $actualTargetMeldType, $targetConcealed);
     }
 
-    function getWaitingTiles() {
-        return $this->getMeldType()->getWaitingTiles($this->tileSortedList);
+    /**
+     * @return TileList
+     */
+    function getWaitingTileList() {
+        return $this->getMeldType()->getWaitingTileList($this);
     }
 
+    /**
+     * @return WaitingType
+     */
     function getWaitingType() {
-        return $this->getMeldType()->getWaitingType($this->tileSortedList);
+        return $this->getMeldType()->getWaitingType($this);
     }
     //endregion
 }

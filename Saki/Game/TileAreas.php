@@ -55,7 +55,7 @@ class TileAreas {
     protected function debugSetHandImpl(Player $player, TileList $newHand, MeldList $declareMeldList = null, Tile $targetTile = null) {
         $currentHand = $player->getTileArea()->getHandReference();
         $newHandSize = $newHand->getHandSize();
-        $validHandPhase = $newHandSize->equalsPhase($currentHand->getHandSize());
+        $validHandPhase = $newHandSize->isSamePhase($currentHand->getHandSize());
         if (!$validHandPhase) {
             throw new \InvalidArgumentException(
                 sprintf('Invalid $hand[%s(%s)], expected same phase one with current hand[%s(%s)].',

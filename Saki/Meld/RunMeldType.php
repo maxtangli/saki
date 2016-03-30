@@ -10,19 +10,23 @@ class RunMeldType extends MeldType {
         return 3;
     }
 
-    protected function validFaces(TileList $tileList) {
-        $sameSuit = $tileList[0]->getTileType()->isSuit() &&
-            $tileList[0]->getTileType() == $tileList[1]->getTileType() && $tileList[1]->getTileType() == $tileList[2]->getTileType();
-        if (!$sameSuit) {
+    protected function validFaces(TileList $validCountTileList) {
+        /** @var TIle $firstTile */
+        if (!$validCountTileList->isAllSameSuit()) {
             return false;
         }
 
+        /**
+         *     a a+1 a+2
+         * a   0   1   2
+         * a+1 1   0   1
+         * a+2 2   1   0
+         */
         $expectedDiffs = [0, 0, 0, 1, 1, 1, 1, 2, 2];
-        $diffList = (new ArrayList())->fromZipped($tileList, $tileList, function(Tile $t1, Tile $t2) {
+        $diffList = (new ArrayList())->fromZipped($validCountTileList, $validCountTileList, function (Tile $t1, Tile $t2) {
             return abs($t1->getNumber() - $t2->getNumber());
         });
         $isConsecutiveNumber = $diffList->valueExist($expectedDiffs);
-
         return $isConsecutiveNumber;
     }
 

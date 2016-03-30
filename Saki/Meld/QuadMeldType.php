@@ -9,8 +9,8 @@ class QuadMeldType extends MeldType {
         return 4;
     }
 
-    protected function validFaces(TileList $tileList) {
-        return $tileList[0] == $tileList[1] && $tileList[1] == $tileList[2] && $tileList[2] == $tileList[3];
+    protected function validFaces(TileList $validCountTileList) {
+        return $validCountTileList[0] == $validCountTileList[1] && $validCountTileList[1] == $validCountTileList[2] && $validCountTileList[2] == $validCountTileList[3];
     }
 
     function getPossibleTileLists(Tile $firstTile) {

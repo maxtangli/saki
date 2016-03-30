@@ -101,7 +101,7 @@ class TileSeries extends Enum {
                 return $meld->canToWeakMeld($winTile);
             });
 
-            $waitingTiles = [];
+            $waitingTileList = new TileList();
             foreach ($winTileMeldList as $winTileMeld) {
                 $weakWinTileMeld = $winTileMeld->toWeakMeld($winTile);
                 $publicHandMeldList = new MeldList($handMeldList->toArray());
@@ -120,12 +120,13 @@ class TileSeries extends Enum {
                 }
 
                 foreach ($weakMeldList as $weakMeld) {
-                    $waitingTiles = array_merge($waitingTiles, $weakMeld->getWaitingTiles());
+                    /** @var Meld $weakMeld */
+                    $weakMeld = $weakMeld;
+                    $waitingTileList->concat($weakMeld->getWaitingTileList());
                 }
             }
 
-            $tileList = (new TileList($waitingTiles))->distinct()->sort();
-            return $tileList;
+            return $waitingTileList->distinct()->orderByTileID();
         }
     }
 

@@ -14,7 +14,7 @@ class MeldCompositionsAnalyzer {
      * @return MeldList[]
      */
     function analyzeMeldCompositions(TileList $tileList, array $meldTypes, $allowPureWeakCount = 0, $toConcealed = true) {
-        $tileSortedList = $tileList->getCopy()->sort();
+        $tileSortedList = $tileList->getCopy()->orderByTileID();
         $meldLists = $this->analyzeMeldCompositionsImpl($tileSortedList, $meldTypes, $allowPureWeakCount, $toConcealed);
         return $meldLists;
     }
@@ -46,8 +46,8 @@ class MeldCompositionsAnalyzer {
 //            echo "get possible cuts: ";MsTimer::getInstance()->restartWithDump();
 
             // with first tile, success to construct a meld by given meldType
-            foreach ($possibleCuts as list($beginTileSortedList, $remainTileSortedList)) {
-                $firstMeld = new Meld($beginTileSortedList, $meldType, $toConcealed);
+            foreach ($possibleCuts as list($beginTileSortedList, $remainTileSortedList)) { // todo inteligence?
+                $firstMeld = new Meld($beginTileSortedList->toArray(), $meldType, $toConcealed);
 
                 if ($remainTileSortedList->isEmpty()) { // with first meld, no remain tiles exist
                     $thisMeldLists = [new MeldList([$firstMeld])];

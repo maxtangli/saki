@@ -1,6 +1,7 @@
 <?php
 namespace Saki\Win;
 
+use Saki\Meld\Meld;
 use Saki\Meld\MeldCompositionsAnalyzer;
 use Saki\Meld\MeldList;
 use Saki\Meld\PairMeldType;
@@ -76,7 +77,7 @@ class WaitingAnalyzer {
      * @return TileList unique sorted waiting tile list
      */
     function analyzePublic(TileList $tileList, MeldList $declaredMeldList) {
-        $handTileList = $tileList->getCopy()->sort();
+        $handTileList = $tileList->getCopy()->orderByTileID();
         if (!$handTileList->getHandSize()->isPublic()) {
             throw new \InvalidArgumentException(
                 sprintf('Invalid handTileList[%s] with count[%s] for WaitingAnalyzer public phase analyze.', $handTileList, $handTileList->count())
@@ -114,7 +115,9 @@ class WaitingAnalyzer {
             foreach ($handSourceMeldList as $handSourceMeld) {
                 // step3. given a handSourceMeld, get its waitingTiles, test each waitingTile if with it any TileSeries exist.
                 //        take passed ones as finalWaitingTiles.
-                $potentialWaitingTiles = $handSourceMeld->getWaitingTiles();
+                /** @var Meld $handSourceMeld */
+                $handSourceMeld = $handSourceMeld;
+                $potentialWaitingTiles = $handSourceMeld->getWaitingTileList();
                 foreach ($potentialWaitingTiles as $potentialWaitingTile) {
                     if ($waitingTileList->valueExist($potentialWaitingTile)) { // ignore duplicated items to speedup
                         continue;
@@ -133,7 +136,7 @@ class WaitingAnalyzer {
             }
         }
 
-        $waitingTileList->sort();
+        $waitingTileList->orderByTileID();
         return $waitingTileList;
     }
 }

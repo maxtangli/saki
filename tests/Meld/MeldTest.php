@@ -10,11 +10,11 @@ class MeldTest extends PHPUnit_Framework_TestCase {
     function testCreate() {
         // new by MeldType
         $meldType = \Saki\Meld\PairMeldType::getInstance();
-        $meld = new \Saki\Meld\Meld(TileList::fromString('11m', false), $meldType);
+        $meld = new Meld([Tile::fromString('1m'), Tile::fromString('1m')], $meldType);
         $this->assertEquals($meldType, $meld->getMeldType());
 
         // new by analyze MeldType
-        $meld = new \Saki\Meld\Meld(TileList::fromString('11m'));
+        $meld = new Meld([Tile::fromString('1m'), Tile::fromString('1m')]);
         $this->assertEquals(\Saki\Meld\PairMeldType::getInstance(), $meld->getMeldType());
         $this->assertEquals('11m', $meld->__toString());
 
@@ -45,13 +45,13 @@ class MeldTest extends PHPUnit_Framework_TestCase {
         $mNotConcealed = Meld::fromString('123s');
         $mNotConcealed2 = Meld::fromString('123s');
         $this->assertTrue($mNotConcealed == $mNotConcealed2);
-        $this->assertTrue($mNotConcealed->equals($mNotConcealed2, true));
-        $this->assertTrue($mNotConcealed->equals($mNotConcealed2, false));
+        $this->assertTrue($mNotConcealed->equalTo($mNotConcealed2, true));
+        $this->assertTrue($mNotConcealed->equalTo($mNotConcealed2, false));
 
         $mConcealed = Meld::fromString('(123s)');
         $this->assertFalse($mNotConcealed == $mConcealed);
-        $this->assertFalse($mNotConcealed->equals($mConcealed, true));
-        $this->assertTrue($mNotConcealed->equals($mConcealed, false));
+        $this->assertFalse($mNotConcealed->equalTo($mConcealed, true));
+        $this->assertTrue($mNotConcealed->equalTo($mConcealed, false));
 
         // array
 
@@ -67,7 +67,7 @@ class MeldTest extends PHPUnit_Framework_TestCase {
 
     function testAddKong() {
         // canPlusKong
-        $meld = new \Saki\Meld\Meld(TileList::fromString('111m'), \Saki\Meld\TripleMeldType::getInstance());
+        $meld = new Meld([Tile::fromString('1m'), Tile::fromString('1m'), Tile::fromString('1m')], \Saki\Meld\TripleMeldType::getInstance());
         $this->assertTrue($meld->canToTargetMeld(\Saki\Tile\Tile::fromString('1m'), \Saki\Meld\QuadMeldType::getInstance()));
         $this->assertFalse($meld->canToTargetMeld(Tile::fromString('1s'), \Saki\Meld\QuadMeldType::getInstance()));
         // plusKong get Quad
@@ -81,7 +81,7 @@ class MeldTest extends PHPUnit_Framework_TestCase {
      * @dataProvider addKongIsConcealedProvider
      */
     function testAddKongIsConcealed($before, $forceConcealed, $after) {
-        $m1 = new Meld(TileList::fromString('111m'), null, $before);
+        $m1 = new Meld([Tile::fromString('1m'), Tile::fromString('1m'), Tile::fromString('1m')], null, $before);
         $m2 = $m1->toTargetMeld(Tile::fromString('1m'), \Saki\Meld\QuadMeldType::getInstance(), $forceConcealed);
         $this->assertEquals($after, $m2->isConcealed());
     }

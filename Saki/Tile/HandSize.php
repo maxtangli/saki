@@ -63,7 +63,7 @@ class HandSize {
         return $this->isCompletePrivate() || $this->isCompletePublic();
     }
 
-    function equalsPhase(HandSize $other) {
+    function isSamePhase(HandSize $other) {
         return ($this->isPrivate() && $other->isPrivate())
         || ($this->isPublic() && $other->isPublic());
     }

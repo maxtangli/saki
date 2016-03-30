@@ -10,8 +10,8 @@ class PairMeldType extends WeakMeldType {
         return 2;
     }
 
-    protected function validFaces(TileList $tileList) {
-        return $tileList[0] == $tileList[1];
+    protected function validFaces(TileList $validCountTileList) {
+        return $validCountTileList[0] == $validCountTileList[1];
     }
 
     function getPossibleTileLists(Tile $firstTile) {
@@ -22,8 +22,8 @@ class PairMeldType extends WeakMeldType {
         return TripleMeldType::getInstance();
     }
 
-    protected function getWaitingTilesImpl(TileList $validMeldTileList) {
-        return [$validMeldTileList[0]];
+    protected function getWaitingTileListImpl(TileList $validMeldTileList) {
+        return new TileList([$validMeldTileList[0]]);
     }
 
     protected function getWaitingTypeImpl(TileList $validMeldTileList) {
