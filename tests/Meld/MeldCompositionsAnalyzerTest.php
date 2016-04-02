@@ -1,7 +1,7 @@
 <?php
 
 use Saki\Meld\Meld;
-use Saki\Meld\MeldCompositionsAnalyzer;
+use Saki\Meld\MeldCombinationAnalyzer;
 use Saki\Meld\RunMeldType;
 use Saki\Tile\TileList;
 
@@ -10,11 +10,11 @@ class MeldCompositionsAnalyzerTest extends PHPUnit_Framework_TestCase {
      * @dataProvider getMeldCompositionsProvider
      */
     function testGetMeldCompositions($expectedMeldListStrings, $tilesStr, $meldTypes) {
-        $r = new \Saki\Meld\MeldCompositionsAnalyzer();
-        $meldLists = $r->analyzeMeldCompositions(\Saki\Tile\TileList::fromString($tilesStr), $meldTypes, 0, false);
+        $r = new MeldCombinationAnalyzer();
+        $combinationList = $r->analyzeMeldCombinationList(\Saki\Tile\TileList::fromString($tilesStr), $meldTypes, 0, false);
         $actualMeldListStrings = array_map(function ($v) {
             return $v->__toString();
-        }, $meldLists);
+        }, $combinationList->toArray());
         $meldTypesStr = implode(',', $meldTypes);
         $msg = "\$tilesStr[$tilesStr] \$meldTypes[$meldTypesStr]";
         $this->assertSame($expectedMeldListStrings, $actualMeldListStrings, $msg);
@@ -45,29 +45,10 @@ class MeldCompositionsAnalyzerTest extends PHPUnit_Framework_TestCase {
     }
 
     function testConcealed() {
-        $r = new MeldCompositionsAnalyzer();
-        $meldLists = $r->analyzeMeldCompositions(TileList::fromString('123s'), [RunMeldType::getInstance()], 0, true);
-        $this->assertEquals(Meld::fromString('(123s)'), $meldLists[0][0]);
-        $meldLists = $r->analyzeMeldCompositions(TileList::fromString('123s'), [RunMeldType::getInstance()], 0, false);
-        $this->assertEquals(Meld::fromString('123s'), $meldLists[0][0]);
-    }
-
-    function testPerformance() {
-        $tileListString = '112233s';
-        $r = new \Saki\Meld\MeldCompositionsAnalyzer();
-        $meldTypes = [
-            \Saki\Meld\PairMeldType::getInstance(),
-            \Saki\Meld\RunMeldType::getInstance(),
-            \Saki\Meld\TripleMeldType::getInstance(),
-        ];
-        $tileList = \Saki\Tile\TileList::fromString($tileListString);
-        $time = microtime(true);
-        $actual = $r->analyzeMeldCompositions($tileList, $meldTypes, 0, false);
-        $cost = microtime(true) - $time;
-        $costMs = round($cost * 1000);
-        //echo sprintf('analyzeMeldCompositions time cost: %s ms.', $costMs);
-
-        $expected = ['11s,22s,33s', '123s,123s'];
-        $this->assertEquals($expected, $actual, sprintf('[%s],[%s]',implode(' or ',$expected), implode(' or ',$actual)));
+        $r = new MeldCombinationAnalyzer();
+        $combinationList = $r->analyzeMeldCombinationList(TileList::fromString('123s'), [RunMeldType::getInstance()], 0, true);
+        $this->assertEquals(Meld::fromString('(123s)'), $combinationList[0][0]);
+        $combinationList = $r->analyzeMeldCombinationList(TileList::fromString('123s'), [RunMeldType::getInstance()], 0, false);
+        $this->assertEquals(Meld::fromString('123s'), $combinationList[0][0]);
     }
 }

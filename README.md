@@ -2,6 +2,11 @@
 
 A japanese-mahjong server.
 
+## remind
+
+- each refactor plan is a chance of learning, be hungry
+- be clear about any action's meaning, do NOT waste time.
+
 ## good practice
 
 goal
@@ -31,8 +36,8 @@ naming conventions
 ## rush statistics
 
 rush       | hours
---------- | -----
-rush  0-5  | 34h
+---------  ||-----
+rush  0-5  | 34.0h
 rush  6-10 | 23.8h
 rush 11-15 | 15.8h
 rush 16-20 | 25.6h
@@ -41,8 +46,9 @@ rush 26-30 | 24.1h
 rush 31-35 | 17.4h
 rush 36-40 | 24.6h
 rush 41-45 | 15.3h
-rush 46-50 | ing
-     total | 207.3h + ing
+rush 46-50 | 24.0h
+rush 51-55 | ing
+     total | 231.3h + ing
 
 ## rush history
 
@@ -559,11 +565,37 @@ rush 47 refactor Saki/Tile/ 4.4h
 - [x] refactor TileSet 0.1h
 - [x] optimize: by profiler 0.6h
 
-rush refactor Saki/Meld/
+rush 48 refactor Saki/Meld/ 7.1h
 
 - [x] MeldType 1.2h
 - [x] Meld 1.2h
-- [ ] MeldList
+- [x] MeldList 2.6h
+- [x] MeldTypeFacade 0.1h
+- [x] MeldTypeAnalyzer 0.2h
+- [x] MeldCompositionsAnalyzer 1.8h
+
+rush 49 all yaku: thirteen orphans 1.8h
+
+- [x] thirteen orphan meld 1.1h
+- [x] test 0.7h
+
+rush 50 refactor Saki/Win/ part1 2.1h
+
+- [x] remove needless XXXTileSeries 0.3h
+- [x] TileSeries 0.4h
+- [x] TileSeriesAnalyzer 0.3h
+- [x] WinAnalyzer 1.1h
+
+rush all yaku: HeavenlyWin, EarthlyWin, HumanlyWin
+
+- [x] fix YakuTest where concealed Triple declared 0.1h
+- [x] HeavenlyWin, EarthlyWin, HumanlyWin 0.6h
+- [ ] test NineGatesYaku
+- [ ] fix FinalTileWin Fish/Moon 0.1h // ? what's wrong
+
+rush refactor
+
+- [ ] Hand = HandTileList + DeclareMeldList
 
 rush red dora: meld issue
 
@@ -573,43 +605,30 @@ rush public command roller
 
 - [ ] public command roller
 
-rush rule.md doc
-
-- [ ] rule 0.6h
-- [ ] tile 0.6h
-- [ ] yaku 1.2h
-- [ ] furiten 0.8h
-
 rush command candidates
 
 - [ ] XXXCommand::getExecutables($player) // maybe better to exist in AI class?
 
-rush all yaku: HeavenlyWin, EarthlyWin, HumanlyWin
+rush UI
 
-- [ ] fix YakuTest where Triple declared
-- [ ] fix FinalTileWin Fish/Moon 0.1h // ? what's wrong
-- [ ] HeavenlyWin
-- [ ] EarthlyWin
-- [ ] HumanlyWin
+rush refactor Saki/Win/ part2
 
-rush all yaku: thirteen orphans
+- [ ] WaitingAnalyzer
+- [ ] WinAnalyzer.isFalseWin
+- [ ] WinTarget, WinResult
+- [ ] Fu
 
-- [ ] thirteen orphan meld
+rush rule.md doc
+
+- [ ] rule 0.6h
+- [ ] tile 0.6h
+- [ ] yaku 1.4h
+- [ ] furiten 0.8h
 
 rush refactor
 
-- [ ] remove redDora tricks
-- [ ] Hand = HandTileList + DeclareMeldList
+- [ ] Assert Command for tests
 - [ ] fix: mockHand target tile vs robQuadPhase target tile
-- [ ] refactor: TileSeries <-> MeldList.xxx, remove needless TileSeries
 - [ ] refactor: RoundResult
 - [ ] refactor: move DrawScore logic into separate class
 - [ ] refactor: simplify reset(),debugReset(),toNextPhase() 0.2h
-
-rush optimize tests
-
-- [ ] optimize: WaitingAnalyzer.analyzePrivate // 270ms
-- [ ] optimize: WinAnalyzerTest // 230ms
-- [ ] optimize: YakuTest 0.1h // 120ms  1 test case 40ms -> debugReplaceHand() slow?
-- [ ] optimize: RoundWinTest 80ms
-- [ ] optimize: RoundDrawTest/testFourReachDraw // 40ms

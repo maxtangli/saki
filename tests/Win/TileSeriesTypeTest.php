@@ -6,17 +6,6 @@ use Saki\Win\TileSeries;
 use Saki\Win\WaitingType;
 
 class TileSeriesTypeTest extends PHPUnit_Framework_TestCase {
-
-    function testGetBestOne() {
-        $greater = TileSeries::getInstance(TileSeries::FOUR_CONCEALED_TRIPLE_OR_QUAD_AND_ONE_PAIR);
-        $smaller = TileSeries::getInstance(TileSeries::FOUR_WIN_SET_AND_ONE_PAIR);
-        $this->assertEquals(1, $greater->compareTo($smaller));
-        $this->assertEquals(-1, $smaller->compareTo($greater));
-
-        $l = new \Saki\Util\ArrayList([$greater, $smaller]);
-        $this->assertEquals($greater, $l->getMax());
-    }
-
     /**
      * @dataProvider FourWinSetAndOnePairProvider
      */
@@ -33,12 +22,12 @@ class TileSeriesTypeTest extends PHPUnit_Framework_TestCase {
         $actualWaitingType = $s->getWaitingType($allMeldList, $winTile, $declaredMeldList);
         $this->assertEquals($expectedWaitingType, $actualWaitingType, "[$meldListString],[$tileString] -> [$expectedWaitingType] but [$actualWaitingType].");
 
-        $expectedWaitingTiles = array_map(function ($s) {
-            return Tile::fromString($s);
-        }, $expectedWaitingTileStrings);
-        $actualWaitingTiles = $s->getWaitingTileList($allMeldList, $winTile, $declaredMeldList)->toArray();
-        $this->assertEquals($expectedWaitingTiles, $actualWaitingTiles,
-            sprintf("[$meldListString],[$tileString] -> [%s] but [%s].", implode(',', $expectedWaitingTiles), implode(',', $actualWaitingTiles)));
+//        $expectedWaitingTiles = array_map(function ($s) {
+//            return Tile::fromString($s);
+//        }, $expectedWaitingTileStrings);
+//        $actualWaitingTiles = $s->getWaitingTileList($allMeldList, $winTile, $declaredMeldList)->toArray();
+//        $this->assertEquals($expectedWaitingTiles, $actualWaitingTiles,
+//            sprintf("[$meldListString],[$tileString] -> [%s] but [%s].", implode(',', $expectedWaitingTiles), implode(',', $actualWaitingTiles)));
 
         $analyzer = new \Saki\Win\TileSeriesAnalyzer();
         $this->assertEquals($s, $analyzer->analyzeTileSeries($allMeldList));

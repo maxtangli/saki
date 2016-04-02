@@ -5,6 +5,7 @@ use Saki\Meld\MeldType;
 use Saki\Meld\PairMeldType;
 use Saki\Meld\QuadMeldType;
 use Saki\Meld\RunMeldType;
+use Saki\Meld\ThirteenOrphanMeldType;
 use Saki\Meld\TripleMeldType;
 use Saki\Meld\WeakPairMeldType;
 use Saki\Meld\WeakRunMeldType;
@@ -44,6 +45,7 @@ class MeldTypeTest extends PHPUnit_Framework_TestCase {
         $triple = TripleMeldType::getInstance();
         $weakPair = WeakPairMeldType::getInstance();
         $weakRun = WeakRunMeldType::getInstance();
+        $orphan = ThirteenOrphanMeldType::getInstance();
         return [
             [true, $pair, '11m'],
             [false, $pair, '111m'],
@@ -69,6 +71,11 @@ class MeldTypeTest extends PHPUnit_Framework_TestCase {
             [true, $weakRun, '13m'],
             [true, $weakRun, '23m'],
             [false, $weakRun, '14m'],
+
+            [true, $orphan, '119m19p19sESWNCPF'],
+            [true, $orphan, '199m19p19sESWNCPF'],
+            [true, $orphan, '9m19m19p19sESWNCPF'],
+            [false, $orphan, '19m19p19sESWNCPF'],
         ];
     }
 

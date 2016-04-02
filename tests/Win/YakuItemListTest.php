@@ -66,7 +66,7 @@ class MockYakuMan extends Yaku {
 
 class YakuItemListTest extends \PHPUnit_Framework_TestCase {
     function testEmpty() {
-        $l = new YakuItemList([]);
+        $l = new YakuItemList();
         $this->assertSame(0, $l->getTotalFanCount());
         $l->normalize();
         $this->assertEquals(0, $l->count());

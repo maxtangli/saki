@@ -21,7 +21,7 @@ class WaitingAnalyzerTest extends \PHPUnit_Framework_TestCase {
         $declaredMeldList = MeldList::fromString($declaredMeldListString);
 
         $waitingTileList = $waitingTileAnalyzer->analyzePublic($handTileList, $declaredMeldList);
-        $waitingTileStrings = (new ArrayList())->fromSelected($waitingTileList, function (Tile $waitingTile) {
+        $waitingTileStrings = (new ArrayList())->fromSelect($waitingTileList, function (Tile $waitingTile) {
             return $waitingTile->__toString();
         })->toArray();
         $this->assertEquals($expected, $waitingTileStrings,
@@ -52,7 +52,7 @@ class WaitingAnalyzerTest extends \PHPUnit_Framework_TestCase {
         $declaredMeldList = MeldList::fromString($declaredMeldListString);
 
         $futureWaitingList = $waitingTileAnalyzer->analyzePrivate($handTileList, $declaredMeldList);
-        $discardedTileStrings = (new ArrayList())->fromSelected($futureWaitingList, function (FutureWaiting $futureWaiting) {
+        $discardedTileStrings = (new ArrayList())->fromSelect($futureWaitingList, function (FutureWaiting $futureWaiting) {
             return $futureWaiting->getDiscardedTile()->__toString();
         })->toArray();
         $this->assertEquals($expected, $discardedTileStrings,

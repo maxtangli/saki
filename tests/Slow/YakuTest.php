@@ -46,7 +46,9 @@ use Saki\Win\Yaku\Yakuman\BigThreeDragonsYaku;
 use Saki\Win\Yaku\Yakuman\FourConcealedTriplesYaku;
 use Saki\Win\Yaku\Yakuman\FourQuadsYaku;
 use Saki\Win\Yaku\Yakuman\SmallFourWindsYaku;
+use Saki\Win\Yaku\Yakuman\ThirteenOrphansYaku;
 use Saki\Win\Yaku\Yakuman2\FourConcealedTriplesOnePairWaitingYaku;
+use Saki\Win\Yaku\Yakuman2\ThirteenOrphansPairWaitingYaku;
 
 class YakuTest extends \PHPUnit_Framework_TestCase {
     static function assertYakuExist($expected, YakuTestData $yakuTestData, Yaku $yaku) {
@@ -206,7 +208,7 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
             // test ThreeColorTriplesYaku
             [new YakuTestData('333m,333s,NN', '333p,234s'), ThreeColorTriplesYaku::getInstance(), true],
             [new YakuTestData('333m,333s,NN', '3333p,234s'), ThreeColorTriplesYaku::getInstance(), true],
-            [new YakuTestData('333m,333s,NN', '(333p),234s'), ThreeColorTriplesYaku::getInstance(), true],
+            [new YakuTestData('333m,333s,NN', '(3333p),234s'), ThreeColorTriplesYaku::getInstance(), true],
             // not same number
             [new YakuTestData('333m,444s,NN', '3333p,234s'), ThreeColorTriplesYaku::getInstance(), false],
             // not same number, with honor
@@ -215,13 +217,13 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
             [new YakuTestData('333m,333m,NN', '3333p,234s'), ThreeColorTriplesYaku::getInstance(), false],
 
             // test ThreeConcealedTriplesYaku
-            [new YakuTestData('111m,222m,123s,EE', '(444m)'), ThreeConcealedTriplesYaku::getInstance(), true],
+            [new YakuTestData('111m,222m,444m,123s,EE'), ThreeConcealedTriplesYaku::getInstance(), true],
             [new YakuTestData('111m,222m,123s,EE', '(4444m)'), ThreeConcealedTriplesYaku::getInstance(), true],
             // not isConcealed
             [new YakuTestData('111m,222m,123s,EE', '444m'), ThreeConcealedTriplesYaku::getInstance(), false],
             // not three
-            [new YakuTestData('111m,234m,456m,EE', '(444m)'), ThreeConcealedTriplesYaku::getInstance(), false],
-            [new YakuTestData('111m,222m,333m,EE', '(444m)'), ThreeConcealedTriplesYaku::getInstance(), false],
+            [new YakuTestData('111m,234m,456m,444m,EE'), ThreeConcealedTriplesYaku::getInstance(), false],
+            [new YakuTestData('111m,222m,333m,444m,EE'), ThreeConcealedTriplesYaku::getInstance(), false],
 
             // test ThreeQuadsYaku
             [new YakuTestData('123s,44s', '1111m,2222m,3333m'), ThreeQuadsYaku::getInstance(), true],
@@ -308,7 +310,6 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
 
             // test FourConcealedTriplesYaku
             [new YakuTestData('111s,222s,333s,444s,55s'), FourConcealedTriplesYaku::getInstance(), true],
-            [new YakuTestData('111s,222s,333s,55s', '(444s)'), FourConcealedTriplesYaku::getInstance(), true],
             [new YakuTestData('111s,222s,333s,55s', '(4444s)'), FourConcealedTriplesYaku::getInstance(), true],
             // not 4 isConcealed
             [new YakuTestData('111s,222s,333s,55s', '444s'), FourConcealedTriplesYaku::getInstance(), false],
@@ -326,6 +327,11 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
             [new YakuTestData('EEE,SSS,WW', 'NNNN,123s'), SmallFourWindsYaku::getInstance(), true],
             // not 3+1 winds
             [new YakuTestData('EEE,SSS,WWW,11s', 'NNN'), SmallFourWindsYaku::getInstance(), false],
+
+            // test ThirteenOrphansYaku
+            [new YakuTestData('119m19p19sESWNCFP', null, '1m'), ThirteenOrphansYaku::getInstance(), true],
+            [new YakuTestData('119m19p19sESWNCFP', null, '9m'), ThirteenOrphansYaku::getInstance(), true],
+            [new YakuTestData('EEE,SSS,WW', 'NNN,123s'), ThirteenOrphansYaku::getInstance(), false],
         ];
 
         /**
@@ -338,19 +344,19 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         function yakuman2Provider() {
             return [
                 // test FourConcealedTriplesOnePairWaitingYaku
-                // test FourConcealedTriplesYaku
                 [new YakuTestData('111s,222s,333s,444s,55s', null, '5s'), FourConcealedTriplesOnePairWaitingYaku::getInstance(), true],
-                [new YakuTestData('111s,222s,333s,55s', '(444s)', '5s'), FourConcealedTriplesOnePairWaitingYaku::getInstance(), true],
                 [new YakuTestData('111s,222s,333s,55s', '(4444s)', '5s'), FourConcealedTriplesOnePairWaitingYaku::getInstance(), true],
                 // not one pair waiting
                 [new YakuTestData('111s,222s,333s,444s,55s', null, '4s'), FourConcealedTriplesOnePairWaitingYaku::getInstance(), false],
-                [new YakuTestData('111s,222s,333s,55s', '(444s)', '4s'), FourConcealedTriplesOnePairWaitingYaku::getInstance(), false],
                 [new YakuTestData('111s,222s,333s,55s', '(4444s)', '4s'), FourConcealedTriplesOnePairWaitingYaku::getInstance(), false],
-
                 // not 4 isConcealed
                 [new YakuTestData('111s,222s,333s,55s', '444s', '5s'), FourConcealedTriplesOnePairWaitingYaku::getInstance(), false],
                 // not 4
                 [new YakuTestData('111s,222s,333s,456s,55s', null, '5s'), FourConcealedTriplesOnePairWaitingYaku::getInstance(), false],
+
+                // test ThirteenOrphansPairWaitingYaku
+                [new YakuTestData('119m19p19sESWNCFP', null, '1m'), ThirteenOrphansPairWaitingYaku::getInstance(), true],
+                [new YakuTestData('119m19p19sESWNCFP', null, '9m'), ThirteenOrphansPairWaitingYaku::getInstance(), false],
             ];
         }
     }
@@ -417,11 +423,12 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         $this->assertContains(KingSTileWinYaku::getInstance(), $yakuList, $yakuList);
     }
 
-    function testRobbingAQuadYaku() {
+    function testRobbingAQuad() {
         $r = YakuTestData::getInitedRound();
         $pro = $r->getProcessor();
 
         $pro->process(
+            'skip 4',
             'mockHand W 23m123456789s11p',
             'discard E E:s-1m:1m',
             'mockHand S 11m; pong S; plusKong S S:s-1m:1m'
@@ -444,10 +451,10 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         // todo
     }
 
-    function testDoraYaku() {
+    function testDora() {
         $r = YakuTestData::getInitedRound();
         $pro = $r->getProcessor();
-        $pro->process('mockDeadWall EEEE1919293949s 5 false; mockHand E 222789s789m12345m');
+        $pro->process('skip 4; mockDeadWall EEEE1919293949s 5 false; mockHand E 222789s789m12345m');
 
         // rely other yakus
         $playerE = $r->getPlayerList()->getSelfWindPlayer(Tile::fromString('E'));
@@ -463,10 +470,10 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals($expectFanCount, $yakuItemList->getTotalFanCount(), $yakuItemList);
     }
 
-    function testUraDoraYaku() {
+    function testUraDora() {
         $r = YakuTestData::getInitedRound();
         $pro = $r->getProcessor();
-        $pro->process('mockDeadWall EEEE9191929394s 5 true; mockHand E 222789s789m12345m');
+        $pro->process('skip 4; mockDeadWall EEEE9191929394s 5 true; mockHand E 222789s789m12345m');
 
         // rely other yakus
         $playerE = $r->getPlayerList()->getSelfWindPlayer(Tile::fromString('E'));
@@ -482,10 +489,10 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals($expectFanCount, $yakuItemList->getTotalFanCount(), $yakuItemList);
     }
 
-    function testRedDoraYaku() {
+    function testRedDora() {
         $r = YakuTestData::getInitedRound();
         $pro = $r->getProcessor();
-        $pro->process('mockDeadWall EEEE9999999999s 1 false; mockHand E 222789s789m12340m');
+        $pro->process('skip 4; mockDeadWall EEEE9999999999s 1 false; mockHand E 222789s789m12340m');
 
         // rely other yakus
         $playerE = $r->getPlayerList()->getSelfWindPlayer(Tile::fromString('E'));
@@ -499,6 +506,18 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         $this->assertContains(RedDoraYaku::getInstance(), $yakuList, $yakuList);
         $expectFanCount = 1 + 2; // selfDraw + 6 uraDora
         $this->assertEquals($expectFanCount, $yakuItemList->getTotalFanCount(), $yakuItemList);
+    }
+    
+    function testHeavenlyWin() {
+        
+    }
+    
+    function testEarthlyWin() {
+    
+    }
+    
+    function testHumanlyWin() {
+        
     }
 }
 

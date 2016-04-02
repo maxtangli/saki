@@ -72,10 +72,10 @@ class MeldListTest extends PHPUnit_Framework_TestCase {
         $meldList = MeldList::fromString('123m,456m,789m,111m,EE');
 
         $this->assertTrue($meldList->valueExist(Meld::fromString('123m')));
-        $this->assertTrue($meldList->valueExist(Meld::fromString('123m'), Meld::getEqualsCallback(false)));
+        $this->assertTrue($meldList->valueExist(Meld::fromString('123m'), Meld::getEqual(false)));
 
-        $this->assertTrue($meldList->valueExist([Meld::fromString('123m'), Meld::fromString('456m')], Meld::getEqualsCallback(false)));
-        $this->assertTrue($meldList->valueExist([Meld::fromString('123m'), Meld::fromString('456m'), Meld::fromString('789m')], Meld::getEqualsCallback(false)));
+        $this->assertTrue($meldList->valueExist([Meld::fromString('123m'), Meld::fromString('456m')], Meld::getEqual(false)));
+        $this->assertTrue($meldList->valueExist([Meld::fromString('123m'), Meld::fromString('456m'), Meld::fromString('789m')], Meld::getEqual(false)));
 
         $this->assertTrue($meldList->isFullStraight());
 
@@ -84,10 +84,10 @@ class MeldListTest extends PHPUnit_Framework_TestCase {
         $meldList = MeldList::fromString('(123m),456m,789m,111m,EE');
 
         $this->assertFalse($meldList->valueExist(Meld::fromString('123m')));
-        $this->assertTrue($meldList->valueExist(Meld::fromString('123m'), Meld::getEqualsCallback(false)));
+        $this->assertTrue($meldList->valueExist(Meld::fromString('123m'), Meld::getEqual(false)));
 
-        $this->assertTrue($meldList->valueExist([Meld::fromString('123m'), Meld::fromString('456m')], Meld::getEqualsCallback(false)));
-        $this->assertTrue($meldList->valueExist([Meld::fromString('123m'), Meld::fromString('456m'), Meld::fromString('789m')], Meld::getEqualsCallback(false)));
+        $this->assertTrue($meldList->valueExist([Meld::fromString('123m'), Meld::fromString('456m')], Meld::getEqual(false)));
+        $this->assertTrue($meldList->valueExist([Meld::fromString('123m'), Meld::fromString('456m'), Meld::fromString('789m')], Meld::getEqual(false)));
 
         $this->assertTrue($meldList->isFullStraight());
     }

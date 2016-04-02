@@ -3,6 +3,6 @@
     "phpunit/phpunit": "5.2.*"
   },
   "autoload": {
-    "psr-4": {"Saki\\": "Saki/"}
+    "psr-4": {"Saki\\": "src/Saki/"}
   }
 }

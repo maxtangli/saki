@@ -16,6 +16,19 @@ class TileTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(-1, $f($t5m, $t0m));
     }
 
+    function testEqual() {
+        $t5m = Tile::fromString('5m');
+        $t0m = Tile::fromString('0m');
+        $this->assertFalse($t0m->equalTo($t5m, true));
+        $this->assertTrue($t0m->equalTo($t5m, false));
+
+        $f = Tile::getEqual(true);
+        $this->assertFalse($f($t0m, $t5m));
+
+        $f = Tile::getEqual(false);
+        $this->assertTrue($f($t0m, $t5m));
+    }
+
     function testOverall() {
         $m = Tile::getInstance(TileType::fromString('m'), 1);
         $this->assertEquals(1, $m->getNumber());
@@ -70,6 +83,8 @@ class TileTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals('0m', $m5);
         $this->assertEquals('0m', $m6);
+
+        $this->assertEquals('5m', $m5->toFormatString(false));
     }
 
     /**
