@@ -12,7 +12,7 @@ abstract class Enum {
      * @param int $value
      * @return static
      */
-    static function getInstance(int $value) {
+    static function create(int $value) {
         $class = static::getClassName();
         if (!isset(self::$instances[$class][$value])) {
             self::$instances[$class][$value] = new $class($value);
@@ -29,7 +29,7 @@ abstract class Enum {
         if ($v === false) {
             throw new \InvalidArgumentException("Invalid argument \$s[$s].");
         }
-        return static::getInstance($v);
+        return static::create($v);
     }
 
     private static function getClassName() {

@@ -1,10 +1,13 @@
 <?php
 namespace Saki\Tile;
 
+use Saki\Util\ReadonlyArrayList;
+
 /**
  * @package Saki\Tile
  */
 class TileSet extends TileList {
+    use ReadonlyArrayList;
 
     private static $standTileSet;
 
@@ -21,7 +24,7 @@ class TileSet extends TileList {
     }
 
     function __construct(TileList $baseTileList) {
-        parent::__construct($baseTileList->toArray(), false);
+        parent::__construct($baseTileList->toArray());
     }
 
     // note not used currently

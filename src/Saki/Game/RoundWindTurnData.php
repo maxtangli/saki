@@ -33,7 +33,7 @@ class RoundWindTurnData {
     }
 
     function setDealerWind(Tile $wind) {
-        $turn = $wind->getWindOffset(Tile::fromString('E')); // validate
+        $turn = $wind->getWindOffsetFrom(Tile::fromString('E')); // validate
         $this->setTurn($turn);
     }
 }

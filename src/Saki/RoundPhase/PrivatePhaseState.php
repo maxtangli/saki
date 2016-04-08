@@ -27,6 +27,7 @@ class PrivatePhaseState extends RoundPhaseState {
     function isCurrentPlayer() {
         return $this->isCurrentPlayer;
     }
+
     function getRoundPhase() {
         return RoundPhase::getPrivateInstance();
     }

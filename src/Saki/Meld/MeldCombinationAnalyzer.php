@@ -11,17 +11,49 @@ use Saki\Util\ArrayList;
  */
 class MeldCombinationAnalyzer {
 
+    private $meldTypes;
+    private $allowPureWeakCount;
+    private $toConcealed;
+
+    function __construct(array $meldTypes, int $allowPureWeakCount = 0, bool $toConcealed = true) {
+        $this->meldTypes = $meldTypes;
+        $this->allowPureWeakCount = $allowPureWeakCount;
+        $this->toConcealed = $toConcealed;
+    }
+
+    /**
+     * @return MeldType[]
+     */
+    function getMeldTypes() {
+        return $this->meldTypes;
+    }
+
+    /**
+     * @return int
+     */
+    function getAllowPureWeakCount() {
+        return $this->allowPureWeakCount;
+    }
+
+    /**
+     * @return bool
+     */
+    function getToConcealed() {
+        return $this->toConcealed;
+    }
+
     /**
      * @param TileList $tileList
-     * @param MeldType[] $meldTypes
-     * @param int $allowPureWeakCount
-     * @param bool $toConcealed
      * @return ArrayList Return an ArrayList of MeldList, where each MeldList means a meld combination.
      */
-    function analyzeMeldCombinationList(TileList $tileList, array $meldTypes,
-                                        int $allowPureWeakCount = 0, bool $toConcealed = true) {
+    function analyzeMeldCombinationList(TileList $tileList) {
         $orderedTileList = $tileList->getCopy()->orderByTileID();
-        $meldLists = $this->analyzeMeldTypesImpl($orderedTileList, $meldTypes, $allowPureWeakCount, $toConcealed);
+        $meldLists = $this->analyzeMeldTypesImpl(
+            $orderedTileList,
+            $this->getMeldTypes(),
+            $this->getAllowPureWeakCount(),
+            $this->getToConcealed()
+        );
         $compositionList = new ArrayList($meldLists);
         return $compositionList;
     }

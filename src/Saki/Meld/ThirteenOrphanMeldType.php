@@ -28,7 +28,7 @@ class ThirteenOrphanMeldType extends MeldType {
     }
 
     function getWinSetType() {
-        return WinSetType::getInstance(WinSetType::SPECIAL);
+        return WinSetType::create(WinSetType::SPECIAL);
     }
 
     /**

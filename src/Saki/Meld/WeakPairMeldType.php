@@ -19,7 +19,7 @@ class WeakPairMeldType extends WeakMeldType {
     }
 
     function getTargetMeldType() {
-        return PairMeldType::getInstance();
+        return PairMeldType::create();
     }
 
     protected function getWaitingTileListImpl(TileList $validMeldTileList) {
@@ -27,10 +27,10 @@ class WeakPairMeldType extends WeakMeldType {
     }
 
     protected function getWaitingTypeImpl(TileList $validMeldTileList) {
-        return WaitingType::getInstance(WaitingType::PAIR_WAITING);
+        return WaitingType::create(WaitingType::PAIR_WAITING);
     }
 
     function getWinSetType() {
-        return WinSetType::getInstance(WinSetType::PURE_WEAK);
+        return WinSetType::create(WinSetType::PURE_WEAK);
     }
 }

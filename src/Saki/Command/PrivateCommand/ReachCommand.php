@@ -28,8 +28,8 @@ class ReachCommand extends PrivateCommand {
 
         // assert waiting after discard
         $analyzer = $this->getContext()->getRound()->getWinAnalyzer()->getWaitingAnalyzer();
-        $handList = $this->getContext()->getRound()->getTileAreas()->getPrivateHand($this->getActPlayer());
-        $futureWaitingList = $analyzer->analyzePrivate($handList, $this->getActPlayer()->getTileArea()->getDeclaredMeldListReference());
+        $handList = $this->getActPlayer()->getTileArea()->getHand()->getPrivate();
+        $futureWaitingList = $analyzer->analyzePrivate($handList, $this->getActPlayer()->getTileArea()->getHand()->getDeclare());
         $isWaiting = $futureWaitingList->count() > 0;
         if (!$isWaiting) {
             return false;

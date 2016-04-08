@@ -5,13 +5,13 @@ use Saki\Meld\MeldCombinationAnalyzer;
 use Saki\Meld\RunMeldType;
 use Saki\Tile\TileList;
 
-class MeldCompositionsAnalyzerTest extends PHPUnit_Framework_TestCase {
+class MeldCombinationAnalyzerTest extends PHPUnit_Framework_TestCase {
     /**
      * @dataProvider getMeldCompositionsProvider
      */
     function testGetMeldCompositions($expectedMeldListStrings, $tilesStr, $meldTypes) {
-        $r = new MeldCombinationAnalyzer();
-        $combinationList = $r->analyzeMeldCombinationList(\Saki\Tile\TileList::fromString($tilesStr), $meldTypes, 0, false);
+        $r = new MeldCombinationAnalyzer($meldTypes, 0, false);
+        $combinationList = $r->analyzeMeldCombinationList(TileList::fromString($tilesStr));
         $actualMeldListStrings = array_map(function ($v) {
             return $v->__toString();
         }, $combinationList->toArray());
@@ -22,10 +22,10 @@ class MeldCompositionsAnalyzerTest extends PHPUnit_Framework_TestCase {
 
     function getMeldCompositionsProvider() {
         $meldTypes = [
-            \Saki\Meld\PairMeldType::getInstance(),
-            \Saki\Meld\RunMeldType::getInstance(),
-            \Saki\Meld\TripleMeldType::getInstance(),
-            \Saki\Meld\QuadMeldType::getInstance(),
+            \Saki\Meld\PairMeldType::create(),
+            \Saki\Meld\RunMeldType::create(),
+            \Saki\Meld\TripleMeldType::create(),
+            \Saki\Meld\QuadMeldType::create(),
         ];
         return [
             // empty case
@@ -45,10 +45,12 @@ class MeldCompositionsAnalyzerTest extends PHPUnit_Framework_TestCase {
     }
 
     function testConcealed() {
-        $r = new MeldCombinationAnalyzer();
-        $combinationList = $r->analyzeMeldCombinationList(TileList::fromString('123s'), [RunMeldType::getInstance()], 0, true);
+        $r = new MeldCombinationAnalyzer([RunMeldType::create()], 0, true);
+        $combinationList = $r->analyzeMeldCombinationList(TileList::fromString('123s'));
         $this->assertEquals(Meld::fromString('(123s)'), $combinationList[0][0]);
-        $combinationList = $r->analyzeMeldCombinationList(TileList::fromString('123s'), [RunMeldType::getInstance()], 0, false);
+
+        $r = new MeldCombinationAnalyzer([RunMeldType::create()], 0, false);
+        $combinationList = $r->analyzeMeldCombinationList(TileList::fromString('123s'));
         $this->assertEquals(Meld::fromString('123s'), $combinationList[0][0]);
     }
 }

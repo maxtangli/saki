@@ -38,7 +38,7 @@ class TileType extends Enum {
     }
 
     static function getSuitTypes() {
-        return [self::getInstance(self::CHARACTER_M), self::getInstance(self::DOT_P), self::getInstance(self::BAMBOO_S)];
+        return [self::create(self::CHARACTER_M), self::create(self::DOT_P), self::create(self::BAMBOO_S)];
     }
 
     function isSuit() {

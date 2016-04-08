@@ -62,7 +62,7 @@ class MeldListTest extends PHPUnit_Framework_TestCase {
             [Meld::fromString('123s'), Meld::fromString('456s'), Meld::fromString('789s')],
         ]);
         $this->assertEquals(3, $a->count());
-        foreach($a as $v) {
+        foreach ($a as $v) {
             $this->assertEquals('array', gettype($v));
             $this->assertCount(3, $v);
         }

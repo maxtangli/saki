@@ -19,18 +19,18 @@ class NineNineDrawCommand extends PrivateCommand {
     }
 
     function matchOtherConditions() {
-        $tileAreas = $this->getContext()->getRound()->getTileAreas();
+        $areas = $this->getContext()->getRound()->getTileAreas();
         $currentTurn = $this->getContext()->getRound()->getTurnManager()->getGlobalTurn();
 
         $isFirstTurn = $currentTurn == 1;
-        $noDeclaredActions = !$tileAreas->getDeclareHistory()->hasDeclare($currentTurn, Tile::fromString('E'));
-        $validTileList = $tileAreas->getPrivateHand($this->getActPlayer())->isNineKindsOfTerminalOrHonor();
+        $noDeclaredActions = !$areas->getDeclareHistory()->hasDeclare($currentTurn, Tile::fromString('E'));
+        $validTileList = $this->getActPlayer()->getTileArea()->getHand()->getPrivate()->isNineKindsOfTerminalOrHonor();
         return $isFirstTurn && $noDeclaredActions && $validTileList;
     }
 
     function executeImpl() {
         $result = new OnTheWayDrawRoundResult($this->getContext()->getRound()->getPlayerList()->toArray(),
-            RoundResultType::getInstance(RoundResultType::NINE_KINDS_OF_TERMINAL_OR_HONOR_DRAW));
+            RoundResultType::create(RoundResultType::NINE_KINDS_OF_TERMINAL_OR_HONOR_DRAW));
         $this->getContext()->getRound()->toNextPhase(new OverPhaseState($result));
     }
 }

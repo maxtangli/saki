@@ -13,14 +13,14 @@ class KongConcernedTest extends PHPUnit_Framework_TestCase {
         $pro = $r->getProcessor();
 
         // execute
-        $tileArea = $r->getTurnManager()->getCurrentPlayer()->getTileArea();
+        $area = $r->getTurnManager()->getCurrentPlayer()->getTileArea();
         $currentPlayerBefore = $r->getTurnManager()->getCurrentPlayer();
-        $tileCountBefore = $tileArea->getHandReference()->count();
+        $tileCountBefore = $area->getHand()->getPrivate()->count();
 
         $pro->process('concealedKong E E:s-1111m:1m');
 
         $currentPlayerAfter = $r->getTurnManager()->getCurrentPlayer();
-        $tileCountAfter = $tileArea->getHandReference()->count();
+        $tileCountAfter = $area->getHand()->getPrivate()->count();
         $roundPhaseAfter = $r->getPhaseState()->getRoundPhase();
 
         // phase keep
@@ -29,8 +29,7 @@ class KongConcernedTest extends PHPUnit_Framework_TestCase {
 
         // tiles moved to created meld
         $this->assertEquals($tileCountBefore - 3, $tileCountAfter);
-        $this->assertTrue($tileArea->getDeclaredMeldListReference()->valueExist(Meld::fromString('(1111m)')),
-            $tileArea->getDeclaredMeldListReference());
+        $this->assertTrue($area->getHand()->getDeclare()->valueExist(Meld::fromString('(1111m)')));
     }
 
     function testPlusKong() {
@@ -40,23 +39,22 @@ class KongConcernedTest extends PHPUnit_Framework_TestCase {
         // execute
         $pro->process(
             'discard E E:s-1m:1m',
-            'mockHand S 11m; pong S'
+            'mockHand S 11m123456789p13s; pong S'
         );
 
-        $tileArea = $r->getTurnManager()->getCurrentPlayer()->getTileArea();
+        $area = $r->getTurnManager()->getCurrentPlayer()->getTileArea();
         $currentPlayerBefore = $r->getTurnManager()->getCurrentPlayer();
-        $tileCountBefore = $tileArea->getHandReference()->count();
-
-        $pro->process('plusKong S S:s-1m:1m');
+        $tileCountBefore = $area->getHand()->getPrivate()->count();
 
         // robQuad phase
+        $pro->process('plusKong S S:s-1m:1m');
         $this->assertEquals(RoundPhase::getPublicInstance(), $r->getPhaseState()->getRoundPhase());
         $this->assertTrue($r->getPhaseState()->isRobQuad());
-        $pro->process('passAll');
 
         // after robQuadPhase
+        $pro->process('passAll');
         $currentPlayerAfter = $r->getTurnManager()->getCurrentPlayer();
-        $tileCountAfter = $tileArea->getHandReference()->count();
+        $tileCountAfter = $area->getHand()->getPrivate()->count();
         $roundPhaseAfter = $r->getPhaseState()->getRoundPhase();
 
         // phase keep
@@ -65,8 +63,7 @@ class KongConcernedTest extends PHPUnit_Framework_TestCase {
 
         // tiles moved to created meld
         $this->assertEquals($tileCountBefore, $tileCountAfter);
-        $this->assertTrue($tileArea->getDeclaredMeldListReference()->valueExist(Meld::fromString('1111m')),
-            $tileArea->getDeclaredMeldListReference());
+        $this->assertTrue($area->getHand()->getDeclare()->valueExist(Meld::fromString('1111m')));
     }
 
     // todo testPlusKongTargetTile
@@ -79,12 +76,11 @@ class KongConcernedTest extends PHPUnit_Framework_TestCase {
         $pro->process('discard I I:s-1m:1m');
         $prePlayer = $r->getTurnManager()->getCurrentPlayer();
         $actPlayer = $r->getTurnManager()->getOffsetPlayer(2);
-        $tileArea = $actPlayer->getTileArea();
-        $tileCountBefore = $tileArea->getHandReference()->count();
+        $area = $actPlayer->getTileArea();
+        $tileCountBefore = $area->getHand()->getPublic()->count();
 
         $pro->process('mockHand W 111m; bigKong W');
 
-        $tileCountAfter = $actPlayer->getTileArea()->getHandReference()->count();
         $roundPhaseAfter = $r->getPhaseState()->getRoundPhase();
         $currentPlayerAfter = $r->getTurnManager()->getCurrentPlayer();
 
@@ -93,9 +89,10 @@ class KongConcernedTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($actPlayer, $currentPlayerAfter);
 
         // tiles moved to created meld
-        $this->assertTrue($r->getTurnManager()->getCurrentPlayer()->getTileArea()->getDeclaredMeldListReference()->valueExist(Meld::fromString('1111m')));
-        $this->assertEquals($tileCountBefore - 2, $r->getTurnManager()->getCurrentPlayer()->getTileArea()->getHandReference()->count());
-        $this->assertEquals(0, $prePlayer->getTileArea()->getDiscardedReference()->count());
+//        $this->assertTrue($r->getTurnManager()->getCurrentPlayer()->getTileArea()->getDeclaredMeldListReference()->valueExist(Meld::fromString('1111m')));
+        $this->assertTrue($r->getTurnManager()->getCurrentPlayer()->getTileArea()->getHand()->getDeclare()->valueExist(Meld::fromString('1111m')));
+        $this->assertEquals($tileCountBefore - 2, $r->getTurnManager()->getCurrentPlayer()->getTileArea()->getHand()->getPrivate()->count());
+        $this->assertEquals(0, $prePlayer->getTileArea()->getDiscard()->count());
     }
 
     function testNotFourKongDrawBySamePlayer() {

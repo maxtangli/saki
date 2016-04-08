@@ -6,7 +6,7 @@ use Saki\Win\Yaku\YakuItemList;
 class WinResult extends WinSubResult {
     static function createNotWin() {
         return new WinResult(
-            WinState::getInstance(WinState::NOT_WIN),
+            WinState::create(WinState::NOT_WIN),
             new YakuItemList(),
             0
         );

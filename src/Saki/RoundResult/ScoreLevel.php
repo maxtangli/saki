@@ -67,7 +67,7 @@ class ScoreLevel extends Enum {
                     $v = self::YAKU_MAN;
                 }
         }
-        return static::getInstance($v);
+        return static::create($v);
     }
 
     function isYakuMan() {

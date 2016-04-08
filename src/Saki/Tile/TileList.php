@@ -43,7 +43,7 @@ class TileList extends ArrayList {
             } else {
                 $cType = TileType::fromString($c);
                 if ($cType->isHonor()) {
-                    $honorTile = Tile::getInstance($cType);
+                    $honorTile = Tile::create($cType);
                     array_unshift($tiles, $honorTile);
                 } else {
                     $lastNumberTileType = $cType;
@@ -80,6 +80,14 @@ class TileList extends ArrayList {
             }
         }
         return $s;
+    }
+
+    /**
+     * @param bool $sort
+     * @return string
+     */
+    function toFormatString(bool $sort) {
+        return $sort ? $this->getCopy()->orderByTileID()->__toString() : $this->__toString();
     }
 
     /**

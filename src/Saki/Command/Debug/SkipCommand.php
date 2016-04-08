@@ -27,7 +27,7 @@ class SkipCommand extends Command {
         $r = $this->getContext()->getRound();
         $pro = $r->getProcessor();
         $nTodo = $this->getSkipCount();
-        while($nTodo-- > 0) {
+        while ($nTodo-- > 0) {
             // todo handle game over
             $pro->process('discard I I:s-C:C; passAll');
         }

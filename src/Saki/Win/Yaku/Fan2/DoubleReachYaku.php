@@ -23,6 +23,6 @@ class DoubleReachYaku extends Yaku {
     }
 
     function getExcludedYakus() {
-        return [ReachYaku::getInstance()];
+        return [ReachYaku::create()];
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Saki\Util;
 
-class MsTimer extends Singleton{
+class MsTimer extends Singleton {
     private $begin;
 
     protected function __construct() {

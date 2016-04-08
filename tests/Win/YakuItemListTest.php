@@ -42,7 +42,7 @@ class MockYaku2 extends Yaku {
     }
 
     function getExcludedYakus() {
-        return [MockYaku::getInstance()];
+        return [MockYaku::create()];
     }
 }
 
@@ -74,23 +74,23 @@ class YakuItemListTest extends \PHPUnit_Framework_TestCase {
 
 //  todo refactor into right ver
 //    function testConcealed() {
-//        $l = new YakuItemList([MockYaku::getInstance(), MockYaku2::getInstance()], true);
+//        $l = new YakuItemList([MockYaku::create(), MockYaku2::create()], true);
 //        $this->assertEquals(2 + 4, $l->getTotalFanCount());
-//        $l = new YakuItemList([MockYaku::getInstance(), MockYaku2::getInstance()], false);
+//        $l = new YakuItemList([MockYaku::create(), MockYaku2::create()], false);
 //        $this->assertEquals(1 + 3, $l->getTotalFanCount());
 //    }
 //
 //    function testExcluded() {
-//        $l = new YakuItemList([MockYaku::getInstance(), MockYaku2::getInstance()], true);
+//        $l = new YakuItemList([MockYaku::create(), MockYaku2::create()], true);
 //        $l->normalize();
 //        $this->assertCount(1, $l);
-//        $this->assertEquals(MockYaku2::getInstance(), $l->getFirst());
+//        $this->assertEquals(MockYaku2::create(), $l->getFirst());
 //    }
 //
 //    function testYakumanExcluded() {
-//        $l = new YakuItemList([MockYaku::getInstance(), MockYakuMan::getInstance()], true);
+//        $l = new YakuItemList([MockYaku::create(), MockYakuMan::create()], true);
 //        $l->normalize();
 //        $this->assertCount(1, $l);
-//        $this->assertEquals(MockYakuMan::getInstance(), $l->getFirst());
+//        $this->assertEquals(MockYakuMan::create(), $l->getFirst());
 //    }
 }

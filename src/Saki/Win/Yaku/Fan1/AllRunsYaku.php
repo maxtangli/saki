@@ -21,7 +21,7 @@ class AllRunsYaku extends Yaku {
 
     protected function getRequiredTileSeries() {
         return [
-            TileSeries::getInstance(TileSeries::FOUR_WIN_SET_AND_ONE_PAIR)
+            TileSeries::create(TileSeries::FOUR_WIN_SET_AND_ONE_PAIR)
         ];
     }
 
@@ -36,12 +36,12 @@ class AllRunsYaku extends Yaku {
          */
         $isFourRunAndOnePair = $subTarget->getAllMeldList()->isFourRunAndOnePair();
 
-        $waitingType = TileSeries::getInstance(TileSeries::FOUR_WIN_SET_AND_ONE_PAIR)->getWaitingType(
+        $waitingType = TileSeries::create(TileSeries::FOUR_WIN_SET_AND_ONE_PAIR)->getWaitingType(
             $subTarget->getAllMeldList(), $subTarget->getTileOfTargetTile(), $subTarget->getDeclaredMeldList()
         );
         return $isFourRunAndOnePair
-        && $subTarget->getPrivateFull()->isAllSuit()
-        && ($waitingType == WaitingType::getInstance(WaitingType::TWO_SIDE_RUN_WAITING));
+        && $subTarget->getPrivateComplete()->isAllSuit()
+        && ($waitingType == WaitingType::create(WaitingType::TWO_SIDE_RUN_WAITING));
     }
 }
 

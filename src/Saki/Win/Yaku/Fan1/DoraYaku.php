@@ -15,7 +15,7 @@ class DoraYaku extends Yaku {
 
     protected function getExistCountImpl(WinSubTarget $subTarget) {
         $doraFacade = $subTarget->getDoraFacade();
-        $privateFull = $subTarget->getPrivateFull();
+        $privateFull = $subTarget->getPrivateComplete();
         return $doraFacade->getHandDoraFanCount($privateFull);
     }
 
@@ -25,7 +25,7 @@ class DoraYaku extends Yaku {
 
     protected function matchOtherConditions(WinSubTarget $subTarget) {
         $doraFacade = $subTarget->getDoraFacade();
-        $privateFull = $subTarget->getPrivateFull();
+        $privateFull = $subTarget->getPrivateComplete();
         return $doraFacade->getHandDoraFanCount($privateFull) > 0;
     }
 }

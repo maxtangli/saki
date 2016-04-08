@@ -95,6 +95,7 @@ abstract class Command {
         array_unshift($tokens, static::getName());
         return implode(' ', $tokens);
     }
+
     //endregion
 
     static function getParamDeclarations() {
@@ -144,9 +145,9 @@ abstract class Command {
 
     function execute() {
         if (!$this->executable()) {
-            throw new \InvalidArgumentException(
-                // todo output param strings
-                sprintf('Not executable command[%s].', $this->__toString())
+            throw new \BadMethodCallException(
+                sprintf('Bad method call of [%s()] on not executable command[%s].'
+                    , __FUNCTION__, $this->__toString())
             );
         }
         $this->executeImpl();

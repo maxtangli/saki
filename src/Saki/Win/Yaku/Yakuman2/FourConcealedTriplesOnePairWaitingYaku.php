@@ -18,24 +18,24 @@ class FourConcealedTriplesOnePairWaitingYaku extends Yaku {
 
     protected function getRequiredTileSeries() {
         return [
-            TileSeries::getInstance(TileSeries::FOUR_WIN_SET_AND_ONE_PAIR)
+            TileSeries::create(TileSeries::FOUR_WIN_SET_AND_ONE_PAIR)
         ];
     }
 
     protected function matchOtherConditions(WinSubTarget $subTarget) {
-        $isFourConcealedTriples =  $subTarget->getAllMeldList()->isFourTripleOrQuadAndOnePair(true);
+        $isFourConcealedTriples = $subTarget->getAllMeldList()->isFourTripleOrQuadAndOnePair(true);
 
-        $waitingType = TileSeries::getInstance(TileSeries::FOUR_WIN_SET_AND_ONE_PAIR)->getWaitingType(
+        $waitingType = TileSeries::create(TileSeries::FOUR_WIN_SET_AND_ONE_PAIR)->getWaitingType(
             $subTarget->getAllMeldList(), $subTarget->getTileOfTargetTile(), $subTarget->getDeclaredMeldList()
         );
-        $isPairWaiting = $waitingType == WaitingType::getInstance(WaitingType::PAIR_WAITING);
+        $isPairWaiting = $waitingType == WaitingType::create(WaitingType::PAIR_WAITING);
 
         return $isFourConcealedTriples && $isPairWaiting;
     }
 
     function getExcludedYakus() {
         return [
-            FourConcealedTriplesYaku::getInstance()
+            FourConcealedTriplesYaku::create()
         ];
     }
 }

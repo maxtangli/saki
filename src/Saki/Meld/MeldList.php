@@ -1,7 +1,6 @@
 <?php
 namespace Saki\Meld;
 
-use Doctrine\Instantiator\Exception\InvalidArgumentException;
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 use Saki\Util\ArrayList;
@@ -88,12 +87,12 @@ class MeldList extends ArrayList {
     /**
      * @return int
      */
-    function getNormalizedHandCount() {
+    function getNormalizedTileCount() {
         // note: each quad introduces 1 extra Tile
         $tileCount = $this->getSum(function (Meld $meld) {
             return $meld->count();
         });
-        $quadMeldCount = $this->toFiltered([QuadMeldType::getInstance()])->count();
+        $quadMeldCount = $this->toFiltered([QuadMeldType::create()])->count();
         $n = $tileCount - $quadMeldCount;
         return $n;
     }
@@ -102,7 +101,7 @@ class MeldList extends ArrayList {
      * @return bool
      */
     function isCompletePrivateHandCount() {
-        return $this->getNormalizedHandCount() == 14;
+        return $this->getNormalizedTileCount() == 14;
     }
 
     protected function assertCompletePrivateHandCount() {
@@ -127,7 +126,7 @@ class MeldList extends ArrayList {
      */
     function isSevenUniquePairs() {
         $this->assertCompletePrivateHandCount();
-        $uniquePairCount = $this->toFiltered([PairMeldType::getInstance()])->distinct()->count();
+        $uniquePairCount = $this->toFiltered([PairMeldType::create()])->distinct()->count();
         return $uniquePairCount == 7;
     }
 
@@ -139,7 +138,7 @@ class MeldList extends ArrayList {
         $winSetCount = $this->getCount(function (Meld $meld) {
             return $meld->getWinSetType()->isWinSet();
         });
-        $pairCount = $this->getCount($this->getPredicate([PairMeldType::getInstance()]));
+        $pairCount = $this->getCount($this->getPredicate([PairMeldType::create()]));
         return [$winSetCount, $pairCount] == [4, 1];
     }
 
@@ -148,8 +147,8 @@ class MeldList extends ArrayList {
      */
     function isFourRunAndOnePair() {
         $this->assertCompletePrivateHandCount();
-        $runCount = $this->getCount($this->getPredicate([RunMeldType::getInstance()]));
-        $pairCount = $this->getCount($this->getPredicate([PairMeldType::getInstance()]));
+        $runCount = $this->getCount($this->getPredicate([RunMeldType::create()]));
+        $pairCount = $this->getCount($this->getPredicate([PairMeldType::create()]));
         return [$runCount, $pairCount] == [4, 1];
     }
 
@@ -161,10 +160,10 @@ class MeldList extends ArrayList {
         $this->assertCompletePrivateHandCount();
 
         $concealedFlag = $requireConcealedTripleOrQuad ? true : null;
-        $isRequiredTripleOrQuad = $this->getPredicate([TripleMeldType::getInstance(), QuadMeldType::getInstance()], $concealedFlag);
+        $isRequiredTripleOrQuad = $this->getPredicate([TripleMeldType::create(), QuadMeldType::create()], $concealedFlag);
 
         $tripleOrQuadCount = $this->getCount($isRequiredTripleOrQuad);
-        $pairCount = $this->getCount($this->getPredicate([PairMeldType::getInstance()]));
+        $pairCount = $this->getCount($this->getPredicate([PairMeldType::create()]));
         return [$tripleOrQuadCount, $pairCount] == [4, 1];
     }
     //endregion
@@ -181,7 +180,7 @@ class MeldList extends ArrayList {
 
         $requiredDoubleRunCount = $isTwoDoubleRun ? 2 : 1;
 
-        $runMeldList = $this->toFiltered([RunMeldType::getInstance()]);
+        $runMeldList = $this->toFiltered([RunMeldType::create()]);
         $keySelector = function (Meld $runMeld) {
             $considerConcealed = false;
             return $runMeld->toFormatString($considerConcealed);
@@ -215,7 +214,7 @@ class MeldList extends ArrayList {
      */
     function isThreeColorRuns() {
         $this->assertCompletePrivateHandCount();
-        $runList = $this->toFiltered([RunMeldType::getInstance()]);
+        $runList = $this->toFiltered([RunMeldType::create()]);
         return $runList->isThreeColorSuits();
     }
 
@@ -224,7 +223,7 @@ class MeldList extends ArrayList {
      */
     function isThreeColorTripleOrQuads() {
         $this->assertCompletePrivateHandCount();
-        $suitTripleOrQuadList = $this->toFiltered([TripleMeldType::getInstance(), QuadMeldType::getInstance()])
+        $suitTripleOrQuadList = $this->toFiltered([TripleMeldType::create(), QuadMeldType::create()])
             ->where(function (Meld $meld) {
                 return $meld->isAllSuit();
             });
@@ -277,7 +276,7 @@ class MeldList extends ArrayList {
      */
     function isValueTiles(Tile $valueTile) {
         $this->assertCompletePrivateHandCount();
-        $tripleOrQuadList = $this->toFiltered([TripleMeldType::getInstance(), QuadMeldType::getInstance()]);
+        $tripleOrQuadList = $this->toFiltered([TripleMeldType::create(), QuadMeldType::create()]);
         $isValueMeld = function (Meld $tripleOrQuad) use ($valueTile) {
             /** @var Tile $firstTile */
             $firstTile = $tripleOrQuad[0];
@@ -291,7 +290,7 @@ class MeldList extends ArrayList {
      */
     function isThreeConcealedTripleOrQuads() {
         $this->assertCompletePrivateHandCount();
-        $isConcealedTripleOrQuad = $this->getPredicate([TripleMeldType::getInstance(), QuadMeldType::getInstance()], true);
+        $isConcealedTripleOrQuad = $this->getPredicate([TripleMeldType::create(), QuadMeldType::create()], true);
         $concealedTripleOrQuadCount = $this->getCount($isConcealedTripleOrQuad);
         return $concealedTripleOrQuadCount == 3;
     }
@@ -303,7 +302,7 @@ class MeldList extends ArrayList {
     function isThreeOrFourQuads(bool $isFour) {
         $this->assertCompletePrivateHandCount();
         $n = $isFour ? 4 : 3;
-        $quadCount = $this->getCount($this->getPredicate([QuadMeldType::getInstance()]));
+        $quadCount = $this->getCount($this->getPredicate([QuadMeldType::create()]));
         return $quadCount == $n;
     }
 
@@ -315,7 +314,7 @@ class MeldList extends ArrayList {
     function isOutsideHand(bool $isPure) {
         $this->assertCompletePrivateHandCount();
 
-        $hasRun = $this->isAny($this->getPredicate([RunMeldType::getInstance()]));
+        $hasRun = $this->isAny($this->getPredicate([RunMeldType::create()]));
         if (!$hasRun) {
             return false;
         }
@@ -368,8 +367,8 @@ class MeldList extends ArrayList {
         $dragonMeldList = $this->getCopy()->where(function (Meld $meld) {
             return $meld[0]->getTileType()->isDragon();
         });
-        $pairCount = $dragonMeldList->getCount($this->getPredicate([PairMeldType::getInstance()]));
-        $tripleOrQuadCount = $dragonMeldList->getCount($this->getPredicate([TripleMeldType::getInstance(), QuadMeldType::getInstance()]));
+        $pairCount = $dragonMeldList->getCount($this->getPredicate([PairMeldType::create()]));
+        $tripleOrQuadCount = $dragonMeldList->getCount($this->getPredicate([TripleMeldType::create(), QuadMeldType::create()]));
         return [$pairCount, $tripleOrQuadCount] == ($isBig ? [0, 3] : [1, 2]);
     }
 
@@ -382,8 +381,8 @@ class MeldList extends ArrayList {
         $windMeldList = $this->where(function (Meld $meld) {
             return $meld[0]->getTileType()->isWind();
         });
-        $pairCount = $windMeldList->getCount($this->getPredicate([PairMeldType::getInstance()]));
-        $tripleOrQuadCount = $windMeldList->getCount($this->getPredicate([TripleMeldType::getInstance(), QuadMeldType::getInstance()]));
+        $pairCount = $windMeldList->getCount($this->getPredicate([PairMeldType::create()]));
+        $tripleOrQuadCount = $windMeldList->getCount($this->getPredicate([TripleMeldType::create(), QuadMeldType::create()]));
         return [$pairCount, $tripleOrQuadCount] == ($isBig ? [0, 4] : [1, 3]);
     }
     //endregion

@@ -1,6 +1,5 @@
 <?php
 namespace Saki\Util;
-use Doctrine\Instantiator\Exception\InvalidArgumentException;
 
 /**
  * Common index array like C# ArrayList.
@@ -9,7 +8,7 @@ use Doctrine\Instantiator\Exception\InvalidArgumentException;
  * features
  * - support foreach/count/isset/get/set.
  * - support object-style and clean array operations.
- * - support readonly?
+ * - support readonly
  * - not support array elements.
  *
  * main functions
@@ -34,57 +33,102 @@ use Doctrine\Instantiator\Exception\InvalidArgumentException;
  * - $predicate : v => bool
  * - $selector  : v => mixed
  *
- * @see https://msdn.microsoft.com/en-us/library/9eekhta0(v=vs.110).aspx
- * @see https://msdn.microsoft.com/en-us/library/system.collections.arraylist(v=vs.110).aspx
+ * @see https://msdn.microsoft.com/en-us/library/9eekhta0(v=vs.110).aspx C# IEnumerable<T> Interface
+ * @see https://msdn.microsoft.com/en-us/library/system.collections.arraylist(v=vs.110).aspx C# ArrayList<T> class
+ * @see https://msdn.microsoft.com/en-us/library/ms132474(v=vs.110).aspx C# ReadOnlyCollection<T> Class
  * @package Saki\Util
  */
 class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
-    //region fields
-    private $innerArray;
-    private $writable;
 
-    function __construct(array $innerArray = null, bool $writable = true) {
-        $this->writable = true;
+    private $innerArray;
+    private $readonly;
+
+    //region construct and convert.
+    function __construct(array $innerArray = null) {
+        $this->readonly = false;
         $this->fromArray($innerArray ?? []);
-        $this->writable = $writable;
+        $this->readonly = $this->isReadonlyClass();
     }
 
     /**
+     * Get a copy of current instance, where lock status is set to default.
      * WARNING: should be override if constructor is override.
      * @return static
      */
     function getCopy() {
-        return new static($this->innerArray, $this->writable);
+        return new static($this->innerArray);
     }
 
+    /**
+     * @return string
+     */
     function __toString() {
         return implode(',', $this->innerArray);
     }
 
+    /**
+     * @return array
+     */
     function toArray() {
         return $this->innerArray;
     }
 
+    /**
+     * Used in: sub class of ArrayList.
+     * @param callable|null $selector
+     * @return ArrayList
+     */
     function toArrayList(callable $selector = null) {
         $a = $selector === null ? $this->innerArray : array_map($selector, $this->innerArray);
         return new ArrayList($a);
     }
+    //endregion
 
-    function isWritable() {
-        return $this->writable;
+    //region readonly
+    /**
+     * override by trait ReadonlyArrayList
+     * @return bool
+     */
+    protected function isReadonlyClass() {
+        return false;
     }
 
-    protected function setWritable(bool $writable) {
-        $this->writable = $writable;
-        return $this;
+    /**
+     * @return bool
+     */
+    function isReadonly() {
+        return $this->readonly;
     }
 
+    /**
+     * Assert not readonly. Called before write operations of ArrayList.
+     * Note that sub class is not required to call this, since its write operations rely on ArrayList ones.
+     */
     protected function assertWritable() {
-        if (!$this->isWritable()) {
+        if ($this->isReadonly()) {
             throw new \LogicException(
                 sprintf('%s[%s] is not writable.', static::class, $this->__toString())
             );
         }
+    }
+
+    /**
+     * @return $this
+     */
+    function lock() {
+        $this->readonly = true;
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    function unlock() {
+        if ($this->isReadonlyClass()) {
+            throw new \BadMethodCallException();
+        }
+        $this->readonly = false;
+        return $this;
     }
     //endregion
 
@@ -233,8 +277,8 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
 
             if ($i === false) {
                 throw new \InvalidArgumentException(
-                    sprintf('Invalid $value[%s] in $valueOrValues[%s] for %s($indexOrIndexes).',
-                        $v, implode($targetValues), __FUNCTION__)
+                    sprintf('Invalid $value[%s] in $valueOrValues[%s] for $this[%s]->%s($indexOrIndexes).',
+                        $v, implode($targetValues), $this, __FUNCTION__)
                 );
             }
 
@@ -261,7 +305,7 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
 
         return $result ?? $default;
     }
-    
+
     /**
      * @return mixed
      */
@@ -624,6 +668,15 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
     }
 
     /**
+     * @param callable $callable
+     * @return $this
+     */
+    function walk(callable $callable) {
+        array_walk($this->innerArray, $callable);
+        return $this;
+    }
+
+    /**
      * @param int $n
      * @return $this
      */
@@ -717,3 +770,4 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
     }
     //endregion
 }
+

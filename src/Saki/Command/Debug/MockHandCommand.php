@@ -33,13 +33,24 @@ class MockHandCommand extends PlayerCommand {
     }
 
     function matchOtherConditions() {
-        $hand = $this->getActPlayer()->getTileArea()->getHandReference();
         $mockTileList = $this->getMockTileList();
-        return $mockTileList->count() <= $hand->count();
+
+        $hand = $this->getActPlayer()->getTileArea()->getHand();
+        if ($mockTileList->count() <= $hand->getPublic()->count()) {
+            return true;
+        }
+
+        if ($hand->isPrivatePlusDeclareComplete()
+            && $mockTileList->count() <= $hand->getPrivate()->count()
+        ) {
+            return true;
+        }
+
+        return false;
     }
 
     function executeImpl() {
-        $tileAreas = $this->getContext()->getRound()->getTileAreas();
-        $tileAreas->debugReplaceHand($this->getActPlayer(), $this->getMockTileList());
+        $areas = $this->getContext()->getRound()->getTileAreas();
+        $areas->debugMockHand($this->getActPlayer(), $this->getMockTileList());
     }
 }

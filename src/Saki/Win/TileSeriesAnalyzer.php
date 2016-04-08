@@ -5,7 +5,6 @@ namespace Saki\Win;
 use Saki\Meld\MeldList;
 use Saki\Util\ArrayList;
 use Saki\Util\Singleton;
-use Saki\Win\TileSeries;
 
 /**
  * Analyze TileSeries for a given complete hand MeldList.
@@ -18,9 +17,9 @@ class TileSeriesAnalyzer extends Singleton {
      */
     static function getDefaultTileSeriesArray() {
         return [
-            TileSeries::getInstance(TileSeries::FOUR_WIN_SET_AND_ONE_PAIR),
-            TileSeries::getInstance(TileSeries::SEVEN_PAIRS),
-            TileSeries::getInstance(TileSeries::THIRTEEN_ORPHANS),
+            TileSeries::create(TileSeries::FOUR_WIN_SET_AND_ONE_PAIR),
+            TileSeries::create(TileSeries::SEVEN_PAIRS),
+            TileSeries::create(TileSeries::THIRTEEN_ORPHANS),
         ];
     }
 
@@ -30,18 +29,9 @@ class TileSeriesAnalyzer extends Singleton {
      * @param TileSeries[] $tileSeriesArray
      */
     function __construct(array $tileSeriesArray = null) {
-//        if ($tileSeriesArray) {
-//            $valid = !empty($tileSeriesArray) && array_unique($tileSeriesArray) == $tileSeriesArray;
-//            if (!$valid) {
-//                throw new \InvalidArgumentException();
-//            }
-//            $actual = $tileSeriesArray;
-//        } else {
-//            $actual = self::getDefaultTileSeriesArray();
-//        }
-
+        // todo validate
         $actual = $tileSeriesArray ?? self::getDefaultTileSeriesArray();
-        $this->tileSeriesList = new ArrayList($actual, false);
+        $this->tileSeriesList = (new ArrayList($actual))->lock();
     }
 
     /**
@@ -59,7 +49,7 @@ class TileSeriesAnalyzer extends Singleton {
         $existIn = function (TileSeries $series) use ($allMeldList) {
             return $series->existIn($allMeldList);
         };
-        $default = TileSeries::getInstance(TileSeries::NOT_TILE_SERIES);
+        $default = TileSeries::create(TileSeries::NOT_TILE_SERIES);
         return $this->getTileSeriesList()->getSingleOrDefault($existIn, $default);
     }
 }

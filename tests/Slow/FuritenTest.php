@@ -21,9 +21,9 @@ class FuritenTest extends \PHPUnit_Framework_TestCase {
         $pro->process(...$scripts);
         $winState = $r->getWinResult($player)->getWinState();
         if ($isFuriten) {
-            $this->assertEquals(WinState::getInstance(WinState::FURITEN_FALSE_WIN), $winState);
+            $this->assertEquals(WinState::create(WinState::FURITEN_FALSE_WIN), $winState);
         } else {
-            $this->assertEquals(WinState::getInstance(WinState::WIN_BY_OTHER), $winState);
+            $this->assertEquals(WinState::create(WinState::WIN_BY_OTHER), $winState);
         }
     }
 

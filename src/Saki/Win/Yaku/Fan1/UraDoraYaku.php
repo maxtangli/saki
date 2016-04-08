@@ -19,7 +19,7 @@ class UraDoraYaku extends Yaku {
 
     protected function getExistCountImpl(WinSubTarget $subTarget) {
         $doraFacade = $subTarget->getDoraFacade();
-        $privateFull = $subTarget->getPrivateFull();
+        $privateFull = $subTarget->getPrivateComplete();
         return $doraFacade->getHandUraDoraFanCount($privateFull);
     }
 
@@ -29,7 +29,7 @@ class UraDoraYaku extends Yaku {
 
     protected function matchOtherConditions(WinSubTarget $subTarget) {
         $doraFacade = $subTarget->getDoraFacade();
-        $privateFull = $subTarget->getPrivateFull();
+        $privateFull = $subTarget->getPrivateComplete();
         return $doraFacade->getHandUraDoraFanCount($privateFull) > 0;
     }
 }

@@ -5,7 +5,6 @@ use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 use Saki\Util\ArrayList;
 use Saki\Win\FutureWaiting;
-use Saki\Win\WaitingAnalyzer;
 use Saki\Win\WinAnalyzer;
 use Saki\Win\Yaku\YakuSet;
 
@@ -15,7 +14,8 @@ class WaitingAnalyzerTest extends \PHPUnit_Framework_TestCase {
      * @dataProvider publicDataProvider
      */
     function testPublicData($onHandTileListString, $declaredMeldListString, $expected) {
-        $waitingTileAnalyzer = new WaitingAnalyzer();
+        $winAnalyzer = new WinAnalyzer(YakuSet::getStandardYakuSet());
+        $waitingTileAnalyzer = $winAnalyzer->getWaitingAnalyzer();
 
         $handTileList = TileList::fromString($onHandTileListString);
         $declaredMeldList = MeldList::fromString($declaredMeldListString);
@@ -47,7 +47,7 @@ class WaitingAnalyzerTest extends \PHPUnit_Framework_TestCase {
      */
     function testPrivateData($onHandTileListString, $declaredMeldListString, $expected) {
         $winAnalyzer = new WinAnalyzer(YakuSet::getStandardYakuSet());
-        $waitingTileAnalyzer = new WaitingAnalyzer($winAnalyzer);
+        $waitingTileAnalyzer = $winAnalyzer->getWaitingAnalyzer();
         $handTileList = TileList::fromString($onHandTileListString);
         $declaredMeldList = MeldList::fromString($declaredMeldListString);
 

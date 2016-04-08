@@ -15,7 +15,7 @@ class RoundWinTest extends PHPUnit_Framework_TestCase {
         // execute
         $r->getProcessor()->process('winBySelf E');
         // phase changed
-        $this->assertEquals(RoundPhase::getInstance(RoundPhase::OVER_PHASE), $r->getPhaseState()->getRoundPhase());
+        $this->assertEquals(RoundPhase::create(RoundPhase::OVER_PHASE), $r->getPhaseState()->getRoundPhase());
         // score changed
         $dealer = $r->getPlayerList()->getDealerPlayer();
         foreach ($r->getPlayerList() as $player) {

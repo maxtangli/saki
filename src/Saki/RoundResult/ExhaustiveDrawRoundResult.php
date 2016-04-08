@@ -14,7 +14,7 @@ class ExhaustiveDrawRoundResult extends RoundResult {
      * @param bool[] $isWaitings
      */
     function __construct(array $players, array $isWaitings) {
-        parent::__construct($players, RoundResultType::getInstance(RoundResultType::EXHAUSTIVE_DRAW));
+        parent::__construct($players, RoundResultType::create(RoundResultType::EXHAUSTIVE_DRAW));
         $valid = count($players) == count($isWaitings);
         if (!$valid) {
             throw new \InvalidArgumentException();

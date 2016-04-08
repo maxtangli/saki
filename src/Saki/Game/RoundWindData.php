@@ -76,7 +76,7 @@ class RoundWindData {
     }
 
     function isSelfWind(Player $player, Tile $tile) {
-        return $player->isSelfWind($tile);
+        return $player->getTileArea()->getPlayerWind()->isSelfWind($tile);
     }
 
     function isDoubleWind(Player $player, Tile $tile) {

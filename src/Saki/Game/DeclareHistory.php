@@ -39,8 +39,8 @@ class DeclareHistory {
             return false;
         }
 
-        foreach($this->a[$fromGlobalTurn] as $selfWind) {
-            if ($selfWind->getWindOffset($fromSelfWind) >= 0) {
+        foreach ($this->a[$fromGlobalTurn] as $selfWind) {
+            if ($selfWind->getWindOffsetFrom($fromSelfWind) >= 0) {
                 return true;
             }
         }

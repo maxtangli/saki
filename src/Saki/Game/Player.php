@@ -1,68 +1,67 @@
 <?php
 namespace Saki\Game;
 
-use Saki\Tile\Tile;
-
+/**
+ * A game player holding his own score, selfWind and tileArea.
+ * @package Saki\Game
+ */
 class Player {
     // immutable
     private $no;
 
     // change via setter
-    private $score;
+    private $score; // todo move into Area
+    /** @var Area */
+    private $area;
 
-    // reset for each round
-    private $selfWind;
-    private $tileArea;
-
-    function __construct($no, $score, Tile $selfWind) {
+    function __construct(int $no, int $score) {
         $this->no = $no;
         $this->score = $score;
-        $this->selfWind = $selfWind;
-        $this->tileArea = new TileArea();
     }
 
-    function reset(Tile $selfWind) {
-        $this->selfWind = $selfWind;
-        $this->tileArea->reset();
-    }
-
+    /**
+     * @return string
+     */
     function __toString() {
-        return sprintf('player[%s] wind[%s] score[%s]', $this->getNo(), $this->getSelfWind(), $this->getScore());
+        return sprintf('player[%s] wind[%s] score[%s]', $this->getNo(), $this->getTileArea()->getPlayerWind()->getWindTile(), $this->getScore());
     }
 
+    /**
+     * @return int
+     */
     function getNo() {
         return $this->no;
     }
 
+    /**
+     * @return int
+     */
     function getScore() {
         return $this->score;
     }
 
-    function setScore($score) {
+    /**
+     * @param $score
+     */
+    function setScore(int $score) {
         $this->score = $score;
     }
 
-    function getSelfWind() {
-        return $this->selfWind;
-    }
-
-    function setSelfWind(Tile $selfWind) {
-        $this->selfWind = $selfWind;
-    }
-
-    function isSelfWind(Tile $tile) {
-        return $tile == $this->getSelfWind();
-    }
-
-    function isDealer() {
-        return $this->getSelfWind() == Tile::fromString('E');
-    }
-
-    function isLeisureFamily() {
-        return !$this->isDealer();
-    }
-
+    /**
+     * @return Area
+     */
     function getTileArea() {
-        return $this->tileArea;
+        if ($this->area === null) {
+            throw new \BadMethodCallException('Bad method call on Area-uninitialized Player.');
+        }
+        return $this->area;
+    }
+
+    /**
+     * @param Area $area
+     */
+    function setTileArea(Area $area) {
+        $this->area = $area;
     }
 }
+

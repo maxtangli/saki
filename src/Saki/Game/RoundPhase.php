@@ -11,35 +11,35 @@ class RoundPhase extends Enum {
     const OVER_PHASE = 4;
 
     static function getNullInstance() {
-        return static::getInstance(self::NULL_PHASE);
+        return static::create(self::NULL_PHASE);
     }
 
     /**
      * @return RoundPhase
      */
     static function getInitInstance() {
-        return static::getInstance(self::INIT_PHASE);
+        return static::create(self::INIT_PHASE);
     }
 
     /**
      * @return RoundPhase
      */
     static function getPrivateInstance() {
-        return static::getInstance(self::PRIVATE_PHASE);
+        return static::create(self::PRIVATE_PHASE);
     }
 
     /**
      * @return RoundPhase
      */
     static function getPublicInstance() {
-        return static::getInstance(self::PUBLIC_PHASE);
+        return static::create(self::PUBLIC_PHASE);
     }
 
     /**
      * @return RoundPhase
      */
     static function getOverInstance() {
-        return static::getInstance(self::OVER_PHASE);
+        return static::create(self::OVER_PHASE);
     }
 
     function isNull() {

@@ -18,10 +18,7 @@ class PongCommand extends PublicCommand {
     }
 
     function matchOtherConditions() {
-        $tileAreas = $this->getContext()->getRound()->getTileAreas();
-        return $this->getActPlayer()->getTileArea()->canPong(
-            $tileAreas->getTargetTile()->getTile()
-        );
+        return true; // todo
     }
 
     function executeImpl() {

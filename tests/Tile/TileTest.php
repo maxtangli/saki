@@ -30,53 +30,53 @@ class TileTest extends PHPUnit_Framework_TestCase {
     }
 
     function testOverall() {
-        $m = Tile::getInstance(TileType::fromString('m'), 1);
+        $m = Tile::create(TileType::fromString('m'), 1);
         $this->assertEquals(1, $m->getNumber());
         $this->assertEquals(TileType::CHARACTER_M, $m->getTileType()->getValue());
         $this->assertEquals('1m', $m->__toString());
 
-        $m = Tile::getInstance(TileType::fromString('E'));
+        $m = Tile::create(TileType::fromString('E'));
         $this->assertEquals(TileType::EAST_E, $m->getTileType()->getValue());
         $this->assertEquals('E', $m->__toString());
     }
 
     function testIdentity() {
-        $m1 = Tile::getInstance(TileType::fromString('m'), 1);
-        $m2 = Tile::getInstance(TileType::fromString('m'), 1);
+        $m1 = Tile::create(TileType::fromString('m'), 1);
+        $m2 = Tile::create(TileType::fromString('m'), 1);
         $this->assertEquals($m1, $m2);
         $this->assertSame($m1, $m2);
-        $m3 = Tile::getInstance(TileType::fromString('m'), 2);
+        $m3 = Tile::create(TileType::fromString('m'), 2);
         $this->assertNotEquals($m1, $m3);
     }
 
     function testFromString() {
-        $m1 = Tile::getInstance(TileType::fromString('m'), 1);
+        $m1 = Tile::create(TileType::fromString('m'), 1);
         $m2 = Tile::fromString('1m');
         $this->assertEquals($m1, $m2);
 
-        $m3 = Tile::getInstance(TileType::fromString('E'));
+        $m3 = Tile::create(TileType::fromString('E'));
         $m4 = Tile::fromString('E');
         $this->assertEquals($m3, $m4);
     }
 
     function testIsRedDora() {
-        $normal5m = Tile::getInstance(TileType::getInstance(TileType::CHARACTER_M), 5, false);
+        $normal5m = Tile::create(TileType::create(TileType::CHARACTER_M), 5, false);
         $this->assertFalse($normal5m->isRedDora());
 
-        $red5m = Tile::getInstance(TileType::getInstance(TileType::CHARACTER_M), 5, true);
+        $red5m = Tile::create(TileType::create(TileType::CHARACTER_M), 5, true);
         $this->assertTrue($red5m->isRedDora());
 
         $this->assertEquals($normal5m, $red5m);
         $this->assertNotSame($normal5m, $red5m);
 
-        $red5p = Tile::getInstance(TileType::getInstance(TileType::DOT_P), 5, true);
+        $red5p = Tile::create(TileType::create(TileType::DOT_P), 5, true);
         $this->assertTrue($red5p->isRedDora());
         $this->assertNotEquals($red5p, $red5m);
         $this->assertNotSame($red5p, $red5m);
     }
 
     function testRedDoraString() {
-        $m5 = Tile::getInstance(TileType::fromString('m'), 5, true);
+        $m5 = Tile::create(TileType::fromString('m'), 5, true);
         $m6 = Tile::fromString('0m');
         $this->assertEquals($m5, $m6);
         $this->assertTrue($m6->isRedDora());
@@ -110,8 +110,9 @@ class TileTest extends PHPUnit_Framework_TestCase {
     function testWindOffset() {
         $e = Tile::fromString('E');
         $w = Tile::fromString('W');
-        $this->assertEquals(0, $e->getWindOffset($e));
-        $this->assertEquals(-2, $e->getWindOffset($w));
-        $this->assertEquals(2, $w->getWindOffset($e));
+
+        $this->assertEquals(0, $e->getWindOffsetFrom($e));
+        $this->assertEquals(-2, $e->getWindOffsetFrom($w));
+        $this->assertEquals(2, $w->getWindOffsetFrom($e));
     }
 }

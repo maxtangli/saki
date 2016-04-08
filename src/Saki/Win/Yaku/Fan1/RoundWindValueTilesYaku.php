@@ -8,10 +8,8 @@ use Saki\Win\Yaku\AbstractValueTilesYaku;
  * 役牌　場風
  * @package Saki\Win\Yaku\Fan1
  */
-class RoundWindValueTilesYaku extends AbstractValueTilesYaku
-{
-    function getValueTile(WinSubTarget $subTarget)
-    {
+class RoundWindValueTilesYaku extends AbstractValueTilesYaku {
+    function getValueTile(WinSubTarget $subTarget) {
         return $subTarget->getRoundWind();
     }
 }

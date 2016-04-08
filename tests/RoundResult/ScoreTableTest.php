@@ -7,7 +7,7 @@ class ScoreTableTest extends PHPUnit_Framework_TestCase {
      * @dataProvider payScoreProvider
      */
     function testPayScore($expectedPayScore, $receiverIsDealer, $fanCount, $fuCount, $winBySelf, $payerIsDealer) {
-        $table = ScoreTable::getInstance();
+        $table = ScoreTable::create();
         $item = $table->getScoreItem($fanCount, $fuCount);
         $payScore = $item->getPayScore($receiverIsDealer, $winBySelf, $payerIsDealer);
         $this->assertEquals($expectedPayScore, $payScore);

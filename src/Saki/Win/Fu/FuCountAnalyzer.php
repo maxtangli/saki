@@ -40,7 +40,7 @@ class FuCountAnalyzer extends Singleton {
         }
 
         // 平和
-        if ($yakuList->valueExist(AllRunsYaku::getInstance())) {
+        if ($yakuList->valueExist(AllRunsYaku::create())) {
             if ($winBySelf) { // ツモ平和	一律20符
                 return 20;
             } else { // 喰い平和	一律30符
@@ -49,7 +49,7 @@ class FuCountAnalyzer extends Singleton {
         }
 
         // 七対子	一律25符
-        if ($yakuList->valueExist(SevenPairsYaku::getInstance())) {
+        if ($yakuList->valueExist(SevenPairsYaku::create())) {
             return 25;
         }
 
@@ -126,9 +126,9 @@ class FuCountAnalyzer extends Singleton {
          * 単騎待ち 2符
          */
         $targetWaitingTypes = [
-            WaitingType::getInstance(WaitingType::MIDDLE_RUN_WAITING),
-            WaitingType::getInstance(WaitingType::ONE_SIDE_RUN_WAITING),
-            WaitingType::getInstance(WaitingType::PAIR_WAITING),
+            WaitingType::create(WaitingType::MIDDLE_RUN_WAITING),
+            WaitingType::create(WaitingType::ONE_SIDE_RUN_WAITING),
+            WaitingType::create(WaitingType::PAIR_WAITING),
         ];
         $waitingTypeFuCount = in_array($waitingType, $targetWaitingTypes) ? 2 : 0;
         return $waitingTypeFuCount;

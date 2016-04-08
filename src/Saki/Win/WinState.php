@@ -7,9 +7,9 @@ use Saki\Util\PriorityComparable;
 class WinState extends Enum {
     static function getWinBySelfOrOther(bool $isPrivate) {
         $v = $isPrivate ? self::WIN_BY_SELF : self::WIN_BY_OTHER;
-        return self::getInstance($v);
+        return self::create($v);
     }
-    
+
     use PriorityComparable;
 
     function getPriority() {

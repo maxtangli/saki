@@ -41,7 +41,7 @@ class RunMeldType extends MeldType {
     }
 
     function getWinSetType() {
-        return WinSetType::getInstance(WinSetType::HAND_WIN_SET);
+        return WinSetType::create(WinSetType::HAND_WIN_SET);
     }
 }
 

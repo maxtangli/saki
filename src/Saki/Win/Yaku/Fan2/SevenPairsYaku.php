@@ -16,7 +16,7 @@ class SevenPairsYaku extends Yaku {
 
     protected function getRequiredTileSeries() {
         return [
-            TileSeries::getInstance(TileSeries::SEVEN_PAIRS)
+            TileSeries::create(TileSeries::SEVEN_PAIRS)
         ];
     }
 

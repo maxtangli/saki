@@ -40,7 +40,7 @@ abstract class RoundResult {
 
     protected function getOriginDealerPlayer() {
         foreach ($this->getPlayers() as $player) {
-            if ($player->isDealer()) {
+            if ($player->getTileArea()->getPlayerWind()->isDealer()) {
                 return $player;
             }
         }

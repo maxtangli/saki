@@ -3,9 +3,11 @@ namespace Saki\Game;
 
 use Saki\Tile\Tile;
 use Saki\Util\ArrayList;
+use Saki\Util\ReadonlyArrayList;
 use Saki\Util\Utils;
 
 class PlayerList extends ArrayList {
+    use ReadonlyArrayList;
 
     static function createStandard() {
         return new PlayerList(4, 25000);
@@ -20,9 +22,8 @@ class PlayerList extends ArrayList {
      * @param int $n
      * @param int $initialScore
      */
-    function __construct($n, $initialScore) {
-        $valid = 1 <= $n && $n <= 4;
-        if (!$valid) {
+    function __construct(int $n, int $initialScore) {
+        if (!Utils::inRange($n, 1, 4)) {
             throw new \InvalidArgumentException();
         }
 
@@ -40,28 +41,10 @@ class PlayerList extends ArrayList {
         $this->players = $players;
     }
 
-    function reset(Player $dealerPlayer) {
-        $dealerIndex = $this->getIndex($dealerPlayer); // assert valid
-
-        // roll each player's selfWind by its offset to dealerPlayer
-        $dealerSelfWind = Tile::fromString('E');
-        foreach ($this->players as $index => $player) {
-            $offsetToDealer = $index - $dealerIndex;
-            $playerSelfWind = $dealerSelfWind->getNextTile($offsetToDealer);
-            $player->reset($playerSelfWind);
-        }
-    }
-
     function hasMinusScorePlayer() {
         return $this->isAny(function (Player $player) {
             return $player->getScore() < 0;
         });
-    }
-
-    function isNextPlayer(Player $currentPlayer, Player $targetPlayer) {
-        $windOffset = $targetPlayer->getSelfWind()->getWindOffset($currentPlayer->getSelfWind());
-        $normalizedWindOffset = Utils::getNormalizedModValue($windOffset, $this->count());
-        return $normalizedWindOffset == 1;
     }
 
     /**
@@ -90,6 +73,18 @@ class PlayerList extends ArrayList {
         return $this->getSelfWindPlayer(Tile::fromString('E'));
     }
 
+    function getSouthPlayer() {
+        return $this->getSelfWindPlayer(Tile::fromString('S'));
+    }
+
+    function getWestPlayer() {
+        return $this->getSelfWindPlayer(Tile::fromString('W'));
+    }
+
+    function getNorthPlayer() {
+        return $this->getSelfWindPlayer(Tile::fromString('N'));
+    }
+
     /**
      * @param Tile $selfWind
      * @return Player
@@ -97,7 +92,9 @@ class PlayerList extends ArrayList {
     function getSelfWindPlayer(Tile $selfWind) {
         $result = [];
         foreach ($this as $player) {
-            if ($player->getSelfWind() == $selfWind) {
+            /** @var Player $player */
+            $player = $player;
+            if ($player->getTileArea()->getPlayerWind()->getWindTile() == $selfWind) {
                 $result[] = $player;
             }
         }

@@ -9,10 +9,8 @@ use Saki\Win\Yaku\AbstractValueTilesYaku;
  * 役牌　白
  * @package Saki\Win\Yaku\Fan1
  */
-class WhiteValueTilesYaku extends AbstractValueTilesYaku
-{
-    function getValueTile(WinSubTarget $subTarget)
-    {
+class WhiteValueTilesYaku extends AbstractValueTilesYaku {
+    function getValueTile(WinSubTarget $subTarget) {
         return Tile::fromString('P');
     }
 }

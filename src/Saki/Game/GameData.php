@@ -1,5 +1,6 @@
 <?php
 namespace Saki\Game;
+
 use Saki\FinalScore\CompositeFinalScoreStrategy;
 use Saki\FinalScore\MoundFinalScoreStrategy;
 use Saki\FinalScore\RankingHorseFinalScoreStrategy;
@@ -24,10 +25,10 @@ class GameData {
      */
     function __construct() {
         $this->playerCount = 4;
-        $this->totalRoundType = GameLengthType::getInstance(GameLengthType::EAST);
+        $this->totalRoundType = GameLengthType::create(GameLengthType::EAST);
         $this->initialScore = 25000;
         $this->finalScoreStrategy = new CompositeFinalScoreStrategy([
-            RankingHorseFinalScoreStrategy::fromType(RankingHorseType::getInstance(RankingHorseType::UMA_10_20)),
+            RankingHorseFinalScoreStrategy::fromType(RankingHorseType::create(RankingHorseType::UMA_10_20)),
             new MoundFinalScoreStrategy(25000, 30000),
         ]);
         $this->tileSet = TileSet::getStandardTileSet();

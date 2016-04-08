@@ -18,10 +18,7 @@ class BigKongCommand extends PublicCommand {
     }
 
     function matchOtherConditions() {
-        $tileAreas = $this->getContext()->getRound()->getTileAreas();
-        return $this->getActPlayer()->getTileArea()->canBigKong(
-            $tileAreas->getTargetTile()->getTile()
-        );
+        return true; // todo
     }
 
     function executeImpl() {

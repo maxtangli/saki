@@ -19,7 +19,7 @@ class RedDoraYaku extends Yaku {
 
     protected function getExistCountImpl(WinSubTarget $subTarget) {
         $doraFacade = $subTarget->getDoraFacade();
-        $privateFull = $subTarget->getPrivateFull();
+        $privateFull = $subTarget->getPrivateComplete();
         return $doraFacade->getHandRedDoraFanCount($privateFull);
     }
 
@@ -29,7 +29,7 @@ class RedDoraYaku extends Yaku {
 
     protected function matchOtherConditions(WinSubTarget $subTarget) {
         $doraFacade = $subTarget->getDoraFacade();
-        $privateFull = $subTarget->getPrivateFull();
+        $privateFull = $subTarget->getPrivateComplete();
         return $doraFacade->getHandRedDoraFanCount($privateFull) > 0;
     }
 }

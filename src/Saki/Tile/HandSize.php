@@ -47,6 +47,16 @@ class HandSize {
         return $this->getCount() >= 14; // todo not right?
     }
 
+    /**
+     * declare-meld private public
+     * 0 14 13
+     * 1 11 10
+     * 2 8 7
+     * 3 5 4
+     * 4 2 1
+     *
+     * @return bool
+     */
     function isPublic() {
         return $this->getCount() && $this->getCount() % 3 == 1;
     }

@@ -24,7 +24,9 @@ class DiscardCommand extends PrivateCommand {
     }
 
     function matchOtherConditions() {
-        $validTile = $this->getActPlayer()->getTileArea()->canDiscard($this->getTile());
+        $area = $this->getActPlayer()->getTileArea();
+        $private = $area->getHand()->getPrivate();
+        $validTile = $private->valueExist($this->getTile());
         return $validTile;
     }
 

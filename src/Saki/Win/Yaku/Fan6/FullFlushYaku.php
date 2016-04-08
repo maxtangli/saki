@@ -19,10 +19,10 @@ class FullFlushYaku extends Yaku {
     }
 
     protected function matchOtherConditions(WinSubTarget $subTarget) {
-        return $subTarget->getPrivateFull()->isFlush(true);
+        return $subTarget->getPrivateComplete()->isFlush(true);
     }
 
     function getExcludedYakus() {
-        return [HalfFlushYaku::getInstance()];
+        return [HalfFlushYaku::create()];
     }
 }

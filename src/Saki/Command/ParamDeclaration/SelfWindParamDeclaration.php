@@ -10,7 +10,7 @@ class SelfWindParamDeclaration extends ParamDeclaration {
 
         if ($paramString == 'I') {
             $currentPlayer = $this->getContext()->getRound()->getTurnManager()->getCurrentPlayer();
-            return $currentPlayer->getSelfWind();
+            return $currentPlayer->getTileArea()->getPlayerWind()->getWindTile();
         }
 
         $selfWind = Tile::fromString($paramString);

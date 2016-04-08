@@ -1,8 +1,8 @@
 <?php
 namespace Saki\Win;
 
-use Saki\Util\PriorityComparable;
 use Saki\Util\Enum;
+use Saki\Util\PriorityComparable;
 
 class WaitingType extends Enum {
     use PriorityComparable;

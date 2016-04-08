@@ -4,7 +4,6 @@ namespace Saki\Win;
 use Saki\RoundResult\ScoreLevel;
 use Saki\RoundResult\ScoreTable;
 use Saki\Util\Comparable;
-use Saki\Util\Utils;
 use Saki\Win\Yaku\YakuItemList;
 
 class WinSubResult {
@@ -65,6 +64,6 @@ class WinSubResult {
     }
 
     function getScoreItem() {
-        return ScoreTable::getInstance()->getScoreItem($this->getFanCount(), $this->getFuCount());
+        return ScoreTable::create()->getScoreItem($this->getFanCount(), $this->getFuCount());
     }
 }

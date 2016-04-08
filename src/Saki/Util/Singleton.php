@@ -2,6 +2,7 @@
 namespace Saki\Util;
 
 /**
+ * todo maybe better to be a trait?
  * @see originated from http://www.phptherightway.com/pages/Design-Patterns.html
  * @package Saki\Util
  */
@@ -12,7 +13,7 @@ abstract class Singleton {
     /**
      * @return static the singleton instance of class
      */
-    static function getInstance() {
+    static function create() {
         $class = static::getClassName();
         if (!isset(self::$instances[$class])) {
             self::$instances[$class] = new $class();

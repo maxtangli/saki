@@ -19,7 +19,7 @@ class TripleMeldType extends WeakMeldType {
     }
 
     function getTargetMeldType() {
-        return QuadMeldType::getInstance();
+        return QuadMeldType::create();
     }
 
     protected function getWaitingTileListImpl(TileList $validMeldTileList) {
@@ -27,10 +27,10 @@ class TripleMeldType extends WeakMeldType {
     }
 
     protected function getWaitingTypeImpl(TileList $validMeldTileList) {
-        return WaitingType::getInstance(WaitingType::NOT_WAITING);
+        return WaitingType::create(WaitingType::NOT_WAITING);
     }
 
     function getWinSetType() {
-        return WinSetType::getInstance(WinSetType::HAND_WIN_SET);
+        return WinSetType::create(WinSetType::HAND_WIN_SET);
     }
 }

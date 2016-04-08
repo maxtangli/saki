@@ -49,19 +49,19 @@ class DoraFacade {
     }
 
     function getHandDoraFanCount(TileList $allTileList) {
-        return $this->getHandDoraFanCountImpl($allTileList, array($this, 'getTileDoraFanCount'));
+        return $this->getHandDoraFanCountImpl($allTileList, [$this, 'getTileDoraFanCount']);
     }
 
     function getHandUraDoraFanCount(TileList $allTileList) {
-        return $this->getHandDoraFanCountImpl($allTileList, array($this, 'getTileUraDoraFanCount'));
+        return $this->getHandDoraFanCountImpl($allTileList, [$this, 'getTileUraDoraFanCount']);
     }
 
     function getHandRedDoraFanCount(TileList $allTileList) {
-        return $this->getHandDoraFanCountImpl($allTileList, array($this, 'getTileRedDoraFanCount'));
+        return $this->getHandDoraFanCountImpl($allTileList, [$this, 'getTileRedDoraFanCount']);
     }
 
     function getHandAllDoraFanCount(TileList $allTileList) {
-        return $this->getHandDoraFanCountImpl($allTileList, array($this, 'getTileAllDoraFanCount'));
+        return $this->getHandDoraFanCountImpl($allTileList, [$this, 'getTileAllDoraFanCount']);
     }
 
     protected function getHandDoraFanCountImpl(TileList $allTileList, callable $getDoraFanCountCallback) {

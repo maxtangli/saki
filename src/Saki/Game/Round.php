@@ -40,7 +40,7 @@ class Round {
     // variable during round
     private $playerList;
     private $turnManager;
-    private $tileAreas;
+    private $areas;
     /** @var RoundPhaseState */
     private $phaseState;
 
@@ -57,9 +57,11 @@ class Round {
         $this->playerList = new PlayerList($gameData->getPlayerCount(), $gameData->getInitialScore());
         $this->turnManager = new TurnManager($this->playerList);
         $wall = new Wall($gameData->getTileSet());
-        $this->tileAreas = new TileAreas($wall, $this->playerList, function () {
+
+        $roundTurnProvider = function () {
             return $this->turnManager->getRoundTurn();
-        });
+        };
+        $this->areas = new Areas($wall, $this->playerList, $roundTurnProvider);
 
         $this->phaseState = new NullPhaseState();
 
@@ -85,6 +87,7 @@ class Round {
             SkipCommand::class,
         ];
         $this->processor = new CommandProcessor(new CommandParser(new CommandContext($this), $classes));
+
         $this->toNextPhase();
         $this->toNextPhase(); // todo better way?
     }
@@ -99,10 +102,9 @@ class Round {
 
         $this->getRoundWindData()->reset($keepDealer);
 
-        $this->getPlayerList()->reset($nextDealer);
-
         $this->getTurnManager()->reset();
-        $this->getTileAreas()->reset();
+        $nextDealerPlayerWind = new PlayerWind($nextDealer->getTileArea()->getPlayerWind()->getWindTile());
+        $this->getTileAreas()->reset($nextDealerPlayerWind);
 
         $this->phaseState = new NullPhaseState();
         $this->toNextPhase();
@@ -112,11 +114,11 @@ class Round {
     function debugReset(RoundResetData $resetData) {
         $this->getRoundWindData()->debugReset($resetData->getRoundWind(), $resetData->getRoundWindTurn(), $resetData->getSelfWindTurn());
 
-        $dealer = $this->getPlayerList()->getSelfWindPlayer($resetData->getDealerWind());
-        $this->getPlayerList()->reset($dealer);
+        $nextDealer = $this->getPlayerList()->getSelfWindPlayer($resetData->getDealerWind());
 
         $this->getTurnManager()->reset();
-        $this->getTileAreas()->reset();
+        $nextDealerPlayerWind = new PlayerWind($nextDealer->getTileArea()->getPlayerWind()->getWindTile());
+        $this->getTileAreas()->reset($nextDealerPlayerWind);
 
         $this->phaseState = new NullPhaseState();
         $this->toNextPhase();
@@ -199,8 +201,11 @@ class Round {
         return $this->playerList;
     }
 
+    /**
+     * @return Areas
+     */
     function getTileAreas() {
-        return $this->tileAreas;
+        return $this->areas;
     }
 
     function getTurnManager() {

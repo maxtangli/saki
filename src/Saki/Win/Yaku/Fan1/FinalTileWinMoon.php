@@ -18,7 +18,7 @@ class FinalTileWinMoon extends Yaku {
     }
 
     protected function matchOtherConditions(WinSubTarget $subTarget) {
-        return $subTarget->getWallRemainTileAmount()==0 && $subTarget->isPrivatePhase();
+        return $subTarget->getWallRemainTileAmount() == 0 && $subTarget->isPrivatePhase();
     }
 }
 

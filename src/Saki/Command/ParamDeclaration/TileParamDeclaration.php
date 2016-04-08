@@ -20,20 +20,19 @@ class TileParamDeclaration extends ParamDeclaration {
          * #Tile#        actual tile
          */
         $matches = [];
-        // todo better way to handle ESWNI
         if (preg_match('/([ESWNI]):(.+)/', $paramString, $matches)) {
             list(, $selfWindString, $remainParamString) = $matches;
 
             $selfWind = (new SelfWindParamDeclaration($this->getContext(), $selfWindString))->toObject();
 
             $player = $round->getPlayerList()->getSelfWindPlayer($selfWind);
-            $hand = $player->getTileArea()->getHandReference();
-            $tileAreas = $round->getTileAreas();
+            $areas = $round->getTileAreas();
 
             if (preg_match('/s-(.+):(.+)/', $remainParamString, $matches)) {
                 list(, $mockTileListString, $tileString) = $matches;
                 $tileList = TileList::fromString($mockTileListString);
-                $tileAreas->debugReplaceHand($player, $tileList);
+
+                $areas->debugMockHand($player, $tileList);
 
                 $tile = Tile::fromString($tileString); // validate
                 return $tile;
@@ -41,9 +40,5 @@ class TileParamDeclaration extends ParamDeclaration {
         }
 
         return Tile::fromString($paramString);
-    }
-
-    protected function getFormats() {
-
     }
 }

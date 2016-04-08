@@ -33,7 +33,7 @@ class WinSetType extends Enum {
     function isPureWeak() {
         return $this->getValue() == self::PURE_WEAK;
     }
-    
+
     function isSpecial() {
         return $this->getValue() == self::SPECIAL;
     }

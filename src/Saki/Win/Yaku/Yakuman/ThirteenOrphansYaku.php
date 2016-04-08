@@ -16,7 +16,7 @@ class ThirteenOrphansYaku extends Yaku {
 
     protected function getRequiredTileSeries() {
         return [
-            TileSeries::getInstance(TileSeries::THIRTEEN_ORPHANS)
+            TileSeries::create(TileSeries::THIRTEEN_ORPHANS)
         ];
     }
 

@@ -50,7 +50,7 @@ class OpenHistoryItem {
         }
 
         if ($this->getGlobalTurn() == $priorItem->getGlobalTurn()) {
-            $windOffset = $this->getSelfWind()->getWindOffset($priorItem->getSelfWind());
+            $windOffset = $this->getSelfWind()->getWindOffsetFrom($priorItem->getSelfWind());
             $isLaterWind = $windOffset > 0;
             $isSameWind = $windOffset == 0;
             if ($isLaterWind || $allowSameTurnAndSelfWind && $isSameWind) {

@@ -3,15 +3,15 @@
 namespace Saki\Tile;
 
 use Saki\Util\ArrayList;
+use Saki\Util\Immutable;
 use Saki\Util\PriorityComparable;
 use Saki\Util\Utils;
-use Saki\Util\ValueObject;
 
-class Tile implements ValueObject {
+class Tile implements Immutable {
     use PriorityComparable;
 
     function getPriority() {
-        return TileFactory::getInstance()->toValueID($this->tileType, $this->number, $this->isRedDora());
+        return TileFactory::create()->toValueID($this->tileType, $this->number, $this->isRedDora());
     }
 
     const REGEX_SUIT_NUMBER = '[0-9]'; // 0 means red dora 5
@@ -26,17 +26,19 @@ class Tile implements ValueObject {
 
     static function fromString(string $s) {
         if (!self::validString($s)) {
-            throw new \InvalidArgumentException();
+            throw new \InvalidArgumentException(
+                sprintf('Invalid $s[%s] for Tile.', $s)
+            );
         }
 
-        // will be validated in getInstance()
+        // will be validated in create()
         if (strlen($s) == 1) {
-            return Tile::getInstance(TileType::fromString($s));
+            return Tile::create(TileType::fromString($s));
         } elseif (strlen($s) == 2) {
             if ($s[0] == '0') {
-                return Tile::getInstance(TileType::fromString($s[1]), 5, true);
+                return Tile::create(TileType::fromString($s[1]), 5, true);
             } else {
-                return Tile::getInstance(TileType::fromString($s[1]), intval($s[0]));
+                return Tile::create(TileType::fromString($s[1]), intval($s[0]));
             }
         }
 
@@ -59,7 +61,7 @@ class Tile implements ValueObject {
      * @param bool $isRedDora
      * @return Tile
      */
-    static function getInstance(TileType $tileType, $number = null, bool $isRedDora = false) {
+    static function create(TileType $tileType, $number = null, bool $isRedDora = false) {
         if (!self::valid($tileType, $number, $isRedDora)) {
             throw new \InvalidArgumentException(
                 "Invalid \$tileType[$tileType], \$number[$number].Remind that \$number should be a int."
@@ -68,7 +70,7 @@ class Tile implements ValueObject {
         $generator = function () use ($tileType, $number, $isRedDora) {
             return new Tile($tileType, $number, $isRedDora);
         };
-        return TileFactory::getInstance()->getOrGenerateTile($tileType, $number, $isRedDora, $generator);
+        return TileFactory::create()->getOrGenerateTile($tileType, $number, $isRedDora, $generator);
     }
 
     /**
@@ -77,7 +79,7 @@ class Tile implements ValueObject {
      */
     static function getSuitList(TileType $tileType) {
         return (new ArrayList(range(1, 9)))->select(function ($v) use ($tileType) {
-            return Tile::getInstance($tileType, $v);
+            return Tile::create($tileType, $v);
         });
     }
 
@@ -107,7 +109,7 @@ class Tile implements ValueObject {
      * @return \Closure
      */
     static function getEqual(bool $compareIsRedDora) {
-        return function (Tile $a, Tile $b) use($compareIsRedDora) {
+        return function (Tile $a, Tile $b) use ($compareIsRedDora) {
             return $a->equalTo($b, $compareIsRedDora);
         };
     }
@@ -117,7 +119,7 @@ class Tile implements ValueObject {
 
     // be private to support singleton
     private function __construct(TileType $tileType, $number, $isRedDora) {
-        // already validated by getInstance()
+        // already validated by create()
         $this->tileType = $tileType;
         $this->number = $number;
         // $isRedDora already handled by TileFactory
@@ -134,10 +136,17 @@ class Tile implements ValueObject {
         && (!$compareIsRedDora || $this->isRedDora() == $other->isRedDora());
     }
 
+    /**
+     * @return string
+     */
     function __toString() {
         return $this->toFormatString(true);
     }
 
+    /**
+     * @param bool $considerRedDora
+     * @return string
+     */
     function toFormatString(bool $considerRedDora) {
         $numberString = $this->isSuit() ? ($considerRedDora && $this->isRedDora() ? 0 : $this->getNumber()) : '';
         $typeString = $this->getTileType()->__toString();
@@ -156,7 +165,7 @@ class Tile implements ValueObject {
     }
 
     function isRedDora() {
-        return TileFactory::getInstance()->isRedDoraTile($this);
+        return TileFactory::create()->isRedDoraTile($this);
     }
 
     function isSuit() {
@@ -207,10 +216,20 @@ class Tile implements ValueObject {
 
     /**
      * @param Tile $other
-     * @return int
+     * @return int offset = this - other. e.x. E.getWindOffsetFrom(S) = -1 .
      */
-    function getWindOffset(Tile $other) {
+    function getWindOffsetFrom(Tile $other) {
         $windList = Tile::getWindList();
         return $windList->getIndex($this) - $windList->getIndex($other); // validate
+    }
+
+    function getWindOffsetTo(Tile $other) {
+        return -$this->getWindOffsetFrom($other);
+    }
+
+    function assertWind() {
+        if (!$this->isWind()) {
+            throw new \LogicException();
+        }
     }
 }

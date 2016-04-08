@@ -10,7 +10,7 @@ class TileFactory extends Singleton {
     private $redDoraInstances;
 
     protected function __construct() {
-        $this->tilePool = Pool::getInstance(__CLASS__);
+        $this->tilePool = Pool::create(__CLASS__);
         $this->redDoraInstances = [];
     }
 

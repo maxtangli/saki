@@ -3,7 +3,6 @@ namespace Saki\Meld;
 
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
-use Saki\Util\ArrayList;
 use Saki\Util\ClassNameToString;
 use Saki\Util\Singleton;
 

@@ -26,7 +26,7 @@ class TurnManager {
     }
 
     function toPlayer(Player $player) {
-        $this->playerWindRoller->toTarget($player->getSelfWind());
+        $this->playerWindRoller->toTarget($player->getTileArea()->getPlayerWind()->getWindTile());
     }
 
     // delegate methods of Roller
@@ -66,7 +66,7 @@ class TurnManager {
      * @return Player
      */
     function getOffsetPlayer($offset, Player $basePlayer = null) {
-        $basePlayerWind = $basePlayer ? $basePlayer->getSelfWind() : null;
+        $basePlayerWind = $basePlayer ? $basePlayer->getTileArea()->getPlayerWind()->getWindTile() : null;
         $wind = $this->playerWindRoller->getOffsetTarget($offset, $basePlayerWind);
         return $this->selfWindToPlayer($wind);
     }

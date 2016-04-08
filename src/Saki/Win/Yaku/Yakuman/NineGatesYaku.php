@@ -10,7 +10,7 @@ class NineGatesYaku extends Yaku {
     }
 
     protected function getNotConcealedFanCount() {
-        return 13;
+        return 0;
     }
 
     protected function getRequiredTileSeries() {
@@ -18,6 +18,6 @@ class NineGatesYaku extends Yaku {
     }
 
     protected function matchOtherConditions(WinSubTarget $subTarget) {
-        return $subTarget->getPrivateFull()->isNineGates(false);
+        return $subTarget->getPrivateComplete()->isNineGates(false);
     }
 }

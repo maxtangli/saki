@@ -30,7 +30,7 @@ class WeakRunMeldType extends WeakMeldType {
     }
 
     function getTargetMeldType() {
-        return RunMeldType::getInstance();
+        return RunMeldType::create();
     }
 
     protected function getWaitingTileListImpl(TileList $validMeldTileList) {
@@ -66,11 +66,11 @@ class WeakRunMeldType extends WeakMeldType {
         } else {
             throw new \LogicException();
         }
-        return WaitingType::getInstance($v);
+        return WaitingType::create($v);
     }
 
     function getWinSetType() {
-        return WinSetType::getInstance(WinSetType::PURE_WEAK);
+        return WinSetType::create(WinSetType::PURE_WEAK);
     }
 
     /**

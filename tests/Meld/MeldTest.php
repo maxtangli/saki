@@ -4,7 +4,6 @@ use Saki\Meld\Meld;
 use Saki\Meld\PairMeldType;
 use Saki\Meld\QuadMeldType;
 use Saki\Meld\ThirteenOrphanMeldType;
-use Saki\Meld\TripleMeldType;
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 use Saki\Util\ArrayList;
@@ -13,13 +12,13 @@ class MeldTest extends PHPUnit_Framework_TestCase {
 
     function testCreate() {
         // new by MeldType
-        $meldType = PairMeldType::getInstance();
+        $meldType = PairMeldType::create();
         $meld = new Meld([Tile::fromString('1m'), Tile::fromString('1m')], $meldType);
         $this->assertEquals($meldType, $meld->getMeldType());
 
         // new by analyze MeldType
         $meld = new Meld([Tile::fromString('1m'), Tile::fromString('1m')]);
-        $this->assertEquals(PairMeldType::getInstance(), $meld->getMeldType());
+        $this->assertEquals(PairMeldType::create(), $meld->getMeldType());
         $this->assertEquals('11m', $meld->__toString());
 
         // validString
@@ -28,15 +27,15 @@ class MeldTest extends PHPUnit_Framework_TestCase {
 
         // fromString
         $meld = Meld::fromString('11m');
-        $this->assertEquals(PairMeldType::getInstance(), $meld->getMeldType());
+        $this->assertEquals(PairMeldType::create(), $meld->getMeldType());
         $this->assertEquals('11m', $meld->__toString());
 
         // thirteen orphan
-        $meld = new Meld(TileList::fromString('119m19p19sESWNCPF')->toArray(), ThirteenOrphanMeldType::getInstance());
-        $this->assertEquals(ThirteenOrphanMeldType::getInstance(), $meld->getMeldType());
+        $meld = new Meld(TileList::fromString('119m19p19sESWNCPF')->toArray(), ThirteenOrphanMeldType::create());
+        $this->assertEquals(ThirteenOrphanMeldType::create(), $meld->getMeldType());
 
         $meld = Meld::fromString('119m19p19sESWNCPF');
-        $this->assertEquals(ThirteenOrphanMeldType::getInstance(), $meld->getMeldType());
+        $this->assertEquals(ThirteenOrphanMeldType::create(), $meld->getMeldType());
     }
 
     function testConcealed() {
@@ -78,12 +77,12 @@ class MeldTest extends PHPUnit_Framework_TestCase {
     function testAddKong() {
         // canPlusKong
         $meld = Meld::fromString('111m');
-        $this->assertTrue($meld->canToTargetMeld(Tile::fromString('1m'), QuadMeldType::getInstance()));
-        $this->assertFalse($meld->canToTargetMeld(Tile::fromString('1s'), QuadMeldType::getInstance()));
+        $this->assertTrue($meld->canToTargetMeld(Tile::fromString('1m'), QuadMeldType::create()));
+        $this->assertFalse($meld->canToTargetMeld(Tile::fromString('1s'), QuadMeldType::create()));
         // plusKong get Quad
-        $meld2 = $meld->toTargetMeld(Tile::fromString('1m'), QuadMeldType::getInstance());
+        $meld2 = $meld->toTargetMeld(Tile::fromString('1m'), QuadMeldType::create());
         $this->assertSame('1111m', $meld2->__toString());
-        $this->assertEquals(QuadMeldType::getInstance(), $meld2->getMeldType());
+        $this->assertEquals(QuadMeldType::create(), $meld2->getMeldType());
     }
 
     /**
@@ -92,7 +91,7 @@ class MeldTest extends PHPUnit_Framework_TestCase {
      */
     function testAddKongIsConcealed($before, $forceConcealed, $after) {
         $m1 = new Meld(TileList::fromString('111m')->toArray(), null, $before);
-        $m2 = $m1->toTargetMeld(Tile::fromString('1m'), QuadMeldType::getInstance(), $forceConcealed);
+        $m2 = $m1->toTargetMeld(Tile::fromString('1m'), QuadMeldType::create(), $forceConcealed);
         $this->assertEquals($after, $m2->isConcealed());
     }
 

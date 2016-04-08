@@ -2,13 +2,12 @@
 namespace Saki\Game;
 
 use Saki\Tile\Tile;
-use Saki\Util\Utils;
 
 class RoundTurn {
     private $globalTurn;
     private $selfWind;
 
-    function __construct($globalTurn, Tile $selfWind) {
+    function __construct(int $globalTurn, Tile $selfWind) {
         $valid = $globalTurn >= 1 && $selfWind->isWind();
         if (!$valid) {
             throw new \InvalidArgumentException();
@@ -32,7 +31,7 @@ class RoundTurn {
             return $globalTurnDiff;
         }
 
-        $selfWindDiff = $this->selfWind->getWindOffset($other->selfWind);
+        $selfWindDiff = $this->selfWind->getWindOffsetFrom($other->selfWind);
         return $selfWindDiff;
     }
 
@@ -44,11 +43,15 @@ class RoundTurn {
         return $this->selfWind;
     }
 
+    function isCurrent(Tile $playerWind) {
+        return $this->getSelfWind() == $playerWind;
+    }
+
     /**
      * @return float
      */
     function getFloatGlobalTurn() {
-        return $this->getGlobalTurn() + 0.25 * $this->getSelfWind()->getWindOffset(Tile::fromString('E'));
+        return $this->getGlobalTurn() + 0.25 * $this->getSelfWind()->getWindOffsetFrom(Tile::fromString('E'));
     }
 
     /**

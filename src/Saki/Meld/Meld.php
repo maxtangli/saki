@@ -3,13 +3,16 @@ namespace Saki\Meld;
 
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
-use Saki\Util\ValueObject;
+use Saki\Util\Immutable;
+use Saki\Util\ReadonlyArrayList;
 
 /**
  * A not empty TileList under one MeldType.
  * @package Saki\Meld
  */
-class Meld extends TileList implements ValueObject {
+class Meld extends TileList implements Immutable {
+    use ReadonlyArrayList;
+
     private static $meldTypeAnalyzer;
 
     /**
@@ -18,17 +21,17 @@ class Meld extends TileList implements ValueObject {
     static function getMeldTypeAnalyzer() {
         self::$meldTypeAnalyzer = self::$meldTypeAnalyzer ?? new MeldTypeAnalyzer([
                 // hand win set
-                RunMeldType::getInstance(),
-                TripleMeldType::getInstance(),
+                RunMeldType::create(),
+                TripleMeldType::create(),
                 // declare win set
-                QuadMeldType::getInstance(),
+                QuadMeldType::create(),
                 // pair
-                PairMeldType::getInstance(),
+                PairMeldType::create(),
                 // weak
-                WeakPairMeldType::getInstance(),
-                WeakRunMeldType::getInstance(),
+                WeakPairMeldType::create(),
+                WeakRunMeldType::create(),
                 // special
-                ThirteenOrphanMeldType::getInstance(),
+                ThirteenOrphanMeldType::create(),
             ]);
         return self::$meldTypeAnalyzer;
     }
@@ -77,17 +80,15 @@ class Meld extends TileList implements ValueObject {
     private $concealed;
 
     function __construct(array $tiles, MeldType $meldType = null, bool $concealed = false) {
-        parent::__construct($tiles);
-        $this->orderByTileID();
-
-        $actualMeldType = $meldType ?? self::getMeldTypeAnalyzer()->analyzeMeldType($this); // validate
-        if (!$actualMeldType->valid($this)) {
+        $l = (new TileList($tiles))->orderByTileID();
+        $actualMeldType = $meldType ?? self::getMeldTypeAnalyzer()->analyzeMeldType($l); // validate
+        if (!$actualMeldType->valid($l)) {
             throw new \InvalidArgumentException(
                 sprintf('Invalid $meldType[%s] for $tiles[%s].', $meldType, $this)
             );
         }
 
-        $this->setWritable(false);
+        parent::__construct($l->toArray());
         $this->meldType = $actualMeldType;
         $this->concealed = $concealed;
     }
@@ -210,7 +211,7 @@ class Meld extends TileList implements ValueObject {
     function isThirteenOrphan() {
         return $this->getMeldType() instanceof ThirteenOrphanMeldType;
     }
-    
+
     /**
      * @return WinSetType
      */

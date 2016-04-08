@@ -17,7 +17,7 @@ class ScoreTable extends Singleton {
 
     function getScoreItem($fanCount, $fuCount = null) {
         $scoreLevel = ScoreLevel::fromFanAndFuCount($fanCount, $fuCount);
-        if ($scoreLevel == ScoreLevel::getInstance(ScoreLevel::NONE)) {
+        if ($scoreLevel == ScoreLevel::create(ScoreLevel::NONE)) {
             $baseScore = $fuCount * intval(pow(2, $fanCount + 2));
         } elseif (!$scoreLevel->isYakuMan()) {
             $m = [

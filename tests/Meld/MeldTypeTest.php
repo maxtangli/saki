@@ -16,15 +16,15 @@ use Saki\Win\WaitingType;
 
 class MeldTypeTest extends PHPUnit_Framework_TestCase {
     function testToString() {
-        $this->assertSame('PairMeldType', PairMeldType::getInstance()->__toString());
+        $this->assertSame('PairMeldType', PairMeldType::create()->__toString());
     }
 
     function testWinSetType() {
-        $this->assertTrue(RunMeldType::getInstance()->getWinSetType()->isWinSet());
-        $this->assertTrue(RunMeldType::getInstance()->getWinSetType()->isHandWinSet());
+        $this->assertTrue(RunMeldType::create()->getWinSetType()->isWinSet());
+        $this->assertTrue(RunMeldType::create()->getWinSetType()->isHandWinSet());
 
-        $this->assertTrue(QuadMeldType::getInstance()->getWinSetType()->isWinSet());
-        $this->assertFalse(QuadMeldType::getInstance()->getWinSetType()->isHandWinSet());
+        $this->assertTrue(QuadMeldType::create()->getWinSetType()->isWinSet());
+        $this->assertFalse(QuadMeldType::create()->getWinSetType()->isHandWinSet());
     }
 
     /**
@@ -40,12 +40,12 @@ class MeldTypeTest extends PHPUnit_Framework_TestCase {
     }
 
     function validProvider() {
-        $pair = PairMeldType::getInstance();
-        $run = RunMeldType::getInstance();
-        $triple = TripleMeldType::getInstance();
-        $weakPair = WeakPairMeldType::getInstance();
-        $weakRun = WeakRunMeldType::getInstance();
-        $orphan = ThirteenOrphanMeldType::getInstance();
+        $pair = PairMeldType::create();
+        $run = RunMeldType::create();
+        $triple = TripleMeldType::create();
+        $weakPair = WeakPairMeldType::create();
+        $weakRun = WeakRunMeldType::create();
+        $orphan = ThirteenOrphanMeldType::create();
         return [
             [true, $pair, '11m'],
             [false, $pair, '111m'],
@@ -83,12 +83,12 @@ class MeldTypeTest extends PHPUnit_Framework_TestCase {
      * @dataProvider weakRunProvider
      */
     function testWeakRun($tileListString, array $waitingTileStrings, $waitingTypeValue) {
-        $weakRun = WeakRunMeldType::getInstance();
+        $weakRun = WeakRunMeldType::create();
         $tileList = TileList::fromString($tileListString);
         $waitingTileList = (new ArrayList($waitingTileStrings))->select(function ($s) {
             return Tile::fromString($s);
         });
-        $waitingType = WaitingType::getInstance($waitingTypeValue);
+        $waitingType = WaitingType::create($waitingTypeValue);
 
         // test waitingTiles, waitingType
         $this->assertEquals($waitingTileList->toArray(), $weakRun->getWaitingTileList($tileList)->toArray());

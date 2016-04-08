@@ -14,7 +14,7 @@ class NullPhaseState extends RoundPhaseState {
     }
 
     function enter(Round $round) {
-        // todo
+        // todo do what? write detailed next time
     }
 
     function leave(Round $round) {

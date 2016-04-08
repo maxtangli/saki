@@ -10,7 +10,7 @@ class TileSeriesTypeTest extends PHPUnit_Framework_TestCase {
      * @dataProvider FourWinSetAndOnePairProvider
      */
     function testFourWinSetAndOnePair($meldListString, $tileString, $expectedTileSeries, $expectedWaitingTypeValue, $expectedWaitingTileStrings) {
-        $s = TileSeries::getInstance($expectedTileSeries);
+        $s = TileSeries::create($expectedTileSeries);
         $allMeldList = MeldList::fromString($meldListString);
         $this->assertTrue($s->existIn($allMeldList), sprintf('[%s],[%s].', $allMeldList, $s));
 
@@ -18,7 +18,7 @@ class TileSeriesTypeTest extends PHPUnit_Framework_TestCase {
 
         $winTile = Tile::fromString($tileString);
 
-        $expectedWaitingType = WaitingType::getInstance($expectedWaitingTypeValue);
+        $expectedWaitingType = WaitingType::create($expectedWaitingTypeValue);
         $actualWaitingType = $s->getWaitingType($allMeldList, $winTile, $declaredMeldList);
         $this->assertEquals($expectedWaitingType, $actualWaitingType, "[$meldListString],[$tileString] -> [$expectedWaitingType] but [$actualWaitingType].");
 
@@ -55,7 +55,7 @@ class TileSeriesTypeTest extends PHPUnit_Framework_TestCase {
     }
 
     function testSevenPairsNotExist() {
-        $s = TileSeries::getInstance(TileSeries::SEVEN_PAIRS);
+        $s = TileSeries::create(TileSeries::SEVEN_PAIRS);
         $this->assertFalse($s->existIn(MeldList::fromString('11s,11s,33s,44s,55s,66s,77s')));
     }
 }

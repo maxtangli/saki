@@ -33,10 +33,7 @@ class ChowCommand extends PublicCommand {
     }
 
     function matchOtherConditions() {
-        $tileAreas = $this->getContext()->getRound()->getTileAreas();
-        return $this->getActPlayer()->getTileArea()->canChowByOther(
-            $tileAreas->getTargetTile()->getTile(), $this->getTile1(), $this->getTile2()
-        );
+        return true; // todo
     }
 
     function executeImpl() {

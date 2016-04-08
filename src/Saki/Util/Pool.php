@@ -5,7 +5,7 @@ namespace Saki\Util;
 class Pool {
     private static $poolOfPools;
 
-    static function getInstance($factoryKey) {
+    static function create($factoryKey) {
         self::$poolOfPools = self::$poolOfPools ?? new Pool();
         return self::$poolOfPools->getOrGenerate($factoryKey, function () {
             return new Pool();

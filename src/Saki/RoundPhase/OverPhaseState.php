@@ -1,7 +1,6 @@
 <?php
 namespace Saki\RoundPhase;
 
-use Saki\Game\Player;
 use Saki\Game\Round;
 use Saki\Game\RoundPhase;
 use Saki\RoundResult\RoundResult;
@@ -59,7 +58,7 @@ class OverPhaseState extends RoundPhaseState {
         $target = new FinalScoreStrategyTarget($round->getPlayerList());
         return $round->getGameData()->getFinalScoreStrategy()->getFinalScoreItems($target);
     }
-    
+
     function getDefaultNextState(Round $round) {
         throw new \LogicException('No nextState exists in OverPhaseState.');
     }
@@ -67,7 +66,7 @@ class OverPhaseState extends RoundPhaseState {
     function enter(Round $round) {
         $result = $this->getRoundResult();
         // modify scores
-        foreach($round->getPlayerList() as $player) {
+        foreach ($round->getPlayerList() as $player) {
             $afterScore = $result->getScoreDelta($player)->getAfter();
             $player->setScore($afterScore);
         }

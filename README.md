@@ -216,7 +216,7 @@ rush 17 win issues 1.6h
 rush 18 refactor 5h
 
 - [x] refactor: score strategy 2h
-- [x] refactor: TileAreas 0.5h
+- [x] refactor: Areas 0.5h
 - [x] refactor: RoundWindData 1.5h
 - [x] refactor: accumulatedReachCount, remove unnecessary methods in Round&RoundData. 0.8h
 - [x] bug: getTopPlayer() is wrong when same score top players exist 0.2h
@@ -305,7 +305,7 @@ rush 27 refactor: concealed 1.7h
 - [x] refactor: remove isExposed, use isConcealed instead 1.7h
 - [x] Meld
 - [x] MeldList
-- [x] TileArea.declareMeld
+- [x] Area.declareMeld
 - [x] Yaku, YakuList
 - [x] MeldCompositionAnalyzer
 - [x] YakuAnalyzer
@@ -315,7 +315,7 @@ rush 28 refactor for beauty 5.9h
 
 - [x] refactor: move Round.roundResult into RoundData 0.2h
 - [x] refactor: organize WinTarget 0.2h
-- [x] refactor: organize TileAreas, PlayerArea 0.2h
+- [x] refactor: organize Areas, PlayerArea 0.2h
 
 - [x] TurnManager 0.7h
 - [x] Roller 1.4h
@@ -323,7 +323,7 @@ rush 28 refactor for beauty 5.9h
 - [x] refactor: move RoundData.$roundPhase into $turnManager 0.2h
 - [x] refactor: move RoundData.$playerList's rolling role into $turnManager 1.2h
 
-- [x] refactor: move TileArea.init() into TileAreas 0.3h
+- [x] refactor: move Area.init() into Areas 0.3h
 - [x] refactor: for ArrayLikeObject: test more, add writable, refactor valueToIndex series 1.4h
 
 rush 29 all yaku: reach concerned 2.8h
@@ -361,7 +361,7 @@ rush 33 refactor handTileList -> 13style + targetTile 3.7h
 - [x] plan 0.2h // should have been considered before. Now it's too complicated to refactor.
 - [x] refactor: reset() vs init() 0.3h // conclusion: reset() is more expressive.
 - [x] refactor: ArrayLikeObject chain style. 0.5h
-- [x] refactor: TileArea->getHandTileSortedList() -> getPrivateHand/getPublicHand 2.2h // refactor TileArea is hard, while refactor TileAreas is easy.
+- [x] refactor: Area->getHandTileSortedList() -> getPrivateHand/getPublicHand 2.2h // refactor Area is hard, while refactor Areas is easy.
 - [x] HandCount 0.5h
 
 rush 34 optimize WinAnalyzer 6.3h
@@ -396,7 +396,7 @@ rush 35 refactor YakuTestData -> RoundData.debugInit 5.4h
 - [x] refactor: YakuTestData -> RoundData.debugInit() 0.8h
 
 - [x] goal: remove MockRound
-- [x] TileAreas.debugSet() -> TileAreas.debugSetPrivate/Public() 0.3h
+- [x] Areas.debugSet() -> Areas.debugSetPrivate/Public() 0.3h
 - [x] refactor: move MockRound methods into RoundData members 1.9 h
 
 - [x] summary: how to avoid those terrible refactorings? refactor as soon as bad smell appears; self code review periodically.
@@ -413,7 +413,7 @@ rush 37 introduce commands: first step 7.5h
 - [x] parse by ParamDeclaration 1h // point: explore requirement by trying design and coding
 - [x] test parse 0.2h
 - [x] try profiling 1.2h
-- [x] optimize: remove TileSortedList in TileAreas 0.2h // profiler found out the ultimate evil thing in pj saki!
+- [x] optimize: remove TileSortedList in Areas 0.2h // profiler found out the ultimate evil thing in pj saki!
 - [x] CommandParser 0.1h
 
 - [x] Command.executable() 1h
@@ -500,7 +500,7 @@ rush 43 dora yaku 5h
 
 rush 44 red dora 1.7h
 
-- [x] Tile.getInstance() 0.3h
+- [x] Tile.create() 0.3h
 - [x] Tile.isRed() 0.2h
 - [x] Tile.getID() 0.3h
 
@@ -586,16 +586,67 @@ rush 50 refactor Saki/Win/ part1 2.1h
 - [x] TileSeriesAnalyzer 0.3h
 - [x] WinAnalyzer 1.1h
 
-rush all yaku: HeavenlyWin, EarthlyWin, HumanlyWin
+rush 51 all yaku: HeavenlyWin, EarthlyWin, HumanlyWin
 
 - [x] fix YakuTest where concealed Triple declared 0.1h
 - [x] HeavenlyWin, EarthlyWin, HumanlyWin 0.6h
-- [ ] test NineGatesYaku
-- [ ] fix FinalTileWin Fish/Moon 0.1h // ? what's wrong
+- [x] test NineGatesYaku 0.2h
 
-rush refactor
+rush 52 refactor Area: introduce Hand 12.5h // a terrible trip ...
 
-- [ ] Hand = HandTileList + DeclareMeldList
+- [x] add Hand, SubHand 0.6h
+- [x] adapt Hand into Area: partly 0.6h
+
+- [x] refactor Player 0.2h
+- [x] add targetTileCallback for Area 0.2h
+- [x] ArrayList.readonly 0.6h
+- [x] move Areas.getXXHand into Area 0.8h
+
+- [x] introduce NullObject pattern for TargetData 0.7h
+1. add null object support: for TargetData
+2. replace === null logic by null object
+3. inline method: hasTargetData() // main benefit
+- [x] Area.getTarget ? 1.2h // terrible ...
+
+- [x] extract class: ReachStatus 0.1h
+- [x] lock discard 0.1h
+
+- [x] add TargetData.TargetType 0.3h
+- [x] move Area.command logic into Areas 0.8h
+- [x] remove Hand.orderBy 0.2h
+- [x] Change logic: Area.handTileList -> Area.public 3.7h // terrible ...
+- [x] remove Area.handTileList 2.1h // terrible ...
+- [x] etc 0.2h
+
+rush 53 refactor PlayerWind 1.8h
+
+- [x] extract class: PlayerWind 0.5h
+- [x] add PlayerWind into Area 1h // terrible ... recall beginning mind!
+- [x] adapt PlayerWind 0.3h
+
+rush refactor Areas
+
+- [ ] etc 0.3h
+- [ ] refactor createMeld logic
+- [ ] move Areas logic into XXCommand
+
+rush refactor: etc
+
+- [ ] refactor tests
+- [ ] fix: mockHand target tile vs robQuadPhase target tile
+- [ ] refactor: RoundResult
+- [ ] refactor: move DrawScore logic into separate class
+- [ ] refactor: simplify reset(),debugReset(),toNextPhase() 0.2h
+
+rush refactor Saki/Win/ part2
+
+- [x] MeldCompositionsAnalyzer 0.2h
+
+- [ ] WaitingAnalyzer 0.4h
+
+- [ ] WinAnalyzer.isFalseWin
+- [ ] WinTarget, WinResult
+- [ ] Fu
 
 rush red dora: meld issue
 
@@ -610,25 +661,17 @@ rush command candidates
 - [ ] XXXCommand::getExecutables($player) // maybe better to exist in AI class?
 
 rush UI
+rush network
 
-rush refactor Saki/Win/ part2
+rush all yaku: tests
 
-- [ ] WaitingAnalyzer
-- [ ] WinAnalyzer.isFalseWin
-- [ ] WinTarget, WinResult
-- [ ] Fu
+- [ ] test and fix FinalTileWin Fish/Moon 0.1h // ? what's wrong
+- [ ] test HeavenlyWin, EarthlyWin, HumanlyWin
+- [ ] refactor yaku tests
 
 rush rule.md doc
 
 - [ ] rule 0.6h
 - [ ] tile 0.6h
-- [ ] yaku 1.4h
+- [ ] yaku 1.5h
 - [ ] furiten 0.8h
-
-rush refactor
-
-- [ ] Assert Command for tests
-- [ ] fix: mockHand target tile vs robQuadPhase target tile
-- [ ] refactor: RoundResult
-- [ ] refactor: move DrawScore logic into separate class
-- [ ] refactor: simplify reset(),debugReset(),toNextPhase() 0.2h

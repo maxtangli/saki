@@ -23,6 +23,6 @@ class TwoDoubleRunYaku extends Yaku {
     }
 
     function getExcludedYakus() {
-        return [DoubleRunYaku::getInstance()];
+        return [DoubleRunYaku::create()];
     }
 }

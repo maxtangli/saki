@@ -18,6 +18,6 @@ class QuadMeldType extends MeldType {
     }
 
     function getWinSetType() {
-        return WinSetType::getInstance(WinSetType::DECLARE_WIN_SET);
+        return WinSetType::create(WinSetType::DECLARE_WIN_SET);
     }
 }

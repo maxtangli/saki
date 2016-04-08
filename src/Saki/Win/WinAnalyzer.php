@@ -23,6 +23,7 @@ class WinAnalyzer {
     private $yakuAnalyzer;
     private $tileSeriesAnalyzer;
     private $waitingAnalyzer;
+    private $handMeldCombinationAnalyzer;
 
     /**
      * @param YakuSet $yakuSet
@@ -30,7 +31,16 @@ class WinAnalyzer {
     function __construct(YakuSet $yakuSet) {
         $this->yakuAnalyzer = new YakuAnalyzer($yakuSet);
         $this->tileSeriesAnalyzer = new TileSeriesAnalyzer();
-        $this->waitingAnalyzer = new WaitingAnalyzer();
+        $this->waitingAnalyzer = new WaitingAnalyzer(
+            $this->tileSeriesAnalyzer
+        );
+
+        $handMeldTypes = [
+            RunMeldType::create(),
+            TripleMeldType::create(),
+            PairMeldType::create(),
+        ];
+        $this->handMeldCombinationAnalyzer = new MeldCombinationAnalyzer($handMeldTypes);
     }
 
     /**
@@ -55,30 +65,32 @@ class WinAnalyzer {
     }
 
     /**
+     * @return MeldCombinationAnalyzer
+     */
+    function getHandMeldCombinationAnalyzer() {
+        return $this->handMeldCombinationAnalyzer;
+    }
+
+    /**
      * Find all possible WinSubResults and merge them into a final WinResult.
      * @param WinTarget $target
      * @return WinResult
      */
     function analyzeTarget(WinTarget $target) {
         // 1. handTileList target -> handMeldList's List
-        $analyzer = new MeldCombinationAnalyzer();
         $handTileList = $target->getPrivateHand();
-        $handMeldTypes = [
-            RunMeldType::getInstance(),
-            TripleMeldType::getInstance(),
-            PairMeldType::getInstance(),
-        ];
-        $handMeldCompositionList = $analyzer->analyzeMeldCombinationList($handTileList, $handMeldTypes);
-        if ($handMeldCompositionList->isEmpty()) {
+        $handMeldCombinationList = $this->getHandMeldCombinationAnalyzer()
+            ->analyzeMeldCombinationList($handTileList);
+        if ($handMeldCombinationList->isEmpty()) {
             return WinResult::createNotWin();
         }
 
         // 2. handMeldList's List -> subTargetList -> subResultList
-        $subResultSelector = function (MeldList $handMeldList) use ($target){
+        $subResultSelector = function (MeldList $handMeldList) use ($target) {
             $subTarget = $target->toSubTarget($handMeldList);
             return $this->analyzeSubTarget($subTarget);
         };
-        $subResultList = (new ArrayList())->fromSelect($handMeldCompositionList, $subResultSelector);
+        $subResultList = (new ArrayList())->fromSelect($handMeldCombinationList, $subResultSelector);
 
         /**
          * 3. merge subResults into final result:
@@ -103,7 +115,7 @@ class WinAnalyzer {
             );
             $isFuritenFalseWin = $this->isFuritenFalseWin($target, $waitingTileList);
             if ($isFuritenFalseWin) {
-                $finalWinState = WinState::getInstance(WinState::FURITEN_FALSE_WIN);
+                $finalWinState = WinState::create(WinState::FURITEN_FALSE_WIN);
             }
         }
 
@@ -121,13 +133,13 @@ class WinAnalyzer {
         // case1: not win
         $tileSeries = $this->getTileSeriesAnalyzer()->analyzeTileSeries($subTarget->getAllMeldList());
         if (!$tileSeries->isExist()) {
-            return new WinSubResult(WinState::getInstance(WinState::NOT_WIN), new YakuItemList(), 0);
+            return new WinSubResult(WinState::create(WinState::NOT_WIN), new YakuItemList(), 0);
         }
 
         // case2: no yaku false win
         $yakuList = $this->getYakuAnalyzer()->analyzeYakuList($subTarget);
         if ($yakuList->count() == 0) {
-            return new WinSubResult(WinState::getInstance(WinState::NO_YAKU_FALSE_WIN), new YakuItemList(), 0);
+            return new WinSubResult(WinState::create(WinState::NO_YAKU_FALSE_WIN), new YakuItemList(), 0);
         }
 
         // case3: win by self or win by other
@@ -135,7 +147,7 @@ class WinAnalyzer {
 
         $waitingType = $tileSeries->getWaitingType($subTarget->getAllMeldList(), $subTarget->getTileOfTargetTile(), $subTarget->getDeclaredMeldList());
         $fuCountTarget = new FuCountTarget($subTarget, $yakuList, $waitingType);
-        $fuCountResult = FuCountAnalyzer::getInstance()->getResult($fuCountTarget);
+        $fuCountResult = FuCountAnalyzer::create()->getResult($fuCountTarget);
         $fuCount = $fuCountResult->getTotalFuCount();
 
         return new WinSubResult($winState, $yakuList, $fuCount);
@@ -169,8 +181,8 @@ class WinAnalyzer {
                 $fromTurn = 1;
             } else {
                 $targetSelfWind = $target->getSelfWind();
-                $currentSelfWind = $target->getCurrentPlayer()->getSelfWind();
-                $selfTurnPassed = $targetSelfWind->getWindOffset($currentSelfWind) <= 0;
+                $currentSelfWind = $target->getCurrentPlayer()->getTileArea()->getPlayerWind()->getWindTile();
+                $selfTurnPassed = $targetSelfWind->getWindOffsetFrom($currentSelfWind) <= 0;
                 $fromTurn = $selfTurnPassed ? $globalTurn : $globalTurn - 1;
             }// todo more simpler logic
         }

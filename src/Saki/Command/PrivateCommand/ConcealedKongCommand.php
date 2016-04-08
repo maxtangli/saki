@@ -24,8 +24,7 @@ class ConcealedKongCommand extends PrivateCommand {
     }
 
     function matchOtherConditions() {
-        $validTile = $this->getActPlayer()->getTileArea()->canConcealedKong($this->getTile());
-        return $validTile;
+        return true; // todo
     }
 
     function executeImpl() {

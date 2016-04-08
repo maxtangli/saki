@@ -16,7 +16,7 @@ class PureOutsideHandYaku extends Yaku {
     }
 
     protected function getRequiredTileSeries() {
-        return [TileSeries::getInstance(TileSeries::FOUR_WIN_SET_AND_ONE_PAIR)];
+        return [TileSeries::create(TileSeries::FOUR_WIN_SET_AND_ONE_PAIR)];
     }
 
     protected function matchOtherConditions(WinSubTarget $subTarget) {
@@ -24,6 +24,6 @@ class PureOutsideHandYaku extends Yaku {
     }
 
     function getExcludedYakus() {
-        return [MixedOutsideHandYaku::getInstance()];
+        return [MixedOutsideHandYaku::create()];
     }
 }

@@ -4,9 +4,7 @@ namespace Saki\Win;
 use Saki\Meld\Meld;
 use Saki\Meld\MeldList;
 use Saki\Tile\Tile;
-use Saki\Util\ArrayList;
 use Saki\Util\Enum;
-use Saki\Util\PriorityComparable;
 
 /**
  * A specific pattern for a complete private TileList.
@@ -35,7 +33,7 @@ class TileSeries extends Enum {
 
         switch ($this->getValue()) {
             case self::NOT_TILE_SERIES:
-                throw new \LogicException();
+                throw new \BadMethodCallException();
             case self::FOUR_WIN_SET_AND_ONE_PAIR:
                 return $allMeldList->isFourWinSetAndOnePair();
             case self::SEVEN_PAIRS:
@@ -61,7 +59,7 @@ class TileSeries extends Enum {
             : $allMeldList->getCopy()->remove($declaredMeldList->toArray());
 
         if (!$handMeldList->tileExist($winTile) || !$this->existIn($allMeldList)) {
-            return WaitingType::getInstance(WaitingType::NOT_WAITING);
+            return WaitingType::create(WaitingType::NOT_WAITING);
         }
 
         $winTileMeldList = $handMeldList->getCopy()->where(function (Meld $meld) use ($winTile) {

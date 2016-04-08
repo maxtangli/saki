@@ -24,9 +24,9 @@ class FuCountAnalyzerTest extends PHPUnit_Framework_TestCase {
 
         $subTarget = new WinSubTarget($handMeldList, $player, $r);
         $yakuList = new YakuItemList();
-        $waitingType = WaitingType::getInstance(WaitingType::ONE_SIDE_RUN_WAITING);
+        $waitingType = WaitingType::create(WaitingType::ONE_SIDE_RUN_WAITING);
         $target = new FuCountTarget($subTarget, $yakuList, $waitingType);
-        $analyzer = FuCountAnalyzer::getInstance();
+        $analyzer = FuCountAnalyzer::create();
         $result = $analyzer->getResult($target);
 
         /**

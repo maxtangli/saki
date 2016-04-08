@@ -9,7 +9,7 @@ class BenchmarkItem {
     function __construct($name, callable $callback) {
         $this->name = $name;
         $this->callback = $callback;
-        $this->msCost = MsTimer::getInstance()->measure($callback);
+        $this->msCost = MsTimer::create()->measure($callback);
     }
 
     function __toString() {

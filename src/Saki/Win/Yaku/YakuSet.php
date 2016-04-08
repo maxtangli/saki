@@ -2,6 +2,7 @@
 namespace Saki\Win\Yaku;
 
 use Saki\Util\ArrayList;
+use Saki\Util\ReadonlyArrayList;
 use Saki\Win\Yaku\Fan1\AllRunsYaku;
 use Saki\Win\Yaku\Fan1\AllSimplesYaku;
 use Saki\Win\Yaku\Fan1\ConcealedSelfDrawYaku;
@@ -55,6 +56,8 @@ use Saki\Win\Yaku\Yakuman2\ThirteenOrphansPairWaitingYaku;
  * @package Saki\Win\Yaku
  */
 class YakuSet extends ArrayList {
+    use ReadonlyArrayList;
+
     private static $standardYakusSet;
 
     /**
@@ -63,63 +66,59 @@ class YakuSet extends ArrayList {
     static function getStandardYakuSet() {
         self::$standardYakusSet = self::$standardYakusSet ?? new self([
                 // Fan1
-                AllRunsYaku::getInstance(),
-                AllSimplesYaku::getInstance(),
-                ConcealedSelfDrawYaku::getInstance(),
-                DoraYaku::getInstance(),
-                DoubleRunYaku::getInstance(),
-                FirstTurnWinYaku::getInstance(),
-                GreenValueTilesYaku::getInstance(),
-                KingSTileWinYaku::getInstance(),
-                ReachYaku::getInstance(),
-                RedDoraYaku::getInstance(),
-                RedValueTilesYaku::getInstance(),
-                RobbingAQuadYaku::getInstance(),
-                RoundWindValueTilesYaku::getInstance(),
-                SelfWindValueTilesYaku::getInstance(),
-                UraDoraYaku::getInstance(),
-                WhiteValueTilesYaku::getInstance(),
+                AllRunsYaku::create(),
+                AllSimplesYaku::create(),
+                ConcealedSelfDrawYaku::create(),
+                DoraYaku::create(),
+                DoubleRunYaku::create(),
+                FirstTurnWinYaku::create(),
+                GreenValueTilesYaku::create(),
+                KingSTileWinYaku::create(),
+                ReachYaku::create(),
+                RedDoraYaku::create(),
+                RedValueTilesYaku::create(),
+                RobbingAQuadYaku::create(),
+                RoundWindValueTilesYaku::create(),
+                SelfWindValueTilesYaku::create(),
+                UraDoraYaku::create(),
+                WhiteValueTilesYaku::create(),
                 // Fan2
-                AllTerminalsAndHonorsYaku::getInstance(),
-                AllTriplesYaku::getInstance(),
-                DoubleReachYaku::getInstance(),
-                FullStraightYaku::getInstance(),
-                LittleThreeDragonsYaku::getInstance(),
-                MixedOutsideHandYaku::getInstance(),
-                SevenPairsYaku::getInstance(),
-                ThreeColorRunsYaku::getInstance(),
-                ThreeColorTriplesYaku::getInstance(),
-                ThreeConcealedTriplesYaku::getInstance(),
-                ThreeQuadsYaku::getInstance(),
+                AllTerminalsAndHonorsYaku::create(),
+                AllTriplesYaku::create(),
+                DoubleReachYaku::create(),
+                FullStraightYaku::create(),
+                LittleThreeDragonsYaku::create(),
+                MixedOutsideHandYaku::create(),
+                SevenPairsYaku::create(),
+                ThreeColorRunsYaku::create(),
+                ThreeColorTriplesYaku::create(),
+                ThreeConcealedTriplesYaku::create(),
+                ThreeQuadsYaku::create(),
                 // Fan3
-                HalfFlushYaku::getInstance(),
-                PureOutsideHandYaku::getInstance(),
-                TwoDoubleRunYaku::getInstance(),
+                HalfFlushYaku::create(),
+                PureOutsideHandYaku::create(),
+                TwoDoubleRunYaku::create(),
                 // Fan6
-                FullFlushYaku::getInstance(),
+                FullFlushYaku::create(),
                 // Yakuman
-                AllGreenYaku::getInstance(),
-                AllHonorsYaku::getInstance(),
-                AllTerminalsYaku::getInstance(),
-                BigFourWindsYaku::getInstance(),
-                BigThreeDragonsYaku::getInstance(),
-                EarthlyWinYaku::getInstance(),
-                FourConcealedTriplesYaku::getInstance(),
-                FourQuadsYaku::getInstance(),
-                HeavenlyWinYaku::getInstance(),
-                HumanlyWinYaku::getInstance(),
-                NineGatesYaku::getInstance(),
-                SmallFourWindsYaku::getInstance(),
-                ThirteenOrphansYaku::getInstance(),
+                AllGreenYaku::create(),
+                AllHonorsYaku::create(),
+                AllTerminalsYaku::create(),
+                BigFourWindsYaku::create(),
+                BigThreeDragonsYaku::create(),
+                EarthlyWinYaku::create(),
+                FourConcealedTriplesYaku::create(),
+                FourQuadsYaku::create(),
+                HeavenlyWinYaku::create(),
+                HumanlyWinYaku::create(),
+                NineGatesYaku::create(),
+                SmallFourWindsYaku::create(),
+                ThirteenOrphansYaku::create(),
                 // Yakuman2
-                FourConcealedTriplesOnePairWaitingYaku::getInstance(),
-                PureNineGatesYaku::getInstance(),
-                ThirteenOrphansPairWaitingYaku::getInstance(),
+                FourConcealedTriplesOnePairWaitingYaku::create(),
+                PureNineGatesYaku::create(),
+                ThirteenOrphansPairWaitingYaku::create(),
             ]);
         return self::$standardYakusSet;
-    }
-
-    function __construct(array $yakus) {
-        parent::__construct($yakus, false);
     }
 }

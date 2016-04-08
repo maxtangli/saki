@@ -17,7 +17,7 @@ class ThirteenOrphansPairWaitingYaku extends Yaku {
 
     protected function getRequiredTileSeries() {
         return [
-            TileSeries::getInstance(TileSeries::THIRTEEN_ORPHANS)
+            TileSeries::create(TileSeries::THIRTEEN_ORPHANS)
         ];
     }
 
@@ -27,7 +27,7 @@ class ThirteenOrphansPairWaitingYaku extends Yaku {
 
     function getExcludedYakus() {
         return [
-            ThirteenOrphansYaku::getInstance()
+            ThirteenOrphansYaku::create()
         ];
     }
 }

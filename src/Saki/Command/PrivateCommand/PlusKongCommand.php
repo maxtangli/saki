@@ -26,8 +26,7 @@ class PlusKongCommand extends PrivateCommand {
     }
 
     function matchOtherConditions() {
-        $validTile = $this->getActPlayer()->getTileArea()->canPlusKong($this->getTile());
-        return $validTile;
+        return true; // todo
     }
 
     function executeImpl() {
@@ -42,7 +41,7 @@ class PlusKongCommand extends PrivateCommand {
         $robQuadPhase->setRobQuad(true);
 
         $postLeave = function () use ($r) {
-            $r->getTileAreas()->plusKong($this->getActPlayer(), $this->getTile());
+            $r->getTileAreas()->plusKongAfter($this->getActPlayer(), $this->getTile());
         };
         $robQuadPhase->setPostLeave($postLeave);
 

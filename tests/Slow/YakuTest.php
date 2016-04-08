@@ -45,6 +45,7 @@ use Saki\Win\Yaku\Yakuman\BigFourWindsYaku;
 use Saki\Win\Yaku\Yakuman\BigThreeDragonsYaku;
 use Saki\Win\Yaku\Yakuman\FourConcealedTriplesYaku;
 use Saki\Win\Yaku\Yakuman\FourQuadsYaku;
+use Saki\Win\Yaku\Yakuman\NineGatesYaku;
 use Saki\Win\Yaku\Yakuman\SmallFourWindsYaku;
 use Saki\Win\Yaku\Yakuman\ThirteenOrphansYaku;
 use Saki\Win\Yaku\Yakuman2\FourConcealedTriplesOnePairWaitingYaku;
@@ -55,7 +56,7 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         $subTarget = $yakuTestData->toWinSubTarget();
         self::assertEquals($expected, $yaku->existIn($subTarget),
             sprintf("yaku        : %s\nyakuTestData: %s\nSubTarget   : currentPlayerWind[%s], targetPlayerWind[%s],%s\n",
-                $yakuTestData, $yaku, $subTarget->getCurrentPlayer()->getSelfWind(), $subTarget->getSelfWind(), 'isPrivatePhase:' . var_export($subTarget->isPrivatePhase(), true)));
+                $yakuTestData, $yaku, $subTarget->getCurrentPlayer()->getTileArea()->getPlayerWind()->getWindTile(), $subTarget->getSelfWind(), 'isPrivatePhase:' . var_export($subTarget->isPrivatePhase(), true)));
     }
 
     /**
@@ -68,69 +69,69 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
     function fan1Provider() {
         return [
             // test AllRunsYaku
-            [new YakuTestData('123m,456m,789m,123s,55s', null, '1s'), AllRunsYaku::getInstance(), true],
+            [new YakuTestData('123m,456m,789m,123s,55s', null, '1s'), AllRunsYaku::create(), true],
             // not isConcealed
-            [new YakuTestData('123m,456m,123s,55s', '789m', '1s'), AllRunsYaku::getInstance(), false],
+            [new YakuTestData('123m,456m,123s,55s', '789m', '1s'), AllRunsYaku::create(), false],
             // not 4 run
-            [new YakuTestData('123m,456m,999m,123s,55s', null, '1s'), AllRunsYaku::getInstance(), false],
+            [new YakuTestData('123m,456m,999m,123s,55s', null, '1s'), AllRunsYaku::create(), false],
             // not suit pair
-            [new YakuTestData('123m,456m,789m,123s,EE', null, '1s'), AllRunsYaku::getInstance(), false],
+            [new YakuTestData('123m,456m,789m,123s,EE', null, '1s'), AllRunsYaku::create(), false],
             // not two-pair waiting
-            [new YakuTestData('123m,456m,789m,123s,55s', null, '2s'), AllRunsYaku::getInstance(), false],
+            [new YakuTestData('123m,456m,789m,123s,55s', null, '2s'), AllRunsYaku::create(), false],
 
             // test AllSimplesYaku
-            [new YakuTestData('234m,456m,888s,55s', '678m'), AllSimplesYaku::getInstance(), true],
+            [new YakuTestData('234m,456m,888s,55s', '678m'), AllSimplesYaku::create(), true],
             // not without terminal
-            [new YakuTestData('234m,456m,888s,55s', '789m'), AllSimplesYaku::getInstance(), false],
+            [new YakuTestData('234m,456m,888s,55s', '789m'), AllSimplesYaku::create(), false],
             // not without honor
-            [new YakuTestData('234m,456m,888s,EE', '789m'), AllSimplesYaku::getInstance(), false],
+            [new YakuTestData('234m,456m,888s,EE', '789m'), AllSimplesYaku::create(), false],
 
             // test ConcealedSelfDrawYaku
-            [new YakuTestData('123m,456m,77m,88m,11s,55s', null, '1s'), ConcealedSelfDrawYaku::getInstance(), true],
+            [new YakuTestData('123m,456m,77m,88m,11s,55s', null, '1s'), ConcealedSelfDrawYaku::create(), true],
             // not isConcealed
-            [new YakuTestData('123m,77m,88m,11s,55s', '333m', '1s'), ConcealedSelfDrawYaku::getInstance(), false],
+            [new YakuTestData('123m,77m,88m,11s,55s', '333m', '1s'), ConcealedSelfDrawYaku::create(), false],
             // not selfDraw
-            [new YakuTestData('123m,456m,77m,88m,11s,55s', null, '1s', 'E', 'W'), ConcealedSelfDrawYaku::getInstance(), false],
+            [new YakuTestData('123m,456m,77m,88m,11s,55s', null, '1s', 'E', 'W'), ConcealedSelfDrawYaku::create(), false],
 
             // test DoubleRunYaku
-            [new YakuTestData('123m,123m,77m,88m,11s,EE', null, 'E'), DoubleRunYaku::getInstance(), true],
+            [new YakuTestData('123m,123m,77m,88m,11s,EE', null, 'E'), DoubleRunYaku::create(), true],
             // not isConcealed
-            [new YakuTestData('123m,123m,EE', '123s,123s', 'E'), DoubleRunYaku::getInstance(), false],
+            [new YakuTestData('123m,123m,EE', '123s,123s', 'E'), DoubleRunYaku::create(), false],
 
             // test TwoDoubleRunYaku
-            [new YakuTestData('123m,123m,123s,123s,EE', null, 'E'), TwoDoubleRunYaku::getInstance(), true],
+            [new YakuTestData('123m,123m,123s,123s,EE', null, 'E'), TwoDoubleRunYaku::create(), true],
             // not non-duplicate
-            [new YakuTestData('123m,123m,123m,123m,EE', null, 'E'), TwoDoubleRunYaku::getInstance(), false],
+            [new YakuTestData('123m,123m,123m,123m,EE', null, 'E'), TwoDoubleRunYaku::create(), false],
             // not isConcealed
-            [new YakuTestData('123m,123m,EE', '123s,123s', 'E'), TwoDoubleRunYaku::getInstance(), false],
+            [new YakuTestData('123m,123m,EE', '123s,123s', 'E'), TwoDoubleRunYaku::create(), false],
 
             // reach and finalTileWin yakus is tested in separate functions
 
             // not reach
-            [new YakuTestData('123m,456m,789m,123s,55s', null, '1s'), ReachYaku::getInstance(), false],
+            [new YakuTestData('123m,456m,789m,123s,55s', null, '1s'), ReachYaku::create(), false],
 
             // test RedValueTilesYaku
-            [new YakuTestData('123m,44m,55m,66m,55s', 'CCC', '5s'), RedValueTilesYaku::getInstance(), true],
-            [new YakuTestData('123m,44m,55m,66m,55s', '111s', '5s'), RedValueTilesYaku::getInstance(), false],
+            [new YakuTestData('123m,44m,55m,66m,55s', 'CCC', '5s'), RedValueTilesYaku::create(), true],
+            [new YakuTestData('123m,44m,55m,66m,55s', '111s', '5s'), RedValueTilesYaku::create(), false],
 
             // test WhiteValueTilesYaku
-            [new YakuTestData('123m,44m,55m,66m,55s', 'PPP', '5s'), WhiteValueTilesYaku::getInstance(), true],
-            [new YakuTestData('123m,44m,55m,66m,55s', '111s', '5s'), WhiteValueTilesYaku::getInstance(), false],
+            [new YakuTestData('123m,44m,55m,66m,55s', 'PPP', '5s'), WhiteValueTilesYaku::create(), true],
+            [new YakuTestData('123m,44m,55m,66m,55s', '111s', '5s'), WhiteValueTilesYaku::create(), false],
 
             // test GreenValueTilesYaku
-            [new YakuTestData('123m,44m,55m,66m,55s', 'FFF', '5s'), GreenValueTilesYaku::getInstance(), true],
-            [new YakuTestData('123m,44m,55m,66m,55s', '111s', '5s'), GreenValueTilesYaku::getInstance(), false],
+            [new YakuTestData('123m,44m,55m,66m,55s', 'FFF', '5s'), GreenValueTilesYaku::create(), true],
+            [new YakuTestData('123m,44m,55m,66m,55s', '111s', '5s'), GreenValueTilesYaku::create(), false],
 
             // test RoundWindValueTilesYaku
-            [new YakuTestData('123m,44m,55m,66m,55s', 'EEE', '5s'), RoundWindValueTilesYaku::getInstance(), true],
+            [new YakuTestData('123m,44m,55m,66m,55s', 'EEE', '5s'), RoundWindValueTilesYaku::create(), true],
             // not roundWind
             [(new YakuTestData('123m,44m,55m,66m,55s', 'EEE', '5s', null, null, (new RoundResetData())->setRoundWind(Tile::fromString('S'))))
-                , RoundWindValueTilesYaku::getInstance(), false],
+                , RoundWindValueTilesYaku::create(), false],
 
             // test SelfWindValueTilesYaku
-            [new YakuTestData('123m,44m,55m,66m,55s', 'SSS', '5s', 'E', 'S'), SelfWindValueTilesYaku::getInstance(), true],
+            [new YakuTestData('123m,44m,55m,66m,55s', 'SSS', '5s', 'E', 'S'), SelfWindValueTilesYaku::create(), true],
             // not selfWind
-            [new YakuTestData('123m,44m,55m,66m,55s', 'SSS', '5s', 'E', 'E'), SelfWindValueTilesYaku::getInstance(), false],
+            [new YakuTestData('123m,44m,55m,66m,55s', 'SSS', '5s', 'E', 'E'), SelfWindValueTilesYaku::create(), false],
         ];
     }
 
@@ -144,93 +145,93 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
     function fan2Provider() {
         return [
             // test AllTerminalsAndHonorsYaku
-            [new YakuTestData('111m,999m,111s,EE', "999s"), AllTerminalsAndHonorsYaku::getInstance(), true],
-            [new YakuTestData('111m,999m,111s,11p', "999s"), AllTerminalsAndHonorsYaku::getInstance(), true],
+            [new YakuTestData('111m,999m,111s,EE', "999s"), AllTerminalsAndHonorsYaku::create(), true],
+            [new YakuTestData('111m,999m,111s,11p', "999s"), AllTerminalsAndHonorsYaku::create(), true],
             // not all terminals
-            [new YakuTestData('123m,999m,111s,EE', "999s"), AllTerminalsAndHonorsYaku::getInstance(), false],
+            [new YakuTestData('123m,999m,111s,EE', "999s"), AllTerminalsAndHonorsYaku::create(), false],
             // not 4+1
-            [new YakuTestData('11m,99m,11p,99p,11s,99s,EE'), AllTerminalsAndHonorsYaku::getInstance(), false],
+            [new YakuTestData('11m,99m,11p,99p,11s,99s,EE'), AllTerminalsAndHonorsYaku::create(), false],
 
             // test AllTriplesYaku
-            [new YakuTestData('111m,999m,111s,EE', "999s"), AllTriplesYaku::getInstance(), true],
-            [new YakuTestData('111m,999m,111s,EE', "9999s"), AllTriplesYaku::getInstance(), true],
+            [new YakuTestData('111m,999m,111s,EE', "999s"), AllTriplesYaku::create(), true],
+            [new YakuTestData('111m,999m,111s,EE', "9999s"), AllTriplesYaku::create(), true],
             // not 4+1
-            [new YakuTestData('111m,99m,11s,22s,EE', "999s"), AllTriplesYaku::getInstance(), false],
+            [new YakuTestData('111m,99m,11s,22s,EE', "999s"), AllTriplesYaku::create(), false],
             // not all triples
-            [new YakuTestData('123m,999m,111s,EE', "999s"), AllTriplesYaku::getInstance(), false],
+            [new YakuTestData('123m,999m,111s,EE', "999s"), AllTriplesYaku::create(), false],
 
             // DoubleReach is tested in fan1 with Reach
 
             // test FullStraightYaku
-            [new YakuTestData('123m,456m,111s,EE', '789m'), FullStraightYaku::getInstance(), true],
+            [new YakuTestData('123m,456m,111s,EE', '789m'), FullStraightYaku::create(), true],
             // not full straight
-            [new YakuTestData('123m,456m,111s,EE', '789s'), FullStraightYaku::getInstance(), false],
+            [new YakuTestData('123m,456m,111s,EE', '789s'), FullStraightYaku::create(), false],
 
             // test LittleThreeDragonsYaku
-            [new YakuTestData('CCC,PPP,FF,11m,22m,33m'), LittleThreeDragonsYaku::getInstance(), true],
-            [new YakuTestData('CCC,FF,11m,22m,33m', 'PPPP'), LittleThreeDragonsYaku::getInstance(), true],
+            [new YakuTestData('CCC,PPP,FF,11m,22m,33m'), LittleThreeDragonsYaku::create(), true],
+            [new YakuTestData('CCC,FF,11m,22m,33m', 'PPPP'), LittleThreeDragonsYaku::create(), true],
             // not 2 pong + 1 pair
-            [new YakuTestData('CCC,PPP,FFF,11m', '789m'), LittleThreeDragonsYaku::getInstance(), false],
+            [new YakuTestData('CCC,PPP,FFF,11m', '789m'), LittleThreeDragonsYaku::create(), false],
 
             // test MixedOutsideHandYaku
-            [new YakuTestData('123m,789m,123s,EE', '789s'), MixedOutsideHandYaku::getInstance(), true],
-            [new YakuTestData('123m,789m,123s,11s', '789s'), MixedOutsideHandYaku::getInstance(), true],
+            [new YakuTestData('123m,789m,123s,EE', '789s'), MixedOutsideHandYaku::create(), true],
+            [new YakuTestData('123m,789m,123s,11s', '789s'), MixedOutsideHandYaku::create(), true],
             // not any run
-            [new YakuTestData('111m,999m,111p,11s', '9999p'), MixedOutsideHandYaku::getInstance(), false],
+            [new YakuTestData('111m,999m,111p,11s', '9999p'), MixedOutsideHandYaku::create(), false],
             // not all outside
-            [new YakuTestData('123m,789m,123s,11s', '678s'), MixedOutsideHandYaku::getInstance(), false],
+            [new YakuTestData('123m,789m,123s,11s', '678s'), MixedOutsideHandYaku::create(), false],
             // not 4+1
-            [new YakuTestData('11m,99m,11p,99p,11s,99s,EE'), MixedOutsideHandYaku::getInstance(), false],
+            [new YakuTestData('11m,99m,11p,99p,11s,99s,EE'), MixedOutsideHandYaku::create(), false],
 
             // test PureOutsideHandYaku
-            [new YakuTestData('123m,789m,123s,11s', '789s'), PureOutsideHandYaku::getInstance(), true],
+            [new YakuTestData('123m,789m,123s,11s', '789s'), PureOutsideHandYaku::create(), true],
             // not any run
-            [new YakuTestData('111m,999m,111p,11s', '999p'), PureOutsideHandYaku::getInstance(), false],
+            [new YakuTestData('111m,999m,111p,11s', '999p'), PureOutsideHandYaku::create(), false],
             // not all outside
-            [new YakuTestData('123m,789m,123s,11s', '678s'), PureOutsideHandYaku::getInstance(), false],
+            [new YakuTestData('123m,789m,123s,11s', '678s'), PureOutsideHandYaku::create(), false],
             // not pure outside
-            [new YakuTestData('123m,789m,123s,EE', '789s'), PureOutsideHandYaku::getInstance(), false],
+            [new YakuTestData('123m,789m,123s,EE', '789s'), PureOutsideHandYaku::create(), false],
             // not 4+1
-            [new YakuTestData('11m,99m,11p,99p,11s,99s,11s'), PureOutsideHandYaku::getInstance(), false],
+            [new YakuTestData('11m,99m,11p,99p,11s,99s,11s'), PureOutsideHandYaku::create(), false],
 
             // test SevenPairsYaku
-            [new YakuTestData('11m,22m,33s,44m,55p,EE,CC'), SevenPairsYaku::getInstance(), true],
+            [new YakuTestData('11m,22m,33s,44m,55p,EE,CC'), SevenPairsYaku::create(), true],
             // not different pairs
-            [new YakuTestData('11m,22m,33s,44m,55p,EE,EE'), SevenPairsYaku::getInstance(), false],
+            [new YakuTestData('11m,22m,33s,44m,55p,EE,EE'), SevenPairsYaku::create(), false],
             // not all pairs
-            [new YakuTestData('11m,222m,333s,55p,EE,CC'), SevenPairsYaku::getInstance(), false],
+            [new YakuTestData('11m,222m,333s,55p,EE,CC'), SevenPairsYaku::create(), false],
 
             // test ThreeColorRunsYaku
-            [new YakuTestData('234m,234p,EEE,NN', '234s'), ThreeColorRunsYaku::getInstance(), true],
+            [new YakuTestData('234m,234p,EEE,NN', '234s'), ThreeColorRunsYaku::create(), true],
             // not all three color
-            [new YakuTestData('234m,234m,EEE,NN', '234s'), ThreeColorRunsYaku::getInstance(), false],
+            [new YakuTestData('234m,234m,EEE,NN', '234s'), ThreeColorRunsYaku::create(), false],
 
             // test ThreeColorTriplesYaku
-            [new YakuTestData('333m,333s,NN', '333p,234s'), ThreeColorTriplesYaku::getInstance(), true],
-            [new YakuTestData('333m,333s,NN', '3333p,234s'), ThreeColorTriplesYaku::getInstance(), true],
-            [new YakuTestData('333m,333s,NN', '(3333p),234s'), ThreeColorTriplesYaku::getInstance(), true],
+            [new YakuTestData('333m,333s,NN', '333p,234s'), ThreeColorTriplesYaku::create(), true],
+            [new YakuTestData('333m,333s,NN', '3333p,234s'), ThreeColorTriplesYaku::create(), true],
+            [new YakuTestData('333m,333s,NN', '(3333p),234s'), ThreeColorTriplesYaku::create(), true],
             // not same number
-            [new YakuTestData('333m,444s,NN', '3333p,234s'), ThreeColorTriplesYaku::getInstance(), false],
+            [new YakuTestData('333m,444s,NN', '3333p,234s'), ThreeColorTriplesYaku::create(), false],
             // not same number, with honor
-            [new YakuTestData('333m,444s,NN', '3333p,CCCC'), ThreeColorTriplesYaku::getInstance(), false],
+            [new YakuTestData('333m,444s,NN', '3333p,CCCC'), ThreeColorTriplesYaku::create(), false],
             // not different color(though not practical)
-            [new YakuTestData('333m,333m,NN', '3333p,234s'), ThreeColorTriplesYaku::getInstance(), false],
+            [new YakuTestData('333m,333m,NN', '3333p,234s'), ThreeColorTriplesYaku::create(), false],
 
             // test ThreeConcealedTriplesYaku
-            [new YakuTestData('111m,222m,444m,123s,EE'), ThreeConcealedTriplesYaku::getInstance(), true],
-            [new YakuTestData('111m,222m,123s,EE', '(4444m)'), ThreeConcealedTriplesYaku::getInstance(), true],
+            [new YakuTestData('111m,222m,444m,123s,EE'), ThreeConcealedTriplesYaku::create(), true],
+            [new YakuTestData('111m,222m,123s,EE', '(4444m)'), ThreeConcealedTriplesYaku::create(), true],
             // not isConcealed
-            [new YakuTestData('111m,222m,123s,EE', '444m'), ThreeConcealedTriplesYaku::getInstance(), false],
+            [new YakuTestData('111m,222m,123s,EE', '444m'), ThreeConcealedTriplesYaku::create(), false],
             // not three
-            [new YakuTestData('111m,234m,456m,444m,EE'), ThreeConcealedTriplesYaku::getInstance(), false],
-            [new YakuTestData('111m,222m,333m,444m,EE'), ThreeConcealedTriplesYaku::getInstance(), false],
+            [new YakuTestData('111m,234m,456m,444m,EE'), ThreeConcealedTriplesYaku::create(), false],
+            [new YakuTestData('111m,222m,333m,444m,EE'), ThreeConcealedTriplesYaku::create(), false],
 
             // test ThreeQuadsYaku
-            [new YakuTestData('123s,44s', '1111m,2222m,3333m'), ThreeQuadsYaku::getInstance(), true],
-            [new YakuTestData('123s,44s', '1111m,2222m,(3333m)'), ThreeQuadsYaku::getInstance(), true],
+            [new YakuTestData('123s,44s', '1111m,2222m,3333m'), ThreeQuadsYaku::create(), true],
+            [new YakuTestData('123s,44s', '1111m,2222m,(3333m)'), ThreeQuadsYaku::create(), true],
             // not three
-            [new YakuTestData('123s,44s', '1111m,2222m,333m'), ThreeQuadsYaku::getInstance(), false],
-            [new YakuTestData('44s', '1111m,2222m,3333m,4444m'), ThreeQuadsYaku::getInstance(), false],
+            [new YakuTestData('123s,44s', '1111m,2222m,333m'), ThreeQuadsYaku::create(), false],
+            [new YakuTestData('44s', '1111m,2222m,3333m,4444m'), ThreeQuadsYaku::create(), false],
         ];
     }
 
@@ -243,21 +244,21 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
 
     function fan3AndFan6Provider() {
         return [
-            [new YakuTestData('123m,33m,44m,55m,EEE,SS'), HalfFlushYaku::getInstance(), true],
+            [new YakuTestData('123m,33m,44m,55m,EEE,SS'), HalfFlushYaku::create(), true],
             // no honor
-            [new YakuTestData('123m,33m,44m,55m,123m,11m'), HalfFlushYaku::getInstance(), false],
+            [new YakuTestData('123m,33m,44m,55m,123m,11m'), HalfFlushYaku::create(), false],
             // no suit types
-            [new YakuTestData('EEE,SSS,WWW,NNN,CC'), HalfFlushYaku::getInstance(), false],
+            [new YakuTestData('EEE,SSS,WWW,NNN,CC'), HalfFlushYaku::create(), false],
             // not same Suit types
-            [new YakuTestData('123m,33m,44m,55m,123m,11s'), HalfFlushYaku::getInstance(), false],
+            [new YakuTestData('123m,33m,44m,55m,123m,11s'), HalfFlushYaku::create(), false],
 
-            [new YakuTestData('123m,33m,44m,55m,123m,11m'), FullFlushYaku::getInstance(), true],
+            [new YakuTestData('123m,33m,44m,55m,123m,11m'), FullFlushYaku::create(), true],
             // not all suit
-            [new YakuTestData('123m,33m,44m,55m,EEE,SS'), FullFlushYaku::getInstance(), false],
+            [new YakuTestData('123m,33m,44m,55m,EEE,SS'), FullFlushYaku::create(), false],
             // no suit types
-            [new YakuTestData('EEE,SSS,WWW,NNN,CC'), FullFlushYaku::getInstance(), false],
+            [new YakuTestData('EEE,SSS,WWW,NNN,CC'), FullFlushYaku::create(), false],
             // not same Suit types
-            [new YakuTestData('123m,33m,44m,55m,123m,11s'), FullFlushYaku::getInstance(), false],
+            [new YakuTestData('123m,33m,44m,55m,123m,11s'), FullFlushYaku::create(), false],
 
             // PureOutsideHand tested in fan2 with MixedOutsideHand
             // TwoDoubleRun tested in fan1 with DoubleRun
@@ -274,64 +275,75 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
     function yakumanProvider() {
         return [
             // test AllGreenYaku
-            [new YakuTestData('234s,234s,FF', '666s,888s'), AllGreenYaku::getInstance(), true],
-            [new YakuTestData('222s,333s,444s,666s,88s'), AllGreenYaku::getInstance(), true],
+            [new YakuTestData('234s,234s,FF', '666s,888s'), AllGreenYaku::create(), true],
+            [new YakuTestData('222s,333s,444s,666s,88s'), AllGreenYaku::create(), true],
             // not 41 tileSeries
-            [new YakuTestData('22s,22s,33s,44s,66s,88s,FF'), AllGreenYaku::getInstance(), false],
+            [new YakuTestData('22s,22s,33s,44s,66s,88s,FF'), AllGreenYaku::create(), false],
             // not all green tiles
-            [new YakuTestData('222s,333s,FF', '666s,111s'), AllGreenYaku::getInstance(), false],
+            [new YakuTestData('222s,333s,FF', '666s,111s'), AllGreenYaku::create(), false],
 
             // test AllHonorsYaku
-            [new YakuTestData('CC', 'EEE,SSS,WWW,NNN'), AllHonorsYaku::getInstance(), true],
-            [new YakuTestData('EEE,SSS,WWW,NNN,CC'), AllHonorsYaku::getInstance(), true],
-            [new YakuTestData('EE,SS,WW,NN,CC,PP,FF'), AllHonorsYaku::getInstance(), true],
+            [new YakuTestData('CC', 'EEE,SSS,WWW,NNN'), AllHonorsYaku::create(), true],
+            [new YakuTestData('EEE,SSS,WWW,NNN,CC'), AllHonorsYaku::create(), true],
+            [new YakuTestData('EE,SS,WW,NN,CC,PP,FF'), AllHonorsYaku::create(), true],
             // not all honors
-            [new YakuTestData('EEE,SSS,WWW,NNN,11s'), AllHonorsYaku::getInstance(), false],
+            [new YakuTestData('EEE,SSS,WWW,NNN,11s'), AllHonorsYaku::create(), false],
 
             // test AllTerminalsYaku
-            [new YakuTestData('111m,999m,11s', '111p,999p'), AllTerminalsYaku::getInstance(), true],
+            [new YakuTestData('111m,999m,11s', '111p,999p'), AllTerminalsYaku::create(), true],
             // not 41 tileSeries
-            [new YakuTestData('11m,11m,99m,11p,99p,11s,99s'), AllTerminalsYaku::getInstance(), false],
+            [new YakuTestData('11m,11m,99m,11p,99p,11s,99s'), AllTerminalsYaku::create(), false],
             // not all terminals
-            [new YakuTestData('EEE,999m,11s', '111p,999p'), AllTerminalsYaku::getInstance(), false],
+            [new YakuTestData('EEE,999m,11s', '111p,999p'), AllTerminalsYaku::create(), false],
 
             // test BigFourWindsYaku
-            [new YakuTestData('EEE,SSS,WWW,11s', 'NNN'), BigFourWindsYaku::getInstance(), true],
-            [new YakuTestData('EEE,SSS,WWW,11s', 'NNNN'), BigFourWindsYaku::getInstance(), true],
+            [new YakuTestData('EEE,SSS,WWW,11s', 'NNN'), BigFourWindsYaku::create(), true],
+            [new YakuTestData('EEE,SSS,WWW,11s', 'NNNN'), BigFourWindsYaku::create(), true],
             // not 4 winds
-            [new YakuTestData('EEE,SSS,WW', 'NNN,123s'), BigFourWindsYaku::getInstance(), false],
+            [new YakuTestData('EEE,SSS,WW', 'NNN,123s'), BigFourWindsYaku::create(), false],
 
             // test BigThreeDragonsYaku
-            [new YakuTestData('CCC,PPP,123s,11s', 'FFF'), BigThreeDragonsYaku::getInstance(), true],
-            [new YakuTestData('CCC,PPP,123s,11s', 'FFFF'), BigThreeDragonsYaku::getInstance(), true],
-            [new YakuTestData('CCC,PPP,123s,11s', '(FFFF)'), BigThreeDragonsYaku::getInstance(), true],
+            [new YakuTestData('CCC,PPP,123s,11s', 'FFF'), BigThreeDragonsYaku::create(), true],
+            [new YakuTestData('CCC,PPP,123s,11s', 'FFFF'), BigThreeDragonsYaku::create(), true],
+            [new YakuTestData('CCC,PPP,123s,11s', '(FFFF)'), BigThreeDragonsYaku::create(), true],
             // not 3 tripleOrQuads
-            [new YakuTestData('CC,PPP,123s,EEE', 'FFF'), BigThreeDragonsYaku::getInstance(), false],
+            [new YakuTestData('CC,PPP,123s,EEE', 'FFF'), BigThreeDragonsYaku::create(), false],
 
             // test FourConcealedTriplesYaku
-            [new YakuTestData('111s,222s,333s,444s,55s'), FourConcealedTriplesYaku::getInstance(), true],
-            [new YakuTestData('111s,222s,333s,55s', '(4444s)'), FourConcealedTriplesYaku::getInstance(), true],
+            [new YakuTestData('111s,222s,333s,444s,55s'), FourConcealedTriplesYaku::create(), true],
+            [new YakuTestData('111s,222s,333s,55s', '(4444s)'), FourConcealedTriplesYaku::create(), true],
             // not 4 isConcealed
-            [new YakuTestData('111s,222s,333s,55s', '444s'), FourConcealedTriplesYaku::getInstance(), false],
+            [new YakuTestData('111s,222s,333s,55s', '444s'), FourConcealedTriplesYaku::create(), false],
             // not 4
-            [new YakuTestData('111s,222s,333s,456s,55s'), FourConcealedTriplesYaku::getInstance(), false],
+            [new YakuTestData('111s,222s,333s,456s,55s'), FourConcealedTriplesYaku::create(), false],
 
             // test FourQuadsYaku
-            [new YakuTestData('11s', '2222s,3333s,4444s,5555s'), FourQuadsYaku::getInstance(), true],
-            [new YakuTestData('11s', '2222s,3333s,4444s,(5555s)'), FourQuadsYaku::getInstance(), true],
+            [new YakuTestData('11s', '2222s,3333s,4444s,5555s'), FourQuadsYaku::create(), true],
+            [new YakuTestData('11s', '2222s,3333s,4444s,(5555s)'), FourQuadsYaku::create(), true],
             // not 4 quads
-            [new YakuTestData('11s', '2222s,3333s,4444s,555s'), FourQuadsYaku::getInstance(), false],
+            [new YakuTestData('11s', '2222s,3333s,4444s,555s'), FourQuadsYaku::create(), false],
+
+            // test NineGatesYaku
+            [new YakuTestData('111s,123s,456s,789s,99s', null, '1s'), NineGatesYaku::create(), true],
+            [new YakuTestData('111s,22s,345s,678s,999s', null, '2s'), NineGatesYaku::create(), true],
+            [new YakuTestData('111s,22s,345s,678s,999s', null, '3s'), NineGatesYaku::create(), true],
+            // not concealed
+            [new YakuTestData('111s,22s,345s,678s', '999s'), NineGatesYaku::create(), false],
+            // not all suit
+            [new YakuTestData('111s,22s,345s,678s,EEE'), NineGatesYaku::create(), false],
+            // not same color suit
+            [new YakuTestData('111s,22s,345s,678s,999m'), NineGatesYaku::create(), false],
 
             // test SmallFourWindsYaku
-            [new YakuTestData('EEE,SSS,WW', 'NNN,123s'), SmallFourWindsYaku::getInstance(), true],
-            [new YakuTestData('EEE,SSS,WW', 'NNNN,123s'), SmallFourWindsYaku::getInstance(), true],
+            [new YakuTestData('EEE,SSS,WW', 'NNN,123s'), SmallFourWindsYaku::create(), true],
+            [new YakuTestData('EEE,SSS,WW', 'NNNN,123s'), SmallFourWindsYaku::create(), true],
             // not 3+1 winds
-            [new YakuTestData('EEE,SSS,WWW,11s', 'NNN'), SmallFourWindsYaku::getInstance(), false],
+            [new YakuTestData('EEE,SSS,WWW,11s', 'NNN'), SmallFourWindsYaku::create(), false],
 
             // test ThirteenOrphansYaku
-            [new YakuTestData('119m19p19sESWNCFP', null, '1m'), ThirteenOrphansYaku::getInstance(), true],
-            [new YakuTestData('119m19p19sESWNCFP', null, '9m'), ThirteenOrphansYaku::getInstance(), true],
-            [new YakuTestData('EEE,SSS,WW', 'NNN,123s'), ThirteenOrphansYaku::getInstance(), false],
+            [new YakuTestData('119m19p19sESWNCFP', null, '1m'), ThirteenOrphansYaku::create(), true],
+            [new YakuTestData('119m19p19sESWNCFP', null, '9m'), ThirteenOrphansYaku::create(), true],
+            [new YakuTestData('EEE,SSS,WW', 'NNN,123s'), ThirteenOrphansYaku::create(), false],
         ];
 
         /**
@@ -344,19 +356,31 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         function yakuman2Provider() {
             return [
                 // test FourConcealedTriplesOnePairWaitingYaku
-                [new YakuTestData('111s,222s,333s,444s,55s', null, '5s'), FourConcealedTriplesOnePairWaitingYaku::getInstance(), true],
-                [new YakuTestData('111s,222s,333s,55s', '(4444s)', '5s'), FourConcealedTriplesOnePairWaitingYaku::getInstance(), true],
+                [new YakuTestData('111s,222s,333s,444s,55s', null, '5s'), FourConcealedTriplesOnePairWaitingYaku::create(), true],
+                [new YakuTestData('111s,222s,333s,55s', '(4444s)', '5s'), FourConcealedTriplesOnePairWaitingYaku::create(), true],
                 // not one pair waiting
-                [new YakuTestData('111s,222s,333s,444s,55s', null, '4s'), FourConcealedTriplesOnePairWaitingYaku::getInstance(), false],
-                [new YakuTestData('111s,222s,333s,55s', '(4444s)', '4s'), FourConcealedTriplesOnePairWaitingYaku::getInstance(), false],
+                [new YakuTestData('111s,222s,333s,444s,55s', null, '4s'), FourConcealedTriplesOnePairWaitingYaku::create(), false],
+                [new YakuTestData('111s,222s,333s,55s', '(4444s)', '4s'), FourConcealedTriplesOnePairWaitingYaku::create(), false],
                 // not 4 isConcealed
-                [new YakuTestData('111s,222s,333s,55s', '444s', '5s'), FourConcealedTriplesOnePairWaitingYaku::getInstance(), false],
+                [new YakuTestData('111s,222s,333s,55s', '444s', '5s'), FourConcealedTriplesOnePairWaitingYaku::create(), false],
                 // not 4
-                [new YakuTestData('111s,222s,333s,456s,55s', null, '5s'), FourConcealedTriplesOnePairWaitingYaku::getInstance(), false],
+                [new YakuTestData('111s,222s,333s,456s,55s', null, '5s'), FourConcealedTriplesOnePairWaitingYaku::create(), false],
+
+                // test PureNineGatesYaku
+                [new YakuTestData('111s,123s,456s,789s,99s', null, '1s'), NineGatesYaku::create(), true],
+                [new YakuTestData('111s,22s,345s,678s,999s', null, '2s'), NineGatesYaku::create(), true],
+                // not pure
+                [new YakuTestData('111s,22s,345s,678s,999s', null, '3s'), NineGatesYaku::create(), false],
+                // not concealed
+                [new YakuTestData('111s,22s,345s,678s', '999s'), NineGatesYaku::create(), false],
+                // not all suit
+                [new YakuTestData('111s,22s,345s,678s,EEE'), NineGatesYaku::create(), false],
+                // not same color suit
+                [new YakuTestData('111s,22s,345s,678s,999m'), NineGatesYaku::create(), false],
 
                 // test ThirteenOrphansPairWaitingYaku
-                [new YakuTestData('119m19p19sESWNCFP', null, '1m'), ThirteenOrphansPairWaitingYaku::getInstance(), true],
-                [new YakuTestData('119m19p19sESWNCFP', null, '9m'), ThirteenOrphansPairWaitingYaku::getInstance(), false],
+                [new YakuTestData('119m19p19sESWNCFP', null, '1m'), ThirteenOrphansPairWaitingYaku::create(), true],
+                [new YakuTestData('119m19p19sESWNCFP', null, '9m'), ThirteenOrphansPairWaitingYaku::create(), false],
             ];
         }
     }
@@ -379,7 +403,7 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
 
         $yakuList = $r->getWinResult($r->getPlayerList()[0])->getYakuList()->toYakuList();
 
-        $this->assertContains(ReachYaku::getInstance(), $yakuList, $yakuList);
+        $this->assertContains(ReachYaku::create(), $yakuList, $yakuList);
     }
 
     function testDoubleReach() {
@@ -393,8 +417,8 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
 
         $yakuList = $r->getWinResult($r->getPlayerList()[0])->getYakuList()->toYakuList();
 
-        $this->assertNotContains(ReachYaku::getInstance(), $yakuList, $yakuList);
-        $this->assertContains(DoubleReachYaku::getInstance(), $yakuList, $yakuList);
+        $this->assertNotContains(ReachYaku::create(), $yakuList, $yakuList);
+        $this->assertContains(DoubleReachYaku::create(), $yakuList, $yakuList);
     }
 
     function testFirstTurnWin() {
@@ -407,11 +431,12 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         $pro->process('discard N N:s-E:E; passAll');
 
         $pro->process('discard E E:s-E:E; mockNextDraw 1m; passAll');
-        $this->assertEquals(Tile::fromString('1m'), $r->getTileAreas()->getTargetTile()->getTile());
+        $playerS = $r->getPlayerList()->getSelfWindPlayer(Tile::fromString('S'));
+        $this->assertEquals(Tile::fromString('1m'), $playerS->getTileArea()->getHand()->getTarget()->getTile());
 
         // S winBySelf FirstTurnWin
         $yakuList = $r->getWinResult($r->getTurnManager()->getCurrentPlayer())->getYakuList()->toYakuList();
-        $this->assertContains(FirstTurnWinYaku::getInstance(), $yakuList, $yakuList);
+        $this->assertContains(FirstTurnWinYaku::create(), $yakuList, $yakuList);
     }
 
     function testKingSTileWin() {
@@ -420,7 +445,7 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
 
         $pro->process('mockNextReplace 5m; concealedKong E E:s-123s456s789s7777m5m:7m');
         $yakuList = $r->getWinResult($r->getTurnManager()->getCurrentPlayer())->getYakuList()->toYakuList();
-        $this->assertContains(KingSTileWinYaku::getInstance(), $yakuList, $yakuList);
+        $this->assertContains(KingSTileWinYaku::create(), $yakuList, $yakuList);
     }
 
     function testRobbingAQuad() {
@@ -433,14 +458,14 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
             'discard E E:s-1m:1m',
             'mockHand S 11m; pong S; plusKong S S:s-1m:1m'
         );
+        $playerW = $r->getPlayerList()->getSelfWindPlayer(Tile::fromString('W'));
 
         // target tile changed
-        $this->assertEquals(Tile::fromString('1m'), $r->getTileAreas()->getTargetTile()->getTile());
+        $this->assertEquals(Tile::fromString('1m'), $playerW->getTileArea()->getHand()->getTarget()->getTile());
 
         // robAQuad exist
-        $playerW = $r->getPlayerList()->getSelfWindPlayer(Tile::fromString('W'));
         $yakuList = $r->getWinResult($playerW)->getYakuList()->toYakuList();
-        $this->assertContains(RobbingAQuadYaku::getInstance(), $yakuList, $yakuList);
+        $this->assertContains(RobbingAQuadYaku::create(), $yakuList, $yakuList);
     }
 
     function testFinalTileWinMoon() {
@@ -465,7 +490,7 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         $pro->process('mockHand E 222789s789m12355m');
         $yakuItemList = $r->getWinResult($playerE)->getYakuList();
         $yakuList = $yakuItemList->toYakuList();
-        $this->assertContains(DoraYaku::getInstance(), $yakuList, $yakuList);
+        $this->assertContains(DoraYaku::create(), $yakuList, $yakuList);
         $expectFanCount = 1 + 6; // selfDraw + 6 dora
         $this->assertEquals($expectFanCount, $yakuItemList->getTotalFanCount(), $yakuItemList);
     }
@@ -484,7 +509,7 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         $pro->process('mockHand E 222789s789m12355m');
         $yakuItemList = $r->getWinResult($playerE)->getYakuList();
         $yakuList = $yakuItemList->toYakuList();
-        $this->assertContains(UraDoraYaku::getInstance(), $yakuList, $yakuList);
+        $this->assertContains(UraDoraYaku::create(), $yakuList, $yakuList);
         $expectFanCount = 1 + 6; // selfDraw + 6 uraDora
         $this->assertEquals($expectFanCount, $yakuItemList->getTotalFanCount(), $yakuItemList);
     }
@@ -503,21 +528,21 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         $pro->process('mockHand E 222789s789m12300m');
         $yakuItemList = $r->getWinResult($playerE)->getYakuList();
         $yakuList = $yakuItemList->toYakuList();
-        $this->assertContains(RedDoraYaku::getInstance(), $yakuList, $yakuList);
+        $this->assertContains(RedDoraYaku::create(), $yakuList, $yakuList);
         $expectFanCount = 1 + 2; // selfDraw + 6 uraDora
         $this->assertEquals($expectFanCount, $yakuItemList->getTotalFanCount(), $yakuItemList);
     }
-    
+
     function testHeavenlyWin() {
-        
+        // todo
     }
-    
+
     function testEarthlyWin() {
-    
+        // todo
     }
-    
+
     function testHumanlyWin() {
-        
+        // todo
     }
 }
 
@@ -529,6 +554,7 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
  */
 class YakuTestData {
     private static $r;
+
     static function getInitedRound(RoundResetData $rebugResetData = null) {
         if (!self::$r) {
             self::$r = new Round(); // for 10 test cases, 1.2s => 0.2s which is 6x faster
@@ -569,24 +595,24 @@ class YakuTestData {
 
         // set phase
         $currentPlayer = $r->getPlayerList()->getSelfWindPlayer($this->currentPlayerWind);
-        $targetPlayer = $r->getPlayerList()->getSelfWindPlayer($this->targetPlayerWind);
-        $isPrivatePhase = ($currentPlayer === $targetPlayer);
+        $actPlayer = $r->getPlayerList()->getSelfWindPlayer($this->targetPlayerWind);
+        $isPrivatePhase = ($currentPlayer === $actPlayer);
 
         // set tiles
         $handMeldList = $this->handMeldList;
         $targetTile = $this->targetTile;
-        $tileAreas = $r->getTileAreas();
+        $areas = $r->getTileAreas();
 
         $rPhase = $isPrivatePhase ? RoundPhase::getPrivateInstance() : RoundPhase::getPublicInstance();
         $r->debugSkipTo($currentPlayer, $rPhase, null, null, $targetTile);
-        if ($isPrivatePhase) {
-            $handTileList = $handMeldList->toTileList();
-            $tileAreas->debugSetPrivate($targetPlayer, $handTileList, $this->declareMeldList, $targetTile);
-        } else {
-            $handTileList = $handMeldList->toTileList()->remove($targetTile);
-            $tileAreas->debugSetPublic($targetPlayer, $handTileList, $this->declareMeldList);
+        if ($isPrivatePhase) { // target tile not set
+            $private = $handMeldList->toTileList();
+            $areas->debugSetPrivate($actPlayer, $private, $this->declareMeldList, $targetTile);
+        } else { // targetTile already set by debugSkipTo
+            $public = $handMeldList->toTileList()->remove($targetTile);
+            $actPlayer->getTileArea()->debugSet($public, $this->declareMeldList, $public);
         }
 
-        return new WinSubTarget($this->handMeldList, $targetPlayer, $r);
+        return new WinSubTarget($this->handMeldList, $actPlayer, $r);
     }
 }

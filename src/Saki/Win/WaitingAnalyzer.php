@@ -12,37 +12,52 @@ use Saki\Meld\WeakRunMeldType;
 use Saki\Tile\TileList;
 
 /**
- * cases
+ * Analyze waiting tiles for a given player.
+ *
+ * Algorithm
  * - 18 tiles, tileSeries N, waitingTiles = merge (remove one tile -> 17 case)
  * - 18 tiles, tileSeries Y, waitingTiles without winTile = remove winTile -> 17 case
  * - 17 tiles, waitingTiles = algorithm(17 tiles)
  *
- * usage
+ * Used in
  * - reachable: 18 tiles, selfTile is in FutureWaitingList's discard
  * - exhaustiveDraw: each player 17 tiles, isWaiting?
  * - furiten: private 18-1 or public 17 tiles, is waitingTiles contains exclude tiles?
  * @package Saki\Win
  */
 class WaitingAnalyzer {
-    private $meldCompositionsAnalyzer;
+    private $meldCombinationAnalyzer;
     private $tileSeriesAnalyzer;
 
-    function __construct() {
-        $this->meldCompositionsAnalyzer = new MeldCombinationAnalyzer();
-        $this->tileSeriesAnalyzer = new TileSeriesAnalyzer(); // todo pass by arguments
+    function __construct(TileSeriesAnalyzer $tileSeriesAnalyzer) {
+        $meldTypes = [
+            RunMeldType::create(), TripleMeldType::create(),
+            PairMeldType::create(),
+            WeakRunMeldType::create(), WeakPairMeldType::create(),
+        ];
+        $this->meldCombinationAnalyzer = new MeldCombinationAnalyzer($meldTypes, 1);
+        $this->tileSeriesAnalyzer = $tileSeriesAnalyzer;
     }
 
-    function getMeldCompositionsAnalyzer() {
-        return $this->meldCompositionsAnalyzer;
+    /**
+     * @return MeldCombinationAnalyzer
+     */
+    function getMeldCombinationAnalyzer() {
+        return $this->meldCombinationAnalyzer;
     }
 
+    /**
+     * @return TileSeriesAnalyzer
+     */
     function getTileSeriesAnalyzer() {
         return $this->tileSeriesAnalyzer;
     }
 
     /**
-     * use case: ableReach.
-     * @param TileList $handTileList 18-tiles-style target.
+     * Analyze waiting tiles for a given player in private phase.
+     *
+     * Used in: ableReach.
+     * @param TileList $handTileList private hand
      * @param MeldList $declaredMeldList
      * @return FutureWaitingList
      */
@@ -69,38 +84,57 @@ class WaitingAnalyzer {
     }
 
     /**
-     * use case: exhaustiveDraw, furiten.
-     * @param TileList $tileList 17-like tile list
+     * Analyze waiting tiles for a given player in public phase.
+     *
+     * Used in: exhaustiveDraw, furiten.
+     * @param TileList $handTileList public hand
      * @param MeldList $declaredMeldList
      * @return TileList unique sorted waiting tile list
      */
-    function analyzePublic(TileList $tileList, MeldList $declaredMeldList) {
-        if (!$tileList->getHandSize()->isPublic()) {
+    function analyzePublic(TileList $handTileList, MeldList $declaredMeldList) {
+        if (!$handTileList->getHandSize()->isPublic()) {
             throw new \InvalidArgumentException(
-                sprintf('Invalid handTileList[%s] with count[%s] for WaitingAnalyzer public phase analyze.', $handTileList, $handTileList->count())
+                sprintf(
+                    'Invalid handTileList[%s] with count[%s] for analyzePublic().',
+                    $handTileList, $handTileList->count()
+                )
             );
         }
-        $handTileList = $tileList->getCopy()->orderByTileID();
+        $orderedHand = $handTileList->getCopy()->orderByTileID();
 
-        // step1. break 17-like tiles into MeldList which include at most 1 WeakType
-        $meldTypes = [
-            RunMeldType::getInstance(), TripleMeldType::getInstance(),
-            PairMeldType::getInstance(),
-            WeakRunMeldType::getInstance(), WeakPairMeldType::getInstance(),
-        ];
-        $handMeldCompositionList = $this->getMeldCompositionsAnalyzer()->analyzeMeldCombinationList($handTileList, $meldTypes, 1);
-        $handMeldLists = $handMeldCompositionList->toArray();
-        
+        /**
+         * Algorithm
+         *
+         * todo
+         */
+
+        /**
+         * An alternative simple but slow algorithm, which is replaced by current one.
+         *
+         * finalWaitingTiles = []
+         * for each unique tile in tileSet
+         *  private hand = public hand + tile
+         *  tileSeries = TileSeriesAnalyzer.analyze(private hand, declareMeld)
+         *  finalWaiting[] = tileSeries.waitingTiles(targetTile = tile)
+         * finalWaitingTiles = finalWaitingTiles.unique().order()
+         */
+
+        // step1. break public hand into possible MeldLists which contains at most 1 WeakMeldType
+        $handMeldCombinationList = $this->getMeldCombinationAnalyzer()
+            ->analyzeMeldCombinationList($orderedHand);
+
         // step2. for each handMeldList,
         $tileSeriesAnalyzer = $this->getTileSeriesAnalyzer();
         $waitingTileList = new TileList();
-        foreach ($handMeldLists as $handMeldList) {
+        foreach ($handMeldCombinationList as $handMeldList) {
             // step2. given a handMeldList, if waitingTiles exist, they must come from melds that matches:
             //  case1. two pairs' waitingTiles
             //  case2. one weakPair or weakRun' waitingTiles
             // we name these melds as handSourceMeld
-            $handPairList = $handMeldList->toFiltered([PairMeldType::getInstance()]);
-            $handWeakPairOrWeakRunList = $handMeldList->toFiltered([WeakPairMeldType::getInstance(), WeakRunMeldType::getInstance()]);
+            /** @var MeldList $handMeldList */
+            $handMeldList = $handMeldList;
+            $handPairList = $handMeldList->toFiltered([PairMeldType::create()]);
+            $handWeakPairOrWeakRunList = $handMeldList->toFiltered([WeakPairMeldType::create(), WeakRunMeldType::create()]);
             if (count($handPairList) == 2) {
                 $handSourceMeldList = $handPairList;
             } elseif (count($handWeakPairOrWeakRunList) == 1) {
