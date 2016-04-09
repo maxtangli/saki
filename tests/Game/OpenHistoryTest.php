@@ -1,68 +1,53 @@
 <?php
 
 use Saki\Game\OpenHistory;
-use Saki\Game\OpenHistoryItem;
+use Saki\Game\OpenRecord;
+use Saki\Game\PlayerWind;
+use Saki\Game\RoundTurn;
 use Saki\Tile\Tile;
-use Saki\Tile\TileList;
 
 class OpenHistoryTest extends PHPUnit_Framework_TestCase {
+    /** @var  OpenHistory */
+    protected $h;
 
-    /**
-     * @dataProvider itemProvider
-     */
-    function testItem(OpenHistoryItem $later, OpenHistoryItem $before, $expected, $allowSameTurnAndSelfWind = false) {
-        $result = $later->validLaterItemOf($before, $allowSameTurnAndSelfWind);
-        $this->assertEquals($expected, $result,
-            sprintf('[%s]->validLaterItemOf([%s], [%s]) expected[%s] but actual[%s]', $later, $before,
-                var_export($allowSameTurnAndSelfWind, true),
-                var_export($expected, true),
-                var_export($result, true))
+    protected function setUp() {
+        $this->h = $this->h ?? new OpenHistory();
+        $this->h->reset();
+    }
+
+    protected function record(string $roundTurn, string $tile, bool $isDiscard = true) {
+        $this->h->record(
+            new OpenRecord(RoundTurn::fromString($roundTurn), Tile::fromString($tile), $isDiscard)
         );
     }
 
-    function itemProvider() {
-        list($e, $s, $w, $n) = Tile::getWindList();
-        $notUsed = $e;
-        return [
-            // same turn
-            [new OpenHistoryItem(1, $e, $notUsed), new OpenHistoryItem(1, $e, $notUsed), false],
-            [new OpenHistoryItem(1, $s, $notUsed), new OpenHistoryItem(1, $e, $notUsed), true],
-            [new OpenHistoryItem(1, $e, $notUsed), new OpenHistoryItem(1, $n, $notUsed), false],
-            // diff turn
-            [new OpenHistoryItem(2, $e, $notUsed), new OpenHistoryItem(1, $e, $notUsed), true],
-            [new OpenHistoryItem(2, $s, $notUsed), new OpenHistoryItem(1, $e, $notUsed), true],
-            [new OpenHistoryItem(2, $e, $notUsed), new OpenHistoryItem(1, $n, $notUsed), true],
-        ];
+    protected function assertGetSelf(string $expectedTileList, string $playerWind) {
+        $actual = $this->h->getSelf(PlayerWind::fromString($playerWind));
+        $this->assertEquals($expectedTileList, $actual->__toString());
     }
 
-    /**
-     * @depends testItem
-     */
-    function testHistory() {
-        $h = new OpenHistory();
-        $this->assertEquals(TileList::fromString(''), $h->getSelf(Tile::fromString('E')));
-        $this->assertEquals(TileList::fromString(''), $h->getOther(Tile::fromString('E')));
+    protected function assertGetOther(string $expectedTileList, string $playerWind, string $fromRoundTurn) {
+        $actual = $this->h->getOther(PlayerWind::fromString($playerWind), RoundTurn::fromString($fromRoundTurn));
+        $this->assertEquals($expectedTileList, $actual->__toString());
+    }
 
-        $h->record(1, Tile::fromString('E'), Tile::fromString('1s'));
-        $this->assertEquals(TileList::fromString('1s'), $h->getSelf(Tile::fromString('E')));
-        $this->assertEquals(TileList::fromString(''), $h->getOther(Tile::fromString('E')));
+    protected function assertGetAllDiscard(string $expectedTileList) {
+        $actual = $this->h->getAllDiscard();
+        $this->assertEquals($expectedTileList, $actual->__toString());
+    }
 
-        $h->record(1, Tile::fromString('S'), Tile::fromString('2s'));
-        $this->assertEquals(TileList::fromString('1s'), $h->getSelf(Tile::fromString('E')));
-        $this->assertEquals(TileList::fromString('2s'), $h->getOther(Tile::fromString('E')));
+    function testAll() {
+        $this->record('1E', '1m');
+        $this->record('1S', '2m');
+        $this->record('1W', '3m');
+        $this->record('1N', '4m');
+        $this->record('3E', '5m', false);
+        $this->record('3S', '6m');
+        $this->record('3W', '7m');
+        $this->record('3N', '8m');
 
-        $h->record(2, Tile::fromString('E'), Tile::fromString('3s'));
-        $h->record(2, Tile::fromString('S'), Tile::fromString('4s'));
-        $h->record(2, Tile::fromString('W'), Tile::fromString('5s'));
-        $h->record(2, Tile::fromString('N'), Tile::fromString('6s'));
-
-        $h->record(3, Tile::fromString('E'), Tile::fromString('7s'));
-        $h->record(3, Tile::fromString('S'), Tile::fromString('8s'));
-        $h->record(3, Tile::fromString('W'), Tile::fromString('9s'));
-
-        $this->assertEquals(TileList::fromString('45689s'), $h->getOther(Tile::fromString('E'), 2, Tile::fromString('E')));
-        $this->assertEquals(TileList::fromString('5679s'), $h->getOther(Tile::fromString('S'), 2, Tile::fromString('S')));
-        $this->assertEquals(TileList::fromString('678s'), $h->getOther(Tile::fromString('W'), 2, Tile::fromString('W')));
-        $this->assertEquals(TileList::fromString('789s'), $h->getOther(Tile::fromString('N'), 2, Tile::fromString('N')));
+        $this->assertGetSelf('15m', 'E');
+        $this->assertGetOther('3467m', 'E', '1W');
+        $this->assertGetAllDiscard('1234678m');
     }
 }

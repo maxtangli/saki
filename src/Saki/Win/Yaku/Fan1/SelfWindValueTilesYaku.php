@@ -10,6 +10,6 @@ use Saki\Win\Yaku\AbstractValueTilesYaku;
  */
 class SelfWindValueTilesYaku extends AbstractValueTilesYaku {
     function getValueTile(WinSubTarget $subTarget) {
-        return $subTarget->getSelfWind();
+        return $subTarget->getSelfWindTile();
     }
 }

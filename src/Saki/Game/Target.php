@@ -11,7 +11,7 @@ class Target {
      * @return Target
      */
     static function createNull() {
-        $obj = new self(Tile::fromString('E'), TargetType::create(TargetType::KEEP), Tile::fromString('E'));
+        $obj = new self(Tile::fromString('E'), TargetType::create(TargetType::KEEP), PlayerWind::createEast());
         $obj->tile = null;
         $obj->type = null;
         $obj->creator = null;
@@ -25,12 +25,12 @@ class Target {
     /**
      * @param Tile $tile
      * @param TargetType $targetType
-     * @param Tile $creatorWind
+     * @param PlayerWind $creator
      */
-    function __construct(Tile $tile, TargetType $targetType, Tile $creatorWind) {
+    function __construct(Tile $tile, TargetType $targetType, PlayerWind $creator) {
         $this->tile = $tile;
         $this->type = $targetType;
-        $this->creator = $creatorWind;
+        $this->creator = $creator;
     }
 
     function __toString() {
@@ -115,21 +115,20 @@ class Target {
     }
 
     /**
-     * @param Tile $playerWind
+     * @param PlayerWind $playerWind
      * @return bool
      */
-    function isCreator(Tile $playerWind) {
+    function isCreator(PlayerWind $playerWind) {
         $this->assertExist();
-        $playerWind->assertWind();
         return $this->getCreator() == $playerWind;
     }
 
     /**
-     * @param Tile $playerWind
+     * @param PlayerWind $playerWind
      * @return bool
      */
-    function isOwner(Tile $playerWind) {
-        $isCreator = $this->isCreator($playerWind); // validate isWind
+    function isOwner(PlayerWind $playerWind) {
+        $isCreator = $this->isCreator($playerWind);
         $isOwnByCreator = $this->getType()->isOwnByCreator();
         return $isCreator == $isOwnByCreator;
     }

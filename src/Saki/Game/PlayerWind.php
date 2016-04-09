@@ -9,7 +9,15 @@ use Saki\Util\Immutable;
  * @package Saki\Game
  */
 class PlayerWind implements Immutable {
-    private $wind;
+    /**
+     * @param string $s
+     * @return PlayerWind
+     */
+    static function fromString(string $s) {
+        return new self(
+            Tile::fromString($s)
+        );
+    }
 
     /**
      * @return PlayerWind
@@ -47,6 +55,8 @@ class PlayerWind implements Immutable {
             self::createEast(), self::createSouth(), self::createWest(), self::createNorth()
         ];
     }
+
+    private $wind;
 
     /**
      * @param Tile $wind
@@ -100,6 +110,14 @@ class PlayerWind implements Immutable {
      */
     function isLeisureFamily() {
         return !$this->isDealer();
+    }
+
+    /**
+     * @param PlayerWind $other
+     * @return bool
+     */
+    function isLaterThanOrEqual(PlayerWind $other) {
+        return $this->getWindTile()->getWindOffsetFrom($other->getWindTile()) >= 0;
     }
 
     /**

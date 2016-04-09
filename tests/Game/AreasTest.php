@@ -16,8 +16,8 @@ class AreasTest extends PHPUnit_Framework_TestCase {
         // E private phase, hand E
         $handE = $areaE->getHand();
         $this->assertEquals('123456789m12344p', $handE->getPrivate()->toFormatString(true));
-        $this->assertEquals('1m', $handE->getTarget()->getTile()->__toString());
-        $this->assertEquals('23456789m12344p', $handE->getPublic()->toFormatString(true));
+        $this->assertEquals('4p', $handE->getTarget()->getTile()->__toString());
+        $this->assertEquals('123456789m1234p', $handE->getPublic()->toFormatString(true));
 
         // E private phase, hand S
         $pro->process('mockHand S 123456789p1234s');

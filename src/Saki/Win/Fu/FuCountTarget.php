@@ -7,6 +7,7 @@ use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\YakuItemList;
 
 class FuCountTarget {
+    /** @var WinSubTarget  */
     private $subTarget;
     private $yakuList;
     private $waitingType;
@@ -44,7 +45,7 @@ class FuCountTarget {
     }
 
     function getSelfWind() {
-        return $this->subTarget->getSelfWind();
+        return $this->subTarget->getSelfWindTile();
     }
 
     function getRoundWind() {

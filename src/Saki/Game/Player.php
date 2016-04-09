@@ -23,7 +23,7 @@ class Player {
      * @return string
      */
     function __toString() {
-        return sprintf('player[%s] wind[%s] score[%s]', $this->getNo(), $this->getTileArea()->getPlayerWind()->getWindTile(), $this->getScore());
+        return sprintf('player[%s] wind[%s] score[%s]', $this->getNo(), $this->getTileArea()->getPlayerWind(), $this->getScore());
     }
 
     /**

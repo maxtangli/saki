@@ -4,6 +4,8 @@ namespace Saki\Command\PrivateCommand;
 use Saki\Command\CommandContext;
 use Saki\Command\ParamDeclaration\SelfWindParamDeclaration;
 use Saki\Command\PrivateCommand;
+use Saki\Game\PlayerWind;
+use Saki\Game\RoundTurn;
 use Saki\RoundPhase\OverPhaseState;
 use Saki\RoundResult\OnTheWayDrawRoundResult;
 use Saki\RoundResult\RoundResultType;
@@ -23,7 +25,9 @@ class NineNineDrawCommand extends PrivateCommand {
         $currentTurn = $this->getContext()->getRound()->getTurnManager()->getGlobalTurn();
 
         $isFirstTurn = $currentTurn == 1;
-        $noDeclaredActions = !$areas->getDeclareHistory()->hasDeclare($currentTurn, Tile::fromString('E'));
+        $noDeclaredActions = !$areas->getDeclareHistory()->hasDeclare(
+            new RoundTurn($currentTurn, PlayerWind::createEast())
+        );
         $validTileList = $this->getActPlayer()->getTileArea()->getHand()->getPrivate()->isNineKindsOfTerminalOrHonor();
         return $isFirstTurn && $noDeclaredActions && $validTileList;
     }

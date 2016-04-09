@@ -3,6 +3,7 @@ namespace Saki\Win;
 
 use Saki\Game\Player;
 use Saki\Game\Round;
+use Saki\Game\RoundTurn;
 use Saki\Meld\MeldList;
 use Saki\Tile\Tile;
 
@@ -98,12 +99,8 @@ class WinTarget {
         return $this->player->getTileArea()->getHand()->isConcealed();
     }
 
-    function isReach() {
-        return $this->player->getTileArea()->getReachStatus()->isReach();
-    }
-
-    function isDoubleReach() {
-        return $this->player->getTileArea()->getReachStatus()->isDoubleReach();
+    function getReachStatus() {
+        return $this->player->getTileArea()->getReachStatus();
     }
 
     function isFirstTurnWin() {
@@ -147,14 +144,16 @@ class WinTarget {
     protected function isFirstTurnNoDeclare(Player $player) {
         $r = $this->round;
         return $r->getTurnManager()->getRoundTurn()->getGlobalTurn() == 1
-        && !$r->getTileAreas()->getDeclareHistory()->hasDeclare(1, $player->getTileArea()->getPlayerWind()->getWindTile());
+        && !$r->getTileAreas()->getDeclareHistory()->hasDeclare(
+            new RoundTurn(1, $player->getTileArea()->getPlayerWind())
+        );
     }
 
-    function getReachTurn() {
-        return $this->player->getTileArea()->getReachStatus()->getReachGlobalTurn();
+    function getPlayerWind() {
+        return $this->player->getTileArea()->getPlayerWind();
     }
 
-    function getSelfWind() {
+    function getSelfWindTile() {
         return $this->player->getTileArea()->getPlayerWind()->getWindTile();
     }
 

@@ -55,8 +55,17 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
     static function assertYakuExist($expected, YakuTestData $yakuTestData, Yaku $yaku) {
         $subTarget = $yakuTestData->toWinSubTarget();
         self::assertEquals($expected, $yaku->existIn($subTarget),
-            sprintf("yaku        : %s\nyakuTestData: %s\nSubTarget   : currentPlayerWind[%s], targetPlayerWind[%s],%s\n",
-                $yakuTestData, $yaku, $subTarget->getCurrentPlayer()->getTileArea()->getPlayerWind()->getWindTile(), $subTarget->getSelfWind(), 'isPrivatePhase:' . var_export($subTarget->isPrivatePhase(), true)));
+            sprintf(
+                "yaku        : %s"
+                . "\nyakuTestData: %s"
+                . "\nSubTarget   : currentPlayerWind[%s], targetPlayerWind[%s],%s\n",
+                $yakuTestData,
+                $yaku,
+                $subTarget->getCurrentPlayer()->getTileArea()->getPlayerWind()->getWindTile(),
+                $subTarget->getSelfWindTile(),
+                'isPrivatePhase:' . var_export($subTarget->isPrivatePhase(), true)
+            )
+        );
     }
 
     /**

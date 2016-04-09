@@ -618,11 +618,30 @@ rush 52 refactor Area: introduce Hand 12.5h // a terrible trip ...
 - [x] remove Area.handTileList 2.1h // terrible ...
 - [x] etc 0.2h
 
-rush 53 refactor PlayerWind 1.8h
+rush 53 refactor PlayerWind 2.6h
 
 - [x] extract class: PlayerWind 0.5h
 - [x] add PlayerWind into Area 1h // terrible ... recall beginning mind!
 - [x] adapt PlayerWind 0.3h
+
+- [x] adapt Target 0.2h
+- [x] adapt DeclareHistory 0.3h
+- [x] adapt RoundTurn 0.1h
+- [x] adapt OpenHistory 0.2h
+
+rush 54 refactor RoundTurn
+
+- [x] adapt ReachStatus 0.3h
+- [x] adapt DeclareHistory 0.1h
+- [x] refactor DeclareHistory 0.4h // my most satisfied class!
+
+- [x] refactor OpenHistory 0.8h
+- [x] rewrite OpenHistory 1.7h
+- [x] refactor OpenHistory 0.5h
+
+- [ ] DeclareHistory phase issue
+
+- [ ] refactor RoundTurn 0.2h
 
 rush refactor Areas
 

@@ -1,6 +1,7 @@
 <?php
 namespace Saki\Win;
 
+use Saki\Game\RoundTurn;
 use Saki\Meld\MeldCombinationAnalyzer;
 use Saki\Meld\MeldList;
 use Saki\Meld\PairMeldType;
@@ -169,25 +170,30 @@ class WinAnalyzer {
         $openHistory = $target->getOpenHistory();
 
         // ng case 1: self discarded tiles
-        $selfNgList = $openHistory->getSelf($target->getSelfWind());
+        $selfNgList = $openHistory->getSelf($target->getPlayerWind());
         $finalNgList->concat($selfNgList);
 
         // ng case 2: all other player's opened tiles since
-        if ($target->isReach()) { // ng case 2: since self reach
-            $fromTurn = $target->getReachTurn();
+        $reachStatus = $target->getReachStatus();
+        if ($reachStatus->isReach()) { // ng case 2: since self reach
+            $fromTurn = $reachStatus->getReachRoundTurn()->getGlobalTurn();
         } else { // ng case 3: since last turn where self discarded
             $globalTurn = $target->getGlobalTurn();
             if ($globalTurn == 1) {
                 $fromTurn = 1;
             } else {
-                $targetSelfWind = $target->getSelfWind();
+                $targetSelfWind = $target->getSelfWindTile();
                 $currentSelfWind = $target->getCurrentPlayer()->getTileArea()->getPlayerWind()->getWindTile();
                 $selfTurnPassed = $targetSelfWind->getWindOffsetFrom($currentSelfWind) <= 0;
                 $fromTurn = $selfTurnPassed ? $globalTurn : $globalTurn - 1;
             }// todo more simpler logic
         }
-        $excludedLastTile = true; // remember to exclude current target tile
-        $otherNgList = $openHistory->getOther($target->getSelfWind(), $fromTurn, $target->getSelfWind(), $excludedLastTile);
+        
+        // exclude current target tile
+        $otherNgList = $openHistory->getOther(
+            $target->getPlayerWind(),
+            new RoundTurn($fromTurn, $target->getPlayerWind())
+        );
         $finalNgList->concat($otherNgList);
 
         $isFuriten = $finalNgList->isAny(function (Tile $ngTile) use ($waitingTileList) {

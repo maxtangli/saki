@@ -87,7 +87,7 @@ class Areas {
 
         $currentTargetTile = $this->target->getTile();
         $actualTargetTile = $targetTile ??
-            ($private->valueExist($currentTargetTile) ? $currentTargetTile : $private[0]);
+            ($private->valueExist($currentTargetTile) ? $currentTargetTile : $private->getLast());
         $actualPublic = $private->getCopy()->remove($actualTargetTile);
         $actualDeclare = $declare ?? $player->getTileArea()->getHand()->getDeclare();
 
@@ -136,7 +136,7 @@ class Areas {
 
     protected function getTarget(Player $player) {
         $seeTarget = $this->target->exist()
-            && $this->target->isOwner($player->getTileArea()->getPlayerWind()->getWindTile());
+            && $this->target->isOwner($player->getTileArea()->getPlayerWind());
         return $seeTarget ? $this->target : Target::createNull();
     }
 
@@ -154,16 +154,12 @@ class Areas {
         return $this->openHistory;
     }
 
-    protected function recordOpen($currentTurn, Tile $mySelfWind, Tile $tile) {
-        $this->openHistory->record($currentTurn, $mySelfWind, $tile);
-    }
-
     function getDeclareHistory() {
         return $this->declareHistory;
     }
 
-    protected function recordDeclare(Tile $mySelfWind) {
-        $this->declareHistory->recordDeclare($this->getRoundTurn()->getGlobalTurn(), $mySelfWind);
+    protected function recordDeclare(PlayerWind $playerWind) {
+        $this->declareHistory->recordDeclare($this->getRoundTurn());
     }
 
     // convert
@@ -180,21 +176,17 @@ class Areas {
     }
 
     function isFirstTurnWin(Player $targetPlayer) {
-        if (!$targetPlayer->getTileArea()->getReachStatus()->isReach()) {
+        $reachStatus = $targetPlayer->getTileArea()->getReachStatus();
+        if (!$reachStatus->isReach()) {
             return false;
         }
 
-        $targetReachGlobalTurn = $targetPlayer->getTileArea()->getReachStatus()->getReachGlobalTurn();
-        $targetReachRoundTurn = new RoundTurn($targetReachGlobalTurn, $targetPlayer->getTileArea()->getPlayerWind()->getWindTile());
-
+        $reachRoundTurn = $reachStatus->getReachRoundTurn();
         $currentRoundTurn = $this->getRoundTurn();
-        $isSameOrNextGlobalTurn = $currentRoundTurn->getPastFloatGlobalTurn($targetReachRoundTurn) <= 1;
+        $isSameOrNextGlobalTurn = $currentRoundTurn->getPastFloatGlobalTurn($reachRoundTurn) <= 1;
 
-        $fromTurn = $targetReachGlobalTurn;
-        $fromWind = $targetPlayer->getTileArea()->getPlayerWind()->getWindTile();
-        $noDeclare = !$this->getDeclareHistory()->hasDeclare($fromTurn, $fromWind);
-
-        return $isSameOrNextGlobalTurn && $noDeclare;
+        $noDeclareSinceReach = !$this->getDeclareHistory()->hasDeclare($reachRoundTurn);
+        return $isSameOrNextGlobalTurn && $noDeclareSinceReach;
     }
 
     // operation
@@ -219,7 +211,7 @@ class Areas {
         $player->getTileArea()->draw($newTile);
 
         $this->setTargetData(
-            new Target($newTile, TargetType::create(TargetType::DRAW), $player->getTileArea()->getPlayerWind()->getWindTile())
+            new Target($newTile, TargetType::create(TargetType::DRAW), $player->getTileArea()->getPlayerWind())
         );
     }
 
@@ -228,7 +220,7 @@ class Areas {
         $player->getTileArea()->draw($newTile);
 
         $this->setTargetData(
-            new Target($newTile, TargetType::create(TargetType::REPLACEMENT), $player->getTileArea()->getPlayerWind()->getWindTile())
+            new Target($newTile, TargetType::create(TargetType::REPLACEMENT), $player->getTileArea()->getPlayerWind())
         );
     }
 
@@ -236,10 +228,12 @@ class Areas {
         $player->getTileArea()->discard($selfTile);
 
         $this->setTargetData(
-            new Target($selfTile, TargetType::create(TargetType::DISCARD), $player->getTileArea()->getPlayerWind()->getWindTile())
+            new Target($selfTile, TargetType::create(TargetType::DISCARD), $player->getTileArea()->getPlayerWind())
         );
 
-        $this->recordOpen($this->getRoundTurn()->getGlobalTurn(), $player->getTileArea()->getPlayerWind()->getWindTile(), $selfTile);
+        $this->openHistory->record(
+            new OpenRecord($this->getRoundTurn(), $selfTile, true)
+        );
     }
 
     /**
@@ -283,17 +277,19 @@ class Areas {
         $player->getTileArea()->discard($selfTile);
 
         $this->setTargetData(
-            new Target($selfTile, TargetType::create(TargetType::DISCARD), $player->getTileArea()->getPlayerWind()->getWindTile())
+            new Target($selfTile, TargetType::create(TargetType::DISCARD), $player->getTileArea()->getPlayerWind())
         );
 
         $player->getTileArea()->setReachStatus(
-            new ReachStatus($this->getRoundTurn()->getGlobalTurn())
+            new ReachStatus($this->getRoundTurn())
         );
 
         $player->setScore($player->getScore() - 1000);
         $this->setAccumulatedReachCount($this->getAccumulatedReachCount() + 1);
 
-        $this->recordOpen($this->getRoundTurn()->getGlobalTurn(), $player->getTileArea()->getPlayerWind()->getWindTile(), $selfTile); // todo reach flag
+        $this->openHistory->record(
+            new OpenRecord($this->getRoundTurn(), $selfTile, true)
+        );
     }
 
     function concealedKong(Player $actPlayer, Tile $selfTile) {
@@ -302,11 +298,11 @@ class Areas {
 
         $this->drawReplacement($actPlayer); // set target
 
-        $this->recordDeclare($actPlayer->getTileArea()->getPlayerWind()->getWindTile());
+        $this->recordDeclare($actPlayer->getTileArea()->getPlayerWind());
     }
 
     function plusKongBefore(Player $actPlayer, Tile $selfTile) {
-        $target = $actPlayer->getTileArea()->tempGenKongTargetData($selfTile, $actPlayer->getTileArea()->getPlayerWind()->getWindTile());
+        $target = $actPlayer->getTileArea()->tempGenKongTargetData($selfTile);
 
         $this->setTargetData($target);
     }
@@ -321,8 +317,11 @@ class Areas {
 
         $this->drawReplacement($actPlayer); // set target
 
-        $this->recordOpen($this->getRoundTurn()->getGlobalTurn(), $actPlayer->getTileArea()->getPlayerWind()->getWindTile(), $plusKongBeforeTile);
-        $this->recordDeclare($actPlayer->getTileArea()->getPlayerWind()->getWindTile());
+        $this->openHistory->record(
+            new OpenRecord($this->getRoundTurn(), $plusKongBeforeTile, false)
+        );
+
+        $this->recordDeclare($actPlayer->getTileArea()->getPlayerWind());
     }
 
     function chow(Player $actPlayer, Tile $selfTile1, Tile $selfTile2, Player $targetPlayer) {
@@ -335,10 +334,10 @@ class Areas {
         $actPlayerArea->declareMeld(RunMeldType::create(), false, $handTiles, $targetTile, null); // validate
         $targetPlayerArea->removeDiscardLast();
 
-        $keepTargetData = $actPlayerArea->tempGenKeepTargetData($actPlayer->getTileArea()->getPlayerWind()->getWindTile());
+        $keepTargetData = $actPlayerArea->tempGenKeepTargetData();
         $this->setTargetData($keepTargetData);
 
-        $this->recordDeclare($actPlayer->getTileArea()->getPlayerWind()->getWindTile());
+        $this->recordDeclare($actPlayer->getTileArea()->getPlayerWind());
     }
 
     function pong(Player $actPlayer, Player $targetPlayer) {
@@ -351,10 +350,10 @@ class Areas {
         $actPlayerArea->declareMeld(TripleMeldType::create(), false, $handTiles, $targetTile, null); // validate
         $targetPlayerArea->removeDiscardLast();
 
-        $keepTargetData = $actPlayerArea->tempGenKeepTargetData($actPlayer->getTileArea()->getPlayerWind()->getWindTile());
+        $keepTargetData = $actPlayerArea->tempGenKeepTargetData();
         $this->setTargetData($keepTargetData);
 
-        $this->recordDeclare($actPlayer->getTileArea()->getPlayerWind()->getWindTile());
+        $this->recordDeclare($actPlayer->getTileArea()->getPlayerWind());
     }
 
     function bigKong(Player $actPlayer, Player $targetPlayer) {
@@ -369,7 +368,7 @@ class Areas {
 
         $this->drawReplacement($actPlayer); // set target
 
-        $this->recordDeclare($actPlayer->getTileArea()->getPlayerWind()->getWindTile());
+        $this->recordDeclare($actPlayer->getTileArea()->getPlayerWind());
     }
 
     function smallKong(Player $actPlayer, Player $targetPlayer) {
@@ -384,7 +383,7 @@ class Areas {
 
         $this->drawReplacement($actPlayer); // set target
 
-        $this->recordDeclare($actPlayer->getTileArea()->getPlayerWind()->getWindTile());
+        $this->recordDeclare($actPlayer->getTileArea()->getPlayerWind());
     }
 
     protected function assertNextPlayer(Player $nextPlayer, Player $prePlayer) {

@@ -18,7 +18,7 @@ class ReachYaku extends Yaku {
     }
 
     protected function matchOtherConditions(WinSubTarget $subTarget) {
-        return $subTarget->isReach();
+        return $subTarget->getReachStatus()->isReach();
     }
 }
 

@@ -19,7 +19,7 @@ class DoubleReachYaku extends Yaku {
     }
 
     protected function matchOtherConditions(WinSubTarget $subTarget) {
-        return $subTarget->isDoubleReach();
+        return $subTarget->getReachStatus()->isDoubleReach();
     }
 
     function getExcludedYakus() {

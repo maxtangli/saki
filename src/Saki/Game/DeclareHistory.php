@@ -1,50 +1,48 @@
 <?php
 namespace Saki\Game;
 
-use Saki\Tile\Tile;
+use Saki\Util\ArrayList;
 
 /**
- * History of chow, pong, kong declarations.
+ * History of chow, pong, kong declarations. Used in: yaku analyze.
+ * Note: my most satisfied class!
  * @package Saki\Game
  */
 class DeclareHistory {
 
     /**
-     * @var Tile[][]
+     * @var ArrayList an ArrayList with ascend declare RoundTurn values.
      */
-    private $a;
+    private $list;
 
     function __construct() {
-        $this->a = [];
+        $this->list = new ArrayList();
     }
 
     function reset() {
-        $this->a = [];
-    }
-
-    function recordDeclare($currentGlobalTurn, Tile $mySelfWind) {
-        // todo assert valid
-
-        $this->a[$currentGlobalTurn][] = $mySelfWind;
+        $this->list->removeAll();
     }
 
     /**
-     * @param $fromGlobalTurn
-     * @param Tile $fromSelfWind
-     * @return bool any declare exist since $fromGlobalTurn, $fromSelfWind
+     * @param RoundTurn $roundTurn
      */
-    function hasDeclare($fromGlobalTurn, Tile $fromSelfWind) {
-        // todo assert valid
-        if (!isset($this->a[$fromGlobalTurn])) {
-            return false;
+    function recordDeclare(RoundTurn $roundTurn) {
+        $valid = $this->list->isEmpty() ||
+            $roundTurn->isLaterThanOrSame($this->list->getLast());
+        if (!$valid) {
+            throw new \InvalidArgumentException();
         }
 
-        foreach ($this->a[$fromGlobalTurn] as $selfWind) {
-            if ($selfWind->getWindOffsetFrom($fromSelfWind) >= 0) {
-                return true;
-            }
-        }
+        $this->list->insertLast($roundTurn);
+    }
 
-        return false;
+    /**
+     * @param RoundTurn $fromRoundTurn
+     * @return bool
+     */
+    function hasDeclare(RoundTurn $fromRoundTurn) {
+        return $this->list->isEmpty() ?
+            false :
+            $fromRoundTurn->isEarlierThanOrSame($this->list->getLast());
     }
 }

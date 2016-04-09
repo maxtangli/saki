@@ -2,110 +2,99 @@
 
 namespace Saki\Game;
 
-use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 use Saki\Util\ArrayList;
 
 /**
- * Record discard and plusKong tiles for furiten judge.
+ * History of open tiles.
+ * Used in: furiten analyze.
  * @package Saki\Game
  */
 class OpenHistory {
-
     /**
-     * @var ArrayList
+     * @var ArrayList An ArrayList with ascend OpenRecord values.
      */
-    private $a;
+    private $list;
 
     function __construct() {
-        $this->a = new ArrayList();
-    }
-
-    function __toString() {
-        return $this->a->__toString("\n");
+        $this->list = new ArrayList();
     }
 
     function reset() {
-        $this->a->removeAll();
+        $this->list->removeAll();
     }
 
     /**
-     * @param Tile $mySelfWind
-     * @param int $fromTurn
-     * @param null $fromSelfWind
-     * @param bool|false $excludedLastTile
-     * @return TileList
+     * @param OpenRecord $record
      */
-    function getOther(Tile $mySelfWind, $fromTurn = 1, $fromSelfWind = null, $excludedLastTile = false) {
-        return $this->getImpl(false, $mySelfWind, $fromTurn, $fromSelfWind, $excludedLastTile);
+    function record(OpenRecord $record) {
+        if (!$record->validNewOf($this->list)) {
+            throw new \InvalidArgumentException();
+        }
+
+        $this->list->insertLast($record);
     }
 
     /**
-     * @param Tile $mySelfWind
-     * @param int $fromTurn
+     * Return self's open tiles since first RoundTurn.
+     * Used in: discard furiten.
+     * @param PlayerWind $myPlayerWind
      * @return TileList
      */
-    function getSelf(Tile $mySelfWind, $fromTurn = 1) {
-        return $this->getImpl(true, $mySelfWind, $fromTurn);
+    function getSelf(PlayerWind $myPlayerWind) {
+        return $this->getImpl(true, $myPlayerWind, RoundTurn::createFirst(), false);
     }
 
     /**
+     * Return other's open tiles since $fromRoundTurn, exclude last one tile if exist since it's target tile.
+     * Used in: reach furiten, turn furiten.
+     * @param PlayerWind $myPlayerWind
+     * @param RoundTurn $fromRoundTurn
      * @return TileList
      */
-    function getAll() {
-        return (new TileList())->fromSelect($this->a, function (OpenHistoryItem $item) {
-            return $item->getDiscardedTile();
+    function getOther(PlayerWind $myPlayerWind, RoundTurn $fromRoundTurn) {
+        return $this->getImpl(false, $myPlayerWind, $fromRoundTurn, true);
+    }
+
+    /**
+     * Return all player's discard TileList.
+     * Note that Area.discard is not used since it may lacks tiles by chow, pong, kong etc.
+     * Used in: FourWindDraw.
+     * @return TileList
+     */
+    function getAllDiscard() {
+        $discardRecords = $this->list->getCopy()->where(function (OpenRecord $record) {
+            return $record->isDiscard();
+        });
+        return (new TileList())->fromSelect($discardRecords, function (OpenRecord $record) {
+            return $record->getTile();
         });
     }
 
     /**
-     * @param $isSelf
-     * @param Tile $mySelfWind
-     * @param int $fromTurn
-     * @param null $fromSelfWind
-     * @param bool|false $excludedLastTile
+     * @param bool $require Require self's open TileList if true, other's open TileList otherwise.
+     * @param PlayerWind $selfActor
+     * @param RoundTurn $fromRoundTurn
+     * @param bool $excludeLastTile
      * @return TileList
      */
-    private function getImpl($isSelf, Tile $mySelfWind, $fromTurn = 1, $fromSelfWind = null, $excludedLastTile = false) {
-        $actualFromSelfWind = $fromSelfWind ?? Tile::fromString('E');
-
-        $notUsedParam = $actualFromSelfWind;
-        $compareItem = new OpenHistoryItem($fromTurn, $actualFromSelfWind, $notUsedParam); // validate
-        $match = function (OpenHistoryItem $item) use ($isSelf, $mySelfWind, $compareItem) {
-            $matchIsSelf = $isSelf ? $item->getSelfWind() == $mySelfWind : $item->getSelfWind() != $mySelfWind;
-            $matchOrder = $item->validLaterItemOf($compareItem, true);
-            return $matchIsSelf && $matchOrder;
+    private function getImpl(bool $require, PlayerWind $selfActor, RoundTurn $fromRoundTurn, bool $excludeLastTile) {
+        // note: the match logic do not belongs to OpenRecord,
+        // since this is a private implementation that varies, not a stable behaviour of OpenRecord.
+        $match = function (OpenRecord $record) use ($require, $selfActor, $fromRoundTurn) {
+            $isSelfActorRecord = $record->getActor() == $selfActor;
+            $matchRequire = $isSelfActorRecord == $require;
+            $matchRoundTurn = $record->getRoundTurn()->isLaterThanOrSame($fromRoundTurn);
+            return $matchRequire && $matchRoundTurn;
         };
+        $result = $this->list->getCopy()->where($match);
 
-        /** @var TileList $openTileList */
-        $openTileList = $this->a->getAggregated(new TileList(), function (TileList $targetDiscardTileList, OpenHistoryItem $item) use ($match) {
-            if ($match($item)) {
-                $targetDiscardTileList->insertLast($item->getDiscardedTile());
-            }
-            return $targetDiscardTileList;
+        if (!$result->isEmpty() && $excludeLastTile) {
+            $result->removeLast();
+        }
+
+        return (new TileList())->fromSelect($result, function (OpenRecord $record) {
+            return $record->getTile();
         });
-
-        if ($excludedLastTile && $openTileList->count() > 0) {
-            $openTileList->removeLast();
-        }
-
-        return $openTileList;
-    }
-
-    function record($currentTurn, Tile $mySelfWind, Tile $tile) {
-        $newItem = new OpenHistoryItem($currentTurn, $mySelfWind, $tile); // validate
-        if ($this->a->count() > 0) {
-            /** @var OpenHistoryItem $lastItem */
-            $lastItem = $this->a->getLast();
-//            $valid = $newItem->validLaterItemOf($lastItem, false);
-            $valid = $newItem->validLaterItemOf($lastItem, true);
-            if (!$valid) {
-                throw new \InvalidArgumentException(
-                    sprintf('param item [%s] should be valid later item of [%s]', $newItem, $lastItem)
-                );
-            }
-        }
-
-        $this->a->insertLast($newItem);
     }
 }

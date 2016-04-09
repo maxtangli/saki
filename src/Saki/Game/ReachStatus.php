@@ -3,35 +3,50 @@ namespace Saki\Game;
 
 use Saki\Util\Immutable;
 
+/**
+ * @package Saki\Game
+ */
 class ReachStatus implements Immutable {
 
+    /**
+     * @return ReachStatus
+     */
     static function createNotReach() {
-        $obj = new self(1);
-        $obj->reachGlobalTurn = null;
+        $obj = new self(RoundTurn::createFirst());
+        $obj->reachRoundTurn = null;
         return $obj;
     }
 
-    private $reachGlobalTurn;
+    private $reachRoundTurn;
 
     /**
-     * @param int $reachGlobalTurn
+     * @param RoundTurn $reachRoundTurn
      */
-    function __construct(int $reachGlobalTurn) {
-        $this->reachGlobalTurn = $reachGlobalTurn;
+    function __construct(RoundTurn $reachRoundTurn) {
+        $this->reachRoundTurn = $reachRoundTurn;
     }
 
+    /**
+     * @return bool
+     */
     function isReach() {
-        return $this->reachGlobalTurn !== null;
+        return $this->reachRoundTurn !== null;
     }
 
-    function isDoubleReach() {
-        return $this->isReach() && $this->getReachGlobalTurn() == 1;
-    }
-
-    function getReachGlobalTurn() {
+    /**
+     * @return RoundTurn
+     */
+    function getReachRoundTurn() {
         if (!$this->isReach()) {
             throw new \LogicException();
         }
-        return $this->reachGlobalTurn;
+        return $this->reachRoundTurn;
+    }
+
+    /**
+     * @return bool
+     */
+    function isDoubleReach() {
+        return $this->isReach() && $this->getReachRoundTurn()->getGlobalTurn() == 1;
     }
 }

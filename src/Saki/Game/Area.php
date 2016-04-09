@@ -80,7 +80,7 @@ class Area {
         /** @var Target $target */
         $target = $f();
 
-        if ($target->exist() && !$target->isOwner($this->getPlayerWind()->getWindTile())) {
+        if ($target->exist() && !$target->isOwner($this->getPlayerWind())) {
             throw new \LogicException();
         }
 
@@ -126,6 +126,10 @@ class Area {
     function setReachStatus(ReachStatus $reachStatus) {
         $this->reachStatus = $reachStatus;
     }
+    
+    function reach() {
+        
+    }
 
     function drawInit(array $tiles) {
         $this->public->insertLast($tiles);
@@ -144,18 +148,18 @@ class Area {
         $this->discardLocked->unlock()->removeLast()->lock();
     }
 
-    function tempGenKeepTargetData(Tile $tempThisTileAreaWind) {
+    function tempGenKeepTargetData() {
         $lastTile = $this->public->getLast(); // validate
         $this->public->remove($lastTile);
         return new Target(
-            $lastTile, TargetType::create(TargetType::KEEP), $tempThisTileAreaWind
+            $lastTile, TargetType::create(TargetType::KEEP), $this->getPlayerWind()
         );
     }
 
-    function tempGenKongTargetData(Tile $selfTile, Tile $tempThisTileAreaWind) {
-        $this->public->fromSelect($this->getPublicPlusTarget()->remove($selfTile)); // validate
+    function tempGenKongTargetData(Tile $kongSelfTile) {
+        $this->public->fromSelect($this->getPublicPlusTarget()->remove($kongSelfTile)); // validate
         return new Target(
-            $selfTile, TargetType::create(TargetType::KONG), $tempThisTileAreaWind
+            $kongSelfTile, TargetType::create(TargetType::KONG), $this->getPlayerWind()
         );
     }
 

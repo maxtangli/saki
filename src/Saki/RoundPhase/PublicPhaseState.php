@@ -88,7 +88,7 @@ class PublicPhaseState extends RoundPhaseState {
         // FourWindDraw
         $isFirstRound = $round->getTurnManager()->getGlobalTurn() == 1;
         if ($isFirstRound) {
-            $allDiscardTileList = $round->getTileAreas()->getOpenHistory()->getAll();
+            $allDiscardTileList = $round->getTileAreas()->getOpenHistory()->getAllDiscard();
             if ($allDiscardTileList->count() == 4) {
                 $allDiscardTileList->distinct();
                 $isFourSameWindDiscard = $allDiscardTileList->count() == 1 && $allDiscardTileList[0]->isWind();
