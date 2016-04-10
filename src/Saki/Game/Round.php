@@ -5,10 +5,10 @@ use Saki\Command\CommandContext;
 use Saki\Command\CommandParser;
 use Saki\Command\CommandProcessor;
 use Saki\Command\CommandSet;
-use Saki\RoundPhase\NullPhaseState;
-use Saki\RoundPhase\PrivatePhaseState;
-use Saki\RoundPhase\PublicPhaseState;
-use Saki\RoundPhase\RoundPhaseState;
+use Saki\Phase\NullPhaseState;
+use Saki\Phase\PhaseState;
+use Saki\Phase\PrivatePhaseState;
+use Saki\Phase\PublicPhaseState;
 use Saki\Tile\Tile;
 use Saki\Win\WinAnalyzer;
 use Saki\Win\WinTarget;
@@ -19,12 +19,12 @@ class Round {
     private $winAnalyzer;
     private $processor;
     // game variable
-    private $roundWindData;
+    private $prevailingWindData;
     // round variable
     private $playerList;
     private $turnManager;
     private $areas;
-    /** @var RoundPhaseState */
+    /** @var PhaseState */
     private $phaseState;
 
     function __construct() {
@@ -35,17 +35,17 @@ class Round {
         $this->processor = new CommandProcessor(new CommandParser(new CommandContext($this), CommandSet::createStandard()));
 
         // game variable
-        $this->roundWindData = new RoundWindData($gameData->getPlayerCount(), $gameData->getTotalRoundType());
+        $this->prevailingWindData = new PrevailingWindManager($gameData->getPlayerCount(), $gameData->getTotalRoundType());
 
         // round variable
-        $this->playerList = new PlayerList($gameData->getPlayerCount(), $gameData->getInitialScore());
+        $this->playerList = new PlayerList($gameData->getPlayerCount(), $gameData->getInitialPoint());
         $this->turnManager = new TurnManager($this->playerList);
         $wall = new Wall($gameData->getTileSet());
 
-        $roundTurnProvider = function () {
-            return $this->turnManager->getRoundTurn();
+        $turnProvider = function () {
+            return $this->turnManager->getCurrentTurn();
         };
-        $this->areas = new Areas($wall, $this->playerList, $roundTurnProvider);
+        $this->areas = new Areas($wall, $this->playerList, $turnProvider);
 
         $this->phaseState = new NullPhaseState();
 
@@ -62,11 +62,11 @@ class Round {
         $currentDealer = $this->getPlayerList()->getDealerPlayer();
         $nextDealer = $keepDealer ? $currentDealer : $this->getTurnManager()->getOffsetPlayer(1, $currentDealer);
 
-        $this->roundWindData->reset($keepDealer);
+        $this->prevailingWindData->reset($keepDealer);
 
         $this->turnManager->reset();
-        $nextDealerPlayerWind = new PlayerWind($nextDealer->getTileArea()->getPlayerWind()->getWindTile());
-        $this->areas->reset($nextDealerPlayerWind);
+        $nextDealerSeatWind = new SeatWind($nextDealer->getArea()->getSeatWind()->getWindTile());
+        $this->areas->reset($nextDealerSeatWind);
 
         $this->phaseState = new NullPhaseState();
         $this->toNextPhase();
@@ -74,13 +74,13 @@ class Round {
     }
 
     function debugReset(GameTurn $resetData) {
-        $this->roundWindData->debugReset($resetData->getRoundWind(), $resetData->getDealerWind()->getIndex(), $resetData->getSelfWindTurn());
+        $this->prevailingWindData->debugReset($resetData->getPrevailingWind(), $resetData->getDealerWind()->getIndex(), $resetData->getSeatWindTurn());
 
-        $nextDealer = $this->getPlayerList()->getSelfWindPlayer($resetData->getDealerWind()->getWindTile());
+        $nextDealer = $this->getPlayerList()->getSeatWindTilePlayer($resetData->getDealerWind()->getWindTile());
 
         $this->turnManager->reset();
-        $nextDealerPlayerWind = new PlayerWind($nextDealer->getTileArea()->getPlayerWind()->getWindTile());
-        $this->areas->reset($nextDealerPlayerWind);
+        $nextDealerSeatWind = new SeatWind($nextDealer->getArea()->getSeatWind()->getWindTile());
+        $this->areas->reset($nextDealerSeatWind);
 
         $this->phaseState = new NullPhaseState();
         $this->toNextPhase();
@@ -88,26 +88,26 @@ class Round {
     }
 
     // todo simplify
-    function debugSkipTo(Player $actualCurrentPlayer, RoundPhase $roundPhase = null, $globalTurn = null,
+    function debugSkipTo(Player $actualCurrentPlayer, Phase $phase = null, $circleCount = null,
                          Tile $mockDiscardTile = null) {
-        if ($this->getTurnManager()->getGlobalTurn() != 1) {
+        if ($this->getTurnManager()->getCurrentTurn()->getCircleCount() != 1) {
             throw new \LogicException('Not implemented.');
         }
 
-        $validCurrentState = $this->getPhaseState()->getRoundPhase()->isPrivateOrPublic();
+        $validCurrentState = $this->getPhaseState()->getPhase()->isPrivateOrPublic();
         if (!$validCurrentState) {
             throw new \InvalidArgumentException();
         }
 
-        $actualRoundPhase = $roundPhase ?? RoundPhase::getPrivateInstance();
-        $validRoundPhase = $actualRoundPhase->isPrivateOrPublic();
-        if (!$validRoundPhase) {
+        $actualPhase = $phase ?? Phase::getPrivateInstance();
+        $validPhase = $actualPhase->isPrivateOrPublic();
+        if (!$validPhase) {
             throw new \InvalidArgumentException();
         }
 
-        $actualGlobalTurn = $globalTurn ?? 1;
-        $validActualGlobalTurn = ($actualGlobalTurn == 1);
-        if (!$validActualGlobalTurn) {
+        $actualCircleCount = $circleCount ?? 1;
+        $validActualCircleCount = ($actualCircleCount == 1);
+        if (!$validActualCircleCount) {
             throw new \InvalidArgumentException('Not implemented.');
         }
 
@@ -117,13 +117,13 @@ class Round {
             throw new \InvalidArgumentException('Not implemented: consider FourWindDiscardedDraw issue.');
         }
 
-        $isTargetTurn = function () use ($actualCurrentPlayer, $actualRoundPhase) {
+        $isTargetTurn = function () use ($actualCurrentPlayer, $actualPhase) {
             $currentPhaseState = $this->getPhaseState();
-            $currentRoundPhase = $currentPhaseState->getRoundPhase();
+            $currentPhase = $currentPhaseState->getPhase();
             $currentPlayer = $this->getTurnManager()->getCurrentPlayer();
 
-            $isTargetTurn = ($currentPlayer == $actualCurrentPlayer) && ($currentRoundPhase == $actualRoundPhase);
-            $isGameOver = $currentRoundPhase->isOver() && $currentPhaseState->isGameOver($this);
+            $isTargetTurn = ($currentPlayer == $actualCurrentPlayer) && ($currentPhase == $actualPhase);
+            $isGameOver = $currentPhase->isOver() && $currentPhaseState->isGameOver($this);
             return $isGameOver || $isTargetTurn;
         };
 
@@ -131,10 +131,10 @@ class Round {
         $tileString = $actualMockDiscardTile->__toString();
         $discardScript = sprintf('discard I I:s-%s:%s', $tileString, $tileString);
         while (!$isTargetTurn()) {
-            $currentRoundPhase = $this->getPhaseState()->getRoundPhase();
-            if ($currentRoundPhase->isPrivate()) {
+            $currentPhase = $this->getPhaseState()->getPhase();
+            if ($currentPhase->isPrivate()) {
                 $pro->process($discardScript);
-            } elseif ($currentRoundPhase->isPublic()) {
+            } elseif ($currentPhase->isPublic()) {
                 $pro->process('passAll');
             } else {
                 throw new \LogicException();
@@ -155,8 +155,8 @@ class Round {
         return $this->getWinAnalyzer()->analyzeTarget(new WinTarget($player, $this));
     }
 
-    function getRoundWindData() {
-        return $this->roundWindData;
+    function getPrevailingWindData() {
+        return $this->prevailingWindData;
     }
 
     function getPlayerList() {
@@ -175,13 +175,13 @@ class Round {
     }
 
     /**
-     * @return RoundPhaseState|PrivatePhaseState|PublicPhaseState|OverPhaseState
+     * @return PhaseState|PrivatePhaseState|PublicPhaseState|OverPhaseState
      */
     function getPhaseState() {
         return $this->phaseState;
     }
 
-    function toNextPhase(RoundPhaseState $customPhaseState = null) {
+    function toNextPhase(PhaseState $customPhaseState = null) {
         if ($customPhaseState !== null) {
             $this->phaseState->setCustomNextState($customPhaseState);
         }
@@ -192,7 +192,7 @@ class Round {
     }
 
     function toNextRound() {
-        if (!$this->getPhaseState()->getRoundPhase()->isOver()) {
+        if (!$this->getPhaseState()->getPhase()->isOver()) {
             throw new \InvalidArgumentException('Not over phase.');
         }
 

@@ -1,7 +1,7 @@
 <?php
 
+use Saki\Game\Phase;
 use Saki\Game\Round;
-use Saki\Game\RoundPhase;
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 
@@ -15,24 +15,24 @@ class RoundWinTest extends PHPUnit_Framework_TestCase {
         // execute
         $r->getProcessor()->process('winBySelf E');
         // phase changed
-        $this->assertEquals(RoundPhase::create(RoundPhase::OVER_PHASE), $r->getPhaseState()->getRoundPhase());
-        // score changed
+        $this->assertEquals(Phase::create(Phase::OVER_PHASE), $r->getPhaseState()->getPhase());
+        // point changed
         $dealer = $r->getPlayerList()->getDealerPlayer();
         foreach ($r->getPlayerList() as $player) {
-            $scoreDelta = $r->getPhaseState()->getRoundResult()->getScoreDelta($player);
-            $deltaInt = $scoreDelta->getDeltaInt();
+            $pointDelta = $r->getPhaseState()->getRoundResult()->getPointDelta($player);
+            $deltaInt = $pointDelta->getDeltaInt();
             if ($player == $dealer) {
                 $this->assertGreaterThan(0, $deltaInt);
-                $this->assertEquals($scoreDelta->getAfter(), $player->getScore(), $scoreDelta);
+                $this->assertEquals($pointDelta->getAfter(), $player->getArea()->getPoint(), $pointDelta);
             } else {
                 $this->assertLessThan(0, $deltaInt);
-                $this->assertEquals($scoreDelta->getAfter(), $player->getScore(), $scoreDelta);
+                $this->assertEquals($pointDelta->getAfter(), $player->getArea()->getPoint(), $pointDelta);
             }
         }
         // test toNextRound
-        $this->assertEquals(RoundPhase::getOverInstance(), $r->getPhaseState()->getRoundPhase());
+        $this->assertEquals(Phase::getOverInstance(), $r->getPhaseState()->getPhase());
         $r->toNextRound();
-        $this->assertEquals(RoundPhase::getPrivateInstance(), $r->getPhaseState()->getRoundPhase());
+        $this->assertEquals(Phase::getPrivateInstance(), $r->getPhaseState()->getPhase());
         // todo assert private state
 
         $this->assertEquals($dealer, $r->getPlayerList()->getDealerPlayer());
@@ -59,7 +59,7 @@ class RoundWinTest extends PHPUnit_Framework_TestCase {
 //        $result = WinRoundResult::createMultiWinByOther(
 //            $this->getPlayerList()->toArray(), $players, $winResults, $this->getCurrentPlayer(),
 //            $this->getRoundData()->getTileAreas()->getAccumulatedReachCount(),
-//            $this->getRoundData()->getRoundWindData()->getSelfWindTurn());
+//            $this->getRoundData()->getPrevailingWindData()->getSeatWindTurn());
 //        // phase
 //        $this->getRoundData()->toNextPhase(new OverPhaseState($result));
 //    }
@@ -81,17 +81,17 @@ class RoundWinTest extends PHPUnit_Framework_TestCase {
         $r->reset(false);
         // todo replace reset() by debugReset()
 
-        // E Player winBySelf, but score not over 30000
+        // E Player winBySelf, but point not over 30000
         $r->getAreas()->debugSetPrivate($r->getTurnManager()->getCurrentPlayer(), TileList::fromString('123m456m789m123s55s'), null, Tile::fromString('2m'));
         $r->getProcessor()->process('winBySelf E');
-        $r->getTurnManager()->getCurrentPlayer()->setScore('25000');
+        $r->getTurnManager()->getCurrentPlayer()->getArea()->setPoint('25000');
         $this->assertFalse($r->getPhaseState()->isGameOver($r));
 
-        // score over 30000
+        // point over 30000
         $dealerPlayer = $r->getPlayerList()->getDealerPlayer();
-        $dealerPlayer->setScore('29999');
+        $dealerPlayer->getArea()->setPoint('29999');
         $this->assertFalse($r->getPhaseState()->isGameOver($r));
-        $dealerPlayer->setScore('30000');
+        $dealerPlayer->getArea()->setPoint('30000');
         $this->assertTrue($r->getPhaseState()->isGameOver($r));
     }
 }

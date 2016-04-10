@@ -9,7 +9,6 @@ use Saki\Win\WinAnalyzer;
 use Saki\Win\Yaku\YakuSet;
 
 class WaitingAnalyzerTest extends \PHPUnit_Framework_TestCase {
-
     /**
      * @dataProvider publicDataProvider
      */

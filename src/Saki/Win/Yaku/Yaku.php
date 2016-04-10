@@ -26,7 +26,7 @@ abstract class Yaku extends Singleton {
      * @return bool
      */
     final function isYakuMan() {
-        return $this->getConcealedFanCount() >= 13 || $this->getNotConcealedFanCount() >= 13;
+        return $this->getConcealedFan() >= 13 || $this->getNotConcealedFan() >= 13;
     }
 
     /**
@@ -41,48 +41,48 @@ abstract class Yaku extends Singleton {
     /**
      * @return int
      */
-    abstract function getConcealedFanCount();
+    abstract function getConcealedFan();
 
     /**
      * @return int
      */
-    abstract function getNotConcealedFanCount();
+    abstract function getNotConcealedFan();
 
     /**
      * @return bool
      */
     public final function requireConcealed() {
-        return $this->getNotConcealedFanCount() == 0;
+        return $this->getNotConcealedFan() == 0;
     }
 
     /**
      * @return TileSeries[] design note: seems array is not required ...
      */
     abstract function getRequiredTileSeries();
-    
+
     /**
      * @param WinSubTarget $subTarget
      * @return bool
      */
     final function existIn(WinSubTarget $subTarget) {
-        return $this->getFanCount($subTarget) > 0;
+        return $this->getFan($subTarget) > 0;
     }
 
     /**
      * @param WinSubTarget $subTarget
      * @return int
      */
-    final function getFanCount(WinSubTarget $subTarget) {
-        $matchAll = $this->matchRequireConcealed($subTarget)
-            && $this->matchRequiredTileSeries($subTarget)
-            && $this->matchOtherConditions($subTarget);
+    final function getFan(WinSubTarget $subTarget) {
+        $matchAll = $this->matchConcealed($subTarget)
+            && $this->matchTileSeries($subTarget)
+            && $this->matchOther($subTarget);
         if (!$matchAll) {
             return 0;
         }
 
-        $fanCount = $subTarget->isConcealed() ? $this->getConcealedFanCount() : $this->getNotConcealedFanCount();
+        $fan = $subTarget->isConcealed() ? $this->getConcealedFan() : $this->getNotConcealedFan();
         $existCount = $this->getExistCountImpl($subTarget);
-        return $fanCount * $existCount;
+        return $fan * $existCount;
     }
 
     /**
@@ -96,7 +96,7 @@ abstract class Yaku extends Singleton {
      * @param WinSubTarget $subTarget
      * @return bool
      */
-    final protected function matchRequireConcealed(WinSubTarget $subTarget) {
+    final protected function matchConcealed(WinSubTarget $subTarget) {
         return !$this->requireConcealed() || $subTarget->isConcealed();
     }
 
@@ -104,7 +104,7 @@ abstract class Yaku extends Singleton {
      * @param WinSubTarget $subTarget
      * @return bool
      */
-    final protected function matchRequiredTileSeries(WinSubTarget $subTarget) {
+    final protected function matchTileSeries(WinSubTarget $subTarget) {
         $requiredTileSeries = $this->getRequiredTileSeries();
         if (empty($requiredTileSeries)) {
             return true;
@@ -121,7 +121,7 @@ abstract class Yaku extends Singleton {
      * @param WinSubTarget $subTarget
      * @return mixed
      */
-    abstract protected function matchOtherConditions(WinSubTarget $subTarget);
+    abstract protected function matchOther(WinSubTarget $subTarget);
 
     /**
      * A hook to support dora-type-yaku which requires dynamic fan count.

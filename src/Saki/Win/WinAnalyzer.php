@@ -9,8 +9,8 @@ use Saki\Meld\TripleMeldType;
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 use Saki\Util\ArrayList;
-use Saki\Win\Fu\FuCountAnalyzer;
-use Saki\Win\Fu\FuCountTarget;
+use Saki\Win\Fu\FuAnalyzer;
+use Saki\Win\Fu\FuTarget;
 use Saki\Win\Yaku\YakuAnalyzer;
 use Saki\Win\Yaku\YakuItemList;
 use Saki\Win\Yaku\YakuSet;
@@ -95,9 +95,9 @@ class WinAnalyzer {
         /**
          * 3. merge subResults into final result:
          *
-         * best subResult     = subResult with highest yaku and fuCount
+         * best subResult     = subResult with highest yaku and fu
          * final yakuList     = best subResult.yakuList
-         * final fuCount      = best subResult.fuCount
+         * final fu      = best subResult.fu
          * final winState     = best subResult.winState + handle furiten
          * todo waiting-but-not-win case
          */
@@ -106,7 +106,7 @@ class WinAnalyzer {
         $targetSubResult = $subResultList->getMax(WinSubResult::getComparator());
 
         $finalYakuList = $targetSubResult->getYakuList();
-        $finalFuCount = $targetSubResult->getFuCount();
+        $finalFu = $targetSubResult->getFu();
 
         $finalWinState = $targetSubResult->getWinState();
         if ($finalWinState->isTrueWin()) {
@@ -119,7 +119,7 @@ class WinAnalyzer {
             }
         }
 
-        $finalResult = new WinResult($finalWinState, $finalYakuList, $finalFuCount);
+        $finalResult = new WinResult($finalWinState, $finalYakuList, $finalFu);
         return $finalResult;
     }
 
@@ -146,11 +146,11 @@ class WinAnalyzer {
         $winState = WinState::getWinBySelfOrOther($subTarget->isPrivatePhase());
 
         $waitingType = $tileSeries->getWaitingType($subTarget->getAllMeldList(), $subTarget->getTileOfTargetTile(), $subTarget->getDeclaredMeldList());
-        $fuCountTarget = new FuCountTarget($subTarget, $yakuList, $waitingType);
-        $fuCountResult = FuCountAnalyzer::create()->getResult($fuCountTarget);
-        $fuCount = $fuCountResult->getTotalFuCount();
+        $fuTarget = new FuTarget($subTarget, $yakuList, $waitingType);
+        $fuResult = FuAnalyzer::create()->getResult($fuTarget);
+        $fu = $fuResult->getTotalFu();
 
-        return new WinSubResult($winState, $yakuList, $fuCount);
+        return new WinSubResult($winState, $yakuList, $fu);
     }
 
     /**
@@ -174,10 +174,10 @@ class WinAnalyzer {
         $isNgTile = function (Tile $ngTile) use ($waitingTileList) {
             return $waitingTileList->valueExist($ngTile);
         };
-        $myPlayerWind = $target->getPlayerWind();
-        
+        $mySeatWind = $target->getSeatWind();
+
         // open furiten: self open TileList contains target tile
-        $selfOpenList = $openHistory->getSelf($myPlayerWind);
+        $selfOpenList = $openHistory->getSelf($mySeatWind);
         if ($selfOpenList->any($isNgTile)) {
             return true;
         }
@@ -185,18 +185,18 @@ class WinAnalyzer {
         // reach furiten: other open TileList since self reach contains target tile
         $reachStatus = $target->getReachStatus();
         if ($reachStatus->isReach()) { // ng case 2: since self reach
-            $reachRoundTurn = $reachStatus->getReachRoundTurn();
-            $otherOpenListSinceReach = $openHistory->getOther($myPlayerWind, $reachRoundTurn);
+            $reachTurn = $reachStatus->getReachTurn();
+            $otherOpenListSinceReach = $openHistory->getOther($mySeatWind, $reachTurn);
             if ($otherOpenListSinceReach->any($isNgTile)) {
                 return true;
             }
         }
 
         // temporary furiten: other open TileList since self last open
-        $lastOpenRoundTurn = $openHistory->getLastOpenOrFalse($myPlayerWind);
-        if ($lastOpenRoundTurn !== false) {
-            // design note: not introduce NullObject of RoundTurn here since it's seldom until now
-            $otherOpenListSinceLastOpen = $openHistory->getOther($myPlayerWind, $lastOpenRoundTurn);
+        $lastOpenTurn = $openHistory->getLastOpenOrFalse($mySeatWind);
+        if ($lastOpenTurn !== false) {
+            // design note: not introduce NullObject of Turn here since it's seldom until now
+            $otherOpenListSinceLastOpen = $openHistory->getOther($mySeatWind, $lastOpenTurn);
             if ($otherOpenListSinceLastOpen->any($isNgTile)) {
                 return true;
             }

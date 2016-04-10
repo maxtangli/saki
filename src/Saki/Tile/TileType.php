@@ -7,7 +7,6 @@ use Saki\Util\Utils;
 class TileType extends Enum {
     const REGEX_SUIT_TYPE = '[smp]';
     const REGEX_HONOR_TYPE = '[ESWNCPF]';
-
     /**
      * Tile ID concerned
      */

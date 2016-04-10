@@ -2,20 +2,20 @@
 namespace Saki\Command\PublicCommand;
 
 use Saki\Command\CommandContext;
-use Saki\Command\ParamDeclaration\SelfWindParamDeclaration;
+use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\ParamDeclaration\TileParamDeclaration;
 use Saki\Command\PrivateCommand;
 use Saki\Command\PublicCommand;
-use Saki\RoundPhase\PrivatePhaseState;
+use Saki\Phase\PrivatePhaseState;
 use Saki\Tile\Tile;
 
 class ChowCommand extends PublicCommand {
     static function getParamDeclarations() {
-        return [SelfWindParamDeclaration::class, TileParamDeclaration::class, TileParamDeclaration::class];
+        return [SeatWindParamDeclaration::class, TileParamDeclaration::class, TileParamDeclaration::class];
     }
 
-    function __construct(CommandContext $context, Tile $playerSelfWind, Tile $tile1, Tile $tile2) {
-        parent::__construct($context, [$playerSelfWind, $tile1, $tile2]);
+    function __construct(CommandContext $context, Tile $playerSeatWind, Tile $tile1, Tile $tile2) {
+        parent::__construct($context, [$playerSeatWind, $tile1, $tile2]);
     }
 
     /**
@@ -32,7 +32,7 @@ class ChowCommand extends PublicCommand {
         return $this->getParam(2);
     }
 
-    function matchOtherConditions() {
+    function matchOther() {
         return true; // todo
     }
 

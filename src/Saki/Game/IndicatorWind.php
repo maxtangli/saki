@@ -5,7 +5,7 @@ use Saki\Tile\Tile;
 use Saki\Util\Immutable;
 
 /**
- * Base class for RoundWind, PlayerWind.
+ * Base class for PrevailingWind, SeatWind.
  * @package Saki\Game
  */
 abstract class IndicatorWind implements Immutable {
@@ -66,7 +66,7 @@ abstract class IndicatorWind implements Immutable {
 
     /**
      * @param int $offset
-     * @return PlayerWind
+     * @return SeatWind
      */
     function toNext(int $offset = 1) {
         return new static($this->getWindTile()->getNextTile($offset));

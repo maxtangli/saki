@@ -12,7 +12,6 @@ use Saki\Util\ReadonlyArrayList;
  */
 class Meld extends TileList implements Immutable {
     use ReadonlyArrayList;
-
     private static $meldTypeAnalyzer;
 
     /**

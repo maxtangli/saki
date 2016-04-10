@@ -2,33 +2,33 @@
 namespace Saki\Command\PrivateCommand;
 
 use Saki\Command\CommandContext;
-use Saki\Command\ParamDeclaration\SelfWindParamDeclaration;
+use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\PrivateCommand;
-use Saki\Game\PlayerWind;
-use Saki\Game\RoundTurn;
-use Saki\RoundPhase\OverPhaseState;
+use Saki\Game\SeatWind;
+use Saki\Game\Turn;
+use Saki\Phase\OverPhaseState;
 use Saki\RoundResult\OnTheWayDrawRoundResult;
 use Saki\RoundResult\RoundResultType;
 use Saki\Tile\Tile;
 
 class NineNineDrawCommand extends PrivateCommand {
     static function getParamDeclarations() {
-        return [SelfWindParamDeclaration::class];
+        return [SeatWindParamDeclaration::class];
     }
 
-    function __construct(CommandContext $context, Tile $playerSelfWind) {
-        parent::__construct($context, [$playerSelfWind]);
+    function __construct(CommandContext $context, Tile $playerSeatWind) {
+        parent::__construct($context, [$playerSeatWind]);
     }
 
-    function matchOtherConditions() {
+    function matchOther() {
         $areas = $this->getContext()->getRound()->getAreas();
-        $currentTurn = $this->getContext()->getRound()->getTurnManager()->getGlobalTurn();
+        $currentCircleCount = $this->getContext()->getRound()->getTurnManager()->getCurrentTurn()->getCircleCount();
 
-        $isFirstTurn = $currentTurn == 1;
+        $isFirstTurn = $currentCircleCount == 1;
         $noDeclaredActions = !$areas->getDeclareHistory()->hasDeclare(
-            new RoundTurn($currentTurn, PlayerWind::createEast())
+            new Turn($currentCircleCount, SeatWind::createEast())
         );
-        $validTileList = $this->getActPlayer()->getTileArea()->getHand()->getPrivate()->isNineKindsOfTerminalOrHonor();
+        $validTileList = $this->getActPlayer()->getArea()->getHand()->getPrivate()->isNineKindsOfTerminalOrHonor();
         return $isFirstTurn && $noDeclaredActions && $validTileList;
     }
 

@@ -9,28 +9,28 @@ use Saki\Win\Yaku\Yaku;
  * @package Saki\Win\Yaku\Fan1
  */
 class UraDoraYaku extends Yaku {
-    function getConcealedFanCount() {
+    function getConcealedFan() {
         return 1;
     }
 
-    function getNotConcealedFanCount() {
+    function getNotConcealedFan() {
         return 1;
     }
 
     protected function getExistCountImpl(WinSubTarget $subTarget) {
         $doraFacade = $subTarget->getDoraFacade();
         $privateFull = $subTarget->getPrivateComplete();
-        return $doraFacade->getHandUraDoraFanCount($privateFull);
+        return $doraFacade->getHandUraDoraFan($privateFull);
     }
 
     function getRequiredTileSeries() {
         return [];
     }
 
-    protected function matchOtherConditions(WinSubTarget $subTarget) {
+    protected function matchOther(WinSubTarget $subTarget) {
         $doraFacade = $subTarget->getDoraFacade();
         $privateFull = $subTarget->getPrivateComplete();
-        return $doraFacade->getHandUraDoraFanCount($privateFull) > 0;
+        return $doraFacade->getHandUraDoraFan($privateFull) > 0;
     }
 }
 

@@ -2,8 +2,8 @@
 
 use Saki\Command\CommandContext;
 use Saki\Command\PrivateCommand\DiscardCommand;
+use Saki\Game\Phase;
 use Saki\Game\Round;
-use Saki\Game\RoundPhase;
 
 class DiscardCommandTest extends PHPUnit_Framework_TestCase {
     function testAll() {
@@ -20,6 +20,6 @@ class DiscardCommandTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($validCommand->executable());
 
         $validCommand->execute();
-        $this->assertEquals(RoundPhase::getPublicInstance(), $r->getPhaseState()->getRoundPhase());
+        $this->assertEquals(Phase::getPublicInstance(), $r->getPhaseState()->getPhase());
     }
 }

@@ -10,7 +10,6 @@ use Saki\Util\ArrayList;
  * @package Saki\Meld
  */
 class MeldCombinationAnalyzer {
-
     private $meldTypes;
     private $allowPureWeakCount;
     private $toConcealed;

@@ -8,7 +8,7 @@ use Saki\Util\Immutable;
 
 /**
  * A record for a open operation, where open operation includes discard and plusKong.
- * Note that open happens in private phase only, thus RoundTurn.PlayerWind means open actor.
+ * Note that open happens in private phase only, thus Turn.SeatWind means open actor.
  * @package Saki\Game
  */
 class OpenRecord implements Immutable {
@@ -17,20 +17,20 @@ class OpenRecord implements Immutable {
     function compareTo($other) {
         /** @var OpenRecord $other */
         $other = $other;
-        return $this->getRoundTurn()->compareTo($other->getRoundTurn());
+        return $this->getTurn()->compareTo($other->getTurn());
     }
 
-    private $roundTurn;
+    private $turn;
     private $tile;
     private $isDiscard;
 
     /**
-     * @param RoundTurn $roundTurn
+     * @param Turn $turn
      * @param Tile $tile
      * @param bool $isDiscard
      */
-    function __construct(RoundTurn $roundTurn, Tile $tile, bool $isDiscard) {
-        $this->roundTurn = $roundTurn;
+    function __construct(Turn $turn, Tile $tile, bool $isDiscard) {
+        $this->turn = $turn;
         $this->tile = $tile;
         $this->isDiscard = $isDiscard;
     }
@@ -40,21 +40,21 @@ class OpenRecord implements Immutable {
      */
     function __toString() {
         return sprintf('%s,%s,%s,%s',
-            $this->getRoundTurn(), $this->getActor(), $this->getTile(), $this->isDiscard());
+            $this->getTurn(), $this->getActor(), $this->getTile(), $this->isDiscard());
     }
 
     /**
-     * @return RoundTurn
+     * @return Turn
      */
-    function getRoundTurn() {
-        return $this->roundTurn;
+    function getTurn() {
+        return $this->turn;
     }
 
     /**
-     * @return PlayerWind
+     * @return SeatWind
      */
     function getActor() {
-        return $this->getRoundTurn()->getPlayerWind();
+        return $this->getTurn()->getSeatWind();
     }
 
     /**

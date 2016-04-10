@@ -7,11 +7,11 @@ use Saki\Win\Yaku\Yaku;
 use Saki\Win\Yaku\YakuItemList;
 
 class MockYaku extends Yaku {
-    public function getConcealedFanCount() {
+    public function getConcealedFan() {
         return 2;
     }
 
-    public function getNotConcealedFanCount() {
+    public function getNotConcealedFan() {
         return 1;
     }
 
@@ -19,17 +19,17 @@ class MockYaku extends Yaku {
         return [];
     }
 
-    protected function matchOtherConditions(WinSubTarget $subTarget) {
+    protected function matchOther(WinSubTarget $subTarget) {
         return true;
     }
 }
 
 class MockYaku2 extends Yaku {
-    public function getConcealedFanCount() {
+    public function getConcealedFan() {
         return 4;
     }
 
-    public function getNotConcealedFanCount() {
+    public function getNotConcealedFan() {
         return 3;
     }
 
@@ -37,7 +37,7 @@ class MockYaku2 extends Yaku {
         return [];
     }
 
-    protected function matchOtherConditions(WinSubTarget $subTarget) {
+    protected function matchOther(WinSubTarget $subTarget) {
         return true;
     }
 
@@ -47,11 +47,11 @@ class MockYaku2 extends Yaku {
 }
 
 class MockYakuMan extends Yaku {
-    public function getConcealedFanCount() {
+    public function getConcealedFan() {
         return 13;
     }
 
-    public function getNotConcealedFanCount() {
+    public function getNotConcealedFan() {
         return 13;
     }
 
@@ -59,7 +59,7 @@ class MockYakuMan extends Yaku {
         return [];
     }
 
-    protected function matchOtherConditions(WinSubTarget $subTarget) {
+    protected function matchOther(WinSubTarget $subTarget) {
         return true;
     }
 }
@@ -67,7 +67,7 @@ class MockYakuMan extends Yaku {
 class YakuItemListTest extends \PHPUnit_Framework_TestCase {
     function testEmpty() {
         $l = new YakuItemList();
-        $this->assertSame(0, $l->getTotalFanCount());
+        $this->assertSame(0, $l->getTotalFan());
         $l->normalize();
         $this->assertEquals(0, $l->count());
     }
@@ -75,9 +75,9 @@ class YakuItemListTest extends \PHPUnit_Framework_TestCase {
 //  todo refactor into right ver
 //    function testConcealed() {
 //        $l = new YakuItemList([MockYaku::create(), MockYaku2::create()], true);
-//        $this->assertEquals(2 + 4, $l->getTotalFanCount());
+//        $this->assertEquals(2 + 4, $l->getTotalFan());
 //        $l = new YakuItemList([MockYaku::create(), MockYaku2::create()], false);
-//        $this->assertEquals(1 + 3, $l->getTotalFanCount());
+//        $this->assertEquals(1 + 3, $l->getTotalFan());
 //    }
 //
 //    function testExcluded() {

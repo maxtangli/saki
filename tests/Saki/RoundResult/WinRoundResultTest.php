@@ -23,8 +23,8 @@ class WinRoundResultTest extends PHPUnit_Framework_TestCase {
         );
         $winResult = new \Saki\Win\WinResult(\Saki\Win\WinState::create(\Saki\Win\WinState::WIN_BY_SELF), $yakuList, 40);
 
-        $this->assertEquals(3, $winResult->getFanCount());
-        $this->assertEquals(40, $winResult->getFuCount());
+        $this->assertEquals(3, $winResult->getFan());
+        $this->assertEquals(40, $winResult->getFu());
 
         // 40符3番 親 7700 / 2600all,
         $r = WinRoundResult::createWinBySelf($players, $playerList[0], $winResult, 0, 0);
@@ -35,10 +35,10 @@ class WinRoundResultTest extends PHPUnit_Framework_TestCase {
             [$playerList[3], -2600],
         ];
         foreach ($expected as list($p, $deltaInt)) {
-            $this->assertEquals($deltaInt, $r->getScoreDeltaInt($p), $p->getNo());
+            $this->assertEquals($deltaInt, $r->getPointDeltaInt($p), $p->getNo());
         }
 
-        // accumulatedReachCount + selfWindTurn
+        // accumulatedReachCount + seatWindTurn
         $r = WinRoundResult::createWinBySelf($players, $playerList[0], $winResult, 2, 2);
         $expected = [
             [$playerList[0], 2600 * 3 + 2000 + 600],
@@ -47,7 +47,7 @@ class WinRoundResultTest extends PHPUnit_Framework_TestCase {
             [$playerList[3], -2600 - 200],
         ];
         foreach ($expected as list($p, $deltaInt)) {
-            $this->assertEquals($deltaInt, $r->getScoreDeltaInt($p), $p->getNo());
+            $this->assertEquals($deltaInt, $r->getPointDeltaInt($p), $p->getNo());
         }
 
         // 40符3番 子 5200 / 1300+1300+2600
@@ -59,7 +59,7 @@ class WinRoundResultTest extends PHPUnit_Framework_TestCase {
             [$playerList[3], -1300],
         ];
         foreach ($expected as list($p, $deltaInt)) {
-            $this->assertEquals($deltaInt, $r->getScoreDeltaInt($p));
+            $this->assertEquals($deltaInt, $r->getPointDeltaInt($p));
         }
     }
 
@@ -76,8 +76,8 @@ class WinRoundResultTest extends PHPUnit_Framework_TestCase {
         );
         $winResult = new \Saki\Win\WinResult(\Saki\Win\WinState::create(\Saki\Win\WinState::WIN_BY_OTHER), $yakuList, 40);
 
-        $this->assertEquals(3, $winResult->getFanCount());
-        $this->assertEquals(40, $winResult->getFuCount());
+        $this->assertEquals(3, $winResult->getFan());
+        $this->assertEquals(40, $winResult->getFu());
 
         // 40符3番 親 7700 / 2600all,
         $r = WinRoundResult::createWinByOther($players, $players[0], $winResult, $players[1], 0, 0);
@@ -88,7 +88,7 @@ class WinRoundResultTest extends PHPUnit_Framework_TestCase {
             [$playerList[3], 0],
         ];
         foreach ($expected as list($p, $deltaInt)) {
-            $this->assertEquals($deltaInt, $r->getScoreDeltaInt($p), $p->getNo());
+            $this->assertEquals($deltaInt, $r->getPointDeltaInt($p), $p->getNo());
         }
 
         // 2,2
@@ -100,7 +100,7 @@ class WinRoundResultTest extends PHPUnit_Framework_TestCase {
             [$playerList[3], 0],
         ];
         foreach ($expected as list($p, $deltaInt)) {
-            $this->assertEquals($deltaInt, $r->getScoreDeltaInt($p), $p->getNo());
+            $this->assertEquals($deltaInt, $r->getPointDeltaInt($p), $p->getNo());
         }
 
         // 40符3番 子 5200 / 1300+1300+2600
@@ -112,7 +112,7 @@ class WinRoundResultTest extends PHPUnit_Framework_TestCase {
             [$playerList[3], 0],
         ];
         foreach ($expected as list($p, $deltaInt)) {
-            $this->assertEquals($deltaInt, $r->getScoreDeltaInt($p));
+            $this->assertEquals($deltaInt, $r->getPointDeltaInt($p));
         }
     }
 
@@ -129,8 +129,8 @@ class WinRoundResultTest extends PHPUnit_Framework_TestCase {
         );
         $winResult = new \Saki\Win\WinResult(\Saki\Win\WinState::create(\Saki\Win\WinState::WIN_BY_OTHER), $yakuList, 40);
 
-        $this->assertEquals(3, $winResult->getFanCount());
-        $this->assertEquals(40, $winResult->getFuCount());
+        $this->assertEquals(3, $winResult->getFan());
+        $this->assertEquals(40, $winResult->getFu());
 
         // 40符3番 親 7700, 子 5200
         $r = WinRoundResult::createMultiWinByOther($players, [$players[0], $players[1]], [$winResult, $winResult], $players[3], 0, 0);
@@ -141,7 +141,7 @@ class WinRoundResultTest extends PHPUnit_Framework_TestCase {
             [$playerList[3], -7700 - 5200],
         ];
         foreach ($expected as list($p, $deltaInt)) {
-            $this->assertEquals($deltaInt, $r->getScoreDeltaInt($p), $p->getNo());
+            $this->assertEquals($deltaInt, $r->getPointDeltaInt($p), $p->getNo());
         }
 
         // 40符3番 親 7700, 子 5200
@@ -153,7 +153,7 @@ class WinRoundResultTest extends PHPUnit_Framework_TestCase {
             [$playerList[3], -7700 - 5200 - 1200],
         ];
         foreach ($expected as list($p, $deltaInt)) {
-            $this->assertEquals($deltaInt, $r->getScoreDeltaInt($p), $p->getNo());
+            $this->assertEquals($deltaInt, $r->getPointDeltaInt($p), $p->getNo());
         }
     }
 }

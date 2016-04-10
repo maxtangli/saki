@@ -6,11 +6,11 @@ use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\Yaku;
 
 class AllGreenYaku extends Yaku {
-    function getConcealedFanCount() {
+    function getConcealedFan() {
         return 13;
     }
 
-    function getNotConcealedFanCount() {
+    function getNotConcealedFan() {
         return 13;
     }
 
@@ -18,7 +18,7 @@ class AllGreenYaku extends Yaku {
         return [TileSeries::create(TileSeries::FOUR_WIN_SET_AND_ONE_PAIR)];
     }
 
-    protected function matchOtherConditions(WinSubTarget $subTarget) {
+    protected function matchOther(WinSubTarget $subTarget) {
         return $subTarget->getPrivateComplete()->isAllGreen();
     }
 }

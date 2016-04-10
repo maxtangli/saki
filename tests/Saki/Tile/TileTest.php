@@ -4,7 +4,6 @@ use Saki\Tile\Tile;
 use Saki\Tile\TileType;
 
 class TileTest extends PHPUnit_Framework_TestCase {
-
     function testCompare() {
         $t5m = Tile::fromString('5m');
         $t0m = Tile::fromString('0m');

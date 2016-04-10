@@ -12,12 +12,12 @@ use Saki\Win\Yaku\Fan1\DoubleRunYaku;
 use Saki\Win\Yaku\Fan1\FirstTurnWinYaku;
 use Saki\Win\Yaku\Fan1\GreenValueTilesYaku;
 use Saki\Win\Yaku\Fan1\KingSTileWinYaku;
+use Saki\Win\Yaku\Fan1\PrevailingWindYaku;
 use Saki\Win\Yaku\Fan1\ReachYaku;
 use Saki\Win\Yaku\Fan1\RedDoraYaku;
 use Saki\Win\Yaku\Fan1\RedValueTilesYaku;
 use Saki\Win\Yaku\Fan1\RobbingAQuadYaku;
-use Saki\Win\Yaku\Fan1\RoundWindValueTilesYaku;
-use Saki\Win\Yaku\Fan1\SelfWindValueTilesYaku;
+use Saki\Win\Yaku\Fan1\SeatWindYaku;
 use Saki\Win\Yaku\Fan1\UraDoraYaku;
 use Saki\Win\Yaku\Fan1\WhiteValueTilesYaku;
 use Saki\Win\Yaku\Fan2\AllTerminalsAndHonorsYaku;
@@ -58,7 +58,6 @@ use Saki\Win\Yaku\Yakuman2\ThirteenOrphansPairWaitingYaku;
  */
 class YakuSet extends ArrayList {
     use ReadonlyArrayList;
-
     private static $standardInstance;
 
     /**
@@ -79,8 +78,8 @@ class YakuSet extends ArrayList {
                 RedDoraYaku::create(),
                 RedValueTilesYaku::create(),
                 RobbingAQuadYaku::create(),
-                RoundWindValueTilesYaku::create(),
-                SelfWindValueTilesYaku::create(),
+                PrevailingWindYaku::create(),
+                SeatWindYaku::create(),
                 UraDoraYaku::create(),
                 WhiteValueTilesYaku::create(),
                 // Fan2

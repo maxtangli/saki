@@ -2,18 +2,18 @@
 namespace Saki\Command\PrivateCommand;
 
 use Saki\Command\CommandContext;
-use Saki\Command\ParamDeclaration\SelfWindParamDeclaration;
+use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\ParamDeclaration\TileParamDeclaration;
 use Saki\Command\PrivateCommand;
 use Saki\Tile\Tile;
 
 class ConcealedKongCommand extends PrivateCommand {
     static function getParamDeclarations() {
-        return [SelfWindParamDeclaration::class, TileParamDeclaration::class];
+        return [SeatWindParamDeclaration::class, TileParamDeclaration::class];
     }
 
-    function __construct(CommandContext $context, Tile $playerSelfWind, Tile $tile) {
-        parent::__construct($context, [$playerSelfWind, $tile]);
+    function __construct(CommandContext $context, Tile $playerSeatWind, Tile $tile) {
+        parent::__construct($context, [$playerSeatWind, $tile]);
     }
 
     /**
@@ -23,7 +23,7 @@ class ConcealedKongCommand extends PrivateCommand {
         return $this->getParam(1);
     }
 
-    function matchOtherConditions() {
+    function matchOther() {
         return true; // todo
     }
 

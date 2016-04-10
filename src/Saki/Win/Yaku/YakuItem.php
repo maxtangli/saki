@@ -3,22 +3,22 @@ namespace Saki\Win\Yaku;
 
 class YakuItem {
     private $yaku;
-    private $fanCount;
+    private $fan;
 
-    function __construct(Yaku $yaku, int $fanCount) {
+    function __construct(Yaku $yaku, int $fan) {
         $this->yaku = $yaku;
-        $this->fanCount = $fanCount;
+        $this->fan = $fan;
     }
 
     function __toString() {
-        return sprintf('%s,%s', $this->yaku, $this->fanCount);
+        return sprintf('%s,%s', $this->yaku, $this->fan);
     }
 
     function getYaku() {
         return $this->yaku;
     }
 
-    function getFanCount() {
-        return $this->fanCount;
+    function getFan() {
+        return $this->fan;
     }
 }

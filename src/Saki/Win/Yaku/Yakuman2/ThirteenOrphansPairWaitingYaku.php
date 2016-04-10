@@ -7,11 +7,11 @@ use Saki\Win\Yaku\Yaku;
 use Saki\Win\Yaku\Yakuman\ThirteenOrphansYaku;
 
 class ThirteenOrphansPairWaitingYaku extends Yaku {
-    function getConcealedFanCount() {
+    function getConcealedFan() {
         return 26;
     }
 
-    function getNotConcealedFanCount() {
+    function getNotConcealedFan() {
         return 26;
     }
 
@@ -21,7 +21,7 @@ class ThirteenOrphansPairWaitingYaku extends Yaku {
         ];
     }
 
-    protected function matchOtherConditions(WinSubTarget $subTarget) {
+    protected function matchOther(WinSubTarget $subTarget) {
         return $subTarget->getAllMeldList()->isThirteenOrphan(true);
     }
 

@@ -5,11 +5,11 @@ use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\Yaku;
 
 class FirstTurnWinYaku extends Yaku {
-    function getConcealedFanCount() {
+    function getConcealedFan() {
         return 1;
     }
 
-    function getNotConcealedFanCount() {
+    function getNotConcealedFan() {
         return 0;
     }
 
@@ -17,7 +17,7 @@ class FirstTurnWinYaku extends Yaku {
         return [];
     }
 
-    protected function matchOtherConditions(WinSubTarget $subTarget) {
+    protected function matchOther(WinSubTarget $subTarget) {
         return $subTarget->isFirstTurnWin();
     }
 }

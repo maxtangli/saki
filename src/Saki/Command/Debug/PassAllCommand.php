@@ -14,7 +14,7 @@ class PassAllCommand extends Command {
     }
 
     function executable() {
-        return $this->getContext()->getRound()->getPhaseState()->getRoundPhase()->isPublic();
+        return $this->getContext()->getRound()->getPhaseState()->getPhase()->isPublic();
     }
 
     function executeImpl() {

@@ -5,11 +5,11 @@ use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\Yaku;
 
 class ThreeColorRunsYaku extends Yaku {
-    function getConcealedFanCount() {
+    function getConcealedFan() {
         return 2;
     }
 
-    function getNotConcealedFanCount() {
+    function getNotConcealedFan() {
         return 1;
     }
 
@@ -17,7 +17,7 @@ class ThreeColorRunsYaku extends Yaku {
         return [];
     }
 
-    protected function matchOtherConditions(WinSubTarget $subTarget) {
+    protected function matchOther(WinSubTarget $subTarget) {
         return $subTarget->getAllMeldList()->isThreeColorRuns();
     }
 }

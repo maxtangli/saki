@@ -36,12 +36,12 @@ class OpenHistory {
     }
 
     /**
-     * @param PlayerWind $myPlayerWind
-     * @return RoundTurn
+     * @param SeatWind $mySeatWind
+     * @return Turn
      */
-    function getLastOpenOrFalse(PlayerWind $myPlayerWind) {
-        $myList = $this->list->getCopy()->where(function (OpenRecord $record) use ($myPlayerWind) {
-            return $record->getActor() == $myPlayerWind;
+    function getLastOpenOrFalse(SeatWind $mySeatWind) {
+        $myList = $this->list->getCopy()->where(function (OpenRecord $record) use ($mySeatWind) {
+            return $record->getActor() == $mySeatWind;
         });
 
         if ($myList->isEmpty()) {
@@ -50,28 +50,28 @@ class OpenHistory {
 
         /** @var OpenRecord $lastRecord */
         $lastRecord = $myList->getLast();
-        return $lastRecord->getRoundTurn();
+        return $lastRecord->getTurn();
     }
 
     /**
-     * Return self's open tiles since first RoundTurn.
+     * Return self's open tiles since first Turn.
      * Used in: discard furiten.
-     * @param PlayerWind $myPlayerWind
+     * @param SeatWind $mySeatWind
      * @return TileList
      */
-    function getSelf(PlayerWind $myPlayerWind) {
-        return $this->getImpl(true, $myPlayerWind, RoundTurn::createFirst(), false);
+    function getSelf(SeatWind $mySeatWind) {
+        return $this->getImpl(true, $mySeatWind, Turn::createFirst(), false);
     }
 
     /**
-     * Return other's open tiles since $fromRoundTurn, exclude last one tile if exist since it's target tile.
+     * Return other's open tiles since $fromTurn, exclude last one tile if exist since it's target tile.
      * Used in: reach furiten, turn furiten.
-     * @param PlayerWind $myPlayerWind
-     * @param RoundTurn $fromRoundTurn
+     * @param SeatWind $mySeatWind
+     * @param Turn $fromTurn
      * @return TileList
      */
-    function getOther(PlayerWind $myPlayerWind, RoundTurn $fromRoundTurn) {
-        return $this->getImpl(false, $myPlayerWind, $fromRoundTurn, true);
+    function getOther(SeatWind $mySeatWind, Turn $fromTurn) {
+        return $this->getImpl(false, $mySeatWind, $fromTurn, true);
     }
 
     /**
@@ -91,19 +91,19 @@ class OpenHistory {
 
     /**
      * @param bool $require Require self's open TileList if true, other's open TileList otherwise.
-     * @param PlayerWind $selfActor
-     * @param RoundTurn $fromRoundTurn
+     * @param SeatWind $selfActor
+     * @param Turn $fromTurn
      * @param bool $excludeLastTile
      * @return TileList
      */
-    private function getImpl(bool $require, PlayerWind $selfActor, RoundTurn $fromRoundTurn, bool $excludeLastTile) {
+    private function getImpl(bool $require, SeatWind $selfActor, Turn $fromTurn, bool $excludeLastTile) {
         // note: the match logic do not belongs to OpenRecord,
         // since this is a private implementation that varies, not a stable behaviour of OpenRecord.
-        $match = function (OpenRecord $record) use ($require, $selfActor, $fromRoundTurn) {
+        $match = function (OpenRecord $record) use ($require, $selfActor, $fromTurn) {
             $isSelfActorRecord = $record->getActor() == $selfActor;
             $matchRequire = $isSelfActorRecord == $require;
-            $matchRoundTurn = $record->getRoundTurn()->isAfterOrSame($fromRoundTurn);
-            return $matchRequire && $matchRoundTurn;
+            $matchTurn = $record->getTurn()->isAfterOrSame($fromTurn);
+            return $matchRequire && $matchTurn;
         };
         $result = $this->list->getCopy()->where($match);
 

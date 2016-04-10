@@ -6,11 +6,11 @@ use Saki\Win\Yaku\Fan1\DoubleRunYaku;
 use Saki\Win\Yaku\Yaku;
 
 class TwoDoubleRunYaku extends Yaku {
-    function getConcealedFanCount() {
+    function getConcealedFan() {
         return 3;
     }
 
-    function getNotConcealedFanCount() {
+    function getNotConcealedFan() {
         return 0;
     }
 
@@ -18,7 +18,7 @@ class TwoDoubleRunYaku extends Yaku {
         return [];
     }
 
-    protected function matchOtherConditions(WinSubTarget $subTarget) {
+    protected function matchOther(WinSubTarget $subTarget) {
         return $subTarget->getAllMeldList()->isDoubleRun(true);
     }
 

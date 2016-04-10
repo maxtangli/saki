@@ -4,15 +4,14 @@ use Saki\Game\Round;
 use Saki\Meld\MeldList;
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
-use Saki\Win\Fu\FuCountAnalyzer;
-use Saki\Win\Fu\FuCountTarget;
+use Saki\Win\Fu\FuAnalyzer;
+use Saki\Win\Fu\FuTarget;
 use Saki\Win\WaitingType;
 use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\YakuItemList;
 
-class FuCountAnalyzerTest extends PHPUnit_Framework_TestCase {
-
-    function testFuCount() {
+class FuAnalyzerTest extends PHPUnit_Framework_TestCase {
+    function testFu() {
         $targetTile = Tile::fromString('3p');
         $declareMeldList = MeldList::fromString('8888p,999m');
         $hand = TileList::fromString('123pCCFFF');
@@ -25,8 +24,8 @@ class FuCountAnalyzerTest extends PHPUnit_Framework_TestCase {
         $subTarget = new WinSubTarget($handMeldList, $player, $r);
         $yakuList = new YakuItemList();
         $waitingType = WaitingType::create(WaitingType::ONE_SIDE_RUN_WAITING);
-        $target = new FuCountTarget($subTarget, $yakuList, $waitingType);
-        $analyzer = FuCountAnalyzer::create();
+        $target = new FuTarget($subTarget, $yakuList, $waitingType);
+        $analyzer = FuAnalyzer::create();
         $result = $analyzer->getResult($target);
 
         /**
@@ -35,16 +34,16 @@ class FuCountAnalyzerTest extends PHPUnit_Framework_TestCase {
          * 46符は切り上げて50符として計算する。
          */
 
-        $this->assertEquals(0, $result->getSpecialYakuTotalFuCount());
-        $this->assertEquals(20, $result->getBaseFuCount());
-        $winSetFuCountResults = $result->getWinSetFuCountResults();
-        $this->assertCount(3, $winSetFuCountResults, var_export($winSetFuCountResults, true));
-        $this->assertEquals(20, $result->getWinSetFuCount(), implode(',', $winSetFuCountResults));
-        $this->assertEquals(2, $result->getPairFuCount());
-        $this->assertEquals(2, $result->getWaitingTypeFuCount());
-        $this->assertEquals(0, $result->getConcealedFuCount());
-        $this->assertEquals(2, $result->getWinBySelfFuCount());
-        $this->assertEquals(46, $result->getRoughTotalFuCount());
-        $this->assertEquals(50, $result->getTotalFuCount());
+        $this->assertEquals(0, $result->getSpecialYakuTotalFu());
+        $this->assertEquals(20, $result->getBaseFu());
+        $winSetFuResults = $result->getWinSetFuResults();
+        $this->assertCount(3, $winSetFuResults, var_export($winSetFuResults, true));
+        $this->assertEquals(20, $result->getWinSetFu(), implode(',', $winSetFuResults));
+        $this->assertEquals(2, $result->getPairFu());
+        $this->assertEquals(2, $result->getWaitingTypeFu());
+        $this->assertEquals(0, $result->getConcealedFu());
+        $this->assertEquals(2, $result->getWinBySelfFu());
+        $this->assertEquals(46, $result->getRoughTotalFu());
+        $this->assertEquals(50, $result->getTotalFu());
     }
 }

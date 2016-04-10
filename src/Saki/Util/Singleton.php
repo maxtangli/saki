@@ -7,7 +7,6 @@ namespace Saki\Util;
  * @package Saki\Util
  */
 abstract class Singleton {
-
     private static $instances;
 
     /**

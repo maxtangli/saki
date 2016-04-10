@@ -7,7 +7,7 @@ class Roller {
     // variable
     private $targetList; // initialIndex is kept to be 0
     private $currentIndex;
-    private $globalTurn; // first turn is 1
+    private $circleCount; // first turn is 1
     private $localTurns;
 
     function __construct(array $targets, $initialTarget = null) {
@@ -27,16 +27,16 @@ class Roller {
 
         $this->targetList->shiftCyclicLeft($initialIndex);
         $this->currentIndex = 0;
-        $this->globalTurn = 1;
+        $this->circleCount = 1;
         $this->localTurns = array_fill(0, $this->targetList->count(), 0);
         $this->localTurns[0] = 1;
     }
 
-    function debugSet($currentTarget, $globalTurn) {
+    function debugSet($currentTarget, $circleCount) {
         $currentIndex = $this->targetList->getIndex($currentTarget);
 
         $this->currentIndex = $currentIndex;
-        $this->globalTurn = $globalTurn;
+        $this->circleCount = $circleCount;
         $this->localTurns = array_fill(0, $this->targetList->count(), 0);
         $this->localTurns[0] = 1;
     }
@@ -61,8 +61,8 @@ class Roller {
         return $this->targetList[$targetIndex];
     }
 
-    function getGlobalTurn() {
-        return $this->globalTurn;
+    function getCircleCount() {
+        return $this->circleCount;
     }
 
     function getTargetLocalTurn($target) {
@@ -82,7 +82,7 @@ class Roller {
         $isNextTurn = $targetIndex < $this->currentIndex;
         $this->currentIndex = $targetIndex;
         if ($isNextTurn) {
-            ++$this->globalTurn;
+            ++$this->circleCount;
         }
         ++$this->localTurns[$targetIndex];
     }

@@ -20,18 +20,18 @@ class PlayerList extends ArrayList {
 
     /**
      * @param int $n
-     * @param int $initialScore
+     * @param int $initialPoint
      */
-    function __construct(int $n, int $initialScore) {
+    function __construct(int $n, int $initialPoint) {
         if (!Utils::inRange($n, 1, 4)) {
             throw new \InvalidArgumentException();
         }
 
         $data = [
-            [1, $initialScore, Tile::fromString('E')],
-            [2, $initialScore, Tile::fromString('S')],
-            [3, $initialScore, Tile::fromString('W')],
-            [4, $initialScore, Tile::fromString('N')],
+            [1, $initialPoint, SeatWind::fromString('E')],
+            [2, $initialPoint, SeatWind::fromString('S')],
+            [3, $initialPoint, SeatWind::fromString('W')],
+            [4, $initialPoint, SeatWind::fromString('N')],
         ];
         $players = array_map(function ($v) {
             return new Player($v[0], $v[1], $v[2]);
@@ -41,9 +41,9 @@ class PlayerList extends ArrayList {
         $this->players = $players;
     }
 
-    function hasMinusScorePlayer() {
+    function hasMinusPointPlayer() {
         return $this->any(function (Player $player) {
-            return $player->getScore() < 0;
+            return $player->getArea()->getPoint() < 0;
         });
     }
 
@@ -52,15 +52,15 @@ class PlayerList extends ArrayList {
      */
     function getTopPlayers() {
         $topPlayers = [];
-        $topScore = 0;
+        $topPoint = 0;
         foreach ($this as $player) {
-            if ($player->getScore() >= $topScore) {
-                if ($player->getScore() > $topScore) {
+            if ($player->getArea()->getPoint() >= $topPoint) {
+                if ($player->getArea()->getPoint() > $topPoint) {
                     $topPlayers = [$player];
                 } else {
                     $topPlayers[] = $player;
                 }
-                $topScore = $player->getScore();
+                $topPoint = $player->getArea()->getPoint();
             }
         }
         return $topPlayers;
@@ -70,36 +70,40 @@ class PlayerList extends ArrayList {
      * @return Player
      */
     function getDealerPlayer() {
-        return $this->getSelfWindPlayer(Tile::fromString('E'));
+        return $this->getSeatWindTilePlayer(Tile::fromString('E'));
     }
 
     function getSouthPlayer() {
-        return $this->getSelfWindPlayer(Tile::fromString('S'));
+        return $this->getSeatWindTilePlayer(Tile::fromString('S'));
     }
 
     function getWestPlayer() {
-        return $this->getSelfWindPlayer(Tile::fromString('W'));
+        return $this->getSeatWindTilePlayer(Tile::fromString('W'));
     }
 
     function getNorthPlayer() {
-        return $this->getSelfWindPlayer(Tile::fromString('N'));
+        return $this->getSeatWindTilePlayer(Tile::fromString('N'));
     }
 
-    /**
-     * @param Tile $selfWind
+    function getPlayer(SeatWind $seatWind) {
+        return $this->getSeatWindTilePlayer($seatWind->getWindTile());
+    }
+    
+    /** todo remove
+     * @param Tile $seatWind
      * @return Player
      */
-    function getSelfWindPlayer(Tile $selfWind) {
+    function getSeatWindTilePlayer(Tile $seatWind) {
         $result = [];
         foreach ($this as $player) {
             /** @var Player $player */
             $player = $player;
-            if ($player->getTileArea()->getPlayerWind()->getWindTile() == $selfWind) {
+            if ($player->getArea()->getSeatWind()->getWindTile() == $seatWind) {
                 $result[] = $player;
             }
         }
         if (count($result) != 1) {
-            throw new \LogicException('not one and only one selfWind.');
+            throw new \LogicException('not one and only one seatWind.');
         }
         return $result[0];
     }

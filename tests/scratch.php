@@ -1,5 +1,4 @@
 <?php
-use Saki\Game\PlayerWind;
 use Saki\Tile\TileSet;
 use Saki\Util\MsTimer;
 

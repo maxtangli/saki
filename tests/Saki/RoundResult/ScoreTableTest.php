@@ -1,21 +1,21 @@
 <?php
 
-use Saki\RoundResult\ScoreTable;
+use Saki\RoundResult\PointTable;
 
-class ScoreTableTest extends PHPUnit_Framework_TestCase {
+class PointTableTest extends PHPUnit_Framework_TestCase {
     /**
-     * @dataProvider payScoreProvider
+     * @dataProvider payPointProvider
      */
-    function testPayScore($expectedPayScore, $receiverIsDealer, $fanCount, $fuCount, $winBySelf, $payerIsDealer) {
-        $table = ScoreTable::create();
-        $item = $table->getScoreItem($fanCount, $fuCount);
-        $payScore = $item->getPayScore($receiverIsDealer, $winBySelf, $payerIsDealer);
-        $this->assertEquals($expectedPayScore, $payScore);
+    function testPayPoint($expectedPayPoint, $receiverIsDealer, $fan, $fu, $winBySelf, $payerIsDealer) {
+        $table = PointTable::create();
+        $item = $table->getPointItem($fan, $fu);
+        $payPoint = $item->getPayPoint($receiverIsDealer, $winBySelf, $payerIsDealer);
+        $this->assertEquals($expectedPayPoint, $payPoint);
     }
 
-    function payScoreProvider() {
+    function payPointProvider() {
         return [
-            // $expectedPayScore, $receiverIsDealer, $fanCount, $fuCount, $winBySelf, $payerIsDealer
+            // $expectedPayPoint, $receiverIsDealer, $fan, $fu, $winBySelf, $payerIsDealer
             // non-dealer 1 fan 30 fu
             [1000, false, 1, 30, false, false],
             [300, false, 1, 30, true, false],

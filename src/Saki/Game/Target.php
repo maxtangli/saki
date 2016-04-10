@@ -11,7 +11,7 @@ class Target {
      * @return Target
      */
     static function createNull() {
-        $obj = new self(Tile::fromString('E'), TargetType::create(TargetType::KEEP), PlayerWind::createEast());
+        $obj = new self(Tile::fromString('E'), TargetType::create(TargetType::KEEP), SeatWind::createEast());
         $obj->tile = null;
         $obj->type = null;
         $obj->creator = null;
@@ -25,9 +25,9 @@ class Target {
     /**
      * @param Tile $tile
      * @param TargetType $targetType
-     * @param PlayerWind $creator
+     * @param SeatWind $creator
      */
-    function __construct(Tile $tile, TargetType $targetType, PlayerWind $creator) {
+    function __construct(Tile $tile, TargetType $targetType, SeatWind $creator) {
         $this->tile = $tile;
         $this->type = $targetType;
         $this->creator = $creator;
@@ -115,20 +115,20 @@ class Target {
     }
 
     /**
-     * @param PlayerWind $playerWind
+     * @param SeatWind $seatWind
      * @return bool
      */
-    function isCreator(PlayerWind $playerWind) {
+    function isCreator(SeatWind $seatWind) {
         $this->assertExist();
-        return $this->getCreator() == $playerWind;
+        return $this->getCreator() == $seatWind;
     }
 
     /**
-     * @param PlayerWind $playerWind
+     * @param SeatWind $seatWind
      * @return bool
      */
-    function isOwner(PlayerWind $playerWind) {
-        $isCreator = $this->isCreator($playerWind);
+    function isOwner(SeatWind $seatWind) {
+        $isCreator = $this->isCreator($seatWind);
         $isOwnByCreator = $this->getType()->isOwnByCreator();
         return $isCreator == $isOwnByCreator;
     }

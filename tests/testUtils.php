@@ -1,7 +1,6 @@
 <?php
 
 class testUtils {
-
 }
 
 class SakiTestCase extends \PHPUnit_Framework_TestCase {

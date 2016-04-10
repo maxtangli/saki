@@ -5,7 +5,6 @@ use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 
 class DoraFacade {
-
     private $deadWall;
 
     function __construct(DeadWall $deadWall) {
@@ -20,15 +19,15 @@ class DoraFacade {
         return $this->deadWall->getOpenedUraDoraIndicators();
     }
 
-    function getTileDoraFanCount(Tile $tile) {
-        return $this->getTileDoraFanCountImpl($tile, $this->getOpenedDoraIndicators());
+    function getTileDoraFan(Tile $tile) {
+        return $this->getTileDoraFanImpl($tile, $this->getOpenedDoraIndicators());
     }
 
-    function getTileUraDoraFanCount(Tile $tile) {
-        return $this->getTileDoraFanCountImpl($tile, $this->getOpenedUraDoraIndicators());
+    function getTileUraDoraFan(Tile $tile) {
+        return $this->getTileDoraFanImpl($tile, $this->getOpenedUraDoraIndicators());
     }
 
-    protected function getTileDoraFanCountImpl(Tile $tile, array $openedIndicators) {
+    protected function getTileDoraFanImpl(Tile $tile, array $openedIndicators) {
         $count = 0;
         foreach ($openedIndicators as $doraIndicator) {
             /** @var Tile $doraIndicator */
@@ -40,38 +39,38 @@ class DoraFacade {
         return $count;
     }
 
-    function getTileRedDoraFanCount(Tile $tile) {
+    function getTileRedDoraFan(Tile $tile) {
         return $tile->isRedDora() ? 1 : 0;
     }
 
-    function getTileAllDoraFanCount(Tile $tile) {
-        return $this->getTileDoraFanCount($tile) + $this->getTileUraDoraFanCount($tile) + $this->getTileRedDoraFanCount($tile);
+    function getTileAllDoraFan(Tile $tile) {
+        return $this->getTileDoraFan($tile) + $this->getTileUraDoraFan($tile) + $this->getTileRedDoraFan($tile);
     }
 
-    function getHandDoraFanCount(TileList $allTileList) {
-        return $this->getHandDoraFanCountImpl($allTileList, [$this, 'getTileDoraFanCount']);
+    function getHandDoraFan(TileList $allTileList) {
+        return $this->getHandDoraFanImpl($allTileList, [$this, 'getTileDoraFan']);
     }
 
-    function getHandUraDoraFanCount(TileList $allTileList) {
-        return $this->getHandDoraFanCountImpl($allTileList, [$this, 'getTileUraDoraFanCount']);
+    function getHandUraDoraFan(TileList $allTileList) {
+        return $this->getHandDoraFanImpl($allTileList, [$this, 'getTileUraDoraFan']);
     }
 
-    function getHandRedDoraFanCount(TileList $allTileList) {
-        return $this->getHandDoraFanCountImpl($allTileList, [$this, 'getTileRedDoraFanCount']);
+    function getHandRedDoraFan(TileList $allTileList) {
+        return $this->getHandDoraFanImpl($allTileList, [$this, 'getTileRedDoraFan']);
     }
 
-    function getHandAllDoraFanCount(TileList $allTileList) {
-        return $this->getHandDoraFanCountImpl($allTileList, [$this, 'getTileAllDoraFanCount']);
+    function getHandAllDoraFan(TileList $allTileList) {
+        return $this->getHandDoraFanImpl($allTileList, [$this, 'getTileAllDoraFan']);
     }
 
-    protected function getHandDoraFanCountImpl(TileList $allTileList, callable $getDoraFanCountCallback) {
+    protected function getHandDoraFanImpl(TileList $allTileList, callable $getDoraFanCallback) {
         if (!$allTileList->getHandSize()->isCompletePrivate()) {
             throw new \InvalidArgumentException();
         }
 
         $count = 0;
         foreach ($allTileList as $tile) {
-            $count += $getDoraFanCountCallback($tile);
+            $count += $getDoraFanCallback($tile);
         }
         return $count;
     }

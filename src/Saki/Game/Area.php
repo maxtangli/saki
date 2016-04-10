@@ -13,38 +13,40 @@ use Saki\Tile\TileList;
  * @package Saki\Game
  */
 class Area {
+    // immutable
+    private $getTarget;
     // game variable
-    private $playerWind;
-
+    private $seatWind;
+    private $point;
     // round variable
     private $public;
     private $discardLocked; // locked to support safe pass by reference
     private $declaredMeldList;
     private $reachStatus;
 
-    // immutable
-    private $getTarget;
-
     /**
      * @param callable $getTarget
-     * @param PlayerWind $playerWind
+     * @param SeatWind $seatWind
+     * @param int $initialPoint
      */
-    function __construct(callable $getTarget, PlayerWind $playerWind) {
-        $this->playerWind = $playerWind;
+    function __construct(callable $getTarget, SeatWind $seatWind, int $initialPoint) {
+        $this->getTarget = $getTarget;
+
+        $this->seatWind = $seatWind;
+        $this->point = $initialPoint;
 
         $this->public = new TileList();
         $this->discardLocked = (new TileList())->lock();
         $this->declaredMeldList = new MeldList();
         $this->reachStatus = ReachStatus::createNotReach();
-
-        $this->getTarget = $getTarget;
     }
 
     /**
-     * @param PlayerWind $playerWind
+     * @param SeatWind $seatWind
      */
-    function reset(PlayerWind $playerWind) {
-        $this->playerWind = $playerWind;
+    function reset(SeatWind $seatWind) {
+        $this->seatWind = $seatWind;
+        // $this->point not change
 
         $this->public->removeAll();
         $this->discardLocked->unlock()->removeAll()->lock();
@@ -68,19 +70,33 @@ class Area {
         $this->declaredMeldList->fromSelect($declare);
     }
 
-    function getPlayerWind() {
-        return $this->playerWind;
+    function getSeatWind() {
+        return $this->seatWind;
     }
 
     /**
-     * @return Target A Target own by this Area's PlayerWind.
+     * @return int
+     */
+    function getPoint() {
+        return $this->point;
+    }
+
+    /**
+     * @param int $point
+     */
+    function setPoint(int $point) {
+        $this->point = $point;
+    }
+
+    /**
+     * @return Target A Target own by this Area's SeatWind.
      */
     protected function getTarget() {
         $f = $this->getTarget;
         /** @var Target $target */
         $target = $f();
 
-        if ($target->exist() && !$target->isOwner($this->getPlayerWind())) {
+        if ($target->exist() && !$target->isOwner($this->getSeatWind())) {
             throw new \LogicException();
         }
 
@@ -126,9 +142,8 @@ class Area {
     function setReachStatus(ReachStatus $reachStatus) {
         $this->reachStatus = $reachStatus;
     }
-    
+
     function reach() {
-        
     }
 
     function drawInit(array $tiles) {
@@ -152,14 +167,14 @@ class Area {
         $lastTile = $this->public->getLast(); // validate
         $this->public->remove($lastTile);
         return new Target(
-            $lastTile, TargetType::create(TargetType::KEEP), $this->getPlayerWind()
+            $lastTile, TargetType::create(TargetType::KEEP), $this->getSeatWind()
         );
     }
 
     function tempGenKongTargetData(Tile $kongSelfTile) {
         $this->public->fromSelect($this->getPublicPlusTarget()->remove($kongSelfTile)); // validate
         return new Target(
-            $kongSelfTile, TargetType::create(TargetType::KONG), $this->getPlayerWind()
+            $kongSelfTile, TargetType::create(TargetType::KONG), $this->getSeatWind()
         );
     }
 

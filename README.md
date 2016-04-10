@@ -16,7 +16,7 @@ though reuse wheels is an important ability that should be mastered via other pr
 
 before coding
 
-- time management: todo list, time-input statistics.
+- time management: todo-list, time-input statistics.
 - requirement control: kiss, important first.
 - it should be easy: feeling hard means abnormal, ex.x unclear requirement? bad design? 
 
@@ -99,7 +99,7 @@ rush 5 round flow: private phase 14.5h
 - [x] new Round
 
 - [x] detailed logic analyze
-- [x] RoundPhase
+- [x] Phase
 - [x] PrivatePhase: getCandidateCommands()
 
 - [x] simple UI
@@ -175,12 +175,12 @@ rush 12 win flow 5.8h
 - [x] private phase: win on self 0.8h
 - [x] over phase: exhaustive drawn 0.6h
 
-rush 13 score table 4.6h
+rush 13 point table 4.6h
 
-- [x] score table 3.3h
+- [x] point table 3.3h
 - [x] analyze 0.6h
 - [x] refactor PlayerList 0.4h
-- [x] bug: RoundResult.getOriginScore() 0.3h
+- [x] bug: RoundResult.getOriginPoint() 0.3h
 
 rush 14 next round 1.4h
 
@@ -195,8 +195,8 @@ rush 14 next round 1.4h
 rush 15 game over 1.8h
 
 - [x] refactor: 0.4h
-- [x] finalScore 1h
-- [x] result: winner order, final score 0.4h
+- [x] finalPoint 1h
+- [x] result: winner order, final point 0.4h
 
 rush 16 game over fix 2.1h
 
@@ -206,9 +206,9 @@ rush 16 game over fix 2.1h
 
 rush 17 win issues 1.6h
 
-- [x] reach score
-- [x] round n score 0.3h
-- [x] game over: minus score 0.1h
+- [x] reach point
+- [x] round n point 0.3h
+- [x] game over: minus point 0.1h
 - [x] WinRoundResult 0.5h
 - [x] public phase: win on other 
 - [x] public phase: multiple win on other 0.4h
@@ -216,11 +216,11 @@ rush 17 win issues 1.6h
 
 rush 18 refactor 5h
 
-- [x] refactor: score strategy 2h
+- [x] refactor: point strategy 2h
 - [x] refactor: Areas 0.5h
-- [x] refactor: RoundWindData 1.5h
+- [x] refactor: PrevailingWindData 1.5h
 - [x] refactor: accumulatedReachCount, remove unnecessary methods in Round&RoundData. 0.8h
-- [x] bug: getTopPlayer() is wrong when same score top players exist 0.2h
+- [x] bug: getTopPlayer() is wrong when same point top players exist 0.2h
 
 rush 19 WinAnalyzer issues 8.2h
 
@@ -321,7 +321,7 @@ rush 28 refactor for beauty 5.9h
 - [x] TurnManager 0.7h
 - [x] Roller 1.4h
 - [x] refactor: move RoundData.$roundResult into $turnManager 0.1h
-- [x] refactor: move RoundData.$roundPhase into $turnManager 0.2h
+- [x] refactor: move RoundData.$phase into $turnManager 0.2h
 - [x] refactor: move RoundData.$playerList's rolling role into $turnManager 1.2h
 
 - [x] refactor: move Area.init() into Areas 0.3h
@@ -331,7 +331,7 @@ rush 29 all yaku: reach concerned 2.8h
 
 - [x] refactor: AbstractValueTilesYaku 0.2h
 - [x] DeclareHistory 0.3h
-- [x] RoundTurn 0.4h
+- [x] Turn 0.4h
 - [x] YakuSet 0.6h // batch is not necessary and too much labour here
 - [x] test reach, doubleReach 0.4h
 - [x] bug: wrongly turn into over phase after pass N's public phase 0.1h // It's not a bug but test case results in FourWindDraw!
@@ -387,7 +387,7 @@ rush 34 optimize WinAnalyzer 6.3h
 
 rush 35 refactor YakuTestData -> RoundData.debugInit 5.4h
 
-- [x] RoundWindTurn 0.3h
+- [x] PrevailingWindTurn 0.3h
 - [x] RoundDebugResetData 0.3h
 - [x] refactor: remove MockRound.debugSetTurn() -> Round.debugSkipTo 0.4h
 - [x] MockRound.debugSkipTo() 1h
@@ -431,7 +431,7 @@ rush 39 introduce PhaseState 5.3h
 
 - [x] analyze: phase logic 2.3h // !important: requirement first, design second, coding last.
 - [x] refactor: move RoundData.toXXPhase() into PhaseState 0.7h
-- [x] refactor: move TurnManager's roundPhase methods into PhaseState 0.6h
+- [x] refactor: move TurnManager's phase methods into PhaseState 0.6h
 - [x] refactor: handle PrivatePhaseState.isFromInit 0.1h
 - [x] refactor: move RoundData's game-over logic into OverPhaseState 0.4h
 - [x] refactor: move Round.passPublicPhase() into PublicPhaseState 0.2h
@@ -452,7 +452,7 @@ rush 40 introduce commands: second step 8.1h
 - [x] advanced TileParamDeclaration 1.3h // agile: not do until currently actual required!
 - [x] refactor: try string-style-commands in tests 0.4h
 
-- [x] I option for SelfWindParamDeclaration 0.2h
+- [x] I option for SeatWindParamDeclaration 0.2h
 - [x] refactor: move into Commands - debug 2h
 
 rush 41 merge Round and RoundData together 1.3h
@@ -469,7 +469,7 @@ rush 41 merge Round and RoundData together 1.3h
 - [x] replace 'roundData'->'round', 'rd'->'r' 0.1h
 - [x] test
 
-- [x] refactor: remove getCurrentPlayer(), getRoundPhase() 0.2h
+- [x] refactor: remove getCurrentPlayer(), getPhase() 0.2h
 
 rush 42 add RobbingAQuadYaku 5.1h
 
@@ -619,15 +619,15 @@ rush 52 refactor Area: introduce Hand 12.5h // a terrible trip ...
 - [x] remove Area.handTileList 2.1h // terrible ...
 - [x] etc 0.2h
 
-rush 53 refactor PlayerWind 2.6h
+rush 53 refactor SeatWind 2.6h
 
-- [x] extract class: PlayerWind 0.5h
-- [x] add PlayerWind into Area 1h // terrible ... recall beginning mind!
-- [x] adapt PlayerWind 0.3h
+- [x] extract class: SeatWind 0.5h
+- [x] add SeatWind into Area 1h // terrible ... recall beginning mind!
+- [x] adapt SeatWind 0.3h
 
 - [x] adapt Target 0.2h
 - [x] adapt DeclareHistory 0.3h
-- [x] adapt RoundTurn 0.1h
+- [x] adapt Turn 0.1h
 - [x] adapt OpenHistory 0.2h
 
 rush 54 refactor reach concerned 3.8h
@@ -649,17 +649,31 @@ rush 55 refactor Saki/Win/ part2 1.7h
 
 - [x] TileSeriesAnalyzer, Yaku 0.3h
 
-rush 56 refactor RoundTurn concerned
+rush 56 refactor Turn concerned: part1 2.3h
 
-- [x] refactor RoundTurn 1h // keep agile! keep clear goal when design!
+- [x] refactor Turn 1h // keep agile! keep clear goal when design!
 
-- [x] add RoundWind 0.5h
+- [x] add PrevailingWind 0.5h
 - [x] refactor GameTurn 0.4h
 - [x] refactor Round a little 0.4h
-- [ ] adapt RoundWind
-- [ ] refactor Tile.getWindOffsetFrom/To
 
-- [ ] remove TurnManger
+rush 57 remove Player usage
+
+- [x] know terms and rename 1h
+- [x] move Player.point into Area 0.8h
+- [x] refactor Areas.reachPoints 0.2h
+- [x] refactor Areas.recordOpen 0.2h
+- [x] add Areas.getArea 0.2h
+
+- [ ] remove Player usage by SeatWind
+- [ ] remove TurnManger 0.4h // with a self-managed Turn abstraction, TurnManager no longer required!
+- [ ] replace TurnManger.getCurrentPlayer by TileAreas.getTurn
+- [ ] try adapt DiscardCommand 1h
+
+rush refactor Turn concerned: part2
+
+- [ ] adapt PrevailingWind
+- [ ] refactor Tile.getWindOffsetFrom/To
 
 rush refactor Saki/Win/ part3
 
@@ -679,7 +693,7 @@ rush refactor: etc
 - [ ] refactor tests
 - [ ] fix: mockHand target tile vs robQuadPhase target tile
 - [ ] refactor: RoundResult
-- [ ] refactor: move DrawScore logic into separate class
+- [ ] refactor: move DrawPoint logic into separate class
 - [ ] refactor: simplify reset(),debugReset(),toNextPhase() 0.2h
 
 rush red dora: meld issue

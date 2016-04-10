@@ -1,39 +1,60 @@
 <?php
 namespace Saki\Command;
 
+use Saki\Game\SeatWind;
+
 abstract class PlayerCommand extends Command {
     // todo constructor validate?
+    function getPhase() {
+        return $this->getContext()->getRound()->getPhaseState()->getPhase();
+    }
+
+    function getActor() {
+        return new SeatWind($this->getParam(0));
+    }
 
     /**
      * @return Tile
      */
-    function getActPlayerSelfWind() {
-        return $this->getParam(0);
+    function getActSeatWindTile() { // todo remove
+        return $this->getActor()->getWindTile();
     }
 
-    function getActPlayer() {
-        return $this->getContext()->getRound()->getPlayerList()->getSelfWindPlayer($this->getActPlayerSelfWind());
+    function getActPlayer() { // todo remove
+        return $this->getContext()->getRound()->getPlayerList()->getSeatWindTilePlayer($this->getActSeatWindTile());
     }
 
-    function getCurrentPlayer() {
-        return $this->getContext()->getRound()->getTurnManager()->getCurrentPlayer();
+    function getCurrentPlayer() { // todo remove
+        $currentSeatWind = $this->getContext()->getCurrentArea()->getSeatWind();
+        return $this->getContext()->getRound()->getPlayerList()->getPlayer($currentSeatWind);
     }
 
-    function isCurrentPlayer() {
+    function isCurrentPlayer() { // todo remove
         return $this->getActPlayer() == $this->getCurrentPlayer();
     }
 
-    function getRoundPhase() {
-        return $this->getContext()->getRound()->getPhaseState()->getRoundPhase();
+    //region override Command
+    function getContext() {
+        $context = parent::getContext();
+        $context->bindActor($this->getActor());
+        return $context;
     }
 
     function executable() {
-        return $this->matchRequiredPhases() && $this->matchRequiredPlayer() && $this->matchOtherConditions();
+        return $this->matchPhase() && $this->matchActor() && $this->matchOther();
     }
 
-    abstract function matchRequiredPhases();
+    function execute() {
+        parent::execute();
+        $this->getContext()->unbindActor();
+    }
+    //endregion
 
-    abstract function matchRequiredPlayer();
+    //region subclass hooks
+    abstract function matchPhase();
 
-    abstract function matchOtherConditions();
+    abstract function matchActor();
+
+    abstract function matchOther();
+    //endregion
 }

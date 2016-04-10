@@ -5,7 +5,6 @@ use Saki\Tile\TileList;
 use Saki\Tile\TileType;
 
 class TileListTest extends PHPUnit_Framework_TestCase {
-
     /**
      * @dataProvider validStringProvider
      */

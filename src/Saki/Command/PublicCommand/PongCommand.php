@@ -2,22 +2,22 @@
 namespace Saki\Command\PublicCommand;
 
 use Saki\Command\CommandContext;
-use Saki\Command\ParamDeclaration\SelfWindParamDeclaration;
+use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\PrivateCommand;
 use Saki\Command\PublicCommand;
-use Saki\RoundPhase\PrivatePhaseState;
+use Saki\Phase\PrivatePhaseState;
 use Saki\Tile\Tile;
 
 class PongCommand extends PublicCommand {
     static function getParamDeclarations() {
-        return [SelfWindParamDeclaration::class];
+        return [SeatWindParamDeclaration::class];
     }
 
-    function __construct(CommandContext $context, Tile $playerSelfWind) {
-        parent::__construct($context, [$playerSelfWind]);
+    function __construct(CommandContext $context, Tile $playerSeatWind) {
+        parent::__construct($context, [$playerSeatWind]);
     }
 
-    function matchOtherConditions() {
+    function matchOther() {
         return true; // todo
     }
 

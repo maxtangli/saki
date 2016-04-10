@@ -2,8 +2,8 @@
 
 use Saki\Game\OpenHistory;
 use Saki\Game\OpenRecord;
-use Saki\Game\PlayerWind;
-use Saki\Game\RoundTurn;
+use Saki\Game\SeatWind;
+use Saki\Game\Turn;
 use Saki\Tile\Tile;
 
 class OpenHistoryTest extends PHPUnit_Framework_TestCase {
@@ -15,25 +15,25 @@ class OpenHistoryTest extends PHPUnit_Framework_TestCase {
         $this->h->reset();
     }
 
-    protected function record(string $roundTurn, string $tile, bool $isDiscard = true) {
+    protected function record(string $turn, string $tile, bool $isDiscard = true) {
         $this->h->record(
-            new OpenRecord(RoundTurn::fromString($roundTurn), Tile::fromString($tile), $isDiscard)
+            new OpenRecord(Turn::fromString($turn), Tile::fromString($tile), $isDiscard)
         );
     }
 
-    protected function assertGetLastOpenOrFalse($expectedStringOrBool, string $playerWind) {
-        $actual = $this->h->getLastOpenOrFalse(PlayerWind::fromString($playerWind));
-        $expected = is_bool($expectedStringOrBool) ? $expectedStringOrBool : RoundTurn::fromString($expectedStringOrBool);
+    protected function assertGetLastOpenOrFalse($expectedStringOrBool, string $seatWind) {
+        $actual = $this->h->getLastOpenOrFalse(SeatWind::fromString($seatWind));
+        $expected = is_bool($expectedStringOrBool) ? $expectedStringOrBool : Turn::fromString($expectedStringOrBool);
         $this->assertEquals($expected, $actual);
     }
 
-    protected function assertGetSelf(string $expectedTileList, string $playerWind) {
-        $actual = $this->h->getSelf(PlayerWind::fromString($playerWind));
+    protected function assertGetSelf(string $expectedTileList, string $seatWind) {
+        $actual = $this->h->getSelf(SeatWind::fromString($seatWind));
         $this->assertEquals($expectedTileList, $actual->__toString());
     }
 
-    protected function assertGetOther(string $expectedTileList, string $playerWind, string $fromRoundTurn) {
-        $actual = $this->h->getOther(PlayerWind::fromString($playerWind), RoundTurn::fromString($fromRoundTurn));
+    protected function assertGetOther(string $expectedTileList, string $seatWind, string $fromTurn) {
+        $actual = $this->h->getOther(SeatWind::fromString($seatWind), Turn::fromString($fromTurn));
         $this->assertEquals($expectedTileList, $actual->__toString());
     }
 

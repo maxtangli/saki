@@ -5,11 +5,11 @@ use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\Yaku;
 
 class LittleThreeDragonsYaku extends Yaku {
-    function getConcealedFanCount() {
+    function getConcealedFan() {
         return 2;
     }
 
-    function getNotConcealedFanCount() {
+    function getNotConcealedFan() {
         return 2;
     }
 
@@ -17,7 +17,7 @@ class LittleThreeDragonsYaku extends Yaku {
         return [];
     }
 
-    protected function matchOtherConditions(WinSubTarget $subTarget) {
+    protected function matchOther(WinSubTarget $subTarget) {
         return $subTarget->getAllMeldList()->isThreeDragon(false);
     }
 }

@@ -2,18 +2,18 @@
 namespace Saki\Command\PrivateCommand;
 
 use Saki\Command\CommandContext;
-use Saki\Command\ParamDeclaration\SelfWindParamDeclaration;
+use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\ParamDeclaration\TileParamDeclaration;
 use Saki\Command\PrivateCommand;
 use Saki\Tile\Tile;
 
 class DiscardCommand extends PrivateCommand {
     static function getParamDeclarations() {
-        return [SelfWindParamDeclaration::class, TileParamDeclaration::class];
+        return [SeatWindParamDeclaration::class, TileParamDeclaration::class];
     }
 
-    function __construct(CommandContext $context, Tile $playerSelfWind, Tile $tile) {
-        parent::__construct($context, [$playerSelfWind, $tile]);
+    function __construct(CommandContext $context, Tile $playerSeatWind, Tile $tile) {
+        parent::__construct($context, [$playerSeatWind, $tile]);
     }
 
     /**
@@ -23,15 +23,15 @@ class DiscardCommand extends PrivateCommand {
         return $this->getParam(1);
     }
 
-    function matchOtherConditions() {
-        $area = $this->getActPlayer()->getTileArea();
-        $private = $area->getHand()->getPrivate();
-        $validTile = $private->valueExist($this->getTile());
+    function matchOther() {
+        $hand = $this->getContext()->getActorHand();
+        $validTile = $hand->getPrivate()->valueExist($this->getTile());
         return $validTile;
     }
 
     function executeImpl() {
-        $this->getContext()->getRound()->getAreas()->discard($this->getActPlayer(), $this->getTile());
-        $this->getContext()->getRound()->toNextPhase();
+        $round = $this->getContext()->getRound();
+        $round->getAreas()->discard($this->getActPlayer(), $this->getTile());
+        $round->toNextPhase();
     }
 }

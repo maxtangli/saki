@@ -20,7 +20,7 @@ class SkipCommand extends Command {
 
     function executable() {
         $r = $this->getContext()->getRound();
-        return $r->getPhaseState()->getRoundPhase()->isPrivate();
+        return $r->getPhaseState()->getPhase()->isPrivate();
     }
 
     function executeImpl() {

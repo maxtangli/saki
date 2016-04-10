@@ -2,22 +2,22 @@
 namespace Saki\Command\PrivateCommand;
 
 use Saki\Command\CommandContext;
-use Saki\Command\ParamDeclaration\SelfWindParamDeclaration;
+use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\PrivateCommand;
-use Saki\RoundPhase\OverPhaseState;
+use Saki\Phase\OverPhaseState;
 use Saki\RoundResult\WinRoundResult;
 use Saki\Tile\Tile;
 
 class WinBySelfCommand extends PrivateCommand {
     static function getParamDeclarations() {
-        return [SelfWindParamDeclaration::class];
+        return [SeatWindParamDeclaration::class];
     }
 
-    function __construct(CommandContext $context, Tile $playerSelfWind) {
-        parent::__construct($context, [$playerSelfWind]);
+    function __construct(CommandContext $context, Tile $playerSeatWind) {
+        parent::__construct($context, [$playerSeatWind]);
     }
 
-    function matchOtherConditions() {
+    function matchOther() {
         // todo
         return true;
     }
@@ -29,8 +29,8 @@ class WinBySelfCommand extends PrivateCommand {
             $round->getPlayerList()->toArray(),
             $this->getActPlayer(),
             $round->getWinResult($this->getActPlayer()),
-            $round->getAreas()->getAccumulatedReachCount(),
-            $round->getRoundWindData()->getSelfWindTurn()
+            $round->getAreas()->getReachPoints() / 1000,
+            $round->getPrevailingWindData()->getSeatWindTurn()
         );
         $round->toNextPhase(new OverPhaseState($result));
     }

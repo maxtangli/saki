@@ -1,9 +1,9 @@
 <?php
 
-use Saki\Game\Round;
-use Saki\Game\RoundPhase;
 use Saki\Game\GameTurn;
-use Saki\Game\RoundWind;
+use Saki\Game\Phase;
+use Saki\Game\PrevailingWind;
+use Saki\Game\Round;
 use Saki\Meld\MeldList;
 use Saki\Tile\Tile;
 use Saki\Win\WinSubTarget;
@@ -15,12 +15,12 @@ use Saki\Win\Yaku\Fan1\DoubleRunYaku;
 use Saki\Win\Yaku\Fan1\FirstTurnWinYaku;
 use Saki\Win\Yaku\Fan1\GreenValueTilesYaku;
 use Saki\Win\Yaku\Fan1\KingSTileWinYaku;
+use Saki\Win\Yaku\Fan1\PrevailingWindYaku;
 use Saki\Win\Yaku\Fan1\ReachYaku;
 use Saki\Win\Yaku\Fan1\RedDoraYaku;
 use Saki\Win\Yaku\Fan1\RedValueTilesYaku;
 use Saki\Win\Yaku\Fan1\RobbingAQuadYaku;
-use Saki\Win\Yaku\Fan1\RoundWindValueTilesYaku;
-use Saki\Win\Yaku\Fan1\SelfWindValueTilesYaku;
+use Saki\Win\Yaku\Fan1\SeatWindYaku;
 use Saki\Win\Yaku\Fan1\UraDoraYaku;
 use Saki\Win\Yaku\Fan1\WhiteValueTilesYaku;
 use Saki\Win\Yaku\Fan2\AllTerminalsAndHonorsYaku;
@@ -59,11 +59,11 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
             sprintf(
                 "yaku        : %s"
                 . "\nyakuTestData: %s"
-                . "\nSubTarget   : currentPlayerWind[%s], targetPlayerWind[%s],%s\n",
+                . "\nSubTarget   : currentSeatWind[%s], targetSeatWind[%s],%s\n",
                 $yakuTestData,
                 $yaku,
-                $subTarget->getCurrentPlayer()->getTileArea()->getPlayerWind()->getWindTile(),
-                $subTarget->getSelfWindTile(),
+                $subTarget->getCurrentPlayer()->getArea()->getSeatWind()->getWindTile(),
+                $subTarget->getSeatWindTile(),
                 'isPrivatePhase:' . var_export($subTarget->isPrivatePhase(), true)
             )
         );
@@ -132,16 +132,16 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
             [new YakuTestData('123m,44m,55m,66m,55s', 'FFF', '5s'), GreenValueTilesYaku::create(), true],
             [new YakuTestData('123m,44m,55m,66m,55s', '111s', '5s'), GreenValueTilesYaku::create(), false],
 
-            // test RoundWindValueTilesYaku
-            [new YakuTestData('123m,44m,55m,66m,55s', 'EEE', '5s'), RoundWindValueTilesYaku::create(), true],
-            // not roundWind
-            [(new YakuTestData('123m,44m,55m,66m,55s', 'EEE', '5s', null, null, (new GameTurn())->setRoundWind(RoundWind::fromString('S'))))
-                , RoundWindValueTilesYaku::create(), false],
+            // test PrevailingWindValueTilesYaku
+            [new YakuTestData('123m,44m,55m,66m,55s', 'EEE', '5s'), PrevailingWindYaku::create(), true],
+            // not prevailingWind
+            [(new YakuTestData('123m,44m,55m,66m,55s', 'EEE', '5s', null, null, (new GameTurn())->setPrevailingWind(PrevailingWind::fromString('S'))))
+                , PrevailingWindYaku::create(), false],
 
-            // test SelfWindValueTilesYaku
-            [new YakuTestData('123m,44m,55m,66m,55s', 'SSS', '5s', 'E', 'S'), SelfWindValueTilesYaku::create(), true],
-            // not selfWind
-            [new YakuTestData('123m,44m,55m,66m,55s', 'SSS', '5s', 'E', 'E'), SelfWindValueTilesYaku::create(), false],
+            // test SeatWindValueTilesYaku
+            [new YakuTestData('123m,44m,55m,66m,55s', 'SSS', '5s', 'E', 'S'), SeatWindYaku::create(), true],
+            // not seatWind
+            [new YakuTestData('123m,44m,55m,66m,55s', 'SSS', '5s', 'E', 'E'), SeatWindYaku::create(), false],
         ];
     }
 
@@ -441,8 +441,8 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         $pro->process('discard N N:s-E:E; passAll');
 
         $pro->process('discard E E:s-E:E; mockNextDraw 1m; passAll');
-        $playerS = $r->getPlayerList()->getSelfWindPlayer(Tile::fromString('S'));
-        $this->assertEquals(Tile::fromString('1m'), $playerS->getTileArea()->getHand()->getTarget()->getTile());
+        $playerS = $r->getPlayerList()->getSeatWindTilePlayer(Tile::fromString('S'));
+        $this->assertEquals(Tile::fromString('1m'), $playerS->getArea()->getHand()->getTarget()->getTile());
 
         // S winBySelf FirstTurnWin
         $yakuList = $r->getWinResult($r->getTurnManager()->getCurrentPlayer())->getYakuList()->toYakuList();
@@ -468,10 +468,10 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
             'discard E E:s-1m:1m',
             'mockHand S 11m; pong S; plusKong S S:s-1m:1m'
         );
-        $playerW = $r->getPlayerList()->getSelfWindPlayer(Tile::fromString('W'));
+        $playerW = $r->getPlayerList()->getSeatWindTilePlayer(Tile::fromString('W'));
 
         // target tile changed
-        $this->assertEquals(Tile::fromString('1m'), $playerW->getTileArea()->getHand()->getTarget()->getTile());
+        $this->assertEquals(Tile::fromString('1m'), $playerW->getArea()->getHand()->getTarget()->getTile());
 
         // robAQuad exist
         $yakuList = $r->getWinResult($playerW)->getYakuList()->toYakuList();
@@ -492,7 +492,7 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         $pro->process('skip 4; mockDeadWall EEEE1919293949s 5 false; mockHand E 222789s789m12345m');
 
         // rely other yakus
-        $playerE = $r->getPlayerList()->getSelfWindPlayer(Tile::fromString('E'));
+        $playerE = $r->getPlayerList()->getSeatWindTilePlayer(Tile::fromString('E'));
         $yakuList = $r->getWinResult($playerE)->getYakuList()->toYakuList();
         $this->assertEmpty($yakuList);
 
@@ -501,8 +501,8 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         $yakuItemList = $r->getWinResult($playerE)->getYakuList();
         $yakuList = $yakuItemList->toYakuList();
         $this->assertContains(DoraYaku::create(), $yakuList, $yakuList);
-        $expectFanCount = 1 + 6; // selfDraw + 6 dora
-        $this->assertEquals($expectFanCount, $yakuItemList->getTotalFanCount(), $yakuItemList);
+        $expectFan = 1 + 6; // selfDraw + 6 dora
+        $this->assertEquals($expectFan, $yakuItemList->getTotalFan(), $yakuItemList);
     }
 
     function testUraDora() {
@@ -511,7 +511,7 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         $pro->process('skip 4; mockDeadWall EEEE9191929394s 5 true; mockHand E 222789s789m12345m');
 
         // rely other yakus
-        $playerE = $r->getPlayerList()->getSelfWindPlayer(Tile::fromString('E'));
+        $playerE = $r->getPlayerList()->getSeatWindTilePlayer(Tile::fromString('E'));
         $yakuList = $r->getWinResult($playerE)->getYakuList()->toYakuList();
         $this->assertEmpty($yakuList);
 
@@ -520,8 +520,8 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         $yakuItemList = $r->getWinResult($playerE)->getYakuList();
         $yakuList = $yakuItemList->toYakuList();
         $this->assertContains(UraDoraYaku::create(), $yakuList, $yakuList);
-        $expectFanCount = 1 + 6; // selfDraw + 6 uraDora
-        $this->assertEquals($expectFanCount, $yakuItemList->getTotalFanCount(), $yakuItemList);
+        $expectFan = 1 + 6; // selfDraw + 6 uraDora
+        $this->assertEquals($expectFan, $yakuItemList->getTotalFan(), $yakuItemList);
     }
 
     function testRedDora() {
@@ -530,7 +530,7 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         $pro->process('skip 4; mockDeadWall EEEE9999999999s 1 false; mockHand E 222789s789m12340m');
 
         // rely other yakus
-        $playerE = $r->getPlayerList()->getSelfWindPlayer(Tile::fromString('E'));
+        $playerE = $r->getPlayerList()->getSeatWindTilePlayer(Tile::fromString('E'));
         $yakuList = $r->getWinResult($playerE)->getYakuList()->toYakuList();
         $this->assertEmpty($yakuList);
 
@@ -539,8 +539,9 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         $yakuItemList = $r->getWinResult($playerE)->getYakuList();
         $yakuList = $yakuItemList->toYakuList();
         $this->assertContains(RedDoraYaku::create(), $yakuList, $yakuList);
-        $expectFanCount = 1 + 2; // selfDraw + 6 uraDora
-        $this->assertEquals($expectFanCount, $yakuItemList->getTotalFanCount(), $yakuItemList);
+        $expectFan = 3; // selfDraw + 6 uraDora
+        $this->assertEquals($expectFan, $yakuItemList->getTotalFan(), $yakuItemList);
+        // todo for first time execution, failed and return 2 rather than 3? RedTile impl trick's dangerous smell...
     }
 
     function testHeavenlyWin() {
@@ -577,35 +578,33 @@ class YakuTestData {
     private $handMeldList;
     private $declareMeldList;
     private $targetTile;
-
-    private $currentPlayerWind;
-    private $targetPlayerWind;
-
+    private $currentSeatWind;
+    private $targetSeatWind;
     private $rebugResetData;
 
     function __construct(string $handMeldListString, string $declareMeldListString = null, string $targetTileString = null,
-                         string $currentPlayerWindString = null, string $targetPlayerWindString = null, GameTurn $rebugResetData = null) {
+                         string $currentSeatWindString = null, string $targetSeatWindString = null, GameTurn $rebugResetData = null) {
         $this->handMeldList = MeldList::fromString($handMeldListString)->toConcealed(true);
         $this->declareMeldList = MeldList::fromString($declareMeldListString !== null ? $declareMeldListString : "");
         $this->targetTile = $targetTileString !== null ? Tile::fromString($targetTileString) : $this->handMeldList[0][0];
 
-        $this->currentPlayerWind = Tile::fromString($currentPlayerWindString ?? 'E');
-        $this->targetPlayerWind = $targetPlayerWindString !== null ? Tile::fromString($targetPlayerWindString) : $this->currentPlayerWind;
+        $this->currentSeatWind = Tile::fromString($currentSeatWindString ?? 'E');
+        $this->targetSeatWind = $targetSeatWindString !== null ? Tile::fromString($targetSeatWindString) : $this->currentSeatWind;
 
         $this->roundDebugResetData = $rebugResetData ?? new GameTurn();
     }
 
     function __toString() {
-        return sprintf('handMeldList[%s], declaredMeldList[%s], currentPlayerWind[%s], targetPlayerWind[%s]'
-            , $this->handMeldList, $this->declareMeldList, $this->currentPlayerWind, $this->targetPlayerWind);
+        return sprintf('handMeldList[%s], declaredMeldList[%s], currentSeatWind[%s], targetSeatWind[%s]'
+            , $this->handMeldList, $this->declareMeldList, $this->currentSeatWind, $this->targetSeatWind);
     }
 
     function toWinSubTarget() {
         $r = self::getInitedRound($this->roundDebugResetData);
 
         // set phase
-        $currentPlayer = $r->getPlayerList()->getSelfWindPlayer($this->currentPlayerWind);
-        $actPlayer = $r->getPlayerList()->getSelfWindPlayer($this->targetPlayerWind);
+        $currentPlayer = $r->getPlayerList()->getSeatWindTilePlayer($this->currentSeatWind);
+        $actPlayer = $r->getPlayerList()->getSeatWindTilePlayer($this->targetSeatWind);
         $isPrivatePhase = ($currentPlayer === $actPlayer);
 
         // set tiles
@@ -613,14 +612,14 @@ class YakuTestData {
         $targetTile = $this->targetTile;
         $areas = $r->getAreas();
 
-        $rPhase = $isPrivatePhase ? RoundPhase::getPrivateInstance() : RoundPhase::getPublicInstance();
+        $rPhase = $isPrivatePhase ? Phase::getPrivateInstance() : Phase::getPublicInstance();
         $r->debugSkipTo($currentPlayer, $rPhase, null, null, $targetTile);
         if ($isPrivatePhase) { // target tile not set
             $private = $handMeldList->toTileList();
             $areas->debugSetPrivate($actPlayer, $private, $this->declareMeldList, $targetTile);
         } else { // targetTile already set by debugSkipTo
             $public = $handMeldList->toTileList()->remove($targetTile);
-            $actPlayer->getTileArea()->debugSet($public, $this->declareMeldList, $public);
+            $actPlayer->getArea()->debugSet($public, $this->declareMeldList, $public);
         }
 
         return new WinSubTarget($this->handMeldList, $actPlayer, $r);

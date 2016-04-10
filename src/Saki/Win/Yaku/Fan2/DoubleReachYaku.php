@@ -6,11 +6,11 @@ use Saki\Win\Yaku\Fan1\ReachYaku;
 use Saki\Win\Yaku\Yaku;
 
 class DoubleReachYaku extends Yaku {
-    function getConcealedFanCount() {
+    function getConcealedFan() {
         return 2;
     }
 
-    function getNotConcealedFanCount() {
+    function getNotConcealedFan() {
         return 0;
     }
 
@@ -18,7 +18,7 @@ class DoubleReachYaku extends Yaku {
         return [];
     }
 
-    protected function matchOtherConditions(WinSubTarget $subTarget) {
+    protected function matchOther(WinSubTarget $subTarget) {
         return $subTarget->getReachStatus()->isDoubleReach();
     }
 

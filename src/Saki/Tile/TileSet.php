@@ -8,7 +8,6 @@ use Saki\Util\ReadonlyArrayList;
  */
 class TileSet extends TileList {
     use ReadonlyArrayList;
-
     private static $standardInstance;
 
     static function createStandard() {

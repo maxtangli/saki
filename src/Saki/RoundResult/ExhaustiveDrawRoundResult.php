@@ -25,9 +25,9 @@ class ExhaustiveDrawRoundResult extends RoundResult {
 
     /**
      * @param Player $player
-     * @return ScoreDelta
+     * @return PointDelta
      */
-    function getScoreDeltaInt(Player $player) {
+    function getPointDeltaInt(Player $player) {
         /**
          * https://ja.wikipedia.org/wiki/麻雀の点
          * 不聴罰符（ノーテンばっぷ）

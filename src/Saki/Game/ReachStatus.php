@@ -14,43 +14,43 @@ class ReachStatus implements Immutable {
      */
     static function createNotReach() {
         if (self::$nullInstance === null) {
-            $obj = new self(RoundTurn::createFirst());
-            $obj->reachRoundTurn = null;
+            $obj = new self(Turn::createFirst());
+            $obj->reachTurn = null;
             self::$nullInstance = $obj;
         }
         return self::$nullInstance;
     }
 
-    private $reachRoundTurn;
+    private $reachTurn;
 
     /**
-     * @param RoundTurn $reachRoundTurn
+     * @param Turn $reachTurn
      */
-    function __construct(RoundTurn $reachRoundTurn) {
-        $this->reachRoundTurn = $reachRoundTurn;
+    function __construct(Turn $reachTurn) {
+        $this->reachTurn = $reachTurn;
     }
 
     /**
      * @return bool
      */
     function isReach() {
-        return $this->reachRoundTurn !== null;
+        return $this->reachTurn !== null;
     }
 
     /**
-     * @return RoundTurn
+     * @return Turn
      */
-    function getReachRoundTurn() {
+    function getReachTurn() {
         if (!$this->isReach()) {
             throw new \LogicException();
         }
-        return $this->reachRoundTurn;
+        return $this->reachTurn;
     }
 
     /**
      * @return bool
      */
     function isDoubleReach() {
-        return $this->isReach() && $this->getReachRoundTurn()->getGlobalTurn() == 1;
+        return $this->isReach() && $this->getReachTurn()->getCircleCount() == 1;
     }
 }

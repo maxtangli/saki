@@ -6,11 +6,11 @@ use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\Yaku;
 
 class SevenPairsYaku extends Yaku {
-    function getConcealedFanCount() {
+    function getConcealedFan() {
         return 2;
     }
 
-    function getNotConcealedFanCount() {
+    function getNotConcealedFan() {
         return 0;
     }
 
@@ -20,7 +20,7 @@ class SevenPairsYaku extends Yaku {
         ];
     }
 
-    protected function matchOtherConditions(WinSubTarget $subTarget) {
+    protected function matchOther(WinSubTarget $subTarget) {
         return true;
     }
 }

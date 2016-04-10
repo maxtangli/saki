@@ -7,11 +7,11 @@ use Saki\Win\Yaku\Fan2\MixedOutsideHandYaku;
 use Saki\Win\Yaku\Yaku;
 
 class PureOutsideHandYaku extends Yaku {
-    function getConcealedFanCount() {
+    function getConcealedFan() {
         return 3;
     }
 
-    function getNotConcealedFanCount() {
+    function getNotConcealedFan() {
         return 2;
     }
 
@@ -19,7 +19,7 @@ class PureOutsideHandYaku extends Yaku {
         return [TileSeries::create(TileSeries::FOUR_WIN_SET_AND_ONE_PAIR)];
     }
 
-    protected function matchOtherConditions(WinSubTarget $subTarget) {
+    protected function matchOther(WinSubTarget $subTarget) {
         return $subTarget->getAllMeldList()->isOutsideHand(true);
     }
 

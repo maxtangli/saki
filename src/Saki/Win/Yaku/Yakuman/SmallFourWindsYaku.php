@@ -5,11 +5,11 @@ use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\Yaku;
 
 class SmallFourWindsYaku extends Yaku {
-    function getConcealedFanCount() {
+    function getConcealedFan() {
         return 13;
     }
 
-    function getNotConcealedFanCount() {
+    function getNotConcealedFan() {
         return 13;
     }
 
@@ -17,7 +17,7 @@ class SmallFourWindsYaku extends Yaku {
         return [];
     }
 
-    protected function matchOtherConditions(WinSubTarget $subTarget) {
+    protected function matchOther(WinSubTarget $subTarget) {
         return $subTarget->getAllMeldList()->isFourWinds(false);
     }
 }

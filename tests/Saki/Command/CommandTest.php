@@ -7,7 +7,7 @@ use Saki\Command\CommandContext;
 use Saki\Command\CommandParser;
 use Saki\Command\CommandSet;
 use Saki\Command\Debug\MockHandCommand;
-use Saki\Command\ParamDeclaration\SelfWindParamDeclaration;
+use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\ParamDeclaration\TileParamDeclaration;
 use Saki\Command\PrivateCommand\DiscardCommand;
 use Saki\Command\PrivateCommand\WinBySelfCommand;
@@ -17,18 +17,18 @@ use Saki\Tile\Tile;
 
 class HelloCommand extends Command {
     static function getParamDeclarations() {
-        return [SelfWindParamDeclaration::class, TileParamDeclaration::class];
+        return [SeatWindParamDeclaration::class, TileParamDeclaration::class];
     }
 
-    function __construct(CommandContext $context, Tile $playerSelfWind, Tile $tile) {
-        parent::__construct($context, [$playerSelfWind, $tile]);
+    function __construct(CommandContext $context, Tile $playerSeatWind, Tile $tile) {
+        parent::__construct($context, [$playerSeatWind, $tile]);
     }
 
     /**
      * @return Tile
      */
-    function getPlayerSelfWind() {
-        return $this->playerSelfWind;
+    function getPlayerSeatWind() {
+        return $this->playerSeatWind;
     }
 
     /**

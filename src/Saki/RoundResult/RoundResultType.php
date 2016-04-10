@@ -8,9 +8,7 @@ class RoundResultType extends Enum {
     const WIN_BY_OTHER = 1;
     const DOUBLE_WIN_BY_OTHER = 2;
     const TRIPLE_WIN_BY_OTHER = 3;
-
     const EXHAUSTIVE_DRAW = 4;
-
     const NINE_KINDS_OF_TERMINAL_OR_HONOR_DRAW = 5;
     const FOUR_WIND_DRAW = 6;
     const FOUR_KONG_DRAW = 7;

@@ -6,11 +6,11 @@ use Saki\Win\Yaku\Yaku;
 use Saki\Win\Yaku\Yakuman\NineGatesYaku;
 
 class PureNineGatesYaku extends Yaku {
-    function getConcealedFanCount() {
+    function getConcealedFan() {
         return 26;
     }
 
-    function getNotConcealedFanCount() {
+    function getNotConcealedFan() {
         return 0;
     }
 
@@ -18,7 +18,7 @@ class PureNineGatesYaku extends Yaku {
         return [];
     }
 
-    protected function matchOtherConditions(WinSubTarget $subTarget) {
+    protected function matchOther(WinSubTarget $subTarget) {
         return $subTarget->getPrivateComplete()->isNineGates(true, $subTarget->getTileOfTargetTile());
     }
 

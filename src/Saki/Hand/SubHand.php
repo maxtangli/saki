@@ -10,7 +10,6 @@ use Saki\Tile\Tile;
  */
 class SubHand extends Hand {
     private $ownMeldList;
-
     private $fastAllMeldList;
 
     function __construct(MeldList $ownMeldList, MeldList $declare, Tile $target) {

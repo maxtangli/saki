@@ -5,13 +5,12 @@ use Saki\Game\Round;
 use Saki\Tile\Tile;
 
 class AreasTest extends PHPUnit_Framework_TestCase {
-
     function testGetHand() {
         $r = new Round();
         $pro = $r->getProcessor();
         $pro->process('mockHand E 123456789m12344p');
-        $areaE = $r->getPlayerList()->getDealerPlayer()->getTileArea();
-        $areaS = $r->getPlayerList()->getSouthPlayer()->getTileArea();
+        $areaE = $r->getPlayerList()->getDealerPlayer()->getArea();
+        $areaS = $r->getPlayerList()->getSouthPlayer()->getArea();
 
         // E private phase, hand E
         $handE = $areaE->getHand();
@@ -40,10 +39,10 @@ class AreasTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('123456789p1234s', $handS->getPublic()->toFormatString(true));
     }
 
-    function testPlayerWindAssign() {
+    function testSeatWindAssign() {
         $r = new Round();
         $initialWindTileList = $r->getPlayerList()->toArrayList(function (Player $player) {
-            return $player->getTileArea()->getPlayerWind()->getWindTile();
+            return $player->getArea()->getSeatWind()->getWindTile();
         });
         $this->assertEquals(Tile::getWindList()->toArray(), $initialWindTileList->toArray());
     }

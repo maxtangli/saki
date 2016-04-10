@@ -1,7 +1,8 @@
 <?php
 
+use Saki\Game\Phase;
 use Saki\Game\Round;
-use Saki\Game\RoundPhase;
+use Saki\RoundResult\ExhaustiveDrawRoundResult;
 use Saki\RoundResult\RoundResultType;
 use Saki\Tile\TileList;
 
@@ -10,10 +11,10 @@ class RoundDrawTest extends PHPUnit_Framework_TestCase {
         $r = new Round();
         $pro = $r->getProcessor();
         // 130ms = avg0.7ms/time * 200times
-        for ($phase = $r->getPhaseState()->getRoundPhase(); $phase != RoundPhase::getOverInstance(); $phase = $r->getPhaseState()->getRoundPhase()) {
+        for ($phase = $r->getPhaseState()->getPhase(); $phase != Phase::getOverInstance(); $phase = $r->getPhaseState()->getPhase()) {
             $pro->process('discard I I:s-1m:1m; passAll');
         }
-        $cls = get_class(new \Saki\RoundResult\ExhaustiveDrawRoundResult(\Saki\Game\PlayerList::createStandard()->toArray(), [false, false, false, false]));
+        $cls = ExhaustiveDrawRoundResult::class;
         $this->assertInstanceOf($cls, $r->getPhaseState()->getRoundResult());
     }
 

@@ -2,14 +2,17 @@
 namespace Saki\Util;
 
 /**
- * Common index array like C# ArrayList.
- * No optimization, since in pj saki no large size list exist.
+ * Common index array in style of C# ArrayList.
+ *
+ * WARNING
+ * - no optimization for size >= 100.
+ * - array values not supported.
+ * - null values not supported.
  *
  * features
  * - support foreach/count/isset/get/set.
  * - support object-style and clean array operations.
  * - support readonly
- * - not support array elements.
  *
  * main functions
  * - convert from array: new(array), fromArray(array).
@@ -39,7 +42,6 @@ namespace Saki\Util;
  * @package Saki\Util
  */
 class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
-
     private $innerArray;
     private $readonly;
 
@@ -290,7 +292,20 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
 
     /**
      * @param callable $predicate
+     * @return mixed
+     */
+    function getSingle(callable $predicate) {
+        $result = $this->getSingleOrDefault($predicate, null);
+        if ($result === null) {
+            throw new \InvalidArgumentException();
+        }
+        return $result;
+    }
+
+    /**
+     * @param callable $predicate
      * @param $default
+     * @return mixed
      */
     function getSingleOrDefault(callable $predicate, $default) {
         $result = null;

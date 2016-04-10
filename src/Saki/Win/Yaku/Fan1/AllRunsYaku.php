@@ -11,11 +11,11 @@ use Saki\Win\Yaku\Yaku;
  * @package Saki\Win\Yaku
  */
 class AllRunsYaku extends Yaku {
-    function getConcealedFanCount() {
+    function getConcealedFan() {
         return 1;
     }
 
-    function getNotConcealedFanCount() {
+    function getNotConcealedFan() {
         return 0;
     }
 
@@ -25,7 +25,7 @@ class AllRunsYaku extends Yaku {
         ];
     }
 
-    protected function matchOtherConditions(WinSubTarget $subTarget) {
+    protected function matchOther(WinSubTarget $subTarget) {
         /**
          * https://ja.wikipedia.org/wiki/%E5%B9%B3%E5%92%8C_(%E9%BA%BB%E9%9B%80)
          * 平和の成立条件は以下の4つである。

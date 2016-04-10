@@ -9,11 +9,11 @@ use Saki\Win\Yaku\Yaku;
  * @package Saki\Win\Yaku
  */
 class AllSimplesYaku extends Yaku {
-    function getConcealedFanCount() {
+    function getConcealedFan() {
         return 1;
     }
 
-    function getNotConcealedFanCount() {
+    function getNotConcealedFan() {
         return 1;
     }
 
@@ -21,7 +21,7 @@ class AllSimplesYaku extends Yaku {
         return [];
     }
 
-    protected function matchOtherConditions(WinSubTarget $subTarget) {
+    protected function matchOther(WinSubTarget $subTarget) {
         return $subTarget->getPrivateComplete()->isAllSimple();
     }
 }

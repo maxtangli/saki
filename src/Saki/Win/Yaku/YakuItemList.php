@@ -10,9 +10,9 @@ class YakuItemList extends ArrayList {
         });
     }
 
-    function getTotalFanCount() {
+    function getTotalFan() {
         return $this->getSum(function (YakuItem $item) {
-            return $item->getFanCount();
+            return $item->getFan();
         });
     }
 

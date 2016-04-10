@@ -10,11 +10,11 @@ use Saki\Win\Yaku\Yaku;
  * @package Saki\Win\Yaku\Fan2
  */
 class AllTerminalsAndHonorsYaku extends Yaku {
-    function getConcealedFanCount() {
+    function getConcealedFan() {
         return 2;
     }
 
-    function getNotConcealedFanCount() {
+    function getNotConcealedFan() {
         return 2;
     }
 
@@ -22,7 +22,7 @@ class AllTerminalsAndHonorsYaku extends Yaku {
         return [TileSeries::create(TileSeries::FOUR_WIN_SET_AND_ONE_PAIR)];
     }
 
-    protected function matchOtherConditions(WinSubTarget $subTarget) {
+    protected function matchOther(WinSubTarget $subTarget) {
         return $subTarget->getAllMeldList()->isAllTerminalsAndHonors();
     }
 }

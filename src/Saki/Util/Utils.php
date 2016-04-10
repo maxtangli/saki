@@ -35,6 +35,5 @@ class Utils {
     }
 
     private function __construct() {
-
     }
 }

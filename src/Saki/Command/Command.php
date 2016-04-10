@@ -14,12 +14,6 @@ CommandParser
 Command.executable() execute()
 - executable: client's responsibility.
 - execution
-
-Phase System
-- todo
-
-Command.getExecutables()
-- todo goal: list all possible commands for a given player
  */
 namespace Saki\Command;
 

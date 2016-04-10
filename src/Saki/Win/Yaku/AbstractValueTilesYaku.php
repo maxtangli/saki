@@ -5,11 +5,11 @@ use Saki\Tile\Tile;
 use Saki\Win\WinSubTarget;
 
 abstract class AbstractValueTilesYaku extends Yaku {
-    function getConcealedFanCount() {
+    function getConcealedFan() {
         return 1;
     }
 
-    function getNotConcealedFanCount() {
+    function getNotConcealedFan() {
         return 1;
     }
 
@@ -17,7 +17,7 @@ abstract class AbstractValueTilesYaku extends Yaku {
         return [];
     }
 
-    protected function matchOtherConditions(WinSubTarget $subTarget) {
+    protected function matchOther(WinSubTarget $subTarget) {
         return $subTarget->getAllMeldList()->isValueTiles($this->getValueTile($subTarget));
     }
 

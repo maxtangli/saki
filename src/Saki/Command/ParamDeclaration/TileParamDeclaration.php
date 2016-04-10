@@ -21,11 +21,11 @@ class TileParamDeclaration extends ParamDeclaration {
          */
         $matches = [];
         if (preg_match('/([ESWNI]):(.+)/', $paramString, $matches)) {
-            list(, $selfWindString, $remainParamString) = $matches;
+            list(, $seatWindString, $remainParamString) = $matches;
 
-            $selfWind = (new SelfWindParamDeclaration($this->getContext(), $selfWindString))->toObject();
+            $seatWind = (new SeatWindParamDeclaration($this->getContext(), $seatWindString))->toObject();
 
-            $player = $round->getPlayerList()->getSelfWindPlayer($selfWind);
+            $player = $round->getPlayerList()->getSeatWindTilePlayer($seatWind);
             $areas = $round->getAreas();
 
             if (preg_match('/s-(.+):(.+)/', $remainParamString, $matches)) {

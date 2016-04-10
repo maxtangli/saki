@@ -5,18 +5,17 @@ use Saki\Tile\Tile;
 use Saki\Win\WinState;
 
 class FuritenTest extends SakiTestCase {
-
-    function assertFuriten(Round $r, string $playerWind, ...$scripts) {
-        $this->assertFuritenImpl(true, $r, $playerWind, ...$scripts);
+    function assertFuriten(Round $r, string $seatWind, ...$scripts) {
+        $this->assertFuritenImpl(true, $r, $seatWind, ...$scripts);
     }
 
-    function assertWinByOther(Round $r, string $playerWind, ...$scripts) {
-        $this->assertFuritenImpl(false, $r, $playerWind, ...$scripts);
+    function assertWinByOther(Round $r, string $seatWind, ...$scripts) {
+        $this->assertFuritenImpl(false, $r, $seatWind, ...$scripts);
     }
 
-    protected function assertFuritenImpl(bool $isFuriten, Round $r, string $playerWind, ...$scripts) {
+    protected function assertFuritenImpl(bool $isFuriten, Round $r, string $seatWind, ...$scripts) {
         $pro = $r->getProcessor();
-        $player = $r->getPlayerList()->getSelfWindPlayer(Tile::fromString($playerWind));
+        $player = $r->getPlayerList()->getSeatWindTilePlayer(Tile::fromString($seatWind));
 
         $pro->process(...$scripts);
         $winState = $r->getWinResult($player)->getWinState();
@@ -145,7 +144,7 @@ class FuritenTest extends SakiTestCase {
             'passAll; discard W W:s-1s:1s',
             'passAll; discard N N:s-1s:1s'
         );
-        $this->assertEquals(1, $r->getTurnManager()->getRoundTurn()->getGlobalTurn());
+        $this->assertEquals(1, $r->getTurnManager()->getCurrentTurn()->getCircleCount());
         $this->assertFuriten(
             $r, 'S',
             'mockHand E 11sC; pong E; discard E C',
@@ -153,6 +152,6 @@ class FuritenTest extends SakiTestCase {
             'mockHand E CCC; pong E; discard E C',
             'mockHand W CC1s; pong W; discard W 1s'
         );
-        $this->assertEquals(3, $r->getTurnManager()->getRoundTurn()->getGlobalTurn());
+        $this->assertEquals(3, $r->getTurnManager()->getCurrentTurn()->getCircleCount());
     }
 }

@@ -2,11 +2,11 @@
 namespace Saki\Command;
 
 abstract class PrivateCommand extends PlayerCommand {
-    function matchRequiredPhases() {
-        return $this->getRoundPhase()->isPrivate();
+    function matchPhase() {
+        return $this->getPhase()->isPrivate();
     }
 
-    function matchRequiredPlayer() {
+    function matchActor() {
         return $this->isCurrentPlayer();
     }
 }

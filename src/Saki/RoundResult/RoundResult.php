@@ -8,7 +8,7 @@ abstract class RoundResult {
      * @var Player[]
      */
     private $players;
-    private $originScores;
+    private $originPoints;
     private $roundResultType;
 
     function __construct(array $players, RoundResultType $roundResultType) {
@@ -17,8 +17,8 @@ abstract class RoundResult {
         }
         $this->players = $players;
         $this->roundResultType = $roundResultType;
-        $this->originScores = array_map(function (Player $player) {
-            return $player->getScore();
+        $this->originPoints = array_map(function (Player $player) {
+            return $player->getArea()->getPoint();
         }, $players);
     }
 
@@ -30,17 +30,17 @@ abstract class RoundResult {
         return $this->roundResultType;
     }
 
-    private function getOriginScore(Player $player) {
+    private function getOriginPoint(Player $player) {
         $k = array_search($player, $this->players);
         if ($k === false) {
             throw new \InvalidArgumentException();
         }
-        return $this->originScores[$k];
+        return $this->originPoints[$k];
     }
 
     protected function getOriginDealerPlayer() {
         foreach ($this->getPlayers() as $player) {
-            if ($player->getTileArea()->getPlayerWind()->isDealer()) {
+            if ($player->getArea()->getSeatWind()->isDealer()) {
                 return $player;
             }
         }
@@ -49,17 +49,17 @@ abstract class RoundResult {
 
     /**
      * @param Player $player
-     * @return ScoreDelta
+     * @return PointDelta
      */
-    final function getScoreDelta(Player $player) {
-        return new ScoreDelta($this->getOriginScore($player), $this->getScoreDeltaInt($player));
+    final function getPointDelta(Player $player) {
+        return new PointDelta($this->getOriginPoint($player), $this->getPointDeltaInt($player));
     }
 
     /**
      * @param Player $player
      * @return int
      */
-    abstract function getScoreDeltaInt(Player $player);
+    abstract function getPointDeltaInt(Player $player);
 
     /**
      * @return bool

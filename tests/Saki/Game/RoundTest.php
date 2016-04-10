@@ -1,9 +1,9 @@
 <?php
 
-use Saki\FinalScore\FinalScoreStrategyTarget;
+use Saki\FinalPoint\FinalPointStrategyTarget;
+use Saki\Game\Phase;
 use Saki\Game\Player;
 use Saki\Game\Round;
-use Saki\Game\RoundPhase;
 use Saki\Meld\Meld;
 
 class RoundTest extends PHPUnit_Framework_TestCase {
@@ -11,13 +11,13 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         $r = new Round();
 
         // phase
-        $this->assertEquals(RoundPhase::getPrivateInstance(), $r->getPhaseState()->getRoundPhase());
+        $this->assertEquals(Phase::getPrivateInstance(), $r->getPhaseState()->getPhase());
         // initial current player
         $dealerPlayer = $r->getPlayerList()->getDealerPlayer();
         $this->assertSame($dealerPlayer, $r->getTurnManager()->getCurrentPlayer());
         // initial candidate tile
-        $this->assertCount(14, $dealerPlayer->getTileArea()->getHand()->getPrivate());
-        $this->assertTrue($dealerPlayer->getTileArea()->getHand()->getTarget()->exist());
+        $this->assertCount(14, $dealerPlayer->getArea()->getHand()->getPrivate());
+        $this->assertTrue($dealerPlayer->getArea()->getHand()->getTarget()->exist());
 
         // initial on-hand tile count
         foreach ($r->getPlayerList() as $player) {
@@ -29,23 +29,25 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         }
     }
 
-    function testRoundWindData() {
+    function testPrevailingWindData() {
         $r = new Round();
         for ($nTodo = 3; $nTodo > 0; --$nTodo) {
             $r->reset(false);
         }
-        $this->assertEquals(4, $r->getRoundWindData()->getRoundWindTurn());
-        $this->assertTrue($r->getRoundWindData()->isLastOrExtraRound());
-        $this->assertFalse($r->getRoundWindData()->isFinalRound());
+        $this->assertEquals(4, $r->getPrevailingWindData()->getPrevailingWindTurn());
+        $this->assertTrue($r->getPrevailingWindData()->isLastOrExtraRound());
+        $this->assertFalse($r->getPrevailingWindData()->isFinalRound());
     }
 
-    function testGetFinalScoreItems() {
+    function testGetFinalPointItems() {
         $r = new Round();
-        $scores = [
+        $points = [
             31100, 24400, 22300, 22200
         ];
         foreach ($r->getPlayerList() as $k => $player) {
-            $player->setScore($scores[$k]);
+            /** @var Player $player */
+            $player = $player;
+            $player->getArea()->setPoint($points[$k]);
         }
 
         $expected = [
@@ -56,13 +58,13 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         ];
 
         // todo should test on GameOver state
-        $target = new FinalScoreStrategyTarget($r->getPlayerList());
-        $items = $r->getGameData()->getFinalScoreStrategy()->getFinalScoreItems($target);
+        $target = new FinalPointStrategyTarget($r->getPlayerList());
+        $items = $r->getGameData()->getFinalPointStrategy()->getFinalPointItems($target);
         foreach ($r->getPlayerList() as $k => $player) {
             $item = $items[$k];
             list($expectedRank, $expectedPoint) = [$expected[$k][0], $expected[$k][1]];
             $this->assertEquals($expectedRank, $item->getRank());
-            $this->assertEquals($expectedPoint, $item->getFinalPoint());
+            $this->assertEquals($expectedPoint, $item->getFinalPointNumber());
         }
     }
 
@@ -76,17 +78,17 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         $actPlayer = $r->getTurnManager()->getOffsetPlayer(1);
 
         // execute
-        $tileCountBefore = $actPlayer->getTileArea()->getHand()->getPublic()->count();
+        $tileCountBefore = $actPlayer->getArea()->getHand()->getPublic()->count();
         $pro->process('mockHand S 23m; chow S 2m 3m');
 
         // phase changed
-        $this->assertEquals(RoundPhase::create(RoundPhase::PRIVATE_PHASE), $r->getPhaseState()->getRoundPhase());
+        $this->assertEquals(Phase::create(Phase::PRIVATE_PHASE), $r->getPhaseState()->getPhase());
         $this->assertEquals($actPlayer, $r->getTurnManager()->getCurrentPlayer());
 
         // tiles moved to created meld
-        $this->assertTrue($r->getTurnManager()->getCurrentPlayer()->getTileArea()->getHand()->getDeclare()->valueExist(Meld::fromString('123m')));
-        $this->assertEquals($tileCountBefore - 2, $r->getTurnManager()->getCurrentPlayer()->getTileArea()->getHand()->getPrivate()->count());
-        $this->assertEquals(0, $prePlayer->getTileArea()->getDiscard()->count());
+        $this->assertTrue($r->getTurnManager()->getCurrentPlayer()->getArea()->getHand()->getDeclare()->valueExist(Meld::fromString('123m')));
+        $this->assertEquals($tileCountBefore - 2, $r->getTurnManager()->getCurrentPlayer()->getArea()->getHand()->getPrivate()->count());
+        $this->assertEquals(0, $prePlayer->getArea()->getDiscard()->count());
     }
 
     function testPong() {
@@ -99,20 +101,20 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         $actPlayer = $r->getTurnManager()->getOffsetPlayer(2);
 
         // execute
-        $tileCountBefore = $actPlayer->getTileArea()->getHand()->getPublic()->count();
+        $tileCountBefore = $actPlayer->getArea()->getHand()->getPublic()->count();
         $pro->process('mockHand W 11m123456789p13s; pong W');
 
         // phase changed
-        $this->assertEquals(RoundPhase::create(RoundPhase::PRIVATE_PHASE), $r->getPhaseState()->getRoundPhase());
+        $this->assertEquals(Phase::create(Phase::PRIVATE_PHASE), $r->getPhaseState()->getPhase());
         $this->assertEquals($actPlayer, $r->getTurnManager()->getCurrentPlayer());
 
         // tiles moved to created meld
-        $this->assertTrue($r->getTurnManager()->getCurrentPlayer()->getTileArea()->getHand()->getDeclare()->valueExist(Meld::fromString('111m')));
-        $this->assertEquals($tileCountBefore - 2, $r->getTurnManager()->getCurrentPlayer()->getTileArea()->getHand()->getPrivate()->count());
-        $this->assertEquals(0, $prePlayer->getTileArea()->getDiscard()->count());
+        $this->assertTrue($r->getTurnManager()->getCurrentPlayer()->getArea()->getHand()->getDeclare()->valueExist(Meld::fromString('111m')));
+        $this->assertEquals($tileCountBefore - 2, $r->getTurnManager()->getCurrentPlayer()->getArea()->getHand()->getPrivate()->count());
+        $this->assertEquals(0, $prePlayer->getArea()->getDiscard()->count());
 
         // hand
-        $handW = $r->getPlayerList()->getWestPlayer()->getTileArea()->getHand();
+        $handW = $r->getPlayerList()->getWestPlayer()->getArea()->getHand();
         $this->assertEquals('123456789p13s', $handW->getPrivate()->toFormatString(true));
         $this->assertEquals('3s', $handW->getTarget()->getTile());
         $this->assertEquals('123456789p1s', $handW->getPublic()->toFormatString(true));
@@ -125,7 +127,7 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         // phase not changed
         $r->debugSkipTo($playerE, null, null, null);
         $this->assertEquals($playerE, $r->getTurnManager()->getCurrentPlayer());
-        $this->assertEquals(RoundPhase::getPrivateInstance(), $r->getPhaseState()->getRoundPhase());
+        $this->assertEquals(Phase::getPrivateInstance(), $r->getPhaseState()->getPhase());
 
         // to public phase
         // todo

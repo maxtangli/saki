@@ -2,28 +2,33 @@
 namespace Saki\Game;
 
 /**
- * A game player holding his own score, selfWind and tileArea.
+ * A game player holding his own point, seatWind and tileArea.
  * @package Saki\Game
  */
 class Player {
     // immutable
     private $no;
-
-    // change via setter
-    private $score; // todo move into Area
-    /** @var Area */
+    private $initialPoint;
+    private $initialSeatWind;
+    // initialized by Areas
     private $area;
 
-    function __construct(int $no, int $score) {
+    /**
+     * @param int $no
+     * @param int $initialPoint
+     * @param SeatWind $initialSeatWind
+     */
+    function __construct(int $no, int $initialPoint, SeatWind $initialSeatWind) {
         $this->no = $no;
-        $this->score = $score;
+        $this->initialPoint = $initialPoint;
+        $this->initialSeatWind = $initialSeatWind;
     }
 
     /**
      * @return string
      */
     function __toString() {
-        return sprintf('player[%s] wind[%s] score[%s]', $this->getNo(), $this->getTileArea()->getPlayerWind(), $this->getScore());
+        return sprintf('player[%s] wind[%s] point[%s]', $this->getNo(), $this->getArea()->getSeatWind(), $this->getArea()->getPoint());
     }
 
     /**
@@ -36,21 +41,21 @@ class Player {
     /**
      * @return int
      */
-    function getScore() {
-        return $this->score;
+    function getInitialPoint() {
+        return $this->initialPoint;
     }
 
     /**
-     * @param $score
+     * @return SeatWind
      */
-    function setScore(int $score) {
-        $this->score = $score;
+    function getInitialSeatWind() {
+        return $this->initialSeatWind;
     }
 
     /**
      * @return Area
      */
-    function getTileArea() {
+    function getArea() {
         if ($this->area === null) {
             throw new \BadMethodCallException('Bad method call on Area-uninitialized Player.');
         }
@@ -60,7 +65,10 @@ class Player {
     /**
      * @param Area $area
      */
-    function setTileArea(Area $area) {
+    function setArea(Area $area) {
+        if ($this->area !== null) {
+            throw new \BadMethodCallException('Bad method call on Area-initialized Player,');
+        }
         $this->area = $area;
     }
 }

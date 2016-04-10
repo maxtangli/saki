@@ -5,7 +5,7 @@ use Saki\Util\Roller;
 class RollerTest extends PHPUnit_Framework_TestCase {
     function testRoll() {
         $r = new Roller([1, 2, 3, 4]);
-        $this->assertEquals(1, $r->getGlobalTurn());
+        $this->assertEquals(1, $r->getCircleCount());
 
         $data = [
             [2, 1, 1], [3, 1, 1], [4, 1, 1],
@@ -13,10 +13,10 @@ class RollerTest extends PHPUnit_Framework_TestCase {
             [2, 3, 2], [4, 3, 2],
             [3, 4, 3],
         ];
-        foreach ($data as list($target, $expectedGlobalTurn, $expectedLocalTurn)) {
+        foreach ($data as list($target, $expectedCircleCount, $expectedLocalTurn)) {
             $r->toTarget($target);
             $this->assertEquals($target, $r->getCurrentTarget());
-            $this->assertEquals($expectedGlobalTurn, $r->getGlobalTurn(), 'global');
+            $this->assertEquals($expectedCircleCount, $r->getCircleCount(), 'global');
             $this->assertEquals($expectedLocalTurn, $r->getTargetLocalTurn($target), 'local');
         }
     }

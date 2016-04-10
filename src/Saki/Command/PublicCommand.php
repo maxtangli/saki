@@ -2,9 +2,9 @@
 namespace Saki\Command;
 
 abstract class PublicCommand extends PlayerCommand {
-    function matchRequiredPhases() {
+    function matchPhase() {
         $phaseState = $this->getContext()->getRound()->getPhaseState();
-        if (!$phaseState->getRoundPhase()->isPublic()) {
+        if (!$phaseState->getPhase()->isPublic()) {
             return false;
         }
 
@@ -15,7 +15,7 @@ abstract class PublicCommand extends PlayerCommand {
         return true;
     }
 
-    function matchRequiredPlayer() {
+    function matchActor() {
         // todo introduce PublicCommandRoller
         return !$this->isCurrentPlayer();
     }

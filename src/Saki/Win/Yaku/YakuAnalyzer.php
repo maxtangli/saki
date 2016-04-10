@@ -20,9 +20,9 @@ class YakuAnalyzer {
         /** @var Yaku[] $yakus */
         $yakus = $this->getYakuSet()->toArray();
         foreach ($yakus as $yaku) {
-            $actualFanCount = $yaku->getFanCount($subTarget);
-            if ($actualFanCount > 0) {
-                $yakuList->insertLast(new YakuItem($yaku, $actualFanCount));
+            $actualFan = $yaku->getFan($subTarget);
+            if ($actualFan > 0) {
+                $yakuList->insertLast(new YakuItem($yaku, $actualFan));
             }
         }
         $yakuList->normalize(); // remove mutually-excluded yaku

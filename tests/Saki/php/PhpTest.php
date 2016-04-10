@@ -1,14 +1,11 @@
 <?php
 
-
 namespace tests\php;
 
 class EqMockA {
-
 }
 
 class EqMockB extends EqMockA {
-
 }
 
 class CalledClassMockA {
@@ -20,7 +17,6 @@ class CalledClassMockA {
 }
 
 class CalledClassMockB extends CalledClassMockA {
-
 }
 
 class PassArgumentArrayMock {

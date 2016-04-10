@@ -8,11 +8,11 @@ use Saki\Win\Yaku\Yaku;
 use Saki\Win\Yaku\Yakuman\FourConcealedTriplesYaku;
 
 class FourConcealedTriplesOnePairWaitingYaku extends Yaku {
-    function getConcealedFanCount() {
+    function getConcealedFan() {
         return 26;
     }
 
-    function getNotConcealedFanCount() {
+    function getNotConcealedFan() {
         return 26;
     }
 
@@ -22,7 +22,7 @@ class FourConcealedTriplesOnePairWaitingYaku extends Yaku {
         ];
     }
 
-    protected function matchOtherConditions(WinSubTarget $subTarget) {
+    protected function matchOther(WinSubTarget $subTarget) {
         $isFourConcealedTriples = $subTarget->getAllMeldList()->isFourTripleOrQuadAndOnePair(true);
 
         $waitingType = TileSeries::create(TileSeries::FOUR_WIN_SET_AND_ONE_PAIR)->getWaitingType(

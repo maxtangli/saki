@@ -1,19 +1,18 @@
 <?php
 
-use Saki\Game\Round;
-use Saki\Game\RoundPhase;
 use Saki\Game\GameTurn;
+use Saki\Game\Phase;
+use Saki\Game\Round;
 use Saki\Meld\Meld;
 use Saki\RoundResult\RoundResultType;
 
 class KongConcernedTest extends PHPUnit_Framework_TestCase {
-
     function testConcealedKong() {
         $r = new Round();
         $pro = $r->getProcessor();
 
         // execute
-        $area = $r->getTurnManager()->getCurrentPlayer()->getTileArea();
+        $area = $r->getTurnManager()->getCurrentPlayer()->getArea();
         $currentPlayerBefore = $r->getTurnManager()->getCurrentPlayer();
         $tileCountBefore = $area->getHand()->getPrivate()->count();
 
@@ -21,10 +20,10 @@ class KongConcernedTest extends PHPUnit_Framework_TestCase {
 
         $currentPlayerAfter = $r->getTurnManager()->getCurrentPlayer();
         $tileCountAfter = $area->getHand()->getPrivate()->count();
-        $roundPhaseAfter = $r->getPhaseState()->getRoundPhase();
+        $phaseAfter = $r->getPhaseState()->getPhase();
 
         // phase keep
-        $this->assertEquals(RoundPhase::getPrivateInstance(), $roundPhaseAfter);
+        $this->assertEquals(Phase::getPrivateInstance(), $phaseAfter);
         $this->assertEquals($currentPlayerBefore, $currentPlayerAfter);
 
         // tiles moved to created meld
@@ -42,23 +41,23 @@ class KongConcernedTest extends PHPUnit_Framework_TestCase {
             'mockHand S 11m123456789p13s; pong S'
         );
 
-        $area = $r->getTurnManager()->getCurrentPlayer()->getTileArea();
+        $area = $r->getTurnManager()->getCurrentPlayer()->getArea();
         $currentPlayerBefore = $r->getTurnManager()->getCurrentPlayer();
         $tileCountBefore = $area->getHand()->getPrivate()->count();
 
         // robQuad phase
         $pro->process('plusKong S S:s-1m:1m');
-        $this->assertEquals(RoundPhase::getPublicInstance(), $r->getPhaseState()->getRoundPhase());
+        $this->assertEquals(Phase::getPublicInstance(), $r->getPhaseState()->getPhase());
         $this->assertTrue($r->getPhaseState()->isRobQuad());
 
         // after robQuadPhase
         $pro->process('passAll');
         $currentPlayerAfter = $r->getTurnManager()->getCurrentPlayer();
         $tileCountAfter = $area->getHand()->getPrivate()->count();
-        $roundPhaseAfter = $r->getPhaseState()->getRoundPhase();
+        $phaseAfter = $r->getPhaseState()->getPhase();
 
         // phase keep
-        $this->assertEquals(RoundPhase::getPrivateInstance(), $roundPhaseAfter);
+        $this->assertEquals(Phase::getPrivateInstance(), $phaseAfter);
         $this->assertEquals($currentPlayerBefore, $currentPlayerAfter);
 
         // tiles moved to created meld
@@ -76,23 +75,23 @@ class KongConcernedTest extends PHPUnit_Framework_TestCase {
         $pro->process('discard I I:s-1m:1m');
         $prePlayer = $r->getTurnManager()->getCurrentPlayer();
         $actPlayer = $r->getTurnManager()->getOffsetPlayer(2);
-        $area = $actPlayer->getTileArea();
+        $area = $actPlayer->getArea();
         $tileCountBefore = $area->getHand()->getPublic()->count();
 
         $pro->process('mockHand W 111m; bigKong W');
 
-        $roundPhaseAfter = $r->getPhaseState()->getRoundPhase();
+        $phaseAfter = $r->getPhaseState()->getPhase();
         $currentPlayerAfter = $r->getTurnManager()->getCurrentPlayer();
 
         // phase changed
-        $this->assertEquals(RoundPhase::getPrivateInstance(), $roundPhaseAfter);
+        $this->assertEquals(Phase::getPrivateInstance(), $phaseAfter);
         $this->assertEquals($actPlayer, $currentPlayerAfter);
 
         // tiles moved to created meld
-//        $this->assertTrue($r->getTurnManager()->getCurrentPlayer()->getTileArea()->getDeclaredMeldListReference()->valueExist(Meld::fromString('1111m')));
-        $this->assertTrue($r->getTurnManager()->getCurrentPlayer()->getTileArea()->getHand()->getDeclare()->valueExist(Meld::fromString('1111m')));
-        $this->assertEquals($tileCountBefore - 2, $r->getTurnManager()->getCurrentPlayer()->getTileArea()->getHand()->getPrivate()->count());
-        $this->assertEquals(0, $prePlayer->getTileArea()->getDiscard()->count());
+//        $this->assertTrue($r->getTurnManager()->getCurrentPlayer()->getArea()->getDeclaredMeldListReference()->valueExist(Meld::fromString('1111m')));
+        $this->assertTrue($r->getTurnManager()->getCurrentPlayer()->getArea()->getHand()->getDeclare()->valueExist(Meld::fromString('1111m')));
+        $this->assertEquals($tileCountBefore - 2, $r->getTurnManager()->getCurrentPlayer()->getArea()->getHand()->getPrivate()->count());
+        $this->assertEquals(0, $prePlayer->getArea()->getDiscard()->count());
     }
 
     function testNotFourKongDrawBySamePlayer() {
@@ -105,7 +104,7 @@ class KongConcernedTest extends PHPUnit_Framework_TestCase {
             'discard E E:s-1s:1s; passAll'
         );
 
-        $this->assertEquals(RoundPhase::getPrivateInstance(), $r->getPhaseState()->getRoundPhase());
+        $this->assertEquals(Phase::getPrivateInstance(), $r->getPhaseState()->getPhase());
     }
 
     function testFourKongDrawByConcealedKong() {
@@ -152,7 +151,7 @@ class KongConcernedTest extends PHPUnit_Framework_TestCase {
             'concealedKong W W:s-1111s:1s; discard W W:s-1s:1s',
             'mockHand E 111s; bigKong E'
         );
-        $this->assertEquals(RoundPhase::getPrivateInstance(), $r->getPhaseState()->getRoundPhase());
+        $this->assertEquals(Phase::getPrivateInstance(), $r->getPhaseState()->getPhase());
 
         $pro->process('discard E E:s-1s:1s; passAll');
         $this->assertEquals(RoundResultType::FOUR_KONG_DRAW,

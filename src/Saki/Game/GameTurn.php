@@ -3,34 +3,34 @@
 namespace Saki\Game;
 
 class GameTurn {
-    private $roundWind;
+    private $prevailingWind;
     private $dealerWind;
-    private $selfWindTurn; // todo rename
+    private $seatWindTurn; // todo rename
 
     function __construct() {
-        $this->roundWind = RoundWind::createEast();
-        $this->dealerWind = PlayerWind::createEast();
-        $this->selfWindTurn = 0;
+        $this->prevailingWind = PrevailingWind::createEast();
+        $this->dealerWind = SeatWind::createEast();
+        $this->seatWindTurn = 0;
     }
 
     /**
-     * @return RoundWind
+     * @return PrevailingWind
      */
-    function getRoundWind() {
-        return $this->roundWind;
+    function getPrevailingWind() {
+        return $this->prevailingWind;
     }
 
     /**
-     * @param RoundWind $roundWind
+     * @param PrevailingWind $prevailingWind
      * @return $this
      */
-    function setRoundWind(RoundWind $roundWind) {
-        $this->roundWind = $roundWind;
+    function setPrevailingWind(PrevailingWind $prevailingWind) {
+        $this->prevailingWind = $prevailingWind;
         return $this;
     }
 
     /**
-     * @return PlayerWind
+     * @return SeatWind
      */
     function getDealerWind() {
         return $this->dealerWind;
@@ -39,7 +39,7 @@ class GameTurn {
     /**
      * @return int
      */
-    function getSelfWindTurn() {
-        return $this->selfWindTurn;
+    function getSeatWindTurn() {
+        return $this->seatWindTurn;
     }
 }

@@ -1,22 +1,20 @@
 <?php
 
 use Saki\Game\DeclareHistory;
-use Saki\Game\PlayerWind;
-use Saki\Game\Round;
-use Saki\Game\RoundTurn;
+use Saki\Game\SeatWind;
+use Saki\Game\Turn;
 
 class DeclareHistoryTest extends PHPUnit_Framework_TestCase {
-
     function testAll() {
         $h = new DeclareHistory();
-        $h->recordDeclare(new RoundTurn(2, PlayerWind::createSouth()));
-        $h->recordDeclare(new RoundTurn(4, PlayerWind::createWest()));
-        $this->assertTrue($h->hasDeclare(new RoundTurn(1, PlayerWind::createNorth())));
-        $this->assertTrue($h->hasDeclare(new RoundTurn(2, PlayerWind::createSouth())));
-        $this->assertTrue($h->hasDeclare(new RoundTurn(2, PlayerWind::createNorth())));
-        $this->assertTrue($h->hasDeclare(new RoundTurn(3, PlayerWind::createEast())));
-        $this->assertTrue($h->hasDeclare(new RoundTurn(4, PlayerWind::createWest())));
-        $this->assertFalse($h->hasDeclare(new RoundTurn(4, PlayerWind::createNorth())));
-        $this->assertFalse($h->hasDeclare(new RoundTurn(5, PlayerWind::createEast())));
+        $h->recordDeclare(new Turn(2, SeatWind::createSouth()));
+        $h->recordDeclare(new Turn(4, SeatWind::createWest()));
+        $this->assertTrue($h->hasDeclare(new Turn(1, SeatWind::createNorth())));
+        $this->assertTrue($h->hasDeclare(new Turn(2, SeatWind::createSouth())));
+        $this->assertTrue($h->hasDeclare(new Turn(2, SeatWind::createNorth())));
+        $this->assertTrue($h->hasDeclare(new Turn(3, SeatWind::createEast())));
+        $this->assertTrue($h->hasDeclare(new Turn(4, SeatWind::createWest())));
+        $this->assertFalse($h->hasDeclare(new Turn(4, SeatWind::createNorth())));
+        $this->assertFalse($h->hasDeclare(new Turn(5, SeatWind::createEast())));
     }
 }

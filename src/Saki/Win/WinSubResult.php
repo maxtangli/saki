@@ -1,13 +1,12 @@
 <?php
 namespace Saki\Win;
 
-use Saki\RoundResult\ScoreLevel;
-use Saki\RoundResult\ScoreTable;
+use Saki\RoundResult\PointLevel;
+use Saki\RoundResult\PointTable;
 use Saki\Util\Comparable;
 use Saki\Win\Yaku\YakuItemList;
 
 class WinSubResult {
-
     use Comparable;
 
     function compareTo($other) {
@@ -19,28 +18,28 @@ class WinSubResult {
             return $winStateDiff;
         }
 
-        $yakuCountDiff = $this->getFanCount() <=> $other->getFanCount();
+        $yakuCountDiff = $this->getFan() <=> $other->getFan();
         if ($yakuCountDiff != 0) {
             return $yakuCountDiff;
         }
 
-        $fuCountDiff = $this->getFuCount() <=> $other->getFuCount();
-        return $fuCountDiff;
+        $fuDiff = $this->getFu() <=> $other->getFu();
+        return $fuDiff;
     }
 
     private $winState;
     private $yakuList;
-    private $fuCount;
+    private $fu;
 
     /**
      * @param WinState $winState
      * @param YakuItemList $yakuList
-     * @param int $fuCount
+     * @param int $fu
      */
-    function __construct(WinState $winState, YakuItemList $yakuList, $fuCount) {
+    function __construct(WinState $winState, YakuItemList $yakuList, $fu) {
         $this->winState = $winState;
         $this->yakuList = $yakuList;
-        $this->fuCount = $fuCount;
+        $this->fu = $fu;
     }
 
     function getWinState() {
@@ -51,19 +50,19 @@ class WinSubResult {
         return $this->yakuList;
     }
 
-    function getFuCount() {
-        return $this->fuCount;
+    function getFu() {
+        return $this->fu;
     }
 
-    function getFanCount() {
-        return $this->getYakuList()->getTotalFanCount();
+    function getFan() {
+        return $this->getYakuList()->getTotalFan();
     }
 
-    function getScoreLevel() {
-        return ScoreLevel::fromFanAndFuCount($this->getFanCount(), $this->getFuCount());
+    function getPointLevel() {
+        return PointLevel::fromFanAndFu($this->getFan(), $this->getFu());
     }
 
-    function getScoreItem() {
-        return ScoreTable::create()->getScoreItem($this->getFanCount(), $this->getFuCount());
+    function getPointItem() {
+        return PointTable::create()->getPointItem($this->getFan(), $this->getFu());
     }
 }

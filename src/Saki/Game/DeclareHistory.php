@@ -10,9 +10,8 @@ use Saki\Util\ArrayList;
  * @package Saki\Game
  */
 class DeclareHistory {
-
     /**
-     * @var ArrayList an ArrayList with ascend declare RoundTurn values.
+     * @var ArrayList an ArrayList with ascend declare Turn values.
      */
     private $list;
 
@@ -25,25 +24,25 @@ class DeclareHistory {
     }
 
     /**
-     * @param RoundTurn $roundTurn
+     * @param Turn $turn
      */
-    function recordDeclare(RoundTurn $roundTurn) {
+    function recordDeclare(Turn $turn) {
         $valid = $this->list->isEmpty() ||
-            $roundTurn->isAfterOrSame($this->list->getLast());
+            $turn->isAfterOrSame($this->list->getLast());
         if (!$valid) {
             throw new \InvalidArgumentException();
         }
 
-        $this->list->insertLast($roundTurn);
+        $this->list->insertLast($turn);
     }
 
     /**
-     * @param RoundTurn $fromRoundTurn
+     * @param Turn $fromTurn
      * @return bool
      */
-    function hasDeclare(RoundTurn $fromRoundTurn) {
+    function hasDeclare(Turn $fromTurn) {
         return $this->list->isEmpty() ?
             false :
-            $fromRoundTurn->isBeforeOrSame($this->list->getLast());
+            $fromTurn->isBeforeOrSame($this->list->getLast());
     }
 }

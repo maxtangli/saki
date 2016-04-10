@@ -2,9 +2,9 @@
 namespace Saki\Win;
 
 use Saki\Game\Player;
+use Saki\Game\PrevailingWind;
 use Saki\Game\Round;
-use Saki\Game\RoundTurn;
-use Saki\Game\RoundWind;
+use Saki\Game\Turn;
 use Saki\Meld\MeldList;
 use Saki\Tile\Tile;
 
@@ -17,13 +17,12 @@ class WinTarget {
         $this->player = $player;
         $this->round = $round;
 
-        $roundPhase = $round->getPhaseState()->getRoundPhase();
-        if (!$roundPhase->isPrivateOrPublic()) {
+        $phase = $round->getPhaseState()->getPhase();
+        if (!$phase->isPrivateOrPublic()) {
             throw new \InvalidArgumentException(
-                sprintf('Invalid round phase, expect[private or public phase] but given[%s].', $roundPhase)
+                sprintf('Invalid round phase, expect[private or public phase] but given[%s].', $phase)
             );
         }
-
         // todo validate hand count, target tile
     }
 
@@ -34,36 +33,36 @@ class WinTarget {
     // about round/global
 
     /**
-     * @return RoundWind
+     * @return PrevailingWind
      */
-    function getRoundWind() {
-        return $this->round->getRoundWindData()->getRoundWind();
+    function getPrevailingWind() {
+        return $this->round->getPrevailingWindData()->getPrevailingWind();
     }
 
     // todo remove
-    function getRoundWindTile() {
-        return $this->round->getRoundWindData()->getRoundWind()->getWindTile();
+    function getPrevailingWindTile() {
+        return $this->round->getPrevailingWindData()->getPrevailingWind()->getWindTile();
     }
 
     function getTileSet() {
         return $this->round->getGameData()->getTileSet();
     }
-    
+
     // about round/current
-    function getRoundTurn() {
-        return $this->round->getTurnManager()->getRoundTurn();
+    function getTurn() {
+        return $this->round->getTurnManager()->getCurrentTurn();
     }
-    
-    function getGlobalTurn() {
-        return $this->round->getTurnManager()->getGlobalTurn();
+
+    function getCircleCount() {
+        return $this->round->getTurnManager()->getCurrentTurn()->getCircleCount();
     }
 
     function isPrivatePhase() {
-        return $this->round->getPhaseState()->getRoundPhase()->isPrivate();
+        return $this->round->getPhaseState()->getPhase()->isPrivate();
     }
 
     function isPubicPhase() {
-        return $this->round->getPhaseState()->getRoundPhase()->isPublic();
+        return $this->round->getPhaseState()->getPhase()->isPublic();
     }
 
     function getActPlayer() {
@@ -89,31 +88,31 @@ class WinTarget {
     // about target player
 
     function getPublicHand() {
-        return $this->player->getTileArea()->getHand()->getPublic();
+        return $this->player->getArea()->getHand()->getPublic();
     }
 
     function getPrivateHand() {
-        return $this->player->getTileArea()->getHand()->getPrivate();
+        return $this->player->getArea()->getHand()->getPrivate();
     }
 
     function getPrivateComplete() {
-        return $this->player->getTileArea()->getHand()->getPrivatePlusDeclare();
+        return $this->player->getArea()->getHand()->getPrivatePlusDeclare();
     }
 
     function getDeclaredMeldList() {
-        return $this->player->getTileArea()->getHand()->getDeclare();
+        return $this->player->getArea()->getHand()->getDeclare();
     }
 
     function getDiscardedTileList() {
-        return $this->player->getTileArea()->getDiscardedReference();
+        return $this->player->getArea()->getDiscardedReference();
     }
 
     function isConcealed() {
-        return $this->player->getTileArea()->getHand()->isConcealed();
+        return $this->player->getArea()->getHand()->isConcealed();
     }
 
     function getReachStatus() {
-        return $this->player->getTileArea()->getReachStatus();
+        return $this->player->getArea()->getReachStatus();
     }
 
     function isFirstTurnWin() {
@@ -121,54 +120,54 @@ class WinTarget {
     }
 
     function getTileOfTargetTile() {
-        return $this->getActPlayer()->getTileArea()->getHand()->getTarget()->getTile();
+        return $this->getActPlayer()->getArea()->getHand()->getTarget()->getTile();
     }
 
     function isKingSTileWin() {
-        return $this->getActPlayer()->getTileArea()->getHand()
+        return $this->getActPlayer()->getArea()->getHand()
             ->getTarget()->isKingSTile();
     }
 
     function isRobbingAQuadWin() {
-        return $this->getActPlayer()->getTileArea()->getHand()->getTarget()->isRobQuadTile();
+        return $this->getActPlayer()->getArea()->getHand()->getTarget()->isRobQuadTile();
     }
 
     function isHeavenlyWin() {
         $actPlayer = $this->getActPlayer();
         return $this->isFirstTurnNoDeclare($actPlayer)
-        && $this->round->getPhaseState()->getRoundPhase()->isPrivate()
-        && $actPlayer->getTileArea()->getPlayerWind()->isDealer();
+        && $this->round->getPhaseState()->getPhase()->isPrivate()
+        && $actPlayer->getArea()->getSeatWind()->isDealer();
     }
 
     function isEarthlyWin() {
         $actPlayer = $this->getActPlayer();
         return $this->isFirstTurnNoDeclare($actPlayer)
-        && $this->round->getPhaseState()->getRoundPhase()->isPrivate()
-        && $actPlayer->getTileArea()->getPlayerWind()->isLeisureFamily();
+        && $this->round->getPhaseState()->getPhase()->isPrivate()
+        && $actPlayer->getArea()->getSeatWind()->isLeisureFamily();
     }
 
     function isHumanlyWin() {
         $actPlayer = $this->getActPlayer();
         return $this->isFirstTurnNoDeclare($actPlayer)
-        && $this->round->getPhaseState()->getRoundPhase()->isPublic()
-        && $actPlayer->getTileArea()->getDiscard()->isEmpty();
+        && $this->round->getPhaseState()->getPhase()->isPublic()
+        && $actPlayer->getArea()->getDiscard()->isEmpty();
     }
 
     protected function isFirstTurnNoDeclare(Player $player) {
         $r = $this->round;
-        return $r->getTurnManager()->getRoundTurn()->getGlobalTurn() == 1
+        return $r->getTurnManager()->getCurrentTurn()->getCircleCount() == 1
         && !$r->getAreas()->getDeclareHistory()->hasDeclare(
-            new RoundTurn(1, $player->getTileArea()->getPlayerWind())
+            new Turn(1, $player->getArea()->getSeatWind())
         );
     }
 
-    function getPlayerWind() {
-        return $this->player->getTileArea()->getPlayerWind();
+    function getSeatWind() {
+        return $this->player->getArea()->getSeatWind();
     }
 
     // todo remove
-    function getSelfWindTile() {
-        return $this->player->getTileArea()->getPlayerWind()->getWindTile();
+    function getSeatWindTile() {
+        return $this->player->getArea()->getSeatWind()->getWindTile();
     }
 
     function getDoraFacade() {

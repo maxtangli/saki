@@ -1,10 +1,10 @@
 <?php
 namespace Saki\Game;
 
-use Saki\FinalScore\CompositeFinalScoreStrategy;
-use Saki\FinalScore\MoundFinalScoreStrategy;
-use Saki\FinalScore\RankingHorseFinalScoreStrategy;
-use Saki\FinalScore\RankingHorseType;
+use Saki\FinalPoint\CompositeFinalPointStrategy;
+use Saki\FinalPoint\MoundFinalPointStrategy;
+use Saki\FinalPoint\RankingHorseFinalPointStrategy;
+use Saki\FinalPoint\RankingHorseType;
 use Saki\Tile\TileSet;
 use Saki\Win\Yaku\YakuSet;
 
@@ -15,21 +15,21 @@ use Saki\Win\Yaku\YakuSet;
 class GameData {
     private $playerCount;
     private $totalRoundType;
-    private $initialScore;
-    private $finalScoreStrategy;
+    private $initialPoint;
+    private $finalPointStrategy;
     private $tileSet;
     private $yakuSet;
 
     /**
-     * default: 4 player, east game, 25000-30000 initial score,
+     * default: 4 player, east game, 25000-30000 initial point,
      */
     function __construct() {
         $this->playerCount = 4;
         $this->totalRoundType = GameLengthType::create(GameLengthType::EAST);
-        $this->initialScore = 25000;
-        $this->finalScoreStrategy = new CompositeFinalScoreStrategy([
-            RankingHorseFinalScoreStrategy::fromType(RankingHorseType::create(RankingHorseType::UMA_10_20)),
-            new MoundFinalScoreStrategy(25000, 30000),
+        $this->initialPoint = 25000;
+        $this->finalPointStrategy = new CompositeFinalPointStrategy([
+            RankingHorseFinalPointStrategy::fromType(RankingHorseType::create(RankingHorseType::UMA_10_20)),
+            new MoundFinalPointStrategy(25000, 30000),
         ]);
         $this->tileSet = TileSet::createStandard();
         $this->yakuSet = YakuSet::createStandard();
@@ -43,12 +43,12 @@ class GameData {
         return $this->totalRoundType;
     }
 
-    function getInitialScore() {
-        return $this->initialScore;
+    function getInitialPoint() {
+        return $this->initialPoint;
     }
 
-    function getFinalScoreStrategy() {
-        return $this->finalScoreStrategy;
+    function getFinalPointStrategy() {
+        return $this->finalPointStrategy;
     }
 
     function getTileSet() {

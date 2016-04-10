@@ -12,30 +12,30 @@ class GameLengthType extends Enum {
     const FULL = 4;
 
     /**
-     * @return RoundWind
+     * @return PrevailingWind
      */
-    function getLastRoundWind() {
+    function getLastPrevailingWind() {
         switch ($this->getValue()) {
             case self::EAST:
-                return RoundWind::fromString('E');
+                return PrevailingWind::fromString('E');
             case self::EAST_SOUTH:
-                return RoundWind::fromString('S');
+                return PrevailingWind::fromString('S');
             case self::FULL;
-                return RoundWind::fromString('N');
+                return PrevailingWind::fromString('N');
         }
         throw new \LogicException();
     }
 
     /**
-     * @param RoundWind $roundWind
+     * @param PrevailingWind $prevailingWind
      * @return bool
      */
-    function inLength(RoundWind $roundWind) {
+    function inLength(PrevailingWind $prevailingWind) {
         switch ($this->getValue()) {
             case self::EAST:
-                return $roundWind == RoundWind::fromString('E');
+                return $prevailingWind == PrevailingWind::fromString('E');
             case self::EAST_SOUTH:
-                return $roundWind == RoundWind::fromString('E') || $roundWind == RoundWind::fromString('S');
+                return $prevailingWind == PrevailingWind::fromString('E') || $prevailingWind == PrevailingWind::fromString('S');
             case self::FULL;
                 return true;
         }

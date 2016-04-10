@@ -6,11 +6,11 @@ use Saki\Win\Yaku\Fan3\HalfFlushYaku;
 use Saki\Win\Yaku\Yaku;
 
 class FullFlushYaku extends Yaku {
-    function getConcealedFanCount() {
+    function getConcealedFan() {
         return 6;
     }
 
-    function getNotConcealedFanCount() {
+    function getNotConcealedFan() {
         return 5;
     }
 
@@ -18,7 +18,7 @@ class FullFlushYaku extends Yaku {
         return [];
     }
 
-    protected function matchOtherConditions(WinSubTarget $subTarget) {
+    protected function matchOther(WinSubTarget $subTarget) {
         return $subTarget->getPrivateComplete()->isFlush(true);
     }
 
