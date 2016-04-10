@@ -25,8 +25,7 @@ abstract class PlayerCommand extends Command {
     }
 
     function getCurrentPlayer() { // todo remove
-        $currentSeatWind = $this->getContext()->getCurrentArea()->getSeatWind();
-        return $this->getContext()->getRound()->getPlayerList()->getPlayer($currentSeatWind);
+        return $this->getContext()->getRound()->getAreas()->tempGetCurrentPlayer();
     }
 
     function isCurrentPlayer() { // todo remove

@@ -41,7 +41,7 @@ class PublicPhaseState extends PhaseState {
     }
 
     function getDefaultNextState(Round $round) {
-        $nextPlayer = $round->getTurnManager()->getOffsetPlayer(1);
+        $nextPlayer = $round->getAreas()->tempGetOffsetPlayer(1);
         $shouldDrawTile = true;
         return new PrivatePhaseState($nextPlayer, $shouldDrawTile);
     }
@@ -85,7 +85,7 @@ class PublicPhaseState extends PhaseState {
         }
 
         // FourWindDraw
-        $isFirstRound = $round->getTurnManager()->getCurrentTurn()->getCircleCount() == 1;
+        $isFirstRound = $round->getAreas()->getCurrentTurn()->getCircleCount() == 1;
         if ($isFirstRound) {
             $allDiscardTileList = $round->getAreas()->getOpenHistory()->getAllDiscard();
             if ($allDiscardTileList->count() == 4) {

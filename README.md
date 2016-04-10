@@ -665,10 +665,9 @@ rush 57 remove Player usage
 - [x] refactor Areas.recordOpen 0.2h
 - [x] add Areas.getArea 0.2h
 
-- [ ] remove Player usage by SeatWind
-- [ ] remove TurnManger 0.4h // with a self-managed Turn abstraction, TurnManager no longer required!
-- [ ] replace TurnManger.getCurrentPlayer by TileAreas.getTurn
 - [ ] try adapt DiscardCommand 1h
+- [ ] remove TurnManger 0.9h // with a self-managed Turn abstraction, TurnManager no longer required!
+- [ ] remove Player usage by SeatWind
 
 rush refactor Turn concerned: part2
 

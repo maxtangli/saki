@@ -12,13 +12,13 @@ class KongConcernedTest extends PHPUnit_Framework_TestCase {
         $pro = $r->getProcessor();
 
         // execute
-        $area = $r->getTurnManager()->getCurrentPlayer()->getArea();
-        $currentPlayerBefore = $r->getTurnManager()->getCurrentPlayer();
+        $area = $r->getAreas()->tempGetCurrentPlayer()->getArea();
+        $currentPlayerBefore = $r->getAreas()->tempGetCurrentPlayer();
         $tileCountBefore = $area->getHand()->getPrivate()->count();
 
         $pro->process('concealedKong E E:s-1111m:1m');
 
-        $currentPlayerAfter = $r->getTurnManager()->getCurrentPlayer();
+        $currentPlayerAfter = $r->getAreas()->tempGetCurrentPlayer();
         $tileCountAfter = $area->getHand()->getPrivate()->count();
         $phaseAfter = $r->getPhaseState()->getPhase();
 
@@ -41,8 +41,8 @@ class KongConcernedTest extends PHPUnit_Framework_TestCase {
             'mockHand S 11m123456789p13s; pong S'
         );
 
-        $area = $r->getTurnManager()->getCurrentPlayer()->getArea();
-        $currentPlayerBefore = $r->getTurnManager()->getCurrentPlayer();
+        $area = $r->getAreas()->tempGetCurrentPlayer()->getArea();
+        $currentPlayerBefore = $r->getAreas()->tempGetCurrentPlayer();
         $tileCountBefore = $area->getHand()->getPrivate()->count();
 
         // robQuad phase
@@ -52,7 +52,7 @@ class KongConcernedTest extends PHPUnit_Framework_TestCase {
 
         // after robQuadPhase
         $pro->process('passAll');
-        $currentPlayerAfter = $r->getTurnManager()->getCurrentPlayer();
+        $currentPlayerAfter = $r->getAreas()->tempGetCurrentPlayer();
         $tileCountAfter = $area->getHand()->getPrivate()->count();
         $phaseAfter = $r->getPhaseState()->getPhase();
 
@@ -73,24 +73,24 @@ class KongConcernedTest extends PHPUnit_Framework_TestCase {
 
         // execute
         $pro->process('discard I I:s-1m:1m');
-        $prePlayer = $r->getTurnManager()->getCurrentPlayer();
-        $actPlayer = $r->getTurnManager()->getOffsetPlayer(2);
+        $prePlayer = $r->getAreas()->tempGetCurrentPlayer();
+        $actPlayer = $r->getAreas()->tempGetOffsetPlayer(2);
         $area = $actPlayer->getArea();
         $tileCountBefore = $area->getHand()->getPublic()->count();
 
         $pro->process('mockHand W 111m; bigKong W');
 
         $phaseAfter = $r->getPhaseState()->getPhase();
-        $currentPlayerAfter = $r->getTurnManager()->getCurrentPlayer();
+        $currentPlayerAfter = $r->getAreas()->tempGetCurrentPlayer();
 
         // phase changed
         $this->assertEquals(Phase::getPrivateInstance(), $phaseAfter);
         $this->assertEquals($actPlayer, $currentPlayerAfter);
 
         // tiles moved to created meld
-//        $this->assertTrue($r->getTurnManager()->getCurrentPlayer()->getArea()->getDeclaredMeldListReference()->valueExist(Meld::fromString('1111m')));
-        $this->assertTrue($r->getTurnManager()->getCurrentPlayer()->getArea()->getHand()->getDeclare()->valueExist(Meld::fromString('1111m')));
-        $this->assertEquals($tileCountBefore - 2, $r->getTurnManager()->getCurrentPlayer()->getArea()->getHand()->getPrivate()->count());
+//        $this->assertTrue($r->getAreas()->tempGetCurrentPlayer()->getArea()->getDeclaredMeldListReference()->valueExist(Meld::fromString('1111m')));
+        $this->assertTrue($r->getAreas()->tempGetCurrentPlayer()->getArea()->getHand()->getDeclare()->valueExist(Meld::fromString('1111m')));
+        $this->assertEquals($tileCountBefore - 2, $r->getAreas()->tempGetCurrentPlayer()->getArea()->getHand()->getPrivate()->count());
         $this->assertEquals(0, $prePlayer->getArea()->getDiscard()->count());
     }
 

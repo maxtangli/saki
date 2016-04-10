@@ -22,7 +22,7 @@ class NineNineDrawCommand extends PrivateCommand {
 
     function matchOther() {
         $areas = $this->getContext()->getRound()->getAreas();
-        $currentCircleCount = $this->getContext()->getRound()->getTurnManager()->getCurrentTurn()->getCircleCount();
+        $currentCircleCount = $this->getContext()->getRound()->getAreas()->getCurrentTurn()->getCircleCount();
 
         $isFirstTurn = $currentCircleCount == 1;
         $noDeclaredActions = !$areas->getDeclareHistory()->hasDeclare(

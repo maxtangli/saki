@@ -46,16 +46,16 @@ class RoundDrawTest extends PHPUnit_Framework_TestCase {
 //        $tileList = TileList::fromString('123456789m12355s');
 //        $tile = Tile::fromString('1s');
 //
-//        $r->debugReachByReplace($r->getTurnManager()->getCurrentPlayer(), $tile, $tileList); // 500ms
+//        $r->debugReachByReplace($r->getAreas()->tempGetCurrentPlayer(), $tile, $tileList); // 500ms
 //        $r->passPublicPhase();
 //
-//        $r->debugReachByReplace($r->getTurnManager()->getCurrentPlayer(), $tile, $tileList);
+//        $r->debugReachByReplace($r->getAreas()->tempGetCurrentPlayer(), $tile, $tileList);
 //        $r->passPublicPhase();
 //
-//        $r->debugReachByReplace($r->getTurnManager()->getCurrentPlayer(), $tile, $tileList);
+//        $r->debugReachByReplace($r->getAreas()->tempGetCurrentPlayer(), $tile, $tileList);
 //        $r->passPublicPhase();
 //
-//        $r->debugReachByReplace($r->getTurnManager()->getCurrentPlayer(), $tile, $tileList);
+//        $r->debugReachByReplace($r->getAreas()->tempGetCurrentPlayer(), $tile, $tileList);
 //        $r->passPublicPhase();
 //
 //        $this->assertEquals(RoundResultType::FOUR_REACH_DRAW, $r->getRoundData()->getTurnManager()->getRoundResult()->getRoundResultType()->getValue());

@@ -50,11 +50,11 @@ class WinTarget {
 
     // about round/current
     function getTurn() {
-        return $this->round->getTurnManager()->getCurrentTurn();
+        return $this->round->getAreas()->getCurrentTurn();
     }
 
     function getCircleCount() {
-        return $this->round->getTurnManager()->getCurrentTurn()->getCircleCount();
+        return $this->round->getAreas()->getCurrentTurn()->getCircleCount();
     }
 
     function isPrivatePhase() {
@@ -70,7 +70,7 @@ class WinTarget {
     }
 
     function getCurrentPlayer() {
-        return $this->round->getTurnManager()->getCurrentPlayer();
+        return $this->round->getAreas()->tempGetCurrentPlayer();
     }
 
     function getOpenHistory() {
@@ -155,7 +155,7 @@ class WinTarget {
 
     protected function isFirstTurnNoDeclare(Player $player) {
         $r = $this->round;
-        return $r->getTurnManager()->getCurrentTurn()->getCircleCount() == 1
+        return $r->getAreas()->getCurrentTurn()->getCircleCount() == 1
         && !$r->getAreas()->getDeclareHistory()->hasDeclare(
             new Turn(1, $player->getArea()->getSeatWind())
         );

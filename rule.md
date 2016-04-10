@@ -117,7 +117,7 @@
 - 洗牌，Mix the tiles
 - 掷骰，Roll two dice
 - 砌牌，Building the wall
-- *断牌，Break the wall
+- 分牌，Break the wall
 - 发牌，The deal
 
 - 巡目，*CircleCount
@@ -125,7 +125,7 @@
 - 当前阶段，*CurrentPhase：个人阶段，公共阶段。
 
 - 回合，Turn：（巡目，当前自风）。
-- 回合阶段？：（巡目，当前自风，当前阶段）。
+- 回合阶段，？：（巡目，当前自风，当前阶段）。
 
 - 手牌
 - 宣告区，MeldedSets
@@ -158,7 +158,7 @@
 - 暗杠，ConcealedKong：Round.stayPrivate()
 - 加杠，ExtendKong：Round.stayPrivate()
 - 立直，Riichi，*Reach：Round.toPublic()
-- 九种九牌流局：Round.toOver(Result)
+- 九种九牌流局，？：Round.toOver(Result)
 - 自摸和，Tsumo：Round.toOver(Result)
 
 公共阶段

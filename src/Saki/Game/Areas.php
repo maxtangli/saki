@@ -19,25 +19,25 @@ use Saki\Util\Utils;
 class Areas {
     // immutable
     private $turnProvider;
-    // variable
-    private $playerList;
-    private $reachPoints;
-    // round variable
-    private $wall;
-    private $target;
-    private $openHistory;
-    private $declareHistory;
     /**
      * An ArrayList of player count Area, order by ascend initial SeatWind.
      * Design note: Areas not implement as ArrayList since Area's order varies by Round.
      * @var ArrayList
      */
     private $areaList;
+    private $playerList; // todo remove
+    // variable
+    private $reachPoints;
+    // round variable
+    private $currentTurn;
+    private $wall;
+    private $target;
+    private $openHistory;
+    private $declareHistory;
 
     function __construct(Wall $wall, PlayerList $playerList, callable $turnProvider) {
         $this->turnProvider = $turnProvider;
         $this->areaList = new ArrayList();
-
         $this->playerList = $playerList;
         $playerList->walk(function (Player $player) { // todo remove PlayerList in Areas
             $getTarget = function () use ($player) {
@@ -47,8 +47,10 @@ class Areas {
             $player->setArea($area);
             $this->areaList->insertLast($area);
         });
+
         $this->reachPoints = 0;
 
+        $this->currentTurn = Turn::createFirst();
         $this->wall = $wall;
         $this->target = Target::createNull();
         $this->openHistory = new OpenHistory();
@@ -60,8 +62,10 @@ class Areas {
             $area = $player->getArea();
             $area->reset($area->getSeatWind()->toNextSelf($nextDealer));
         });
+
         // $this->reachPoints not changed
 
+        $this->currentTurn = Turn::createFirst();
         $this->wall->reset(true);
         $this->target = Target::createNull();
         $this->openHistory->reset();
@@ -82,7 +86,17 @@ class Areas {
      * @return Area
      */
     function getCurrentArea() {
-        return $this->getArea($this->getTurn()->getSeatWind());
+        return $this->getArea($this->getCurrentTurn()->getSeatWind());
+    }
+
+    function tempGetCurrentPlayer() {
+        return $this->playerList->getPlayer($this->getCurrentTurn()->getSeatWind());
+    }
+
+    function tempGetOffsetPlayer(int $offset) {
+        $currentSeatWind = $this->getCurrentTurn()->getSeatWind();
+        $offsetSeatWind = $currentSeatWind->toNext($offset);
+        return $this->playerList->getPlayer($offsetSeatWind);
     }
 
     /**
@@ -137,9 +151,16 @@ class Areas {
     /**
      * @return Turn
      */
-    protected function getTurn() {
+    function getCurrentTurn() {
         $f = $this->turnProvider;
         return $f();
+    }
+
+    /**
+     * @param SeatWind $seatWind
+     */
+    function toSeatWind(SeatWind $seatWind) {
+        $this->currentTurn = $this->currentTurn->toSeatWind($seatWind);
     }
 
     /**
@@ -185,7 +206,7 @@ class Areas {
      * @param bool $isDiscard
      */
     protected function recordOpen(Tile $tile, bool $isDiscard) {
-        $this->openHistory->record(new OpenRecord($this->getTurn(), $tile, $isDiscard));
+        $this->openHistory->record(new OpenRecord($this->getCurrentTurn(), $tile, $isDiscard));
     }
 
     function getDeclareHistory() {
@@ -193,7 +214,7 @@ class Areas {
     }
 
     protected function recordDeclare() {
-        $this->declareHistory->recordDeclare($this->getTurn());
+        $this->declareHistory->recordDeclare($this->getCurrentTurn());
     }
 
     // convert
@@ -220,7 +241,7 @@ class Areas {
             $reachTurn->getCircleCount() + 1,
             $targetPlayer->getArea()->getSeatWind()
         );
-        $currentTurn = $this->getTurn();
+        $currentTurn = $this->getCurrentTurn();
         $isSameOrNextCircleCount = $currentTurn->isBeforeOrSame($reachNextTurn);
 
         $noDeclareSinceReach = !$this->getDeclareHistory()->hasDeclare($reachTurn);
@@ -316,7 +337,7 @@ class Areas {
         );
 
         $player->getArea()->setReachStatus(
-            new ReachStatus($this->getTurn())
+            new ReachStatus($this->getCurrentTurn())
         );
 
         $player->getArea()->setPoint($player->getArea()->getPoint() - 1000);

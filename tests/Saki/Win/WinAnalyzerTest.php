@@ -9,7 +9,7 @@ class WinAnalyzerTest extends \PHPUnit_Framework_TestCase {
         $pro = $r->getProcessor();
         $pro->process('discard E E:s-5s:5s; mockHand E 123m456m789m123s5s'); // mock 13 tiles
 
-        $target = new WinTarget($r->getTurnManager()->getCurrentPlayer(), $r);
+        $target = new WinTarget($r->getAreas()->tempGetCurrentPlayer(), $r);
 
         $dataProvider = [
 //            ['123456789m12355s', $target->getPrivateHand()->__toString()],

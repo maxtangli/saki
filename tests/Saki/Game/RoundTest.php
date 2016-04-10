@@ -14,7 +14,7 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(Phase::getPrivateInstance(), $r->getPhaseState()->getPhase());
         // initial current player
         $dealerPlayer = $r->getPlayerList()->getDealerPlayer();
-        $this->assertSame($dealerPlayer, $r->getTurnManager()->getCurrentPlayer());
+        $this->assertSame($dealerPlayer, $r->getAreas()->tempGetCurrentPlayer());
         // initial candidate tile
         $this->assertCount(14, $dealerPlayer->getArea()->getHand()->getPrivate());
         $this->assertTrue($dealerPlayer->getArea()->getHand()->getTarget()->exist());
@@ -74,8 +74,8 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         $pro->process('discard I I:s-1m:1m');
 
         // setup
-        $prePlayer = $r->getTurnManager()->getCurrentPlayer();
-        $actPlayer = $r->getTurnManager()->getOffsetPlayer(1);
+        $prePlayer = $r->getAreas()->tempGetCurrentPlayer();
+        $actPlayer = $r->getAreas()->tempGetOffsetPlayer(1);
 
         // execute
         $tileCountBefore = $actPlayer->getArea()->getHand()->getPublic()->count();
@@ -83,11 +83,11 @@ class RoundTest extends PHPUnit_Framework_TestCase {
 
         // phase changed
         $this->assertEquals(Phase::create(Phase::PRIVATE_PHASE), $r->getPhaseState()->getPhase());
-        $this->assertEquals($actPlayer, $r->getTurnManager()->getCurrentPlayer());
+        $this->assertEquals($actPlayer, $r->getAreas()->tempGetCurrentPlayer());
 
         // tiles moved to created meld
-        $this->assertTrue($r->getTurnManager()->getCurrentPlayer()->getArea()->getHand()->getDeclare()->valueExist(Meld::fromString('123m')));
-        $this->assertEquals($tileCountBefore - 2, $r->getTurnManager()->getCurrentPlayer()->getArea()->getHand()->getPrivate()->count());
+        $this->assertTrue($r->getAreas()->tempGetCurrentPlayer()->getArea()->getHand()->getDeclare()->valueExist(Meld::fromString('123m')));
+        $this->assertEquals($tileCountBefore - 2, $r->getAreas()->tempGetCurrentPlayer()->getArea()->getHand()->getPrivate()->count());
         $this->assertEquals(0, $prePlayer->getArea()->getDiscard()->count());
     }
 
@@ -97,8 +97,8 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         $pro->process('discard I I:s-1m:1m');
 
         // setup
-        $prePlayer = $r->getTurnManager()->getCurrentPlayer();
-        $actPlayer = $r->getTurnManager()->getOffsetPlayer(2);
+        $prePlayer = $r->getAreas()->tempGetCurrentPlayer();
+        $actPlayer = $r->getAreas()->tempGetOffsetPlayer(2);
 
         // execute
         $tileCountBefore = $actPlayer->getArea()->getHand()->getPublic()->count();
@@ -106,11 +106,11 @@ class RoundTest extends PHPUnit_Framework_TestCase {
 
         // phase changed
         $this->assertEquals(Phase::create(Phase::PRIVATE_PHASE), $r->getPhaseState()->getPhase());
-        $this->assertEquals($actPlayer, $r->getTurnManager()->getCurrentPlayer());
+        $this->assertEquals($actPlayer, $r->getAreas()->tempGetCurrentPlayer());
 
         // tiles moved to created meld
-        $this->assertTrue($r->getTurnManager()->getCurrentPlayer()->getArea()->getHand()->getDeclare()->valueExist(Meld::fromString('111m')));
-        $this->assertEquals($tileCountBefore - 2, $r->getTurnManager()->getCurrentPlayer()->getArea()->getHand()->getPrivate()->count());
+        $this->assertTrue($r->getAreas()->tempGetCurrentPlayer()->getArea()->getHand()->getDeclare()->valueExist(Meld::fromString('111m')));
+        $this->assertEquals($tileCountBefore - 2, $r->getAreas()->tempGetCurrentPlayer()->getArea()->getHand()->getPrivate()->count());
         $this->assertEquals(0, $prePlayer->getArea()->getDiscard()->count());
 
         // hand
@@ -122,11 +122,11 @@ class RoundTest extends PHPUnit_Framework_TestCase {
 
     function testDebugSkipTo() {
         $r = new Round();
-        $playerE = $r->getTurnManager()->getCurrentPlayer();
+        $playerE = $r->getAreas()->tempGetCurrentPlayer();
 
         // phase not changed
         $r->debugSkipTo($playerE, null, null, null);
-        $this->assertEquals($playerE, $r->getTurnManager()->getCurrentPlayer());
+        $this->assertEquals($playerE, $r->getAreas()->tempGetCurrentPlayer());
         $this->assertEquals(Phase::getPrivateInstance(), $r->getPhaseState()->getPhase());
 
         // to public phase

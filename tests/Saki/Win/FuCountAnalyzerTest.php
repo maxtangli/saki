@@ -18,7 +18,7 @@ class FuAnalyzerTest extends PHPUnit_Framework_TestCase {
         $handMeldList = MeldList::fromString('123p,CC,(FFF)');
 
         $r = new Round();
-        $player = $r->getTurnManager()->getCurrentPlayer();
+        $player = $r->getAreas()->tempGetCurrentPlayer();
         $r->getAreas()->debugSetPrivate($player, $hand, $declareMeldList, $targetTile);
 
         $subTarget = new WinSubTarget($handMeldList, $player, $r);

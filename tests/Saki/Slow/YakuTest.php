@@ -445,7 +445,7 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(Tile::fromString('1m'), $playerS->getArea()->getHand()->getTarget()->getTile());
 
         // S winBySelf FirstTurnWin
-        $yakuList = $r->getWinResult($r->getTurnManager()->getCurrentPlayer())->getYakuList()->toYakuList();
+        $yakuList = $r->getWinResult($r->getAreas()->tempGetCurrentPlayer())->getYakuList()->toYakuList();
         $this->assertContains(FirstTurnWinYaku::create(), $yakuList, $yakuList);
     }
 
@@ -454,7 +454,7 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         $pro = $r->getProcessor();
 
         $pro->process('mockNextReplace 5m; concealedKong E E:s-123s456s789s7777m5m:7m');
-        $yakuList = $r->getWinResult($r->getTurnManager()->getCurrentPlayer())->getYakuList()->toYakuList();
+        $yakuList = $r->getWinResult($r->getAreas()->tempGetCurrentPlayer())->getYakuList()->toYakuList();
         $this->assertContains(KingSTileWinYaku::create(), $yakuList, $yakuList);
     }
 

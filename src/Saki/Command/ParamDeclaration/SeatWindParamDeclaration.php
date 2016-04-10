@@ -9,7 +9,7 @@ class SeatWindParamDeclaration extends ParamDeclaration {
         $paramString = $this->getParamString();
 
         if ($paramString == 'I') {
-            $currentPlayer = $this->getContext()->getRound()->getTurnManager()->getCurrentPlayer();
+            $currentPlayer = $this->getContext()->getRound()->getAreas()->tempGetCurrentPlayer();
             return $currentPlayer->getArea()->getSeatWind()->getWindTile();
         }
 

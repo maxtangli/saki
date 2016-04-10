@@ -11,7 +11,7 @@ class RoundWinTest extends PHPUnit_Framework_TestCase {
         $r = new Round();
         $pro = $r->getProcessor();
         // setup
-        $r->getAreas()->debugSetPrivate($r->getTurnManager()->getCurrentPlayer(), TileList::fromString('123m456m789m123s55s'));
+        $r->getAreas()->debugSetPrivate($r->getAreas()->tempGetCurrentPlayer(), TileList::fromString('123m456m789m123s55s'));
         // execute
         $r->getProcessor()->process('winBySelf E');
         // phase changed
@@ -66,7 +66,7 @@ class RoundWinTest extends PHPUnit_Framework_TestCase {
 //
 //    function testMultiWinByOther() {
 //        $r = new Round();
-//        $r->debugDiscardByReplace($r->getTurnManager()->getCurrentPlayer(), Tile::fromString('4s'));
+//        $r->debugDiscardByReplace($r->getAreas()->tempGetCurrentPlayer(), Tile::fromString('4s'));
 //        $r->getRoundData()->getTileAreas()->debugSetPublic($r->getPlayerList()[1], TileList::fromString('123m456m789m23s55s'));
 //        $r->getRoundData()->getTileAreas()->debugSetPublic($r->getPlayerList()[2], TileList::fromString('123m456m789m23s55s'));
 //        $r->multiWinByOther([$r->getPlayerList()[1], $r->getPlayerList()[2]]);
@@ -82,9 +82,9 @@ class RoundWinTest extends PHPUnit_Framework_TestCase {
         // todo replace reset() by debugReset()
 
         // E Player winBySelf, but point not over 30000
-        $r->getAreas()->debugSetPrivate($r->getTurnManager()->getCurrentPlayer(), TileList::fromString('123m456m789m123s55s'), null, Tile::fromString('2m'));
+        $r->getAreas()->debugSetPrivate($r->getAreas()->tempGetCurrentPlayer(), TileList::fromString('123m456m789m123s55s'), null, Tile::fromString('2m'));
         $r->getProcessor()->process('winBySelf E');
-        $r->getTurnManager()->getCurrentPlayer()->getArea()->setPoint('25000');
+        $r->getAreas()->tempGetCurrentPlayer()->getArea()->setPoint('25000');
         $this->assertFalse($r->getPhaseState()->isGameOver($r));
 
         // point over 30000

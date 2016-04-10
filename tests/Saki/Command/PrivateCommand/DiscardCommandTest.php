@@ -10,7 +10,7 @@ class DiscardCommandTest extends PHPUnit_Framework_TestCase {
         $r = new Round();
         $pro = $r->getProcessor();
         $pro->process('mockHand E 123456789m12344s');
-//        $r->getTileAreas()->debugReplaceHand($r->getTurnManager()->getCurrentPlayer(), TileList::fromString('123456789m12344s'));
+//        $r->getTileAreas()->debugReplaceHand($r->getAreas()->tempGetCurrentPlayer(), TileList::fromString('123456789m12344s'));
 
         $context = new CommandContext($r);
         $invalidCommand = DiscardCommand::fromString($context, 'discard E 9p');

@@ -60,7 +60,7 @@ class Round {
         }
 
         $currentDealer = $this->getPlayerList()->getDealerPlayer();
-        $nextDealer = $keepDealer ? $currentDealer : $this->getTurnManager()->getOffsetPlayer(1, $currentDealer);
+        $nextDealer = $keepDealer ? $currentDealer : $this->getAreas()->tempGetOffsetPlayer(1);
 
         $this->prevailingWindData->reset($keepDealer);
 
@@ -90,7 +90,7 @@ class Round {
     // todo simplify
     function debugSkipTo(Player $actualCurrentPlayer, Phase $phase = null, $circleCount = null,
                          Tile $mockDiscardTile = null) {
-        if ($this->getTurnManager()->getCurrentTurn()->getCircleCount() != 1) {
+        if ($this->getAreas()->getCurrentTurn()->getCircleCount() != 1) {
             throw new \LogicException('Not implemented.');
         }
 
@@ -120,7 +120,7 @@ class Round {
         $isTargetTurn = function () use ($actualCurrentPlayer, $actualPhase) {
             $currentPhaseState = $this->getPhaseState();
             $currentPhase = $currentPhaseState->getPhase();
-            $currentPlayer = $this->getTurnManager()->getCurrentPlayer();
+            $currentPlayer = $this->getAreas()->tempGetCurrentPlayer();
 
             $isTargetTurn = ($currentPlayer == $actualCurrentPlayer) && ($currentPhase == $actualPhase);
             $isGameOver = $currentPhase->isOver() && $currentPhaseState->isGameOver($this);

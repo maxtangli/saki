@@ -15,7 +15,7 @@ class TurnManager {
     private $seatWindRoller;
     private $currentTurn;
 
-    function __construct(PlayerList $playerList) {
+    function __construct(PlayerList $playerList) { // round only
         $windTiles = Tile::getWindList($playerList->count())->toArray(); // validate
         $this->playerList = $playerList;
         $this->seatWindRoller = new Roller($windTiles);
@@ -23,7 +23,7 @@ class TurnManager {
         $this->currentTurn = Turn::createFirst();
     }
 
-    function reset() {
+    function reset() { // round only
         $this->seatWindRoller->reset(Tile::fromString('E'));
 
         $this->currentTurn = Turn::createFirst();
@@ -32,39 +32,15 @@ class TurnManager {
     /**
      * @return Turn
      */
-    function getCurrentTurn() {
+    function getCurrentTurn() { // round only
         $circleCount = $this->seatWindRoller->getCircleCount();
         $wind = $this->seatWindRoller->getCurrentTarget();
         return new Turn($circleCount, new SeatWind($wind));
     }
 
-    function toSeatWind(SeatWind $seatWind) {
+    function toSeatWind(SeatWind $seatWind) { // one usage only
         $this->seatWindRoller->toTarget($seatWind->getWindTile());
 
         $this->currentTurn = $this->currentTurn->toSeatWind($seatWind);
-    }
-
-    // delegate methods of Roller
-    /**
-     * @return Player
-     */
-    function getCurrentPlayer() { // todo
-        $wind = $this->seatWindRoller->getCurrentTarget();
-        return $this->seatWindToPlayer($wind);
-    }
-
-    /**
-     * @param $offset
-     * @param Player $basePlayer
-     * @return Player
-     */
-    function getOffsetPlayer($offset, Player $basePlayer = null) {
-        $baseSeatWind = $basePlayer ? $basePlayer->getArea()->getSeatWind()->getWindTile() : null;
-        $wind = $this->seatWindRoller->getOffsetTarget($offset, $baseSeatWind);
-        return $this->seatWindToPlayer($wind);
-    }
-
-    protected function seatWindToPlayer(Tile $seatWind) {
-        return $this->playerList->getSeatWindTilePlayer($seatWind);
     }
 }
