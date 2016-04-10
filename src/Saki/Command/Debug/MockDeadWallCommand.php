@@ -47,7 +47,7 @@ class MockDeadWallCommand extends Command {
     }
 
     function executeImpl() {
-        $deadWall = $this->getContext()->getRound()->getTileAreas()->getWall()->getDeadWall();
+        $deadWall = $this->getContext()->getRound()->getAreas()->getWall()->getDeadWall();
         $deadWall->reset($this->getTileList(), $this->getOpenedDoraIndicatorCount(), $this->getUraDoraOpened());
     }
 }

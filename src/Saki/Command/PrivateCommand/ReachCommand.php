@@ -48,7 +48,7 @@ class ReachCommand extends PrivateCommand {
     }
 
     function executeImpl() {
-        $this->getContext()->getRound()->getTileAreas()->reach($this->getActPlayer(), $this->getTile());
+        $this->getContext()->getRound()->getAreas()->reach($this->getActPlayer(), $this->getTile());
         $this->getContext()->getRound()->toNextPhase();
     }
 }

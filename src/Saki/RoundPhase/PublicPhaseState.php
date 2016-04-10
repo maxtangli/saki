@@ -70,7 +70,7 @@ class PublicPhaseState extends RoundPhaseState {
         $nextState = $this->getNextState($round);
         $isExhaustiveDraw = $nextState->getRoundPhase()->isPrivate()
             && $nextState->shouldDrawTile()
-            && $round->getTileAreas()->getWall()->getRemainTileCount() == 0;
+            && $round->getAreas()->getWall()->getRemainTileCount() == 0;
         if ($isExhaustiveDraw) {
             $players = $round->getPlayerList()->toArray();
             $waitingAnalyzer = $round->getWinAnalyzer()->getWaitingAnalyzer();
@@ -88,7 +88,7 @@ class PublicPhaseState extends RoundPhaseState {
         // FourWindDraw
         $isFirstRound = $round->getTurnManager()->getGlobalTurn() == 1;
         if ($isFirstRound) {
-            $allDiscardTileList = $round->getTileAreas()->getOpenHistory()->getAllDiscard();
+            $allDiscardTileList = $round->getAreas()->getOpenHistory()->getAllDiscard();
             if ($allDiscardTileList->count() == 4) {
                 $allDiscardTileList->distinct();
                 $isFourSameWindDiscard = $allDiscardTileList->count() == 1 && $allDiscardTileList[0]->isWind();

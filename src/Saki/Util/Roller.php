@@ -4,8 +4,7 @@ namespace Saki\Util;
 class Roller {
     // immutable
     private $targets;
-
-    // impl, mutable
+    // variable
     private $targetList; // initialIndex is kept to be 0
     private $currentIndex;
     private $globalTurn; // first turn is 1
@@ -75,7 +74,9 @@ class Roller {
         $targetIndex = $this->targetList->getIndex($target); // validate
 
         if ($targetIndex == $this->currentIndex) {
-            throw new \InvalidArgumentException('target should not be same with current. Logic maybe confusing.');
+            throw new \InvalidArgumentException(
+                'target should not be same with current. Logic maybe confusing.'
+            );
         }
 
         $isNextTurn = $targetIndex < $this->currentIndex;
@@ -85,6 +86,4 @@ class Roller {
         }
         ++$this->localTurns[$targetIndex];
     }
-
-    // convenient methods
 }

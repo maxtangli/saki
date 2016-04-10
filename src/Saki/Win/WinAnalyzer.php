@@ -165,7 +165,7 @@ class WinAnalyzer {
          * extract class if dynamic furiten rule setting is required
          */
 
-        // furiten has no effect on win-by-self
+        // A player who is furiten, can still win on a self-drawn tile
         if ($target->isPrivatePhase()) {
             return false;
         }
@@ -175,7 +175,7 @@ class WinAnalyzer {
             return $waitingTileList->valueExist($ngTile);
         };
         $myPlayerWind = $target->getPlayerWind();
-
+        
         // open furiten: self open TileList contains target tile
         $selfOpenList = $openHistory->getSelf($myPlayerWind);
         if ($selfOpenList->any($isNgTile)) {
@@ -192,7 +192,7 @@ class WinAnalyzer {
             }
         }
 
-        // turn furiten: other open TileList since self last open
+        // temporary furiten: other open TileList since self last open
         $lastOpenRoundTurn = $openHistory->getLastOpenOrFalse($myPlayerWind);
         if ($lastOpenRoundTurn !== false) {
             // design note: not introduce NullObject of RoundTurn here since it's seldom until now

@@ -2,7 +2,7 @@
 
 文档书写标准
 
-  -
+- 英文术语以MIL为准，自创者标*。
 
 规则采用标准
 
@@ -12,7 +12,9 @@
 
 参考资料
 
-- wiki：麻雀のルール https://ja.wikipedia.org/wiki/%E9%BA%BB%E9%9B%80%E3%81%AE%E3%83%AB%E3%83%BC%E3%83%AB
+- Mahjong International League/Riichi Competition Rules http://mahjong-mil.org/riichirules2016.pdf
+- 日本プロ麻雀連盟/競技ルール http://www.ma-jan.or.jp/guide/game_rule.html
+- wiki/麻雀のルール https://ja.wikipedia.org/wiki/%E9%BA%BB%E9%9B%80%E3%81%AE%E3%83%AB%E3%83%BC%E3%83%AB
 
 进行
 
@@ -92,19 +94,25 @@
 ## 局中的牌
 
 - 牌堆
-- 山牌
-- 王牌
+- 山牌，Wall
+- 王牌，DeadWall
 - 洗牌
 
 - 手牌
-- 场风（RoundWind）
-- 自风（PlayerWind）
+- 场风，PrevailingWind
+- 自风，SeatWind
 
-- 宣告区
+- 宣告区，MeldedSets
 - 明刻
 - 暗刻
 - 明杠
 - 暗杠
+
+- 宝牌指示牌，DoraIndicator：
+- 宝牌，Dora：
+- 里宝牌（*UraDora）：
+- 赤宝牌（*RedDora）：
+- 宝牌类型役（*DoraTypeYaku）：
 
 ## 剧中的概念
 
@@ -131,24 +139,27 @@
 - 进入：1.荒牌流局判定。2.修改当前玩家。3.等待当前玩家指令。
 - 离开：1.进入公共阶段。
 
+系统指令
+- 抽牌，Draw：
+
 个人阶段玩家指令
-- 打牌: Round.toPublic()
-- 暗杠: Round.stayPrivate()
-- 加杠: Round.stayPrivate()
-- 立直: Round.toPublic()
-- 九种九牌流局: Round.toOver(Result)
-- 自摸和: Round.toOver(Result)
+- 打牌，Discard：Round.toPublic()
+- 暗杠，ConcealedKong：Round.stayPrivate()
+- 加杠，ExtendKong：Round.stayPrivate()
+- 立直，Riichi，*Reach：Round.toPublic()
+- 九种九牌流局：Round.toOver(Result)
+- 自摸和，Tsumo：Round.toOver(Result)
 
 公共阶段
 - 进入：1.等待其它玩家指令。
 - 离开：1.途中流局判定。2.进入（下一玩家,抽牌）的个人阶段。
 
 公共阶段玩家指令
-- 跳过: Round.toPrivate(next player, true) // leavePublic required
-- 吃: Round.toPrivate(act player, false) // leavePublic ?
-- 碰
-- 大明杠
-- 荣和: Round.toOver(Result)
+- 跳过：Round.toPrivate(next player, true) // leavePublic required
+- 吃，Chow：Round.toPrivate(act player, false) // leavePublic ?
+- 碰，Pung：
+- 大明杠，Kong：
+- 荣和，Ron：Round.toOver(Result)
 
 结束阶段
 - 进入：1.记录结果，修改分数。
@@ -176,8 +187,8 @@
    c.公共阶段-大明杠：将postLeave设为加杠逻辑（为避免四开杠判定），进入杠者的不摸牌个人阶段。 
 2. 杠宣言成立：向宣言区添加杠子，翻杠宝牌，杠者补牌
 3. 
- a.kongBySelf : 进入抢杠公共阶段，并设置下一阶段为杠者的不抽牌-不计巡-个人阶段
- b.kongByOther: 进入抢杠公共阶段，并设置下一阶段为杠者的不抽牌-计巡-个人阶段
+ a.kongBySelf ：进入抢杠公共阶段，并设置下一阶段为杠者的不抽牌-不计巡-个人阶段
+ b.kongByOther：进入抢杠公共阶段，并设置下一阶段为杠者的不抽牌-计巡-个人阶段
 4. 他家轮询抢杠，若和牌本局结束。
 5. 离开抢杠公共阶段（途中流局判定）
 6. 进入事先设好的同一玩家的个人阶段，不摸牌不计回合数
@@ -185,7 +196,7 @@
 
 # 流局的判定
 
-## 荒牌流局
+## 荒牌流局，ExhaustiveDraw
 
 进入个人阶段前判定。需要抽牌且牌山不存在牌时流局。
 
@@ -227,6 +238,8 @@
 - 七对子牌型：有7个不同的对子。
 - 国士无双牌型：只有幺九牌，有所有幺九牌。
 
+## 听牌，Tenpai
+
 ## 听牌类型
 
 - 边张
@@ -236,15 +249,15 @@
 - 地狱单骑
 - 空听
 
-## 振听（Furiten）
+## 振听，Furiten
 
 符合其它和牌条件但不允许荣和的情形。
 
-### 公开牌记录（OpenHistory）
+### 公开牌记录（*OpenHistory）
 
 各回合、各玩家的舍牌和加杠牌的记录。用于振听判定。
 
-### 振听目标牌清单（FuritenTargetTileList）
+### 振听目标牌清单（*FuritenTargetTileList）
 
 公共阶段中，听牌玩家的振听目标牌清单是：
 
@@ -253,7 +266,7 @@
 
 用于振听判定。
 
-## 振听目标牌，FuritenTargetTile
+## 振听目标牌，*FuritenTargetTile
 
 振听目标牌清单中的牌。
 
@@ -263,20 +276,13 @@
 2.荣和。注意自摸和不受振听影响。
 3.符合以下任一条件
 
-- 舍牌振听，OpenFuriten：玩家的 公开牌记录中含有 任一振听目标牌。
-- 立直振听，ReachFuriten：玩家的 立直宣言后的 任一公开牌记录中含有 任一振听目标牌。
-- 同巡振听，TurnFuriten：玩家的 上一次舍牌回合开始的 任一公开牌记录中含有 任一振听目标牌。注意“同巡”有特殊含义，不是“同一巡目”的意思。
+- 舍牌振听，*OpenFuriten：玩家的 公开牌记录中含有 任一振听目标牌。
+- 立直振听，*ReachFuriten：玩家的 立直宣言后的 任一公开牌记录中含有 任一振听目标牌。
+- 同巡振听，*TemporaryFuriten：玩家的 上一次舍牌回合开始的 任一公开牌记录中含有 任一振听目标牌。注意“同巡”有特殊含义，不是“同一巡目”的意思。
 
 ## 立直
 
 ## 役种
-
-### 宝牌
-
-- 宝牌类型役（DoraTypeYaku）：
-- 宝牌（Dora）：
-- 里宝牌（UraDora）：
-- 赤宝牌（RedDora）：
 
 ### 1番役
 

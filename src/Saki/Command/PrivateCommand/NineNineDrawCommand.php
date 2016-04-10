@@ -21,7 +21,7 @@ class NineNineDrawCommand extends PrivateCommand {
     }
 
     function matchOtherConditions() {
-        $areas = $this->getContext()->getRound()->getTileAreas();
+        $areas = $this->getContext()->getRound()->getAreas();
         $currentTurn = $this->getContext()->getRound()->getTurnManager()->getGlobalTurn();
 
         $isFirstTurn = $currentTurn == 1;

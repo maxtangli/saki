@@ -25,7 +25,7 @@ class MockNextReplaceCommand extends Command {
     }
 
     function executeImpl() {
-        $wall = $this->getContext()->getRound()->getTileAreas()->getWall();
+        $wall = $this->getContext()->getRound()->getAreas()->getWall();
         $wall->debugSetNextReplaceTile($this->getMockTile());
     }
 }

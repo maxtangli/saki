@@ -72,7 +72,7 @@ class OverPhaseState extends RoundPhaseState {
         }
         // clear accumulatedReachCount if isWin
         if ($result->getRoundResultType()->isWin()) {
-            $round->getTileAreas()->setAccumulatedReachCount(0);
+            $round->getAreas()->setAccumulatedReachCount(0);
         }
     }
 

@@ -27,7 +27,9 @@ class PlayerWindTest extends PHPUnit_Framework_TestCase {
          * W
          * N
          */
-        list($e, $s, $w, $n) = PlayerWind::createAll();
+        list($e, $s, $w, $n) = [
+            PlayerWind::createEast(), PlayerWind::createSouth(), PlayerWind::createWest(), PlayerWind::createNorth()
+        ];
         return [
             [$e, $e, $e],
             [$n, $e, $s],

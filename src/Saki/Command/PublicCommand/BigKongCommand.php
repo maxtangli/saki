@@ -26,7 +26,7 @@ class BigKongCommand extends PublicCommand {
 
         // avoid FourKongDraw by postLeave
         $postLeave = function () use ($r) {
-            $r->getTileAreas()->bigKong(
+            $r->getAreas()->bigKong(
                 $this->getActPlayer(), $this->getCurrentPlayer()
             );
         };

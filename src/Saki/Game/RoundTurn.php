@@ -1,7 +1,6 @@
 <?php
 namespace Saki\Game;
 
-use Saki\Tile\Tile;
 use Saki\Util\ComparableSequence;
 use Saki\Util\Immutable;
 
@@ -85,27 +84,5 @@ class RoundTurn implements Immutable {
      */
     function getPlayerWind() {
         return $this->playerWind;
-    }
-
-    /**
-     * Used in: isFirstTurnWin.
-     * @param RoundTurn $priorRoundTurn
-     * @return bool
-     */
-    function isFirstTurn(RoundTurn $priorRoundTurn) {
-        $diff = $this->getFloatGlobalTurn() - $priorRoundTurn->getFloatGlobalTurn();
-        if ($diff <= 0) {
-            throw new \InvalidArgumentException();
-        }
-        return $diff <= 1;
-    }
-
-    /**
-     * @return float
-     */
-    protected function getFloatGlobalTurn() {
-        return $this->getGlobalTurn() +
-        // todo simplify offset logic
-        0.25 * $this->getPlayerWind()->getWindTile()->getWindOffsetFrom(Tile::fromString('E'));
     }
 }

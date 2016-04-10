@@ -29,7 +29,7 @@ class WinBySelfCommand extends PrivateCommand {
             $round->getPlayerList()->toArray(),
             $this->getActPlayer(),
             $round->getWinResult($this->getActPlayer()),
-            $round->getTileAreas()->getAccumulatedReachCount(),
+            $round->getAreas()->getAccumulatedReachCount(),
             $round->getRoundWindData()->getSelfWindTurn()
         );
         $round->toNextPhase(new OverPhaseState($result));

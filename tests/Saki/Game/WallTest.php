@@ -8,7 +8,7 @@ class WallTest extends PHPUnit_Framework_TestCase {
         $standardCnt = 136;
 
         // new, no shuffle
-        $w = new Wall(TileSet::getStandardTileSet());
+        $w = new Wall(TileSet::createStandard());
         $this->assertCount($standardCnt, $w->getTileSet());
 
         // reset and shuffle
@@ -20,7 +20,7 @@ class WallTest extends PHPUnit_Framework_TestCase {
             '111122223333444455556666777788889999s' .
             'EEEESSSSWWWWNNNNCCCCPPPPFFFF';
         $tileList = \Saki\Tile\TileList::fromString($s);
-        $tileSet = new TileSet($tileList);
+        $tileSet = new TileSet($tileList->toArray());
         $w = new Wall($tileSet);
         $t = $w->draw();
         $this->assertEquals(\Saki\Tile\Tile::fromString('F'), $t);

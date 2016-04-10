@@ -39,7 +39,7 @@ class ChowCommand extends PublicCommand {
     function executeImpl() {
         $round = $this->getContext()->getRound();
 
-        $round->getTileAreas()->chow(
+        $round->getAreas()->chow(
             $this->getActPlayer(), $this->getTile1(), $this->getTile2(), $this->getCurrentPlayer()
         );
         $round->toNextPhase(

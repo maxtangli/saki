@@ -26,7 +26,7 @@ class TileParamDeclaration extends ParamDeclaration {
             $selfWind = (new SelfWindParamDeclaration($this->getContext(), $selfWindString))->toObject();
 
             $player = $round->getPlayerList()->getSelfWindPlayer($selfWind);
-            $areas = $round->getTileAreas();
+            $areas = $round->getAreas();
 
             if (preg_match('/s-(.+):(.+)/', $remainParamString, $matches)) {
                 list(, $mockTileListString, $tileString) = $matches;

@@ -50,7 +50,7 @@ class MockHandCommand extends PlayerCommand {
     }
 
     function executeImpl() {
-        $areas = $this->getContext()->getRound()->getTileAreas();
+        $areas = $this->getContext()->getRound()->getAreas();
         $areas->debugMockHand($this->getActPlayer(), $this->getMockTileList());
     }
 }

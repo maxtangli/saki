@@ -33,7 +33,7 @@ class PlusKongCommand extends PrivateCommand {
         $r = $this->getContext()->getRound();
 
         // set target tile
-        $r->getTileAreas()->plusKongBefore($this->getActPlayer(), $this->getTile());
+        $r->getAreas()->plusKongBefore($this->getActPlayer(), $this->getTile());
 
         // to RobAQuadPhase
         $robQuadPhase = new PublicPhaseState();
@@ -41,7 +41,7 @@ class PlusKongCommand extends PrivateCommand {
         $robQuadPhase->setRobQuad(true);
 
         $postLeave = function () use ($r) {
-            $r->getTileAreas()->plusKongAfter($this->getActPlayer(), $this->getTile());
+            $r->getAreas()->plusKongAfter($this->getActPlayer(), $this->getTile());
         };
         $robQuadPhase->setPostLeave($postLeave);
 

@@ -7,14 +7,18 @@ use Saki\Util\Immutable;
  * @package Saki\Game
  */
 class ReachStatus implements Immutable {
+    private static $nullInstance;
 
     /**
      * @return ReachStatus
      */
     static function createNotReach() {
-        $obj = new self(RoundTurn::createFirst());
-        $obj->reachRoundTurn = null;
-        return $obj;
+        if (self::$nullInstance === null) {
+            $obj = new self(RoundTurn::createFirst());
+            $obj->reachRoundTurn = null;
+            self::$nullInstance = $obj;
+        }
+        return self::$nullInstance;
     }
 
     private $reachRoundTurn;

@@ -5,6 +5,7 @@ namespace tests\Command;
 use Saki\Command\Command;
 use Saki\Command\CommandContext;
 use Saki\Command\CommandParser;
+use Saki\Command\CommandSet;
 use Saki\Command\Debug\MockHandCommand;
 use Saki\Command\ParamDeclaration\SelfWindParamDeclaration;
 use Saki\Command\ParamDeclaration\TileParamDeclaration;
@@ -49,7 +50,8 @@ class HelloCommand extends Command {
 class CommandTest extends \PHPUnit_Framework_TestCase {
     function testParse() {
         $context = new CommandContext(new Round());
-        $parser = new CommandParser($context, [HelloCommand::class]);
+        $set = new CommandSet([HelloCommand::class]);
+        $parser = new CommandParser($context, $set);
 
         // parseLine
         $line = 'hello E 1p';

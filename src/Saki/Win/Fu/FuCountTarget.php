@@ -49,6 +49,6 @@ class FuCountTarget {
     }
 
     function getRoundWind() {
-        return $this->subTarget->getRoundWind();
+        return $this->subTarget->getRoundWindTile();
     }
 }

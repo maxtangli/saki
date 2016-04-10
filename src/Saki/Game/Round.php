@@ -4,23 +4,7 @@ namespace Saki\Game;
 use Saki\Command\CommandContext;
 use Saki\Command\CommandParser;
 use Saki\Command\CommandProcessor;
-use Saki\Command\Debug\MockDeadWallCommand;
-use Saki\Command\Debug\MockHandCommand;
-use Saki\Command\Debug\MockNextDrawCommand;
-use Saki\Command\Debug\MockNextReplaceCommand;
-use Saki\Command\Debug\PassAllCommand;
-use Saki\Command\Debug\SkipCommand;
-use Saki\Command\PrivateCommand\ConcealedKongCommand;
-use Saki\Command\PrivateCommand\DiscardCommand;
-use Saki\Command\PrivateCommand\NineNineDrawCommand;
-use Saki\Command\PrivateCommand\PlusKongCommand;
-use Saki\Command\PrivateCommand\ReachCommand;
-use Saki\Command\PrivateCommand\WinBySelfCommand;
-use Saki\Command\PublicCommand\BigKongCommand;
-use Saki\Command\PublicCommand\ChowCommand;
-use Saki\Command\PublicCommand\PongCommand;
-use Saki\Command\PublicCommand\SmallKongCommand;
-use Saki\Command\PublicCommand\WinByOtherCommand;
+use Saki\Command\CommandSet;
 use Saki\RoundPhase\NullPhaseState;
 use Saki\RoundPhase\PrivatePhaseState;
 use Saki\RoundPhase\PublicPhaseState;
@@ -30,30 +14,30 @@ use Saki\Win\WinAnalyzer;
 use Saki\Win\WinTarget;
 
 class Round {
-    // immutable during game
+    // immutable
     private $gameData;
     private $winAnalyzer;
-
-    // immutable during round
+    private $processor;
+    // game variable
     private $roundWindData;
-
-    // variable during round
+    // round variable
     private $playerList;
     private $turnManager;
     private $areas;
     /** @var RoundPhaseState */
     private $phaseState;
 
-    // special: currently immutable, future variable
-    private $processor;
-
     function __construct() {
+        // immutable
         $gameData = new GameData();
         $this->gameData = $gameData;
         $this->winAnalyzer = new WinAnalyzer($gameData->getYakuSet());
+        $this->processor = new CommandProcessor(new CommandParser(new CommandContext($this), CommandSet::createStandard()));
 
+        // game variable
         $this->roundWindData = new RoundWindData($gameData->getPlayerCount(), $gameData->getTotalRoundType());
 
+        // round variable
         $this->playerList = new PlayerList($gameData->getPlayerCount(), $gameData->getInitialScore());
         $this->turnManager = new TurnManager($this->playerList);
         $wall = new Wall($gameData->getTileSet());
@@ -65,29 +49,7 @@ class Round {
 
         $this->phaseState = new NullPhaseState();
 
-        $classes = [
-            // private
-            DiscardCommand::class,
-            ConcealedKongCommand::class,
-            PlusKongCommand::class,
-            ReachCommand::class,
-            WinBySelfCommand::class,
-            NineNineDrawCommand::class,
-            // public
-            ChowCommand::class,
-            PongCommand::class,
-            BigKongCommand::class,
-            WinByOtherCommand::class,
-            // debug
-            MockNextReplaceCommand::class,
-            MockDeadWallCommand::class,
-            MockHandCommand::class,
-            MockNextDrawCommand::class,
-            PassAllCommand::class,
-            SkipCommand::class,
-        ];
-        $this->processor = new CommandProcessor(new CommandParser(new CommandContext($this), $classes));
-
+        // initial
         $this->toNextPhase();
         $this->toNextPhase(); // todo better way?
     }
@@ -100,25 +62,25 @@ class Round {
         $currentDealer = $this->getPlayerList()->getDealerPlayer();
         $nextDealer = $keepDealer ? $currentDealer : $this->getTurnManager()->getOffsetPlayer(1, $currentDealer);
 
-        $this->getRoundWindData()->reset($keepDealer);
+        $this->roundWindData->reset($keepDealer);
 
-        $this->getTurnManager()->reset();
+        $this->turnManager->reset();
         $nextDealerPlayerWind = new PlayerWind($nextDealer->getTileArea()->getPlayerWind()->getWindTile());
-        $this->getTileAreas()->reset($nextDealerPlayerWind);
+        $this->areas->reset($nextDealerPlayerWind);
 
         $this->phaseState = new NullPhaseState();
         $this->toNextPhase();
         $this->toNextPhase(); // todo better way?
     }
 
-    function debugReset(RoundResetData $resetData) {
-        $this->getRoundWindData()->debugReset($resetData->getRoundWind(), $resetData->getRoundWindTurn(), $resetData->getSelfWindTurn());
+    function debugReset(GameTurn $resetData) {
+        $this->roundWindData->debugReset($resetData->getRoundWind(), $resetData->getDealerWind()->getIndex(), $resetData->getSelfWindTurn());
 
-        $nextDealer = $this->getPlayerList()->getSelfWindPlayer($resetData->getDealerWind());
+        $nextDealer = $this->getPlayerList()->getSelfWindPlayer($resetData->getDealerWind()->getWindTile());
 
-        $this->getTurnManager()->reset();
+        $this->turnManager->reset();
         $nextDealerPlayerWind = new PlayerWind($nextDealer->getTileArea()->getPlayerWind()->getWindTile());
-        $this->getTileAreas()->reset($nextDealerPlayerWind);
+        $this->areas->reset($nextDealerPlayerWind);
 
         $this->phaseState = new NullPhaseState();
         $this->toNextPhase();
@@ -204,7 +166,7 @@ class Round {
     /**
      * @return Areas
      */
-    function getTileAreas() {
+    function getAreas() {
         return $this->areas;
     }
 

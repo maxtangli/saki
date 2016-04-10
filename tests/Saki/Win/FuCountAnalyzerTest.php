@@ -20,7 +20,7 @@ class FuCountAnalyzerTest extends PHPUnit_Framework_TestCase {
 
         $r = new Round();
         $player = $r->getTurnManager()->getCurrentPlayer();
-        $r->getTileAreas()->debugSetPrivate($player, $hand, $declareMeldList, $targetTile);
+        $r->getAreas()->debugSetPrivate($player, $hand, $declareMeldList, $targetTile);
 
         $subTarget = new WinSubTarget($handMeldList, $player, $r);
         $yakuList = new YakuItemList();

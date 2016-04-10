@@ -36,7 +36,7 @@ naming conventions
 ## rush statistics
 
 rush       | hours
----------  ||-----
+---------  | -----
 rush  0-5  | 34.0h
 rush  6-10 | 23.8h
 rush 11-15 | 15.8h
@@ -47,8 +47,9 @@ rush 31-35 | 17.4h
 rush 36-40 | 24.6h
 rush 41-45 | 15.3h
 rush 46-50 | 24.0h
-rush 51-55 | ing
-     total | 231.3h + ing
+rush 51-55 | 21.5h
+rush 56-60 | ing
+     total | 252.8h + ing
 
 ## rush history
 
@@ -586,7 +587,7 @@ rush 50 refactor Saki/Win/ part1 2.1h
 - [x] TileSeriesAnalyzer 0.3h
 - [x] WinAnalyzer 1.1h
 
-rush 51 all yaku: HeavenlyWin, EarthlyWin, HumanlyWin
+rush 51 all yaku: HeavenlyWin, EarthlyWin, HumanlyWin 0.9h
 
 - [x] fix YakuTest where concealed Triple declared 0.1h
 - [x] HeavenlyWin, EarthlyWin, HumanlyWin 0.6h
@@ -629,7 +630,7 @@ rush 53 refactor PlayerWind 2.6h
 - [x] adapt RoundTurn 0.1h
 - [x] adapt OpenHistory 0.2h
 
-rush 54 refactor RoundTurn
+rush 54 refactor reach concerned 3.8h
 
 - [x] adapt ReachStatus 0.3h
 - [x] adapt DeclareHistory 0.1h
@@ -639,10 +640,7 @@ rush 54 refactor RoundTurn
 - [x] rewrite OpenHistory 1.7h
 - [x] refactor OpenHistory 0.5h
 
-- [ ] refactor RoundTurn 0.7h // keep agile! keep clear goal when design!
-
-
-rush refactor Saki/Win/ part2
+rush 55 refactor Saki/Win/ part2 1.7h
 
 - [x] MeldCompositionsAnalyzer 0.2h
 
@@ -650,6 +648,20 @@ rush refactor Saki/Win/ part2
 - [x] fix turnFuriten bug 0.5h
 
 - [x] TileSeriesAnalyzer, Yaku 0.3h
+
+rush 56 refactor RoundTurn concerned
+
+- [x] refactor RoundTurn 1h // keep agile! keep clear goal when design!
+
+- [x] add RoundWind 0.5h
+- [x] refactor GameTurn 0.4h
+- [x] refactor Round a little 0.4h
+- [ ] adapt RoundWind
+- [ ] refactor Tile.getWindOffsetFrom/To
+
+- [ ] remove TurnManger
+
+rush refactor Saki/Win/ part3
 
 - [ ] WaitingAnalyzer 0.4h
 

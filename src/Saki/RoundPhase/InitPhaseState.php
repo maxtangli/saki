@@ -16,10 +16,7 @@ class InitPhaseState extends RoundPhaseState {
     }
 
     function enter(Round $round) {
-        // each player draw initial tiles
-        $round->getTileAreas()->drawInitForAll();
-        // go to dealer player's private phase todo right?
-//        $round->getTurnManager()->start();
+        $round->getAreas()->drawInitForAll();
     }
 
     function leave(Round $round) {

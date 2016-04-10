@@ -10,6 +10,6 @@ use Saki\Win\Yaku\AbstractValueTilesYaku;
  */
 class RoundWindValueTilesYaku extends AbstractValueTilesYaku {
     function getValueTile(WinSubTarget $subTarget) {
-        return $subTarget->getRoundWind();
+        return $subTarget->getRoundWind()->getWindTile();
     }
 }

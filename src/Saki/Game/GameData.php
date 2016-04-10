@@ -31,7 +31,7 @@ class GameData {
             RankingHorseFinalScoreStrategy::fromType(RankingHorseType::create(RankingHorseType::UMA_10_20)),
             new MoundFinalScoreStrategy(25000, 30000),
         ]);
-        $this->tileSet = TileSet::getStandardTileSet();
+        $this->tileSet = TileSet::createStandard();
         $this->yakuSet = YakuSet::createStandard();
     }
 

@@ -182,8 +182,12 @@ class Areas {
         }
 
         $reachRoundTurn = $reachStatus->getReachRoundTurn();
+        $reachNextRoundTurn = new RoundTurn(
+            $reachRoundTurn->getGlobalTurn() + 1,
+            $targetPlayer->getTileArea()->getPlayerWind()
+        );
         $currentRoundTurn = $this->getRoundTurn();
-        $isSameOrNextGlobalTurn = $currentRoundTurn->isFirstTurn($reachRoundTurn);
+        $isSameOrNextGlobalTurn = $currentRoundTurn->isBeforeOrSame($reachNextRoundTurn);
 
         $noDeclareSinceReach = !$this->getDeclareHistory()->hasDeclare($reachRoundTurn);
         return $isSameOrNextGlobalTurn && $noDeclareSinceReach;

@@ -30,7 +30,7 @@ class WinByOtherCommand extends PublicCommand {
             $this->getActPlayer(),
             $round->getWinResult($this->getActPlayer()),
             $this->getCurrentPlayer(),
-            $round->getTileAreas()->getAccumulatedReachCount(),
+            $round->getAreas()->getAccumulatedReachCount(),
             $round->getRoundWindData()->getSelfWindTurn());
         $round->toNextPhase(
             new OverPhaseState($result)

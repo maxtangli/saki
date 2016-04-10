@@ -4,6 +4,7 @@ namespace Saki\Win;
 use Saki\Game\Player;
 use Saki\Game\Round;
 use Saki\Game\RoundTurn;
+use Saki\Game\RoundWind;
 use Saki\Meld\MeldList;
 use Saki\Tile\Tile;
 
@@ -32,8 +33,16 @@ class WinTarget {
 
     // about round/global
 
+    /**
+     * @return RoundWind
+     */
     function getRoundWind() {
         return $this->round->getRoundWindData()->getRoundWind();
+    }
+
+    // todo remove
+    function getRoundWindTile() {
+        return $this->round->getRoundWindData()->getRoundWind()->getWindTile();
     }
 
     function getTileSet() {
@@ -66,15 +75,15 @@ class WinTarget {
     }
 
     function getOpenHistory() {
-        return $this->round->getTileAreas()->getOpenHistory();
+        return $this->round->getAreas()->getOpenHistory();
     }
 
     function getOutsideRemainTileAmount(Tile $tile) {
-        return $this->round->getTileAreas()->getOutsideRemainTileAmount($tile);
+        return $this->round->getAreas()->getOutsideRemainTileAmount($tile);
     }
 
     function getWallRemainTileAmount() {
-        return $this->round->getTileAreas()->getWall()->getRemainTileCount();
+        return $this->round->getAreas()->getWall()->getRemainTileCount();
     }
 
     // about target player
@@ -108,7 +117,7 @@ class WinTarget {
     }
 
     function isFirstTurnWin() {
-        return $this->round->getTileAreas()->isFirstTurnWin($this->player);
+        return $this->round->getAreas()->isFirstTurnWin($this->player);
     }
 
     function getTileOfTargetTile() {
@@ -148,7 +157,7 @@ class WinTarget {
     protected function isFirstTurnNoDeclare(Player $player) {
         $r = $this->round;
         return $r->getTurnManager()->getRoundTurn()->getGlobalTurn() == 1
-        && !$r->getTileAreas()->getDeclareHistory()->hasDeclare(
+        && !$r->getAreas()->getDeclareHistory()->hasDeclare(
             new RoundTurn(1, $player->getTileArea()->getPlayerWind())
         );
     }
@@ -157,11 +166,12 @@ class WinTarget {
         return $this->player->getTileArea()->getPlayerWind();
     }
 
+    // todo remove
     function getSelfWindTile() {
         return $this->player->getTileArea()->getPlayerWind()->getWindTile();
     }
 
     function getDoraFacade() {
-        return $this->round->getTileAreas()->getWall()->getDoraFacade();
+        return $this->round->getAreas()->getWall()->getDoraFacade();
     }
 }

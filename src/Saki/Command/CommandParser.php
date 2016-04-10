@@ -5,8 +5,9 @@ class CommandParser {
     private $context;
     private $classes;
 
-    function __construct(CommandContext $context, array $classes) {
+    function __construct(CommandContext $context, CommandSet $commandSet) {
         $this->context = $context;
+        $classes = $commandSet->toArray();
         $this->classes = array_combine(array_map(function ($class) {
             return $class::getName();
         }, $classes), $classes);  // note: validation ignored

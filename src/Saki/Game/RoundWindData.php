@@ -1,40 +1,32 @@
 <?php
 namespace Saki\Game;
 
-use Saki\Tile\Tile;
-
 class RoundWindData {
+    // immutable
     private $playerCount;
-    /**
-     * @var GameLengthType
-     */
     private $gameLengthType;
-
-    /**
-     * @var Tile
-     */
+    // game variable
     private $roundWind; // [東] 1 局
-
-    private $roundWindTurn; // 東 [1] 局
+    private $roundWindTurn; // 東 [1] 局 // todo remove duplicate with TileArea.PlayerWind
     private $selfWindTurn; // [0] 本場
 
-    function __construct($playerCount, GameLengthType $gameLengthType) {
+    function __construct(int $playerCount, GameLengthType $gameLengthType) {
         $this->playerCount = $playerCount;
         $this->gameLengthType = $gameLengthType;
 
-        $this->roundWind = Tile::fromString('E');
+        $this->roundWind = RoundWind::createEast();
         $this->roundWindTurn = 1;
         $this->selfWindTurn = 0;
     }
 
-    function reset($keepDealer) {
+    function reset(bool $keepDealer) {
         if ($keepDealer) {
             // keep roundWind
             // keep roundWindTurn
             $this->selfWindTurn += 1;
         } else { // not keep dealer
             if ($this->isCurrentRoundWindLastTurn()) {
-                $this->roundWind = $this->roundWind->getNextTile();
+                $this->roundWind = $this->roundWind->toNext();
                 $this->roundWindTurn = 1;
                 $this->selfWindTurn = 0;
             } else {
@@ -45,58 +37,45 @@ class RoundWindData {
         }
     }
 
-    function debugReset(Tile $roundWind = null, $roundWindTurn = null, $selfWindTurn = null) {
-        if ($roundWind && !$roundWind->isWind()) {
-            throw new \InvalidArgumentException();
-        }
-
-        $this->roundWind = $roundWind ?? Tile::fromString('E');
+    function debugReset(RoundWind $roundWind = null, $roundWindTurn = null, $selfWindTurn = null) {
+        $this->roundWind = $roundWind ?? RoundWind::createEast();
         $this->roundWindTurn = $roundWindTurn ?? 1;
         $this->selfWindTurn = $selfWindTurn ?? 0;
     }
 
-    function getPlayerCount() {
+    /**
+     * @return int
+     */
+    protected function getPlayerCount() {
         return $this->playerCount;
     }
 
-    function getTotalRoundType() {
+    /**
+     * @return GameLengthType
+     */
+    protected function getGameLengthType() {
         return $this->gameLengthType;
     }
 
+    /**
+     * @return RoundWind
+     */
     function getRoundWind() {
         return $this->roundWind;
     }
 
-    function setRoundWind(Tile $roundWind) {
-        $this->roundWind = $roundWind;
-    }
-
-    function isRoundWind(Tile $tile) {
-        return $tile == $this->getRoundWind();
-    }
-
-    function isSelfWind(Player $player, Tile $tile) {
-        return $player->getTileArea()->getPlayerWind()->isSelfWind($tile);
-    }
-
-    function isDoubleWind(Player $player, Tile $tile) {
-        return $this->isRoundWind($tile) && $this->isSelfWind($player, $tile);
-    }
-
+    /**
+     * @return int
+     */
     function getRoundWindTurn() {
         return $this->roundWindTurn;
     }
 
-    function setRoundWindTurn($roundWindTurn) {
-        $this->roundWindTurn = $roundWindTurn;
-    }
-
+    /**
+     * @return int
+     */
     function getSelfWindTurn() {
         return $this->selfWindTurn;
-    }
-
-    function setSelfWindTurn($selfWindTurn) {
-        $this->selfWindTurn = $selfWindTurn;
     }
 
     function isCurrentRoundWindLastTurn() {
@@ -105,24 +84,25 @@ class RoundWindData {
 
     // 游戏长度定下的最后一局,分不出胜负时进入延长局。
     function isLastOrExtraRound() {
-        $isLastRoundWind = $this->getRoundWind() == $this->getTotalRoundType()->getLastRoundWind();
+        $isLastRoundWind = $this->getRoundWind() == $this->getGameLengthType()->getLastRoundWind();
         $isLastRound = $isLastRoundWind && $this->isCurrentRoundWindLastTurn();
         return $isLastRound || $this->isExtraRound();
     }
 
     // 延长局？
     function isExtraRound() {
-        return !$this->getTotalRoundType()->isInLengthRoundWind($this->getRoundWind());
+        return !$this->getGameLengthType()->inLength($this->getRoundWind());
     }
 
     // 最终局，完局后游戏结束
     function isFinalRound() {
         // 最多延长一个场风
-        if ($this->getTotalRoundType()->getValue() == GameLengthType::FULL) {
-            throw new \LogicException('un implemented.');
+        if ($this->getGameLengthType()->getValue() == GameLengthType::FULL) {
+            throw new \BadMethodCallException('todo');
         }
-        $finalRoundWind = $this->getTotalRoundType()->getLastRoundWind()->getNextTile();
-        $isFinalRoundWind = $this->getRoundWind() == $finalRoundWind;
-        return $isFinalRoundWind && $this->isCurrentRoundWindLastTurn();
+
+        $final = $this->getGameLengthType()->getLastRoundWind()->toNext();
+        $isFinal = $this->getRoundWind() == $final;
+        return $isFinal && $this->isCurrentRoundWindLastTurn();
     }
 }

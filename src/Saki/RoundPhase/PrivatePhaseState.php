@@ -42,7 +42,7 @@ class PrivatePhaseState extends RoundPhaseState {
         }
 
         if ($this->shouldDrawTile()) {
-            $round->getTileAreas()->draw($this->getPlayer());
+            $round->getAreas()->draw($this->getPlayer());
         }
     }
 

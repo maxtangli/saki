@@ -24,7 +24,7 @@ class PongCommand extends PublicCommand {
     function executeImpl() {
         $round = $this->getContext()->getRound();
 
-        $round->getTileAreas()->pong(
+        $round->getAreas()->pong(
             $this->getActPlayer(), $this->getCurrentPlayer()
         );
         $round->toNextPhase(
