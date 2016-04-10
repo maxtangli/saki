@@ -3,6 +3,7 @@ namespace Saki\Win\Yaku;
 
 use Saki\Util\ArrayList;
 use Saki\Util\ReadonlyArrayList;
+use Saki\Win\TileSeries;
 use Saki\Win\Yaku\Fan1\AllRunsYaku;
 use Saki\Win\Yaku\Fan1\AllSimplesYaku;
 use Saki\Win\Yaku\Fan1\ConcealedSelfDrawYaku;
@@ -58,13 +59,13 @@ use Saki\Win\Yaku\Yakuman2\ThirteenOrphansPairWaitingYaku;
 class YakuSet extends ArrayList {
     use ReadonlyArrayList;
 
-    private static $standardYakusSet;
+    private static $standardInstance;
 
     /**
      * @return YakuSet
      */
-    static function getStandardYakuSet() {
-        self::$standardYakusSet = self::$standardYakusSet ?? new self([
+    static function createStandard() {
+        self::$standardInstance = self::$standardInstance ?? new self([
                 // Fan1
                 AllRunsYaku::create(),
                 AllSimplesYaku::create(),
@@ -119,6 +120,16 @@ class YakuSet extends ArrayList {
                 PureNineGatesYaku::create(),
                 ThirteenOrphansPairWaitingYaku::create(),
             ]);
-        return self::$standardYakusSet;
+        return self::$standardInstance;
+    }
+
+    /**
+     * @return ArrayList An ArrayList of TileSeries required by any Yaku in YakuSet.
+     */
+    function getTileSeriesList() {
+        return (new ArrayList())->fromSelectMany($this, function (Yaku $yaku) {
+            return $yaku->getRequiredTileSeries();
+        })->insertFirst(TileSeries::create(TileSeries::FOUR_WIN_SET_AND_ONE_PAIR))
+            ->distinct();
     }
 }

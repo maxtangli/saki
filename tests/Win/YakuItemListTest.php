@@ -7,15 +7,15 @@ use Saki\Win\Yaku\Yaku;
 use Saki\Win\Yaku\YakuItemList;
 
 class MockYaku extends Yaku {
-    protected function getConcealedFanCount() {
+    public function getConcealedFanCount() {
         return 2;
     }
 
-    protected function getNotConcealedFanCount() {
+    public function getNotConcealedFanCount() {
         return 1;
     }
 
-    protected function getRequiredTileSeries() {
+    public function getRequiredTileSeries() {
         return [];
     }
 
@@ -25,15 +25,15 @@ class MockYaku extends Yaku {
 }
 
 class MockYaku2 extends Yaku {
-    protected function getConcealedFanCount() {
+    public function getConcealedFanCount() {
         return 4;
     }
 
-    protected function getNotConcealedFanCount() {
+    public function getNotConcealedFanCount() {
         return 3;
     }
 
-    protected function getRequiredTileSeries() {
+    public function getRequiredTileSeries() {
         return [];
     }
 
@@ -47,15 +47,15 @@ class MockYaku2 extends Yaku {
 }
 
 class MockYakuMan extends Yaku {
-    protected function getConcealedFanCount() {
+    public function getConcealedFanCount() {
         return 13;
     }
 
-    protected function getNotConcealedFanCount() {
+    public function getNotConcealedFanCount() {
         return 13;
     }
 
-    protected function getRequiredTileSeries() {
+    public function getRequiredTileSeries() {
         return [];
     }
 

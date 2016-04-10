@@ -28,9 +28,6 @@ class TileSeriesTypeTest extends PHPUnit_Framework_TestCase {
 //        $actualWaitingTiles = $s->getWaitingTileList($allMeldList, $winTile, $declaredMeldList)->toArray();
 //        $this->assertEquals($expectedWaitingTiles, $actualWaitingTiles,
 //            sprintf("[$meldListString],[$tileString] -> [%s] but [%s].", implode(',', $expectedWaitingTiles), implode(',', $actualWaitingTiles)));
-
-        $analyzer = new \Saki\Win\TileSeriesAnalyzer();
-        $this->assertEquals($s, $analyzer->analyzeTileSeries($allMeldList));
     }
 
     function FourWinSetAndOnePairProvider() {

@@ -9,11 +9,11 @@ use Saki\Win\Yaku\Yaku;
  * @package Saki\Win\Yaku\Fan1
  */
 class RedDoraYaku extends Yaku {
-    protected function getConcealedFanCount() {
+    function getConcealedFanCount() {
         return 1;
     }
 
-    protected function getNotConcealedFanCount() {
+    function getNotConcealedFanCount() {
         return 1;
     }
 
@@ -23,7 +23,7 @@ class RedDoraYaku extends Yaku {
         return $doraFacade->getHandRedDoraFanCount($privateFull);
     }
 
-    protected function getRequiredTileSeries() {
+    function getRequiredTileSeries() {
         return [];
     }
 

@@ -5,11 +5,11 @@ use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\Yaku;
 
 class DoraYaku extends Yaku {
-    protected function getConcealedFanCount() {
+    function getConcealedFanCount() {
         return 1;
     }
 
-    protected function getNotConcealedFanCount() {
+    function getNotConcealedFanCount() {
         return 1;
     }
 
@@ -19,7 +19,7 @@ class DoraYaku extends Yaku {
         return $doraFacade->getHandDoraFanCount($privateFull);
     }
 
-    protected function getRequiredTileSeries() {
+    function getRequiredTileSeries() {
         return [];
     }
 

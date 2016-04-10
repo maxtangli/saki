@@ -39,8 +39,12 @@ class WinTarget {
     function getTileSet() {
         return $this->round->getGameData()->getTileSet();
     }
-
+    
     // about round/current
+    function getRoundTurn() {
+        return $this->round->getTurnManager()->getRoundTurn();
+    }
+    
     function getGlobalTurn() {
         return $this->round->getTurnManager()->getGlobalTurn();
     }
@@ -160,6 +164,4 @@ class WinTarget {
     function getDoraFacade() {
         return $this->round->getTileAreas()->getWall()->getDoraFacade();
     }
-
-
 }

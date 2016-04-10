@@ -147,7 +147,7 @@ class TileList extends ArrayList {
     }
 
     function isAllSuit() {
-        return $this->isAll(function (Tile $tile) {
+        return $this->all(function (Tile $tile) {
             return $tile->isSuit();
         });
     }
@@ -157,37 +157,37 @@ class TileList extends ArrayList {
     }
 
     function isAllSimple() {
-        return $this->isAll(function (Tile $tile) {
+        return $this->all(function (Tile $tile) {
             return $tile->isSimple();
         });
     }
 
     function isAllTerminal() {
-        return $this->isAll(function (Tile $tile) {
+        return $this->all(function (Tile $tile) {
             return $tile->isTerminal();
         });
     }
 
     function isAllTerminalOrHonor() {
-        return $this->isAll(function (Tile $tile) {
+        return $this->all(function (Tile $tile) {
             return $tile->isTerminalOrHonor();
         });
     }
 
     function isAllHonor() {
-        return $this->isAll(function (Tile $tile) {
+        return $this->all(function (Tile $tile) {
             return $tile->isHonor();
         });
     }
 
     function isAnyTerminalOrHonor() {
-        return $this->isAny(function (Tile $tile) {
+        return $this->any(function (Tile $tile) {
             return $tile->isTerminalOrHonor();
         });
     }
 
     function isAnyTerminal() {
-        return $this->isAny(function (Tile $tile) {
+        return $this->any(function (Tile $tile) {
             return $tile->isTerminal();
         });
     }
@@ -248,7 +248,7 @@ class TileList extends ArrayList {
         $isAllGreenTile = function (Tile $tile) use ($greenTileList) {
             return $greenTileList->valueExist($tile);
         };
-        return $this->isAll($isAllGreenTile);
+        return $this->all($isAllGreenTile);
     }
 
     /**

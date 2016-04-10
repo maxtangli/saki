@@ -1,7 +1,6 @@
 <?php
 namespace Saki\Win;
 
-use Saki\Game\RoundTurn;
 use Saki\Meld\MeldCombinationAnalyzer;
 use Saki\Meld\MeldList;
 use Saki\Meld\PairMeldType;
@@ -31,7 +30,7 @@ class WinAnalyzer {
      */
     function __construct(YakuSet $yakuSet) {
         $this->yakuAnalyzer = new YakuAnalyzer($yakuSet);
-        $this->tileSeriesAnalyzer = new TileSeriesAnalyzer();
+        $this->tileSeriesAnalyzer = new TileSeriesAnalyzer($yakuSet->getTileSeriesList()->toArray());
         $this->waitingAnalyzer = new WaitingAnalyzer(
             $this->tileSeriesAnalyzer
         );
@@ -114,7 +113,7 @@ class WinAnalyzer {
             $waitingTileList = $this->getWaitingAnalyzer()->analyzePublic(
                 $target->getPublicHand(), $target->getDeclaredMeldList()
             );
-            $isFuritenFalseWin = $this->isFuritenFalseWin($target, $waitingTileList);
+            $isFuritenFalseWin = $this->isFuriten($target, $waitingTileList);
             if ($isFuritenFalseWin) {
                 $finalWinState = WinState::create(WinState::FURITEN_FALSE_WIN);
             }
@@ -160,45 +159,49 @@ class WinAnalyzer {
      * @param TileList $waitingTileList
      * @return bool
      */
-    function isFuritenFalseWin(WinTarget $target, TileList $waitingTileList) {
+    function isFuriten(WinTarget $target, TileList $waitingTileList) {
+        /**
+         * design note: as a function since its not too complex,
+         * extract class if dynamic furiten rule setting is required
+         */
+
         // furiten has no effect on win-by-self
         if ($target->isPrivatePhase()) {
             return false;
         }
 
-        $finalNgList = new TileList();
         $openHistory = $target->getOpenHistory();
+        $isNgTile = function (Tile $ngTile) use ($waitingTileList) {
+            return $waitingTileList->valueExist($ngTile);
+        };
+        $myPlayerWind = $target->getPlayerWind();
 
-        // ng case 1: self discarded tiles
-        $selfNgList = $openHistory->getSelf($target->getPlayerWind());
-        $finalNgList->concat($selfNgList);
+        // open furiten: self open TileList contains target tile
+        $selfOpenList = $openHistory->getSelf($myPlayerWind);
+        if ($selfOpenList->any($isNgTile)) {
+            return true;
+        }
 
-        // ng case 2: all other player's opened tiles since
+        // reach furiten: other open TileList since self reach contains target tile
         $reachStatus = $target->getReachStatus();
         if ($reachStatus->isReach()) { // ng case 2: since self reach
-            $fromTurn = $reachStatus->getReachRoundTurn()->getGlobalTurn();
-        } else { // ng case 3: since last turn where self discarded
-            $globalTurn = $target->getGlobalTurn();
-            if ($globalTurn == 1) {
-                $fromTurn = 1;
-            } else {
-                $targetSelfWind = $target->getSelfWindTile();
-                $currentSelfWind = $target->getCurrentPlayer()->getTileArea()->getPlayerWind()->getWindTile();
-                $selfTurnPassed = $targetSelfWind->getWindOffsetFrom($currentSelfWind) <= 0;
-                $fromTurn = $selfTurnPassed ? $globalTurn : $globalTurn - 1;
-            }// todo more simpler logic
+            $reachRoundTurn = $reachStatus->getReachRoundTurn();
+            $otherOpenListSinceReach = $openHistory->getOther($myPlayerWind, $reachRoundTurn);
+            if ($otherOpenListSinceReach->any($isNgTile)) {
+                return true;
+            }
         }
-        
-        // exclude current target tile
-        $otherNgList = $openHistory->getOther(
-            $target->getPlayerWind(),
-            new RoundTurn($fromTurn, $target->getPlayerWind())
-        );
-        $finalNgList->concat($otherNgList);
 
-        $isFuriten = $finalNgList->isAny(function (Tile $ngTile) use ($waitingTileList) {
-            return $waitingTileList->valueExist($ngTile);
-        });
-        return $isFuriten;
+        // turn furiten: other open TileList since self last open
+        $lastOpenRoundTurn = $openHistory->getLastOpenOrFalse($myPlayerWind);
+        if ($lastOpenRoundTurn !== false) {
+            // design note: not introduce NullObject of RoundTurn here since it's seldom until now
+            $otherOpenListSinceLastOpen = $openHistory->getOther($myPlayerWind, $lastOpenRoundTurn);
+            if ($otherOpenListSinceLastOpen->any($isNgTile)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

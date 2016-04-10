@@ -6,15 +6,15 @@ use Saki\Win\Yaku\Fan3\HalfFlushYaku;
 use Saki\Win\Yaku\Yaku;
 
 class FullFlushYaku extends Yaku {
-    protected function getConcealedFanCount() {
+    function getConcealedFanCount() {
         return 6;
     }
 
-    protected function getNotConcealedFanCount() {
+    function getNotConcealedFanCount() {
         return 5;
     }
 
-    protected function getRequiredTileSeries() {
+    function getRequiredTileSeries() {
         return [];
     }
 

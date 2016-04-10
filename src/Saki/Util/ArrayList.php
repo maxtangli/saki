@@ -20,7 +20,7 @@ namespace Saki\Util;
  * - property: count, getCount($predicate).
  *             indexExist($indexes), getValuesAt(indexes), valueExist($values, $equal).
  *             getAggregated($list, $accumulator). getSum($selector), getMin($selector), getMax($selector).
- *             isAll($predicate), isAny($predicate).
+ *             all($predicate), any($predicate).
  * - operation: insert($index, $values), concat($list).
  *              replace($indexes, $values).
  *              remove($indexes), take($indexFrom, $n), where($predicate), except($predicate).
@@ -321,7 +321,7 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
      * @param callable $predicate
      * @return bool
      */
-    function isAll(callable $predicate) {
+    function all(callable $predicate) {
         foreach ($this->innerArray as $v) {
             if ($predicate($v) == false) {
                 return false;
@@ -334,7 +334,7 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
      * @param callable $predicate
      * @return bool
      */
-    function isAny(callable $predicate) {
+    function any(callable $predicate) {
         foreach ($this->innerArray as $v) {
             if ($predicate($v) == true) {
                 return true;
@@ -456,14 +456,14 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
         if ($equal !== null) {
             $result = new ArrayList();
             foreach ($this as $v) {
-                $duplicate = $result->isAny(Utils::toPredicate($v));
+                $duplicate = $result->any(Utils::toPredicate($v));
                 if (!$duplicate) {
                     $result->insertLast($v);
                 }
             }
             $this->innerArray = $result->toArray();
         } else {
-            $this->innerArray = array_unique($this->innerArray);
+            $this->innerArray = array_values(array_unique($this->innerArray));
         }
         return $this;
     }

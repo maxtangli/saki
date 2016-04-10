@@ -3,7 +3,7 @@ namespace Saki\Game;
 
 use Saki\Tile\Tile;
 use Saki\Util\ArrayList;
-use Saki\Util\ComparableTimeLine;
+use Saki\Util\ComparableSequence;
 use Saki\Util\Immutable;
 
 /**
@@ -12,7 +12,7 @@ use Saki\Util\Immutable;
  * @package Saki\Game
  */
 class OpenRecord implements Immutable {
-    use ComparableTimeLine;
+    use ComparableSequence;
 
     function compareTo($other) {
         /** @var OpenRecord $other */
@@ -77,6 +77,6 @@ class OpenRecord implements Immutable {
      */
     function validNewOf(ArrayList $recordList) {
         return $recordList->isEmpty() ||
-        $this->isLaterThanOrSame($recordList->getLast());
+        $this->isAfterOrSame($recordList->getLast());
     }
 }

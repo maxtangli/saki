@@ -7,15 +7,15 @@ use Saki\Win\Yaku\Yaku;
 use Saki\Win\Yaku\Yakuman\ThirteenOrphansYaku;
 
 class ThirteenOrphansPairWaitingYaku extends Yaku {
-    protected function getConcealedFanCount() {
+    function getConcealedFanCount() {
         return 26;
     }
 
-    protected function getNotConcealedFanCount() {
+    function getNotConcealedFanCount() {
         return 26;
     }
 
-    protected function getRequiredTileSeries() {
+    function getRequiredTileSeries() {
         return [
             TileSeries::create(TileSeries::THIRTEEN_ORPHANS)
         ];

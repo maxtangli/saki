@@ -4,7 +4,7 @@ use Saki\Game\Round;
 use Saki\Tile\Tile;
 use Saki\Win\WinState;
 
-class FuritenTest extends \PHPUnit_Framework_TestCase {
+class FuritenTest extends SakiTestCase {
 
     function assertFuriten(Round $r, string $playerWind, ...$scripts) {
         $this->assertFuritenImpl(true, $r, $playerWind, ...$scripts);
@@ -74,7 +74,6 @@ class FuritenTest extends \PHPUnit_Framework_TestCase {
         );
     }
 
-
     function testReach() {
         $r = new Round();
 
@@ -108,7 +107,7 @@ class FuritenTest extends \PHPUnit_Framework_TestCase {
         );
     }
 
-    function testCurrentTurn() {
+    function testTurn() {
         // other discarded in one turn
         $r = new Round();
         // setup
@@ -128,11 +127,32 @@ class FuritenTest extends \PHPUnit_Framework_TestCase {
             $r, 'S',
             'passAll; discard E E:s-4s:4s'
         );
-        // not furiten after 1 turn passed
+        // not furiten after self's discard
         $this->assertWinByOther(
             $r, 'S',
             'mockNextDraw E; passAll; discard S E'
             , 'passAll; discard W W:s-1s:1s'
         );
+    }
+
+    function testTurnSpecial() {
+        $r = new Round();
+        // furiten since last self's discard, even multiple turn passed
+        $this->assertFuriten(
+            $r, 'S',
+            'discard E E:s-E:E',
+            'passAll; discard S S:s-123m456m789m23s55sE:E', // wait 14s
+            'passAll; discard W W:s-1s:1s',
+            'passAll; discard N N:s-1s:1s'
+        );
+        $this->assertEquals(1, $r->getTurnManager()->getRoundTurn()->getGlobalTurn());
+        $this->assertFuriten(
+            $r, 'S',
+            'mockHand E 11sC; pong E; discard E C',
+            'mockHand W CCC; pong W; discard W C',
+            'mockHand E CCC; pong E; discard E C',
+            'mockHand W CC1s; pong W; discard W 1s'
+        );
+        $this->assertEquals(3, $r->getTurnManager()->getRoundTurn()->getGlobalTurn());
     }
 }

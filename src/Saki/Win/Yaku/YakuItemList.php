@@ -43,7 +43,7 @@ class YakuItemList extends ArrayList {
         });
 
         // dora-type-yaku requires at least 1 non-dora-type-yaku
-        if ($this->isAll(function (YakuItem $yakuItem) {
+        if ($this->all(function (YakuItem $yakuItem) {
             return $yakuItem->getYaku()->isDoraTypeYaku();
         })
         ) {

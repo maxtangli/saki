@@ -11,33 +11,19 @@ use Saki\Util\Singleton;
  * @package Saki\Win
  */
 class TileSeriesAnalyzer extends Singleton {
-
-    /**
-     * @return TileSeries[]
-     */
-    static function getDefaultTileSeriesArray() {
-        return [
-            TileSeries::create(TileSeries::FOUR_WIN_SET_AND_ONE_PAIR),
-            TileSeries::create(TileSeries::SEVEN_PAIRS),
-            TileSeries::create(TileSeries::THIRTEEN_ORPHANS),
-        ];
-    }
-
     private $tileSeriesList;
 
     /**
      * @param TileSeries[] $tileSeriesArray
      */
-    function __construct(array $tileSeriesArray = null) {
-        // todo validate
-        $actual = $tileSeriesArray ?? self::getDefaultTileSeriesArray();
-        $this->tileSeriesList = (new ArrayList($actual))->lock();
+    function __construct(array $tileSeriesArray) {
+        $this->tileSeriesList = (new ArrayList($tileSeriesArray))->lock();
     }
 
     /**
      * @return ArrayList
      */
-    public function getTileSeriesList() {
+    function getTileSeriesList() {
         return $this->tileSeriesList;
     }
 

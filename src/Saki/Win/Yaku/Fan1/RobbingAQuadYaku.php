@@ -5,15 +5,15 @@ use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\Yaku;
 
 class RobbingAQuadYaku extends Yaku {
-    protected function getConcealedFanCount() {
+    function getConcealedFanCount() {
         return 1;
     }
 
-    protected function getNotConcealedFanCount() {
+    function getNotConcealedFanCount() {
         return 1;
     }
 
-    protected function getRequiredTileSeries() {
+    function getRequiredTileSeries() {
         return [];
     }
 

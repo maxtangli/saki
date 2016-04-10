@@ -15,7 +15,7 @@ class ThirteenOrphanMeldType extends MeldType {
     protected function validFaces(TileList $validCountTileList) {
 //        $target = $validCountTileList->getCopy()->orderByTileID(); // error todo better design of getCopy()
         $target = (new TileList())->fromSelect($validCountTileList)->orderByTileID();
-        return $this->getAllPossibleTileLists()->isAny(function (TileList $tileList) use ($target) {
+        return $this->getAllPossibleTileLists()->any(function (TileList $tileList) use ($target) {
             return $tileList->__toString() == $target->__toString();
         });
     }

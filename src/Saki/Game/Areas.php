@@ -183,7 +183,7 @@ class Areas {
 
         $reachRoundTurn = $reachStatus->getReachRoundTurn();
         $currentRoundTurn = $this->getRoundTurn();
-        $isSameOrNextGlobalTurn = $currentRoundTurn->getPastFloatGlobalTurn($reachRoundTurn) <= 1;
+        $isSameOrNextGlobalTurn = $currentRoundTurn->isFirstTurn($reachRoundTurn);
 
         $noDeclareSinceReach = !$this->getDeclareHistory()->hasDeclare($reachRoundTurn);
         return $isSameOrNextGlobalTurn && $noDeclareSinceReach;

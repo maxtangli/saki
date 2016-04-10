@@ -207,7 +207,7 @@ class WinRoundResult extends RoundResult {
      */
     function isKeepDealer() {
         $winPlayers = new ArrayList($this->getWinPlayers());
-        return $winPlayers->isAny(function (Player $player) {
+        return $winPlayers->any(function (Player $player) {
             return $player->getTileArea()->getPlayerWind()->isDealer();
         });
     }

@@ -79,7 +79,7 @@ class MeldList extends ArrayList {
      * @return bool
      */
     function isConcealed() {
-        return $this->isAll(function (Meld $meld) {
+        return $this->all(function (Meld $meld) {
             return $meld->isConcealed();
         });
     }
@@ -115,7 +115,7 @@ class MeldList extends ArrayList {
      * @return bool
      */
     function tileExist(Tile $tile) {
-        return $this->isAny(function (Meld $meld) use ($tile) {
+        return $this->any(function (Meld $meld) use ($tile) {
             return $meld->valueExist($tile);
         });
     }
@@ -206,7 +206,7 @@ class MeldList extends ArrayList {
         $existInThis = function (array $targetMelds) {
             return $this->valueExist($targetMelds, Meld::getEqual(false));
         };
-        return $targetMeldsList->isAny($existInThis);
+        return $targetMeldsList->any($existInThis);
     }
 
     /**
@@ -282,7 +282,7 @@ class MeldList extends ArrayList {
             $firstTile = $tripleOrQuad[0];
             return $firstTile->equalTo($valueTile, false);
         };
-        return $tripleOrQuadList->isAny($isValueMeld);
+        return $tripleOrQuadList->any($isValueMeld);
     }
 
     /**
@@ -314,7 +314,7 @@ class MeldList extends ArrayList {
     function isOutsideHand(bool $isPure) {
         $this->assertCompletePrivateHandCount();
 
-        $hasRun = $this->isAny($this->getPredicate([RunMeldType::create()]));
+        $hasRun = $this->any($this->getPredicate([RunMeldType::create()]));
         if (!$hasRun) {
             return false;
         }
@@ -322,7 +322,7 @@ class MeldList extends ArrayList {
         $isOutsideMeld = function (Meld $meld) use ($isPure) {
             return $isPure ? $meld->isAnyTerminal() : $meld->isAnyTerminalOrHonor();
         };
-        return $this->isAll($isOutsideMeld);
+        return $this->all($isOutsideMeld);
     }
 
     /**
@@ -333,7 +333,7 @@ class MeldList extends ArrayList {
         $isAllTerminalMeld = function (Meld $meld) {
             return $meld->isAllTerminal();
         };
-        return $this->isAll($isAllTerminalMeld);
+        return $this->all($isAllTerminalMeld);
     }
 
     /**
@@ -344,7 +344,7 @@ class MeldList extends ArrayList {
         $isAllHonorMeld = function (Meld $meld) {
             return $meld->isAllHonor();
         };
-        return $this->isAll($isAllHonorMeld);
+        return $this->all($isAllHonorMeld);
     }
 
     /**
@@ -355,7 +355,7 @@ class MeldList extends ArrayList {
         $isAllTerminalOrHonorMeld = function (Meld $meld) {
             return $meld->isAllTerminalOrHonor();
         };
-        return $this->isAll($isAllTerminalOrHonorMeld);
+        return $this->all($isAllTerminalOrHonorMeld);
     }
 
     /**

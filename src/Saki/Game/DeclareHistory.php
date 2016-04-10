@@ -4,8 +4,9 @@ namespace Saki\Game;
 use Saki\Util\ArrayList;
 
 /**
- * History of chow, pong, kong declarations. Used in: yaku analyze.
- * Note: my most satisfied class!
+ * History of declarations include chow, pong, kong.
+ * Note that current phase is not considered since it do not affects hasDeclare() result.
+ * Used in: yaku analyze.
  * @package Saki\Game
  */
 class DeclareHistory {
@@ -28,7 +29,7 @@ class DeclareHistory {
      */
     function recordDeclare(RoundTurn $roundTurn) {
         $valid = $this->list->isEmpty() ||
-            $roundTurn->isLaterThanOrSame($this->list->getLast());
+            $roundTurn->isAfterOrSame($this->list->getLast());
         if (!$valid) {
             throw new \InvalidArgumentException();
         }
@@ -43,6 +44,6 @@ class DeclareHistory {
     function hasDeclare(RoundTurn $fromRoundTurn) {
         return $this->list->isEmpty() ?
             false :
-            $fromRoundTurn->isEarlierThanOrSame($this->list->getLast());
+            $fromRoundTurn->isBeforeOrSame($this->list->getLast());
     }
 }

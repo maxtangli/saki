@@ -639,9 +639,22 @@ rush 54 refactor RoundTurn
 - [x] rewrite OpenHistory 1.7h
 - [x] refactor OpenHistory 0.5h
 
-- [ ] DeclareHistory phase issue
+- [ ] refactor RoundTurn 0.7h // keep agile! keep clear goal when design!
 
-- [ ] refactor RoundTurn 0.2h
+
+rush refactor Saki/Win/ part2
+
+- [x] MeldCompositionsAnalyzer 0.2h
+
+- [x] isFuriten 0.7h
+- [x] fix turnFuriten bug 0.5h
+
+- [x] TileSeriesAnalyzer, Yaku 0.3h
+
+- [ ] WaitingAnalyzer 0.4h
+
+- [ ] WinTarget, WinResult
+- [ ] Fu
 
 rush refactor Areas
 
@@ -656,16 +669,6 @@ rush refactor: etc
 - [ ] refactor: RoundResult
 - [ ] refactor: move DrawScore logic into separate class
 - [ ] refactor: simplify reset(),debugReset(),toNextPhase() 0.2h
-
-rush refactor Saki/Win/ part2
-
-- [x] MeldCompositionsAnalyzer 0.2h
-
-- [ ] WaitingAnalyzer 0.4h
-
-- [ ] WinAnalyzer.isFalseWin
-- [ ] WinTarget, WinResult
-- [ ] Fu
 
 rush red dora: meld issue
 

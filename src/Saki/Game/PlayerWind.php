@@ -87,6 +87,7 @@ class PlayerWind implements Immutable {
      * @return PlayerWind
      */
     function toNextSelf(PlayerWind $nextDealer) {
+        // todo replace offset into self
         $offsetNextDealerToSelf = $nextDealer->getWindTile()->getWindOffsetTo($this->getWindTile());
         return self::createEast()->toNext($offsetNextDealerToSelf);
     }
@@ -110,22 +111,5 @@ class PlayerWind implements Immutable {
      */
     function isLeisureFamily() {
         return !$this->isDealer();
-    }
-
-    /**
-     * @param PlayerWind $other
-     * @return bool
-     */
-    function isLaterThanOrEqual(PlayerWind $other) {
-        return $this->getWindTile()->getWindOffsetFrom($other->getWindTile()) >= 0;
-    }
-
-    /**
-     * @param Tile $tile
-     * @return bool
-     */
-    function isSelfWindTile(Tile $tile) {
-        $tile->assertWind();
-        return $tile == $this->getWindTile();
     }
 }

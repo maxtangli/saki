@@ -32,7 +32,7 @@ class GameData {
             new MoundFinalScoreStrategy(25000, 30000),
         ]);
         $this->tileSet = TileSet::getStandardTileSet();
-        $this->yakuSet = YakuSet::getStandardYakuSet();
+        $this->yakuSet = YakuSet::createStandard();
     }
 
     function getPlayerCount() {

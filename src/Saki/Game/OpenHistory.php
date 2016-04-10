@@ -36,6 +36,24 @@ class OpenHistory {
     }
 
     /**
+     * @param PlayerWind $myPlayerWind
+     * @return RoundTurn
+     */
+    function getLastOpenOrFalse(PlayerWind $myPlayerWind) {
+        $myList = $this->list->getCopy()->where(function (OpenRecord $record) use ($myPlayerWind) {
+            return $record->getActor() == $myPlayerWind;
+        });
+
+        if ($myList->isEmpty()) {
+            return false;
+        }
+
+        /** @var OpenRecord $lastRecord */
+        $lastRecord = $myList->getLast();
+        return $lastRecord->getRoundTurn();
+    }
+
+    /**
      * Return self's open tiles since first RoundTurn.
      * Used in: discard furiten.
      * @param PlayerWind $myPlayerWind
@@ -84,7 +102,7 @@ class OpenHistory {
         $match = function (OpenRecord $record) use ($require, $selfActor, $fromRoundTurn) {
             $isSelfActorRecord = $record->getActor() == $selfActor;
             $matchRequire = $isSelfActorRecord == $require;
-            $matchRoundTurn = $record->getRoundTurn()->isLaterThanOrSame($fromRoundTurn);
+            $matchRoundTurn = $record->getRoundTurn()->isAfterOrSame($fromRoundTurn);
             return $matchRequire && $matchRoundTurn;
         };
         $result = $this->list->getCopy()->where($match);

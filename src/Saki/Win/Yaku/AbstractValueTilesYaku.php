@@ -5,15 +5,15 @@ use Saki\Tile\Tile;
 use Saki\Win\WinSubTarget;
 
 abstract class AbstractValueTilesYaku extends Yaku {
-    protected function getConcealedFanCount() {
+    function getConcealedFanCount() {
         return 1;
     }
 
-    protected function getNotConcealedFanCount() {
+    function getNotConcealedFanCount() {
         return 1;
     }
 
-    protected function getRequiredTileSeries() {
+    function getRequiredTileSeries() {
         return [];
     }
 

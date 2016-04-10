@@ -11,15 +11,15 @@ use Saki\Win\Yaku\Yaku;
  * @package Saki\Win\Yaku
  */
 class AllRunsYaku extends Yaku {
-    protected function getConcealedFanCount() {
+    function getConcealedFanCount() {
         return 1;
     }
 
-    protected function getNotConcealedFanCount() {
+    function getNotConcealedFanCount() {
         return 0;
     }
 
-    protected function getRequiredTileSeries() {
+    function getRequiredTileSeries() {
         return [
             TileSeries::create(TileSeries::FOUR_WIN_SET_AND_ONE_PAIR)
         ];

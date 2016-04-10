@@ -10,15 +10,15 @@ use Saki\Win\Yaku\Yaku;
  * @package Saki\Win\Yaku\Fan2
  */
 class MixedOutsideHandYaku extends Yaku {
-    protected function getConcealedFanCount() {
+    function getConcealedFanCount() {
         return 2;
     }
 
-    protected function getNotConcealedFanCount() {
+    function getNotConcealedFanCount() {
         return 1;
     }
 
-    protected function getRequiredTileSeries() {
+    function getRequiredTileSeries() {
         return [TileSeries::create(TileSeries::FOUR_WIN_SET_AND_ONE_PAIR)];
     }
 

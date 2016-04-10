@@ -14,7 +14,7 @@ class WaitingAnalyzerTest extends \PHPUnit_Framework_TestCase {
      * @dataProvider publicDataProvider
      */
     function testPublicData($onHandTileListString, $declaredMeldListString, $expected) {
-        $winAnalyzer = new WinAnalyzer(YakuSet::getStandardYakuSet());
+        $winAnalyzer = new WinAnalyzer(YakuSet::createStandard());
         $waitingTileAnalyzer = $winAnalyzer->getWaitingAnalyzer();
 
         $handTileList = TileList::fromString($onHandTileListString);
@@ -46,7 +46,7 @@ class WaitingAnalyzerTest extends \PHPUnit_Framework_TestCase {
      * @dataProvider privateDataProvider
      */
     function testPrivateData($onHandTileListString, $declaredMeldListString, $expected) {
-        $winAnalyzer = new WinAnalyzer(YakuSet::getStandardYakuSet());
+        $winAnalyzer = new WinAnalyzer(YakuSet::createStandard());
         $waitingTileAnalyzer = $winAnalyzer->getWaitingAnalyzer();
         $handTileList = TileList::fromString($onHandTileListString);
         $declaredMeldList = MeldList::fromString($declaredMeldListString);

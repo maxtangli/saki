@@ -101,7 +101,7 @@ class PublicPhaseState extends RoundPhaseState {
         }
 
         // FourReachDraw
-        $isFourReachDraw = $round->getPlayerList()->isAll(function (Player $player) {
+        $isFourReachDraw = $round->getPlayerList()->all(function (Player $player) {
             return $player->getTileArea()->getReachStatus()->isReach();
         });
         if ($isFourReachDraw) {

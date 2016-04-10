@@ -5,15 +5,15 @@ use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\Yaku;
 
 class ThreeConcealedTriplesYaku extends Yaku {
-    protected function getConcealedFanCount() {
+    function getConcealedFanCount() {
         return 2;
     }
 
-    protected function getNotConcealedFanCount() {
+    function getNotConcealedFanCount() {
         return 2;
     }
 
-    protected function getRequiredTileSeries() {
+    function getRequiredTileSeries() {
         return [];
     }
 

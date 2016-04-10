@@ -8,15 +8,15 @@ use Saki\Win\Yaku\Yaku;
 use Saki\Win\Yaku\Yakuman\FourConcealedTriplesYaku;
 
 class FourConcealedTriplesOnePairWaitingYaku extends Yaku {
-    protected function getConcealedFanCount() {
+    function getConcealedFanCount() {
         return 26;
     }
 
-    protected function getNotConcealedFanCount() {
+    function getNotConcealedFanCount() {
         return 26;
     }
 
-    protected function getRequiredTileSeries() {
+    function getRequiredTileSeries() {
         return [
             TileSeries::create(TileSeries::FOUR_WIN_SET_AND_ONE_PAIR)
         ];

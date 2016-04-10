@@ -21,6 +21,12 @@ class OpenHistoryTest extends PHPUnit_Framework_TestCase {
         );
     }
 
+    protected function assertGetLastOpenOrFalse($expectedStringOrBool, string $playerWind) {
+        $actual = $this->h->getLastOpenOrFalse(PlayerWind::fromString($playerWind));
+        $expected = is_bool($expectedStringOrBool) ? $expectedStringOrBool : RoundTurn::fromString($expectedStringOrBool);
+        $this->assertEquals($expected, $actual);
+    }
+
     protected function assertGetSelf(string $expectedTileList, string $playerWind) {
         $actual = $this->h->getSelf(PlayerWind::fromString($playerWind));
         $this->assertEquals($expectedTileList, $actual->__toString());
@@ -40,11 +46,15 @@ class OpenHistoryTest extends PHPUnit_Framework_TestCase {
         $this->record('1E', '1m');
         $this->record('1S', '2m');
         $this->record('1W', '3m');
+        $this->assertGetLastOpenOrFalse(false, 'N');
         $this->record('1N', '4m');
+        $this->assertGetLastOpenOrFalse('1N', 'N');
         $this->record('3E', '5m', false);
         $this->record('3S', '6m');
         $this->record('3W', '7m');
+        $this->assertGetLastOpenOrFalse('1N', 'N');
         $this->record('3N', '8m');
+        $this->assertGetLastOpenOrFalse('3N', 'N');
 
         $this->assertGetSelf('15m', 'E');
         $this->assertGetOther('3467m', 'E', '1W');

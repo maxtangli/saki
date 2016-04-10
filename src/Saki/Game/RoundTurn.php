@@ -2,14 +2,14 @@
 namespace Saki\Game;
 
 use Saki\Tile\Tile;
-use Saki\Util\ComparableTimeLine;
+use Saki\Util\ComparableSequence;
 use Saki\Util\Immutable;
 
 /**
  * @package Saki\Game
  */
 class RoundTurn implements Immutable {
-    use ComparableTimeLine;
+    use ComparableSequence;
 
     function compareTo($other) {
         /** @var RoundTurn $other */
@@ -19,7 +19,7 @@ class RoundTurn implements Immutable {
             return $globalTurnDiff;
         }
 
-        // todo
+        // todo simplify offset
         $selfWindDiff = $this->getPlayerWind()->getWindTile()->getWindOffsetFrom(
             $other->getPlayerWind()->getWindTile()
         );
@@ -37,6 +37,7 @@ class RoundTurn implements Immutable {
     }
 
     /**
+     * Note that here it's more clear to provide a factory method rather than default constructor.
      * @return RoundTurn
      */
     static function createFirst() {
@@ -87,24 +88,24 @@ class RoundTurn implements Immutable {
     }
 
     /**
-     * @return float
+     * Used in: isFirstTurnWin.
+     * @param RoundTurn $priorRoundTurn
+     * @return bool
      */
-    function getFloatGlobalTurn() {
-        return $this->getGlobalTurn() +
-        // todo
-        0.25 * $this->getPlayerWind()->getWindTile()->getWindOffsetFrom(Tile::fromString('E'));
+    function isFirstTurn(RoundTurn $priorRoundTurn) {
+        $diff = $this->getFloatGlobalTurn() - $priorRoundTurn->getFloatGlobalTurn();
+        if ($diff <= 0) {
+            throw new \InvalidArgumentException();
+        }
+        return $diff <= 1;
     }
 
     /**
-     * @param RoundTurn $priorRoundTurn
-     * @return float past float global turn in format like 0.25, 0.5, 0.75, 1.0, 1.25 etc.
+     * @return float
      */
-    function getPastFloatGlobalTurn(RoundTurn $priorRoundTurn) {
-        // todo
-        $result = $this->getFloatGlobalTurn() - $priorRoundTurn->getFloatGlobalTurn();
-        if ($result <= 0) {
-            throw new \InvalidArgumentException();
-        }
-        return $result;
+    protected function getFloatGlobalTurn() {
+        return $this->getGlobalTurn() +
+        // todo simplify offset logic
+        0.25 * $this->getPlayerWind()->getWindTile()->getWindOffsetFrom(Tile::fromString('E'));
     }
 }

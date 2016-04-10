@@ -9,15 +9,15 @@ use Saki\Win\Yaku\Yaku;
  * @package Saki\Win\Yaku\Fan1
  */
 class DoubleRunYaku extends Yaku {
-    protected function getConcealedFanCount() {
+    function getConcealedFanCount() {
         return 1;
     }
 
-    protected function getNotConcealedFanCount() {
+    function getNotConcealedFanCount() {
         return 0;
     }
 
-    protected function getRequiredTileSeries() {
+    function getRequiredTileSeries() {
         return [];
     }
 
