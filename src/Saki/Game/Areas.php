@@ -17,16 +17,15 @@ use Saki\Util\Utils;
  * @package Saki\Game
  */
 class Areas {
-    // immutable
-    private $turnProvider;
+    // temp
+    private $playerList; // todo remove
+    // variable
     /**
      * An ArrayList of player count Area, order by ascend initial SeatWind.
      * Design note: Areas not implement as ArrayList since Area's order varies by Round.
      * @var ArrayList
      */
     private $areaList;
-    private $playerList; // todo remove
-    // variable
     private $reachPoints;
     // round variable
     private $currentTurn;
@@ -35,8 +34,8 @@ class Areas {
     private $openHistory;
     private $declareHistory;
 
-    function __construct(Wall $wall, PlayerList $playerList, callable $turnProvider) {
-        $this->turnProvider = $turnProvider;
+    function __construct(Wall $wall, PlayerList $playerList) {
+        // immutable
         $this->areaList = new ArrayList();
         $this->playerList = $playerList;
         $playerList->walk(function (Player $player) { // todo remove PlayerList in Areas
@@ -48,8 +47,10 @@ class Areas {
             $this->areaList->insertLast($area);
         });
 
+        // variable
         $this->reachPoints = 0;
 
+        // round variable
         $this->currentTurn = Turn::createFirst();
         $this->wall = $wall;
         $this->target = Target::createNull();
@@ -58,45 +59,18 @@ class Areas {
     }
 
     function reset(SeatWind $nextDealer) {
-        $this->playerList->walk(function (Player $player) use ($nextDealer) {
-            $area = $player->getArea();
+        // variable
+        $this->areaList->walk(function (Area $area) use ($nextDealer) {
             $area->reset($area->getSeatWind()->toNextSelf($nextDealer));
         });
-
         // $this->reachPoints not changed
 
+        // round variable
         $this->currentTurn = Turn::createFirst();
         $this->wall->reset(true);
         $this->target = Target::createNull();
         $this->openHistory->reset();
         $this->declareHistory->reset();
-    }
-
-    /**
-     * @param SeatWind $seatWind
-     * @return Area
-     */
-    function getArea(SeatWind $seatWind) {
-        return $this->areaList->getSingle(function (Area $area) use ($seatWind) {
-            return $area->getSeatWind() == $seatWind;
-        });
-    }
-
-    /**
-     * @return Area
-     */
-    function getCurrentArea() {
-        return $this->getArea($this->getCurrentTurn()->getSeatWind());
-    }
-
-    function tempGetCurrentPlayer() {
-        return $this->playerList->getPlayer($this->getCurrentTurn()->getSeatWind());
-    }
-
-    function tempGetOffsetPlayer(int $offset) {
-        $currentSeatWind = $this->getCurrentTurn()->getSeatWind();
-        $offsetSeatWind = $currentSeatWind->toNext($offset);
-        return $this->playerList->getPlayer($offsetSeatWind);
     }
 
     /**
@@ -125,7 +99,7 @@ class Areas {
         $actualPublic = $private->getCopy()->remove($actualTargetTile);
         $actualDeclare = $declare ?? $player->getArea()->getHand()->getDeclare();
 
-        $player->getArea()->debugSet($actualPublic, $actualDeclare, $private);
+        $player->getArea()->debugSet($actualPublic, $actualDeclare);
         $this->setTargetData($this->target->toSetValue($actualTargetTile));
     }
 
@@ -144,23 +118,38 @@ class Areas {
             ->replaceAt($replaceIndexes, $replace->toArray());
         $declare = $hand->getDeclare();
 
-        $area->debugSet($public, $declare, null);
+        $area->debugSet($public, $declare);
     }
 
-    // getter,setter
-    /**
-     * @return Turn
-     */
-    function getCurrentTurn() {
-        $f = $this->turnProvider;
-        return $f();
+    function tempGetCurrentPlayer() {
+        return $this->playerList->getPlayer($this->getCurrentTurn()->getSeatWind());
+    }
+
+    function tempGetOffsetPlayer(int $offset) {
+        $currentSeatWind = $this->getCurrentTurn()->getSeatWind();
+        $offsetSeatWind = $currentSeatWind->toNext($offset);
+        return $this->playerList->getPlayer($offsetSeatWind);
     }
 
     /**
      * @param SeatWind $seatWind
+     * @return Area
      */
-    function toSeatWind(SeatWind $seatWind) {
-        $this->currentTurn = $this->currentTurn->toSeatWind($seatWind);
+    function getArea(SeatWind $seatWind) {
+        return $this->areaList->getSingle(function (Area $area) use ($seatWind) {
+            return $area->getSeatWind() == $seatWind;
+        });
+    }
+
+    /**
+     * @return Area
+     */
+    function getCurrentArea() {
+        return $this->getArea($this->getCurrentTurn()->getSeatWind());
+    }
+
+    function getDealerArea() {
+        return $this->getArea(SeatWind::createEast());
     }
 
     /**
@@ -175,6 +164,20 @@ class Areas {
      */
     function setReachPoints(int $reachPoints) {
         $this->reachPoints = $reachPoints;
+    }
+
+    /**
+     * @return Turn
+     */
+    function getCurrentTurn() {
+        return $this->currentTurn;
+    }
+
+    /**
+     * @param SeatWind $seatWind
+     */
+    function toSeatWind(SeatWind $seatWind) {
+        $this->currentTurn = $this->currentTurn->toSeatWind($seatWind);
     }
 
     function getWall() {
@@ -217,9 +220,7 @@ class Areas {
         $this->declareHistory->recordDeclare($this->getCurrentTurn());
     }
 
-    // convert
-    // data
-    function getOutsideRemainTileAmount(Tile $tile) {
+    function getOutsideRemainTileAmount(Tile $tile) { // todo move
         $allPlayerDiscard = $this->playerList->getAggregated(TileList::fromString(''), function (TileList $l, Player $player) {
             return $l->insertLast($player->getArea()->getDiscard()->toArray());
         });
@@ -230,7 +231,7 @@ class Areas {
         return max(0, $remainCount); // note: in tests $remainCount may be negative because of mocking.
     }
 
-    function isFirstTurnWin(Player $targetPlayer) {
+    function isFirstTurnWin(Player $targetPlayer) { // todo move
         $reachStatus = $targetPlayer->getArea()->getReachStatus();
         if (!$reachStatus->isReach()) {
             return false;
@@ -247,8 +248,6 @@ class Areas {
         $noDeclareSinceReach = !$this->getDeclareHistory()->hasDeclare($reachTurn);
         return $isSameOrNextCircleCount && $noDeclareSinceReach;
     }
-
-    // operation
 
     function drawInitForAll() {
         // each player draw initial tiles, notice NOT to trigger turn changes by avoid calling PlayerList->toPlayer()
@@ -437,20 +436,24 @@ class Areas {
         $this->recordDeclare();
     }
 
-    protected function assertNextPlayer(Player $nextPlayer, Player $prePlayer) {
-        list($iNext, $iPre) = $this->playerList->getIndex([$nextPlayer, $prePlayer]);
-        $valid = ($iNext == ($iPre + 1));
-        if (!$valid) {
-            throw new \InvalidArgumentException(
-                sprintf('[%s] should be next of [%s]', $nextPlayer, $prePlayer)
-            );
-        }
+    protected function assertNextPlayer() {
     }
+//    protected function assertNextPlayer(Player $nextPlayer, Player $prePlayer) {
+//        list($iNext, $iPre) = $this->playerList->getIndex([$nextPlayer, $prePlayer]);
+//        $valid = ($iNext == ($iPre + 1));
+//        if (!$valid) {
+//            throw new \InvalidArgumentException(
+//                sprintf('[%s] should be next of [%s]', $nextPlayer, $prePlayer)
+//            );
+//        }
+//    }
 
-    protected function assertDifferentPlayer(Player $player, Player $otherPlayer) {
-        $valid = $player != $otherPlayer;
-        if (!$valid) {
-            throw new \InvalidArgumentException();
-        }
+    protected function assertDifferentPlayer() {
     }
+//    protected function assertDifferentPlayer(Player $player, Player $otherPlayer) {
+//        $valid = $player != $otherPlayer;
+//        if (!$valid) {
+//            throw new \InvalidArgumentException();
+//        }
+//    }
 }

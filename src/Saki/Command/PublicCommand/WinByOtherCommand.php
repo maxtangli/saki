@@ -31,7 +31,8 @@ class WinByOtherCommand extends PublicCommand {
             $round->getWinResult($this->getActPlayer()),
             $this->getCurrentPlayer(),
             $round->getAreas()->getReachPoints() / 1000,
-            $round->getPrevailingWindData()->getSeatWindTurn());
+//            $round->getPrevailingCurrent()->getStatus()->getSeatWindTurn());
+            $round->getAreas()->getDealerArea()->getSeatWindTurn());
         $round->toNextPhase(
             new OverPhaseState($result)
         );

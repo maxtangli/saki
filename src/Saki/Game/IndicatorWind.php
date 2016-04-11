@@ -2,6 +2,7 @@
 namespace Saki\Game;
 
 use Saki\Tile\Tile;
+use Saki\Util\ComparableIndex;
 use Saki\Util\Immutable;
 
 /**
@@ -9,6 +10,36 @@ use Saki\Util\Immutable;
  * @package Saki\Game
  */
 abstract class IndicatorWind implements Immutable {
+    //region ComparableIndex Impl
+    use ComparableIndex;
+
+    static function fromIndex(int $index) {
+        // todo safe check, remove duplicate
+        $m = [
+            'E' => 1,
+            'S' => 2,
+            'W' => 3,
+            'N' => 4
+        ];
+        $s = array_flip($m)[$index];
+        return static::fromString($s);
+    }
+
+    function getIndex() {
+        $m = [
+            'E' => 1,
+            'S' => 2,
+            'W' => 3,
+            'N' => 4
+        ];
+        return $m[$this->__toString()];
+    }
+
+    function toNext(int $offset = 1) {
+        return new static($this->getWindTile()->getNextTile($offset));
+    }
+    //endregion
+
     /**
      * @param string $s
      * @return static
@@ -53,7 +84,9 @@ abstract class IndicatorWind implements Immutable {
      * @param Tile $wind
      */
     function __construct(Tile $wind) {
-        $wind->assertWind();
+        if (!$wind->isWind()) {
+            throw new \InvalidArgumentException();
+        }
         $this->wind = $wind;
     }
 
@@ -65,30 +98,9 @@ abstract class IndicatorWind implements Immutable {
     }
 
     /**
-     * @param int $offset
-     * @return SeatWind
-     */
-    function toNext(int $offset = 1) {
-        return new static($this->getWindTile()->getNextTile($offset));
-    }
-
-    /**
      * @return Tile
      */
     function getWindTile() {
         return $this->wind;
-    }
-
-    /**
-     * @return int
-     */
-    function getIndex() {
-        $m = [
-            'E' => 1,
-            'S' => 2,
-            'W' => 3,
-            'N' => 4
-        ];
-        return $m[$this->__toString()];
     }
 }

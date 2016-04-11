@@ -1,7 +1,7 @@
 <?php
 
-use Saki\Game\GameTurn;
 use Saki\Game\Phase;
+use Saki\Game\PrevailingStatus;
 use Saki\Game\Round;
 use Saki\Meld\Meld;
 use Saki\RoundResult\RoundResultType;
@@ -96,7 +96,7 @@ class KongConcernedTest extends PHPUnit_Framework_TestCase {
 
     function testNotFourKongDrawBySamePlayer() {
         $r = new Round();
-        $r->debugReset(new GameTurn());
+        $r->debugReset(PrevailingStatus::createFirst());
         $pro = $r->getProcessor();
 
         $pro->process(
@@ -109,7 +109,7 @@ class KongConcernedTest extends PHPUnit_Framework_TestCase {
 
     function testFourKongDrawByConcealedKong() {
         $r = new Round();
-        $r->debugReset(new GameTurn());
+        $r->debugReset(PrevailingStatus::createFirst());
         $pro = $r->getProcessor();
 
         $pro->process(
@@ -125,7 +125,7 @@ class KongConcernedTest extends PHPUnit_Framework_TestCase {
 
     function testFourKongDrawByPlusKong() {
         $r = new Round();
-        $r->debugReset(new GameTurn());
+        $r->debugReset(PrevailingStatus::createFirst());
         $pro = $r->getProcessor();
 
         $pro->process(
@@ -142,7 +142,7 @@ class KongConcernedTest extends PHPUnit_Framework_TestCase {
 
     function testFourKongDrawByBigKong() {
         $r = new Round();
-        $r->debugReset(new GameTurn());
+        $r->debugReset(PrevailingStatus::createFirst());
         $pro = $r->getProcessor();
 
         $pro->process(

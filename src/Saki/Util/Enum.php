@@ -1,9 +1,16 @@
 <?php
 namespace Saki\Util;
 
-abstract class Enum {
+/**
+ * @package Saki\Util
+ */
+abstract class Enum implements Immutable {
     private static $instances;
 
+    /**
+     * @param int $value
+     * @return bool
+     */
     static function validValue(int $value) {
         return isset(static::getValue2StringMap()[$value]);
     }
@@ -13,7 +20,7 @@ abstract class Enum {
      * @return static
      */
     static function create(int $value) {
-        $class = static::getClassName();
+        $class = get_called_class();
         if (!isset(self::$instances[$class][$value])) {
             self::$instances[$class][$value] = new $class($value);
         }
@@ -32,34 +39,9 @@ abstract class Enum {
         return static::create($v);
     }
 
-    private static function getClassName() {
-        return get_called_class();
-    }
-
-    private $value;
-
-    function getValue() {
-        return $this->value;
-    }
-
-    protected function __construct($value) {
-        if (!static::validValue($value)) {
-            throw new \InvalidArgumentException();
-        }
-        $this->value = $value;
-    }
-
-    private function __clone() {
-    }
-
-//    // __wakeup() is required to support object reconstruction from $_SESSION.
-//    private function __wakeup() {
-//    }
-
-    function __toString() {
-        return static::getValue2StringMap()[$this->getValue()];
-    }
-
+    /**
+     * @return array A map of values [enumValue => string].
+     */
     static function getValue2StringMap() {
         $r = [];
         $refClass = new \ReflectionClass(get_called_class());
@@ -70,6 +52,43 @@ abstract class Enum {
         return $r;
     }
 
+    private $value;
+
+    /**
+     * @param int $value
+     */
+    protected function __construct(int $value) {
+        if (!static::validValue($value)) {
+            throw new \InvalidArgumentException();
+        }
+        $this->value = $value;
+    }
+
+    private function __clone() {
+    }
+
+    // __wakeup() is required to support object reconstruction from $_SESSION.
+//    private function __wakeup() {
+//    }
+
+    /**
+     * @return string
+     */
+    function __toString() {
+        return static::getValue2StringMap()[$this->getValue()];
+    }
+
+    /**
+     * @return int
+     */
+    function getValue() {
+        return $this->value;
+    }
+
+    /**
+     * @param array $targetValues
+     * @return bool
+     */
     protected function isTargetValue(array $targetValues) {
         return in_array($this->getValue(), $targetValues);
     }

@@ -19,10 +19,9 @@ class Round {
     private $winAnalyzer;
     private $processor;
     // game variable
-    private $prevailingWindData;
+    private $prevailingCurrent;
     // round variable
     private $playerList;
-    private $turnManager;
     private $areas;
     /** @var PhaseState */
     private $phaseState;
@@ -32,20 +31,18 @@ class Round {
         $gameData = new GameData();
         $this->gameData = $gameData;
         $this->winAnalyzer = new WinAnalyzer($gameData->getYakuSet());
-        $this->processor = new CommandProcessor(new CommandParser(new CommandContext($this), CommandSet::createStandard()));
+        $this->processor = new CommandProcessor(
+            new CommandParser(new CommandContext($this), CommandSet::createStandard())
+        );
 
         // game variable
-        $this->prevailingWindData = new PrevailingWindManager($gameData->getPlayerCount(), $gameData->getTotalRoundType());
+        $this->prevailingCurrent = new PrevailingCurrent($gameData->getPrevailingContext());
 
         // round variable
         $this->playerList = new PlayerList($gameData->getPlayerCount(), $gameData->getInitialPoint());
-        $this->turnManager = new TurnManager($this->playerList);
         $wall = new Wall($gameData->getTileSet());
 
-        $turnProvider = function () {
-            return $this->turnManager->getCurrentTurn();
-        };
-        $this->areas = new Areas($wall, $this->playerList, $turnProvider);
+        $this->areas = new Areas($wall, $this->playerList);
 
         $this->phaseState = new NullPhaseState();
 
@@ -54,17 +51,12 @@ class Round {
         $this->toNextPhase(); // todo better way?
     }
 
-    function reset($keepDealer) {
-        if (!is_bool($keepDealer)) {
-            throw new \InvalidArgumentException('bool expected.');
-        }
-
-        $currentDealer = $this->getPlayerList()->getDealerPlayer();
+    function reset(bool $keepDealer) {
+        $currentDealer = $this->getPlayerList()->getEastPlayer();
         $nextDealer = $keepDealer ? $currentDealer : $this->getAreas()->tempGetOffsetPlayer(1);
 
-        $this->prevailingWindData->reset($keepDealer);
+        $this->prevailingCurrent = $this->prevailingCurrent->toReset($keepDealer);
 
-        $this->turnManager->reset();
         $nextDealerSeatWind = new SeatWind($nextDealer->getArea()->getSeatWind()->getWindTile());
         $this->areas->reset($nextDealerSeatWind);
 
@@ -73,12 +65,13 @@ class Round {
         $this->toNextPhase(); // todo better way?
     }
 
-    function debugReset(GameTurn $resetData) {
-        $this->prevailingWindData->debugReset($resetData->getPrevailingWind(), $resetData->getDealerWind()->getIndex(), $resetData->getSeatWindTurn());
+    function debugReset(PrevailingStatus $PrevailingStatus) {
+        $this->prevailingCurrent = $this->prevailingCurrent->toDebugReset($PrevailingStatus);
 
-        $nextDealer = $this->getPlayerList()->getSeatWindTilePlayer($resetData->getDealerWind()->getWindTile());
+        $nextDealer = $this->getPlayerList()->getPlayerByInitial(
+            $PrevailingStatus->getInitialSeatWindOfDealer()
+        );
 
-        $this->turnManager->reset();
         $nextDealerSeatWind = new SeatWind($nextDealer->getArea()->getSeatWind()->getWindTile());
         $this->areas->reset($nextDealerSeatWind);
 
@@ -155,8 +148,8 @@ class Round {
         return $this->getWinAnalyzer()->analyzeTarget(new WinTarget($player, $this));
     }
 
-    function getPrevailingWindData() {
-        return $this->prevailingWindData;
+    function getPrevailingCurrent() {
+        return $this->prevailingCurrent;
     }
 
     function getPlayerList() {
@@ -168,10 +161,6 @@ class Round {
      */
     function getAreas() {
         return $this->areas;
-    }
-
-    function getTurnManager() {
-        return $this->turnManager;
     }
 
     /**

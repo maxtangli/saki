@@ -13,18 +13,6 @@ class PointLevel extends Enum {
     const W_YAKU_MAN = 7;
     const MULTI_YAKU_MAN = 9;
 
-    static function getValue2StringMap() {
-        return [
-            self::NONE => 'none',
-            self::MAN_GAN => 'man gan',
-            self::HANE_MAN => 'hane man',
-            self::BAI_MAN => 'bai man',
-            self::SAN_BAI_MAN => 'san bai man',
-            self::YAKU_MAN => 'yaku man',
-            self::W_YAKU_MAN => 'w yaku man',
-        ];
-    }
-
     /**
      * @param int $fan
      * @param int|null $fu

@@ -14,11 +14,6 @@ class PlayerList extends ArrayList {
     }
 
     /**
-     * @var Player[]
-     */
-    private $players;
-
-    /**
      * @param int $n
      * @param int $initialPoint
      */
@@ -38,38 +33,61 @@ class PlayerList extends ArrayList {
         }, array_slice($data, 0, $n));
 
         parent::__construct($players);
-        $this->players = $players;
     }
 
-    function hasMinusPointPlayer() {
+    /**
+     * Used in: isGameOver.
+     * @return bool
+     */
+    function hasMinusPointPlayer() { // todo move into PointFacade
         return $this->any(function (Player $player) {
             return $player->getArea()->getPoint() < 0;
         });
     }
 
     /**
-     * @return Player[]
+     * Used in: isGameOver.
+     * @return bool
      */
-    function getTopPlayers() {
-        $topPlayers = [];
-        $topPoint = 0;
-        foreach ($this as $player) {
-            if ($player->getArea()->getPoint() >= $topPoint) {
-                if ($player->getArea()->getPoint() > $topPoint) {
-                    $topPlayers = [$player];
-                } else {
-                    $topPlayers[] = $player;
-                }
-                $topPoint = $player->getArea()->getPoint();
-            }
+    function areTiledForTop() { // todo move into PointFacade
+        return $this->getTopPlayerArrayList()->count() >= 2;
+    }
+
+    /**
+     * Used in: isGameOver.
+     * @return bool
+     */
+    function getSingleTopPlayer() {
+        // todo safe way
+        if ($this->areTiledForTop()) {
+            throw new \InvalidArgumentException();
         }
-        return $topPlayers;
+        return $this->getTopPlayerArrayList()[0];
+    }
+
+    /**
+     * @return ArrayList A not empty ArrayList of top Player.
+     */
+    protected function getTopPlayerArrayList() {
+        $pointList = (new ArrayList())->fromSelect($this, function (Player $player) {
+            return $player->getArea()->getPoint();
+        });
+        $maxPoint = $pointList->getMax();
+
+        $maxPlayerArrayList = (new ArrayList())->fromSelect($this)
+            ->where(function (Player $player) use ($maxPoint) {
+                return $player->getArea()->getPoint() == $maxPoint;
+            });
+        if ($maxPlayerArrayList->isEmpty()) {
+            throw new \LogicException();
+        }
+        return $maxPlayerArrayList;
     }
 
     /**
      * @return Player
      */
-    function getDealerPlayer() {
+    function getEastPlayer() {
         return $this->getSeatWindTilePlayer(Tile::fromString('E'));
     }
 
@@ -85,26 +103,27 @@ class PlayerList extends ArrayList {
         return $this->getSeatWindTilePlayer(Tile::fromString('N'));
     }
 
-    function getPlayer(SeatWind $seatWind) {
-        return $this->getSeatWindTilePlayer($seatWind->getWindTile());
+    function getPlayer(SeatWind $currentSeatWind) {
+        return $this->getSeatWindTilePlayer($currentSeatWind->getWindTile());
     }
-    
-    /** todo remove
-     * @param Tile $seatWind
+
+    /**
+     * @param SeatWind $initialSeatWind
      * @return Player
      */
-    function getSeatWindTilePlayer(Tile $seatWind) {
-        $result = [];
-        foreach ($this as $player) {
-            /** @var Player $player */
-            $player = $player;
-            if ($player->getArea()->getSeatWind()->getWindTile() == $seatWind) {
-                $result[] = $player;
-            }
-        }
-        if (count($result) != 1) {
-            throw new \LogicException('not one and only one seatWind.');
-        }
-        return $result[0];
+    function getPlayerByInitial(SeatWind $initialSeatWind) {
+        return $this->getSingle(function (Player $player) use ($initialSeatWind) {
+            return $player->getInitialSeatWind() == $initialSeatWind;
+        });
+    }
+
+    /** todo remove
+     * @param Tile $seatWindTile
+     * @return Player
+     */
+    function getSeatWindTilePlayer(Tile $seatWindTile) {
+        return $this->getSingle(function (Player $player) use ($seatWindTile) {
+            return $player->getArea()->getSeatWind()->getWindTile() == $seatWindTile;
+        });
     }
 }

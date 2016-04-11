@@ -38,7 +38,7 @@ class PrivatePhaseState extends PhaseState {
 
     function enter(Round $round) {
         if (!$this->isCurrentPlayer()) {
-            $round->getTurnManager()->toSeatWind($this->getPlayer()->getArea()->getSeatWind());
+            $round->getAreas()->toSeatWind($this->getPlayer()->getArea()->getSeatWind());
         }
 
         if ($this->shouldDrawTile()) {

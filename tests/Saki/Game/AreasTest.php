@@ -9,7 +9,7 @@ class AreasTest extends PHPUnit_Framework_TestCase {
         $r = new Round();
         $pro = $r->getProcessor();
         $pro->process('mockHand E 123456789m12344p');
-        $areaE = $r->getPlayerList()->getDealerPlayer()->getArea();
+        $areaE = $r->getPlayerList()->getEastPlayer()->getArea();
         $areaS = $r->getPlayerList()->getSouthPlayer()->getArea();
 
         // E private phase, hand E

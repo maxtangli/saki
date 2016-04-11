@@ -1,8 +1,7 @@
 <?php
 
-namespace Saki\Hand;
+namespace Saki\Game;
 
-use Saki\Game\Target;
 use Saki\Meld\MeldList;
 use Saki\Tile\TileList;
 use Saki\Util\Immutable;

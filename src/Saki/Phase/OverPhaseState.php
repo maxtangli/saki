@@ -22,29 +22,35 @@ class OverPhaseState extends PhaseState {
     }
 
     function isGameOver(Round $round) {
-        if ($round->getPlayerList()->hasMinusPointPlayer()) { // 有玩家被打飞，游戏结束
-            return true;
-        } elseif ($round->getPrevailingWindData()->isFinalRound()) { // 北入终局，游戏结束
-            return true;
-        } elseif (!$round->getPrevailingWindData()->isLastOrExtraRound()) { // 指定场数未达，游戏未结束
-            return false;
-        } else { // 达到指定场数
-            $topPlayers = $round->getPlayerList()->getTopPlayers();
-            if (count($topPlayers) != 1) {
-                return false; // 并列第一，游戏未结束
-            }
+        $playerList = $round->getPlayerList();
+        $prevailingCurrent = $round->getPrevailingCurrent();
 
-            $topPlayer = $topPlayers[0];
-            $isTopPlayerEnoughPoint = $topPlayer->getArea()->getPoint() >= 30000; // todo rule
-            if (!$isTopPlayerEnoughPoint) { // 若首位点数未达原点，游戏未结束
-                return false;
-            } else { // 首位点数达到原点，非连庄 或 连庄者达首位，游戏结束
-                $result = $round->getPhaseState()->getRoundResult();
-                $keepDealer = $result->isKeepDealer();
-                $dealerIsTopPlayer = $round->getPlayerList()->getDealerPlayer() == $topPlayer;
-                return (!$keepDealer || $dealerIsTopPlayer);
-            }
+        if ($playerList->hasMinusPointPlayer()) {
+            return true;
         }
+
+        if ($prevailingCurrent->isNormalNotLast()) {
+            return false;
+        }
+
+        if ($prevailingCurrent->isSuddenDeathLast()) {
+            return true; // todo right? write detailed rule doc
+        } // else isNormalLast or isSuddenDeath
+
+        if ($playerList->areTiledForTop()) {
+            return false;
+        }
+
+        $topPlayer = $playerList->getSingleTopPlayer();
+        $isTopPlayerEnoughPoint = $topPlayer->getArea()->getPoint() >= 30000; // todo wrap in rule class
+        if (!$isTopPlayerEnoughPoint) {
+            return false;
+        } // else isTopPlayerEnoughPoint
+
+        $result = $round->getPhaseState()->getRoundResult();
+        $keepDealer = $result->isKeepDealer();
+        $dealerIsTopPlayer = $playerList->getEastPlayer() == $topPlayer;
+        return (!$keepDealer || $dealerIsTopPlayer);
     }
 
     /**

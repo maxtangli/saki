@@ -1,8 +1,8 @@
 <?php
 namespace Saki\Win;
 
+use Saki\Util\ComparablePriority;
 use Saki\Util\Enum;
-use Saki\Util\PriorityComparable;
 
 class WinState extends Enum {
     static function getWinBySelfOrOther(bool $isPrivate) {
@@ -10,7 +10,7 @@ class WinState extends Enum {
         return self::create($v);
     }
 
-    use PriorityComparable;
+    use ComparablePriority;
 
     function getPriority() {
         $m = [

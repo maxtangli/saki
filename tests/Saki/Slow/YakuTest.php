@@ -1,7 +1,7 @@
 <?php
 
-use Saki\Game\GameTurn;
 use Saki\Game\Phase;
+use Saki\Game\PrevailingStatus;
 use Saki\Game\PrevailingWind;
 use Saki\Game\Round;
 use Saki\Meld\MeldList;
@@ -135,7 +135,7 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
             // test PrevailingWindValueTilesYaku
             [new YakuTestData('123m,44m,55m,66m,55s', 'EEE', '5s'), PrevailingWindYaku::create(), true],
             // not prevailingWind
-            [(new YakuTestData('123m,44m,55m,66m,55s', 'EEE', '5s', null, null, (new GameTurn())->setPrevailingWind(PrevailingWind::fromString('S'))))
+            [(new YakuTestData('123m,44m,55m,66m,55s', 'EEE', '5s', null, null, PrevailingWind::fromString('S')))
                 , PrevailingWindYaku::create(), false],
 
             // test SeatWindValueTilesYaku
@@ -566,12 +566,12 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
 class YakuTestData {
     private static $r;
 
-    static function getInitedRound(GameTurn $rebugResetData = null) {
+    static function getInitedRound(PrevailingStatus $rebugResetData = null) {
         if (!self::$r) {
             self::$r = new Round(); // for 10 test cases, 1.2s => 0.2s which is 6x faster
         }
         $r = self::$r;
-        $r->debugReset($rebugResetData ?? new GameTurn());
+        $r->debugReset($rebugResetData ?? PrevailingStatus::createFirst());
         return $r;
     }
 
@@ -580,10 +580,9 @@ class YakuTestData {
     private $targetTile;
     private $currentSeatWind;
     private $targetSeatWind;
-    private $rebugResetData;
 
     function __construct(string $handMeldListString, string $declareMeldListString = null, string $targetTileString = null,
-                         string $currentSeatWindString = null, string $targetSeatWindString = null, GameTurn $rebugResetData = null) {
+                         string $currentSeatWindString = null, string $targetSeatWindString = null, string $targetPrevailingWindString = null) {
         $this->handMeldList = MeldList::fromString($handMeldListString)->toConcealed(true);
         $this->declareMeldList = MeldList::fromString($declareMeldListString !== null ? $declareMeldListString : "");
         $this->targetTile = $targetTileString !== null ? Tile::fromString($targetTileString) : $this->handMeldList[0][0];
@@ -591,7 +590,8 @@ class YakuTestData {
         $this->currentSeatWind = Tile::fromString($currentSeatWindString ?? 'E');
         $this->targetSeatWind = $targetSeatWindString !== null ? Tile::fromString($targetSeatWindString) : $this->currentSeatWind;
 
-        $this->roundDebugResetData = $rebugResetData ?? new GameTurn();
+        $prevailingWind = PrevailingWind::fromString($targetPrevailingWindString ?? 'E');
+        $this->roundDebugResetData = new PrevailingStatus($prevailingWind, 1, 0);
     }
 
     function __toString() {
@@ -619,7 +619,7 @@ class YakuTestData {
             $areas->debugSetPrivate($actPlayer, $private, $this->declareMeldList, $targetTile);
         } else { // targetTile already set by debugSkipTo
             $public = $handMeldList->toTileList()->remove($targetTile);
-            $actPlayer->getArea()->debugSet($public, $this->declareMeldList, $public);
+            $actPlayer->getArea()->debugSet($public, $this->declareMeldList);
         }
 
         return new WinSubTarget($this->handMeldList, $actPlayer, $r);

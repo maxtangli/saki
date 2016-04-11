@@ -2,7 +2,7 @@
 
 namespace Saki\Tile;
 
-class HandSize {
+class HandSize { // todo remove
     private $count;
 
     function __construct($count, $validate = false) {

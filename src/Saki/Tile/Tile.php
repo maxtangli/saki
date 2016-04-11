@@ -3,12 +3,12 @@
 namespace Saki\Tile;
 
 use Saki\Util\ArrayList;
+use Saki\Util\ComparablePriority;
 use Saki\Util\Immutable;
-use Saki\Util\PriorityComparable;
 use Saki\Util\Utils;
 
 class Tile implements Immutable {
-    use PriorityComparable;
+    use ComparablePriority;
 
     function getPriority() {
         return TileFactory::create()->toValueID($this->tileType, $this->number, $this->isRedDora());
@@ -125,7 +125,7 @@ class Tile implements Immutable {
         // $isRedDora already handled by TileFactory
     }
 
-    /**
+    /** todo better way
      * @param Tile $other
      * @param bool $compareIsRedDora
      * @return bool
@@ -212,24 +212,5 @@ class Tile implements Immutable {
             throw new \LogicException();
         }
         return $a->getCyclicNext($this, $offset);
-    }
-
-    /**
-     * @param Tile $other
-     * @return int offset = this - other. e.x. E.getWindOffsetFrom(S) = -1 .
-     */
-    function getWindOffsetFrom(Tile $other) {
-        $windList = Tile::getWindList();
-        return $windList->getIndex($this) - $windList->getIndex($other); // validate
-    }
-
-    function getWindOffsetTo(Tile $other) {
-        return -$this->getWindOffsetFrom($other);
-    }
-
-    function assertWind() {
-        if (!$this->isWind()) {
-            throw new \LogicException();
-        }
     }
 }

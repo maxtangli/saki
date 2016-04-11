@@ -1,7 +1,6 @@
 <?php
 namespace Saki\Game;
 
-use Saki\Hand\Hand;
 use Saki\Meld\Meld;
 use Saki\Meld\MeldList;
 use Saki\Meld\MeldType;
@@ -17,11 +16,12 @@ class Area {
     private $getTarget;
     // game variable
     private $seatWind;
+    private $seatWindTurn;
     private $point;
     // round variable
     private $public;
     private $discardLocked; // locked to support safe pass by reference
-    private $declaredMeldList;
+    private $declare;
     private $reachStatus;
 
     /**
@@ -30,14 +30,16 @@ class Area {
      * @param int $initialPoint
      */
     function __construct(callable $getTarget, SeatWind $seatWind, int $initialPoint) {
+        // immutable
         $this->getTarget = $getTarget;
-
+        // game variable
         $this->seatWind = $seatWind;
+        $this->seatWindTurn = 0;
         $this->point = $initialPoint;
-
+        // round variable
         $this->public = new TileList();
         $this->discardLocked = (new TileList())->lock();
-        $this->declaredMeldList = new MeldList();
+        $this->declare = new MeldList();
         $this->reachStatus = ReachStatus::createNotReach();
     }
 
@@ -45,21 +47,23 @@ class Area {
      * @param SeatWind $seatWind
      */
     function reset(SeatWind $seatWind) {
+        // game variable
+        $keepDealer = $this->seatWind->isDealer() && $seatWind->isDealer();
         $this->seatWind = $seatWind;
+        $this->seatWindTurn = $keepDealer ? $this->seatWindTurn + 1 : 0;
         // $this->point not change
-
+        // round variable
         $this->public->removeAll();
         $this->discardLocked->unlock()->removeAll()->lock();
-        $this->declaredMeldList->removeAll();
+        $this->declare->removeAll();
         $this->reachStatus = ReachStatus::createNotReach();
     }
 
     /**
      * @param TileList $public
      * @param MeldList $declare
-     * @param TileList $tempHandTileList
      */
-    function debugSet(TileList $public, MeldList $declare, TileList $tempHandTileList = null) {
+    function debugSet(TileList $public, MeldList $declare) {
         $valid = (new Hand($public, $declare, $this->getTarget()))
             ->isPublicPlusDeclareComplete();
         if (!$valid) {
@@ -67,11 +71,24 @@ class Area {
         }
 
         $this->public->fromSelect($public);
-        $this->declaredMeldList->fromSelect($declare);
+        $this->declare->fromSelect($declare);
     }
 
+    /**
+     * @return SeatWind
+     */
     function getSeatWind() {
         return $this->seatWind;
+    }
+
+    /**
+     * @return int
+     */
+    function getSeatWindTurn() {
+        if (!$this->getSeatWind()->isDealer()) {
+            throw new \BadMethodCallException();
+        }
+        return $this->seatWindTurn;
     }
 
     /**
@@ -116,7 +133,7 @@ class Area {
     function getHand() {
         return new Hand(
             $this->public,
-            $this->declaredMeldList,
+            $this->declare,
             $this->getTarget()
         );
     }
@@ -141,9 +158,6 @@ class Area {
      */
     function setReachStatus(ReachStatus $reachStatus) {
         $this->reachStatus = $reachStatus;
-    }
-
-    function reach() {
     }
 
     function drawInit(array $tiles) {
@@ -193,7 +207,7 @@ class Area {
         }
 
         // exist source meld
-        if ($declaredMeld && !$this->declaredMeldList->valueExist($declaredMeld, function (Meld $a, Meld $b) {
+        if ($declaredMeld && !$this->declare->valueExist($declaredMeld, function (Meld $a, Meld $b) {
                 return $a->equalTo($b, false);
             })
         ) {
@@ -251,12 +265,12 @@ class Area {
 
         if ($declaredMeld) {
             // remove meld ignoring concealed todo right?
-            $this->declaredMeldList->remove($declaredMeld, function (Meld $a, Meld $b) {
+            $this->declare->remove($declaredMeld, function (Meld $a, Meld $b) {
                 return $a->equalTo($b, false);
             });
         }
 
-        $this->declaredMeldList->insertLast($targetMeld);
+        $this->declare->insertLast($targetMeld);
         return $targetMeld;
     }
     //endregion

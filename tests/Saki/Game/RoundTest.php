@@ -13,7 +13,7 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         // phase
         $this->assertEquals(Phase::getPrivateInstance(), $r->getPhaseState()->getPhase());
         // initial current player
-        $dealerPlayer = $r->getPlayerList()->getDealerPlayer();
+        $dealerPlayer = $r->getPlayerList()->getEastPlayer();
         $this->assertSame($dealerPlayer, $r->getAreas()->tempGetCurrentPlayer());
         // initial candidate tile
         $this->assertCount(14, $dealerPlayer->getArea()->getHand()->getPrivate());
@@ -27,16 +27,6 @@ class RoundTest extends PHPUnit_Framework_TestCase {
 //            $expected = $player == $dealerPlayer ? 14 : 13;
 //            $this->assertCount($expected, $onHandTileList, sprintf('%s %s', $player, count($onHandTileList)));
         }
-    }
-
-    function testPrevailingWindData() {
-        $r = new Round();
-        for ($nTodo = 3; $nTodo > 0; --$nTodo) {
-            $r->reset(false);
-        }
-        $this->assertEquals(4, $r->getPrevailingWindData()->getPrevailingWindTurn());
-        $this->assertTrue($r->getPrevailingWindData()->isLastOrExtraRound());
-        $this->assertFalse($r->getPrevailingWindData()->isFinalRound());
     }
 
     function testGetFinalPointItems() {

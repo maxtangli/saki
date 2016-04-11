@@ -6,6 +6,7 @@ namespace Saki\Util;
  */
 trait Comparable {
     /**
+     * design note: to get short implementation, use "if ($v = $this->a <=> $other->a) return $v; else ...".
      * @param $other
      * @return int -1|0|1
      */

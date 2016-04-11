@@ -26,6 +26,13 @@ class CommandContext {
         return $this->round;
     }
 
+    /**
+     * @return \Saki\Game\Areas
+     */
+    function getAreas() {
+        return $this->getRound()->getAreas();
+    }
+
     //region sugar methods
     function getCurrentArea() {
         return $this->getRound()->getAreas()->getCurrentArea();
@@ -39,7 +46,7 @@ class CommandContext {
      */
     function bindActor(SeatWind $seatWind) {
         // todo safe check
-        $this->bindActor = $seatWind;    
+        $this->bindActor = $seatWind;
     }
 
     function unbindActor() {
@@ -56,11 +63,11 @@ class CommandContext {
         }
         return $this->bindActor;
     }
-    
+
     function getActorArea() {
         return $this->getRound()->getAreas()->getArea($this->getActor());
     }
-    
+
     function getActorHand() {
         return $this->getActorArea()->getHand();
     }

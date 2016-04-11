@@ -14,9 +14,9 @@ class SeatWind extends IndicatorWind {
      * @return SeatWind
      */
     function toNextSelf(SeatWind $nextDealer) {
-        // todo replace offset into self
-        $offsetNextDealerToSelf = $nextDealer->getWindTile()->getWindOffsetTo($this->getWindTile());
-        return self::createEast()->toNext($offsetNextDealerToSelf);
+        // diff keeps when dealer rolls
+        $dealerToThis = $nextDealer->getOffsetTo($this);
+        return self::createEast()->toNext($dealerToThis);
     }
 
     /**

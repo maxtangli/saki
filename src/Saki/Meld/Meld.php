@@ -96,7 +96,7 @@ class Meld extends TileList implements Immutable {
         return new Meld($this->toArray(), $this->meldType, $this->concealed);
     }
 
-    /**
+    /** todo better way
      * @param Meld $other
      * @param bool $compareConcealed
      * @return bool

@@ -36,8 +36,8 @@ naming conventions
 ## rush statistics
 
 rush       | hours
----------  | -----
-rush  0-5  | 34.0h
+---------- | -----
+rush  0- 5 | 34.0h
 rush  6-10 | 23.8h
 rush 11-15 | 15.8h
 rush 16-20 | 25.6h
@@ -107,7 +107,7 @@ rush 5 round flow: private phase 14.5h
 - [x] PrivatePhase: execute command and to next turn
 - [x] RoundCommand toString()/fromString()
 - [x] bug: InfiniteIterator buggy with session
-- [x] refactor: least RoundCommand to KISS  
+- [x] refactor: least RoundCommand to KISS
 - [x] Player toString()/fromString()
 - [x] child commands fromString() 
 
@@ -202,7 +202,7 @@ rush 16 game over fix 2.1h
 
 - [x] isLastRound() 0.6h
 - [x] refactor: move PlayerList into RoundData 1.1h
-- [x] bug: PlayerList  0.4h
+- [x] bug: PlayerList 0.4h
 
 rush 17 win issues 1.6h
 
@@ -657,7 +657,7 @@ rush 56 refactor Turn concerned: part1 2.3h
 - [x] refactor GameTurn 0.4h
 - [x] refactor Round a little 0.4h
 
-rush 57 remove Player usage
+rush 57 move Player.point, TurnManger into Areas 4.6h
 
 - [x] know terms and rename 1h
 - [x] move Player.point into Area 0.8h
@@ -665,14 +665,42 @@ rush 57 remove Player usage
 - [x] refactor Areas.recordOpen 0.2h
 - [x] add Areas.getArea 0.2h
 
-- [ ] try adapt DiscardCommand 1h
-- [ ] remove TurnManger 0.9h // with a self-managed Turn abstraction, TurnManager no longer required!
+- [x] try adapt DiscardCommand 1h
+- [x] remove TurnManger 1.2h // with a self-managed Turn abstraction, TurnManager no longer required!
+
+rush 58 refactor Turn concerned: part2
+
+- [x] add ComparableIndex 0.2h
+- [x] refactor Tile.getWindOffsetFrom/To 0.3h
+- [x] refactor PrevailingWindManager 1.7h
+- [x] refactor PrevailingWindManager.debugSet 1h
+
+- [x] refactor OverPhaseState.isGameOver 0.5h
+- [x] adapt PrevailingStatus 1.5h
+
+- [x] move SeatWindTurn into Area 0.4h
+- [x] add PrevailingContext 1.8h
+- [ ] test PrevailingCurrent 0.1h
+
+- [x] refactor Util/ 0.2h
+
+refactor status
+
+module      | process
+----------- | -----
+Command     | 0%
+FinalPoint  | 0%
+Game        | ing
+Meld        | done
+Phase       | 0%
+RoundResult | 0%
+Tile        | remove HandSize
+Util        | remove ComparablePriority
+Win         | ing
+
+rush remove Player usage
+
 - [ ] remove Player usage by SeatWind
-
-rush refactor Turn concerned: part2
-
-- [ ] adapt PrevailingWind
-- [ ] refactor Tile.getWindOffsetFrom/To
 
 rush refactor Saki/Win/ part3
 
@@ -699,6 +727,12 @@ rush red dora: meld issue
 
 - [ ] adapt discard/createMeld logic
 
+rush all yaku: tests
+
+- [ ] test and fix FinalTileWin Fish/Moon 0.1h // ? what's wrong
+- [ ] test HeavenlyWin, EarthlyWin, HumanlyWin
+- [ ] refactor yaku tests
+
 rush public command roller
 
 - [ ] public command roller
@@ -709,13 +743,7 @@ rush command candidates
 
 rush UI
 rush network
-
-rush all yaku: tests
-
-- [ ] test and fix FinalTileWin Fish/Moon 0.1h // ? what's wrong
-- [ ] test HeavenlyWin, EarthlyWin, HumanlyWin
-- [ ] refactor yaku tests
-
+rush learn from other projects
 rush rule.md doc
 
 - [ ] rule 0.6h

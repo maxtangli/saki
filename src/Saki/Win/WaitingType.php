@@ -1,11 +1,11 @@
 <?php
 namespace Saki\Win;
 
+use Saki\Util\ComparablePriority;
 use Saki\Util\Enum;
-use Saki\Util\PriorityComparable;
 
 class WaitingType extends Enum {
-    use PriorityComparable;
+    use ComparablePriority;
 
     function getPriority() {
         $m = [ // todo adjust orders

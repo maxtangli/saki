@@ -10,7 +10,7 @@ class InitPhaseState extends PhaseState {
     }
 
     function getDefaultNextState(Round $round) {
-        $nextPlayer = $round->getPlayerList()->getDealerPlayer();
+        $nextPlayer = $round->getPlayerList()->getEastPlayer();
         $shouldDrawTile = true;
         return new PrivatePhaseState($nextPlayer, $shouldDrawTile, true);
     }

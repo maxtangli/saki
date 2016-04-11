@@ -2,7 +2,7 @@
 
 namespace Saki\Util;
 
-trait PriorityComparable {
+trait ComparablePriority { // todo remove
     use Comparable;
 
     abstract function getPriority();

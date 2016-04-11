@@ -297,7 +297,9 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
     function getSingle(callable $predicate) {
         $result = $this->getSingleOrDefault($predicate, null);
         if ($result === null) {
-            throw new \InvalidArgumentException();
+            throw new \BadMethodCallException(
+                sprintf('Bad method call of getSingle($predicate) on [%s], 0 matches.', $this)
+            );
         }
         return $result;
     }
@@ -312,12 +314,13 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
         foreach ($this->innerArray as $v) {
             if ($predicate($v)) {
                 if ($result !== null) {
-                    throw new \LogicException();
+                    throw new \BadMethodCallException(
+                        sprintf('Bad method call of getSingle($predicate) on [%s], 2 or more matches.', $this)
+                    );
                 }
                 $result = $v;
             }
         }
-
         return $result ?? $default;
     }
 

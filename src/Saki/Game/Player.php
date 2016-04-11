@@ -28,7 +28,8 @@ class Player {
      * @return string
      */
     function __toString() {
-        return sprintf('player[%s] wind[%s] point[%s]', $this->getNo(), $this->getArea()->getSeatWind(), $this->getArea()->getPoint());
+        return sprintf('p%s%s-%s-%s',
+            $this->getNo(), $this->getInitialSeatWind(), $this->getArea()->getSeatWind(), $this->getArea()->getPoint());
     }
 
     /**
@@ -55,9 +56,9 @@ class Player {
     /**
      * @return Area
      */
-    function getArea() {
+    function getArea() { // todo remove
         if ($this->area === null) {
-            throw new \BadMethodCallException('Bad method call on Area-uninitialized Player.');
+            throw new \BadMethodCallException('Bad method call of getArea() on Area-uninitialized Player.');
         }
         return $this->area;
     }
@@ -65,9 +66,9 @@ class Player {
     /**
      * @param Area $area
      */
-    function setArea(Area $area) {
+    function setArea(Area $area) { // todo remove
         if ($this->area !== null) {
-            throw new \BadMethodCallException('Bad method call on Area-initialized Player,');
+            throw new \BadMethodCallException('Bad method call of getArea() on Area-initialized Player,');
         }
         $this->area = $area;
     }

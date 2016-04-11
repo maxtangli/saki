@@ -13,16 +13,13 @@ class Turn implements Immutable {
     function compareTo($other) {
         /** @var Turn $other */
         $other = $other;
+
         $circleCountDiff = $this->circleCount <=> $other->circleCount;
         if ($circleCountDiff != 0) {
             return $circleCountDiff;
         }
 
-        // todo simplify offset
-        $seatWindDiff = $this->getSeatWind()->getWindTile()->getWindOffsetFrom(
-            $other->getSeatWind()->getWindTile()
-        );
-        return $seatWindDiff;
+        return $this->getSeatWind()->compareTo($other->getSeatWind());
     }
 
     /**

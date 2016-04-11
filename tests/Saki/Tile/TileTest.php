@@ -105,13 +105,4 @@ class TileTest extends PHPUnit_Framework_TestCase {
             ['E', 3, 'N'], ['E', 4, 'E'], ['E', 5, 'S'], ['E', 6, 'W'], ['E', 7, 'N'], ['E', 8, 'E'],
         ];
     }
-
-    function testWindOffset() {
-        $e = Tile::fromString('E');
-        $w = Tile::fromString('W');
-
-        $this->assertEquals(0, $e->getWindOffsetFrom($e));
-        $this->assertEquals(-2, $e->getWindOffsetFrom($w));
-        $this->assertEquals(2, $w->getWindOffsetFrom($e));
-    }
 }

@@ -17,7 +17,7 @@ class RoundWinTest extends PHPUnit_Framework_TestCase {
         // phase changed
         $this->assertEquals(Phase::create(Phase::OVER_PHASE), $r->getPhaseState()->getPhase());
         // point changed
-        $dealer = $r->getPlayerList()->getDealerPlayer();
+        $dealer = $r->getPlayerList()->getEastPlayer();
         foreach ($r->getPlayerList() as $player) {
             $pointDelta = $r->getPhaseState()->getRoundResult()->getPointDelta($player);
             $deltaInt = $pointDelta->getDeltaInt();
@@ -35,7 +35,7 @@ class RoundWinTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(Phase::getPrivateInstance(), $r->getPhaseState()->getPhase());
         // todo assert private state
 
-        $this->assertEquals($dealer, $r->getPlayerList()->getDealerPlayer());
+        $this->assertEquals($dealer, $r->getPlayerList()->getEastPlayer());
         // todo test initial state
     }
 
@@ -88,7 +88,7 @@ class RoundWinTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($r->getPhaseState()->isGameOver($r));
 
         // point over 30000
-        $dealerPlayer = $r->getPlayerList()->getDealerPlayer();
+        $dealerPlayer = $r->getPlayerList()->getEastPlayer();
         $dealerPlayer->getArea()->setPoint('29999');
         $this->assertFalse($r->getPhaseState()->isGameOver($r));
         $dealerPlayer->getArea()->setPoint('30000');

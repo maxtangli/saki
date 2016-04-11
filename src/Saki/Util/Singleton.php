@@ -13,15 +13,11 @@ abstract class Singleton {
      * @return static the singleton instance of class
      */
     static function create() {
-        $class = static::getClassName();
+        $class = get_called_class();
         if (!isset(self::$instances[$class])) {
             self::$instances[$class] = new $class();
         }
         return self::$instances[$class];
-    }
-
-    private static function getClassName() {
-        return get_called_class();
     }
 
     /**
@@ -34,8 +30,6 @@ abstract class Singleton {
     /**
      * Private clone method to prevent cloning of the instance of the
      * *Singleton* instance.
-     *
-     * @return void
      */
     private function __clone() {
     }
@@ -43,8 +37,6 @@ abstract class Singleton {
 //    /**
 //     * Private unserialize method to prevent unserializing of the *Singleton*
 //     * instance.
-//     *
-//     * @return void
 //     */
 //    private function __wakeup() {
 //    }
