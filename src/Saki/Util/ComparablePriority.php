@@ -2,10 +2,8 @@
 
 namespace Saki\Util;
 
-trait ComparablePriority { // todo remove
+trait ComparablePriority { // todo remove?
     use Comparable;
-
-    abstract function getPriority();
 
     function compareTo($other) {
         return $this->getPriority() <=> $other->getPriority();
@@ -16,4 +14,6 @@ trait ComparablePriority { // todo remove
             return $v->getPriority();
         };
     }
+
+    abstract function getPriority();
 }

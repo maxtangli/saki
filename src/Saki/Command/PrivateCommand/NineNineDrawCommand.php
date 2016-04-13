@@ -5,36 +5,28 @@ use Saki\Command\CommandContext;
 use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\PrivateCommand;
 use Saki\Game\SeatWind;
-use Saki\Game\Turn;
 use Saki\Phase\OverPhaseState;
-use Saki\RoundResult\OnTheWayDrawRoundResult;
-use Saki\RoundResult\RoundResultType;
-use Saki\Tile\Tile;
+use Saki\Result\AbortiveDrawResult;
+use Saki\Result\ResultType;
 
 class NineNineDrawCommand extends PrivateCommand {
     static function getParamDeclarations() {
         return [SeatWindParamDeclaration::class];
     }
 
-    function __construct(CommandContext $context, Tile $playerSeatWind) {
+    function __construct(CommandContext $context, SeatWind $playerSeatWind) {
         parent::__construct($context, [$playerSeatWind]);
     }
 
-    function matchOther() {
-        $areas = $this->getContext()->getRound()->getAreas();
-        $currentCircleCount = $this->getContext()->getRound()->getAreas()->getCurrentTurn()->getCircleCount();
-
-        $isFirstTurn = $currentCircleCount == 1;
-        $noDeclaredActions = !$areas->getDeclareHistory()->hasDeclare(
-            new Turn($currentCircleCount, SeatWind::createEast())
-        );
-        $validTileList = $this->getActPlayer()->getArea()->getHand()->getPrivate()->isNineKindsOfTerminalOrHonor();
-        return $isFirstTurn && $noDeclaredActions && $validTileList;
+    protected function matchOther(CommandContext $context) {
+        return $context->getTurn()->isFirstCircle()
+        && !$context->getAreas()->getDeclareHistory()->hasDeclare()
+        && $context->getActorHand()->getPrivate()->isNineKindsOfTerminalOrHonor();
     }
 
-    function executeImpl() {
-        $result = new OnTheWayDrawRoundResult($this->getContext()->getRound()->getPlayerList()->toArray(),
-            RoundResultType::create(RoundResultType::NINE_KINDS_OF_TERMINAL_OR_HONOR_DRAW));
-        $this->getContext()->getRound()->toNextPhase(new OverPhaseState($result));
+    protected function executeImpl(CommandContext $context) {
+        $result = new AbortiveDrawResult($context->getRound()->getPlayerList()->toArray(),
+            ResultType::create(ResultType::NINE_NINE_DRAW));
+        $context->getRound()->toNextPhase(new OverPhaseState($result));
     }
 }

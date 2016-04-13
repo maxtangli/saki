@@ -5,6 +5,7 @@ use Saki\Command\CommandContext;
 use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\ParamDeclaration\TileParamDeclaration;
 use Saki\Command\PrivateCommand;
+use Saki\Game\SeatWind;
 use Saki\Tile\Tile;
 
 class DiscardCommand extends PrivateCommand {
@@ -12,7 +13,7 @@ class DiscardCommand extends PrivateCommand {
         return [SeatWindParamDeclaration::class, TileParamDeclaration::class];
     }
 
-    function __construct(CommandContext $context, Tile $playerSeatWind, Tile $tile) {
+    function __construct(CommandContext $context, SeatWind $playerSeatWind, Tile $tile) {
         parent::__construct($context, [$playerSeatWind, $tile]);
     }
 
@@ -23,15 +24,14 @@ class DiscardCommand extends PrivateCommand {
         return $this->getParam(1);
     }
 
-    function matchOther() {
+    protected function matchOther(CommandContext $context) {
         $hand = $this->getContext()->getActorHand();
         $validTile = $hand->getPrivate()->valueExist($this->getTile());
         return $validTile;
     }
 
-    function executeImpl() {
-        $context = $this->getContext();
-        $context->getAreas()->discard($this->getActPlayer(), $this->getTile());
+    protected function executeImpl(CommandContext $context) {
+        $context->getAreas()->discard($this->getActor(), $this->getTile());
         $context->getRound()->toNextPhase();
     }
 }

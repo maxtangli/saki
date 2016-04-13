@@ -1,6 +1,9 @@
 <?php
 namespace Saki\Util;
 
+/**
+ * @package Saki\Util
+ */
 trait ComparableIndex {
     use ComparableSequence;
 

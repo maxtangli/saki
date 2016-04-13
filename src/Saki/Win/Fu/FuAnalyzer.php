@@ -23,7 +23,7 @@ class FuAnalyzer extends Singleton {
             $baseFu = $this->getBaseFu();
             $winSetFu = $this->getWinSetListFu($target->getAllMeldList());
             $winSetFuResults = $this->getWinSetListFuResult($target->getAllMeldList());
-            $pairFu = $this->getPairFu($target->getPairMeld(), $target->getSeatWind(), $target->getPrevailingWind());
+            $pairFu = $this->getPairFu($target->getPairMeld(), $target->getSeatWindTile(), $target->getPrevailingWindTile());
             $waitingTypeFu = $this->getWaitingTypeFu($target->getWaitingType());
             $concealedFu = $this->getConcealedFu($target->isConcealed());
             $winBySelfFu = $this->getWinBySelfFu($target->isSelfPhase());

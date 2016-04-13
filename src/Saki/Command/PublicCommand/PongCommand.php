@@ -5,30 +5,28 @@ use Saki\Command\CommandContext;
 use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\PrivateCommand;
 use Saki\Command\PublicCommand;
+use Saki\Game\SeatWind;
 use Saki\Phase\PrivatePhaseState;
-use Saki\Tile\Tile;
 
 class PongCommand extends PublicCommand {
     static function getParamDeclarations() {
         return [SeatWindParamDeclaration::class];
     }
 
-    function __construct(CommandContext $context, Tile $playerSeatWind) {
+    function __construct(CommandContext $context, SeatWind $playerSeatWind) {
         parent::__construct($context, [$playerSeatWind]);
     }
 
-    function matchOther() {
+    protected function matchOther(CommandContext $context) {
         return true; // todo
     }
 
-    function executeImpl() {
-        $round = $this->getContext()->getRound();
+    protected function executeImpl(CommandContext $context) {
+        $round = $context->getRound();
 
-        $round->getAreas()->pong(
-            $this->getActPlayer(), $this->getCurrentPlayer()
-        );
+        $round->getAreas()->pong($this->getActor());
         $round->toNextPhase(
-            new PrivatePhaseState($this->getActPlayer(), false)
+            new PrivatePhaseState($this->getActor(), false)
         );
     }
 }

@@ -2,34 +2,44 @@
 namespace Saki\Phase;
 
 use Saki\Game\Phase;
-use Saki\Game\Player;
 use Saki\Game\Round;
+use Saki\Game\SeatWind;
 
+/**
+ * @package Saki\Phase
+ */
 class PrivatePhaseState extends PhaseState {
-    private $player;
+    private $actor;
     private $shouldDrawTile;
-    private $isCurrentPlayer;
+    private $isCurrent;
 
-    function __construct(Player $player, bool $shouldDrawTile, bool $isCurrentPlayer = false) {
-        $this->player = $player;
+    /**
+     * PrivatePhaseState constructor.
+     * @param SeatWind $actor
+     * @param bool $shouldDrawTile
+     * @param bool $isCurrent
+     */
+    function __construct(SeatWind $actor, bool $shouldDrawTile, bool $isCurrent = false) {
+        $this->actor = $actor;
         $this->shouldDrawTile = $shouldDrawTile;
-        $this->isCurrentPlayer = $isCurrentPlayer;
+        $this->isCurrent = $isCurrent;
     }
 
-    function getPlayer() {
-        return $this->player;
+    function getActor() {
+        return $this->actor;
     }
 
     function shouldDrawTile() {
         return $this->shouldDrawTile;
     }
 
-    function isCurrentPlayer() {
-        return $this->isCurrentPlayer;
+    function isCurrent() {
+        return $this->isCurrent;
     }
 
+    //region PhaseState impl
     function getPhase() {
-        return Phase::getPrivateInstance();
+        return Phase::createPrivate();
     }
 
     function getDefaultNextState(Round $round) {
@@ -37,16 +47,17 @@ class PrivatePhaseState extends PhaseState {
     }
 
     function enter(Round $round) {
-        if (!$this->isCurrentPlayer()) {
-            $round->getAreas()->toSeatWind($this->getPlayer()->getArea()->getSeatWind());
-        }
+        $actor = $this->getActor();
+
+        $round->getAreas()->toSeatWind($actor);
 
         if ($this->shouldDrawTile()) {
-            $round->getAreas()->draw($this->getPlayer());
+            $round->getAreas()->draw($actor);
         }
     }
 
     function leave(Round $round) {
         // do nothing
     }
+    //endregion
 }

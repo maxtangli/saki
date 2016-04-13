@@ -4,6 +4,7 @@ use Saki\Game\Phase;
 use Saki\Game\PrevailingStatus;
 use Saki\Game\PrevailingWind;
 use Saki\Game\Round;
+use Saki\Game\SeatWind;
 use Saki\Meld\MeldList;
 use Saki\Tile\Tile;
 use Saki\Win\WinSubTarget;
@@ -62,7 +63,7 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
                 . "\nSubTarget   : currentSeatWind[%s], targetSeatWind[%s],%s\n",
                 $yakuTestData,
                 $yaku,
-                $subTarget->getCurrentPlayer()->getArea()->getSeatWind()->getWindTile(),
+                $subTarget->getAreas()->getCurrentSeatWind()->getWindTile(),
                 $subTarget->getSeatWindTile(),
                 'isPrivatePhase:' . var_export($subTarget->isPrivatePhase(), true)
             )
@@ -411,7 +412,7 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         // S discard, E may win
         $pro->process('discard S S:s-1m:1m');
 
-        $yakuList = $r->getWinResult($r->getPlayerList()[0])->getYakuList()->toYakuList();
+        $yakuList = $r->getWinResult(SeatWind::createEast())->getYakuList()->toYakuList();
 
         $this->assertContains(ReachYaku::create(), $yakuList, $yakuList);
     }
@@ -425,7 +426,7 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         // S discard, E may win
         $pro->process('discard S S:s-1m:1m');
 
-        $yakuList = $r->getWinResult($r->getPlayerList()[0])->getYakuList()->toYakuList();
+        $yakuList = $r->getWinResult(SeatWind::createEast())->getYakuList()->toYakuList();
 
         $this->assertNotContains(ReachYaku::create(), $yakuList, $yakuList);
         $this->assertContains(DoubleReachYaku::create(), $yakuList, $yakuList);
@@ -441,11 +442,11 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         $pro->process('discard N N:s-E:E; passAll');
 
         $pro->process('discard E E:s-E:E; mockNextDraw 1m; passAll');
-        $playerS = $r->getPlayerList()->getSeatWindTilePlayer(Tile::fromString('S'));
-        $this->assertEquals(Tile::fromString('1m'), $playerS->getArea()->getHand()->getTarget()->getTile());
+        $areaS = $r->getAreas()->getArea(SeatWind::createSouth());
+        $this->assertEquals(Tile::fromString('1m'), $areaS->getHand()->getTarget()->getTile());
 
         // S winBySelf FirstTurnWin
-        $yakuList = $r->getWinResult($r->getAreas()->tempGetCurrentPlayer())->getYakuList()->toYakuList();
+        $yakuList = $r->getWinResult($r->getAreas()->getCurrentSeatWind())->getYakuList()->toYakuList();
         $this->assertContains(FirstTurnWinYaku::create(), $yakuList, $yakuList);
     }
 
@@ -454,7 +455,7 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         $pro = $r->getProcessor();
 
         $pro->process('mockNextReplace 5m; concealedKong E E:s-123s456s789s7777m5m:7m');
-        $yakuList = $r->getWinResult($r->getAreas()->tempGetCurrentPlayer())->getYakuList()->toYakuList();
+        $yakuList = $r->getWinResult($r->getAreas()->getCurrentSeatWind())->getYakuList()->toYakuList();
         $this->assertContains(KingSTileWinYaku::create(), $yakuList, $yakuList);
     }
 
@@ -468,13 +469,13 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
             'discard E E:s-1m:1m',
             'mockHand S 11m; pong S; plusKong S S:s-1m:1m'
         );
-        $playerW = $r->getPlayerList()->getSeatWindTilePlayer(Tile::fromString('W'));
+        $areaW = $r->getAreas()->getArea(SeatWind::createWest());
 
         // target tile changed
-        $this->assertEquals(Tile::fromString('1m'), $playerW->getArea()->getHand()->getTarget()->getTile());
+        $this->assertEquals(Tile::fromString('1m'), $areaW->getHand()->getTarget()->getTile());
 
         // robAQuad exist
-        $yakuList = $r->getWinResult($playerW)->getYakuList()->toYakuList();
+        $yakuList = $r->getWinResult(SeatWind::createWest())->getYakuList()->toYakuList();
         $this->assertContains(RobbingAQuadYaku::create(), $yakuList, $yakuList);
     }
 
@@ -492,13 +493,12 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         $pro->process('skip 4; mockDeadWall EEEE1919293949s 5 false; mockHand E 222789s789m12345m');
 
         // rely other yakus
-        $playerE = $r->getPlayerList()->getSeatWindTilePlayer(Tile::fromString('E'));
-        $yakuList = $r->getWinResult($playerE)->getYakuList()->toYakuList();
+        $yakuList = $r->getWinResult(SeatWind::createEast())->getYakuList()->toYakuList();
         $this->assertEmpty($yakuList);
 
         // fan count
         $pro->process('mockHand E 222789s789m12355m');
-        $yakuItemList = $r->getWinResult($playerE)->getYakuList();
+        $yakuItemList = $r->getWinResult(SeatWind::createEast())->getYakuList();
         $yakuList = $yakuItemList->toYakuList();
         $this->assertContains(DoraYaku::create(), $yakuList, $yakuList);
         $expectFan = 1 + 6; // selfDraw + 6 dora
@@ -511,13 +511,12 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         $pro->process('skip 4; mockDeadWall EEEE9191929394s 5 true; mockHand E 222789s789m12345m');
 
         // rely other yakus
-        $playerE = $r->getPlayerList()->getSeatWindTilePlayer(Tile::fromString('E'));
-        $yakuList = $r->getWinResult($playerE)->getYakuList()->toYakuList();
+        $yakuList = $r->getWinResult(SeatWind::createEast())->getYakuList()->toYakuList();
         $this->assertEmpty($yakuList);
 
         // fan count
         $pro->process('mockHand E 222789s789m12355m');
-        $yakuItemList = $r->getWinResult($playerE)->getYakuList();
+        $yakuItemList = $r->getWinResult(SeatWind::createEast())->getYakuList();
         $yakuList = $yakuItemList->toYakuList();
         $this->assertContains(UraDoraYaku::create(), $yakuList, $yakuList);
         $expectFan = 1 + 6; // selfDraw + 6 uraDora
@@ -530,13 +529,12 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         $pro->process('skip 4; mockDeadWall EEEE9999999999s 1 false; mockHand E 222789s789m12340m');
 
         // rely other yakus
-        $playerE = $r->getPlayerList()->getSeatWindTilePlayer(Tile::fromString('E'));
-        $yakuList = $r->getWinResult($playerE)->getYakuList()->toYakuList();
+        $yakuList = $r->getWinResult(SeatWind::createEast())->getYakuList()->toYakuList();
         $this->assertEmpty($yakuList);
 
         // fan count
         $pro->process('mockHand E 222789s789m12300m');
-        $yakuItemList = $r->getWinResult($playerE)->getYakuList();
+        $yakuItemList = $r->getWinResult(SeatWind::createEast())->getYakuList();
         $yakuList = $yakuItemList->toYakuList();
         $this->assertContains(RedDoraYaku::create(), $yakuList, $yakuList);
         $expectFan = 3; // selfDraw + 6 uraDora
@@ -559,7 +557,7 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
 
 /**
  * Convenient adaptor for write yaku test cases.
- * tobe removed
+ * todo remove
  * goal
  * - YakuTestCase: RoundDebugSetData RoundDebugSkipToData targetPlayer yaku isExist getRound
  */
@@ -567,61 +565,59 @@ class YakuTestData {
     private static $r;
 
     static function getInitedRound(PrevailingStatus $rebugResetData = null) {
-        if (!self::$r) {
-            self::$r = new Round(); // for 10 test cases, 1.2s => 0.2s which is 6x faster
-        }
-        $r = self::$r;
-        $r->debugReset($rebugResetData ?? PrevailingStatus::createFirst());
-        return $r;
+        self::$r = self::$r ?? new Round();
+        self::$r->debugInit($rebugResetData ?? PrevailingStatus::createFirst());
+        return self::$r;
     }
 
     private $handMeldList;
     private $declareMeldList;
     private $targetTile;
     private $currentSeatWind;
-    private $targetSeatWind;
+    private $actorSeatWind;
 
-    function __construct(string $handMeldListString, string $declareMeldListString = null, string $targetTileString = null,
-                         string $currentSeatWindString = null, string $targetSeatWindString = null, string $targetPrevailingWindString = null) {
+    function __construct(string $handMeldListString, string $declareString = null, string $targetTileString = null,
+                         string $currentString = null, string $actorString = null, string $prevailingWindString = null) {
         $this->handMeldList = MeldList::fromString($handMeldListString)->toConcealed(true);
-        $this->declareMeldList = MeldList::fromString($declareMeldListString !== null ? $declareMeldListString : "");
+        $this->declareMeldList = MeldList::fromString($declareString !== null ? $declareString : "");
         $this->targetTile = $targetTileString !== null ? Tile::fromString($targetTileString) : $this->handMeldList[0][0];
 
-        $this->currentSeatWind = Tile::fromString($currentSeatWindString ?? 'E');
-        $this->targetSeatWind = $targetSeatWindString !== null ? Tile::fromString($targetSeatWindString) : $this->currentSeatWind;
-
-        $prevailingWind = PrevailingWind::fromString($targetPrevailingWindString ?? 'E');
+        $this->currentSeatWind = SeatWind::fromString($currentString ?? 'E');
+        $this->actorSeatWind = $actorString !== null ? SeatWind::fromString($actorString) : $this->currentSeatWind;
+        
+        $prevailingWind = PrevailingWind::fromString($prevailingWindString ?? 'E');
         $this->roundDebugResetData = new PrevailingStatus($prevailingWind, 1, 0);
     }
 
     function __toString() {
         return sprintf('handMeldList[%s], declaredMeldList[%s], currentSeatWind[%s], targetSeatWind[%s]'
-            , $this->handMeldList, $this->declareMeldList, $this->currentSeatWind, $this->targetSeatWind);
+            , $this->handMeldList, $this->declareMeldList, $this->currentSeatWind, $this->actorSeatWind);
     }
 
     function toWinSubTarget() {
         $r = self::getInitedRound($this->roundDebugResetData);
 
         // set phase
-        $currentPlayer = $r->getPlayerList()->getSeatWindTilePlayer($this->currentSeatWind);
-        $actPlayer = $r->getPlayerList()->getSeatWindTilePlayer($this->targetSeatWind);
-        $isPrivatePhase = ($currentPlayer === $actPlayer);
+        $currentSeatWind = $this->currentSeatWind;
+        $actorSeatWind = $this->actorSeatWind;
+        $isPrivate = $currentSeatWind == $actorSeatWind;
 
         // set tiles
         $handMeldList = $this->handMeldList;
         $targetTile = $this->targetTile;
         $areas = $r->getAreas();
 
-        $rPhase = $isPrivatePhase ? Phase::getPrivateInstance() : Phase::getPublicInstance();
-        $r->debugSkipTo($currentPlayer, $rPhase, null, null, $targetTile);
-        if ($isPrivatePhase) { // target tile not set
+        $rPhase = $isPrivate ? Phase::createPrivate() : Phase::createPublic();
+        $r->debugSkipTo($currentSeatWind, $rPhase, null, null, $targetTile);
+        $actorArea = $areas->getArea($actorSeatWind);
+        if ($isPrivate) { // target tile not set
             $private = $handMeldList->toTileList();
-            $areas->debugSetPrivate($actPlayer, $private, $this->declareMeldList, $targetTile);
+            $areas->debugSetPrivate($actorArea->getSeatWind(), $private, $this->declareMeldList, $targetTile);
         } else { // targetTile already set by debugSkipTo
             $public = $handMeldList->toTileList()->remove($targetTile);
-            $actPlayer->getArea()->debugSet($public, $this->declareMeldList);
+            $actorArea->debugSet($public, $this->declareMeldList);
         }
 
-        return new WinSubTarget($this->handMeldList, $actPlayer, $r);
+        return new WinSubTarget($this->handMeldList, $actorSeatWind, $r);
     }
 }

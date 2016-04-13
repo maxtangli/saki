@@ -4,6 +4,9 @@ namespace Saki\Phase;
 use Saki\Game\Phase;
 use Saki\Game\Round;
 
+/**
+ * @package Saki\Phase
+ */
 abstract class PhaseState {
     private $customNextState;
 

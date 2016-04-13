@@ -46,44 +46,46 @@ class Round {
 
         $this->phaseState = new NullPhaseState();
 
-        // initial
+        // to private phase
         $this->toNextPhase();
         $this->toNextPhase(); // todo better way?
     }
 
-    function reset(bool $keepDealer) {
-        $currentDealer = $this->getPlayerList()->getEastPlayer();
-        $nextDealer = $keepDealer ? $currentDealer : $this->getAreas()->tempGetOffsetPlayer(1);
+    function roll(bool $keepDealer) {
+        // game variable
+        $this->prevailingCurrent = $this->prevailingCurrent->toRolled($keepDealer);
 
-        $this->prevailingCurrent = $this->prevailingCurrent->toReset($keepDealer);
-
-        $nextDealerSeatWind = new SeatWind($nextDealer->getArea()->getSeatWind()->getWindTile());
-        $this->areas->reset($nextDealerSeatWind);
+        // round variable
+        $this->areas->roll($keepDealer);
 
         $this->phaseState = new NullPhaseState();
+
+        // to private phase
         $this->toNextPhase();
         $this->toNextPhase(); // todo better way?
     }
 
-    function debugReset(PrevailingStatus $PrevailingStatus) {
-        $this->prevailingCurrent = $this->prevailingCurrent->toDebugReset($PrevailingStatus);
+    function debugInit(PrevailingStatus $PrevailingStatus) {
+        // game variable
+        $this->prevailingCurrent = $this->prevailingCurrent->toDebugInited($PrevailingStatus);
 
-        $nextDealer = $this->getPlayerList()->getPlayerByInitial(
+        // round variable
+        $nextDealerSeatWind = $this->getAreas()->getAreaByInitial(
             $PrevailingStatus->getInitialSeatWindOfDealer()
-        );
-
-        $nextDealerSeatWind = new SeatWind($nextDealer->getArea()->getSeatWind()->getWindTile());
-        $this->areas->reset($nextDealerSeatWind);
+        )->getPlayer()->getInitialSeatWind();
+        $this->areas->debugInit($nextDealerSeatWind); // todo wrong, score/seatWindTurn not inited. should use Areas.debugInit
 
         $this->phaseState = new NullPhaseState();
+
+        // to private phase
         $this->toNextPhase();
         $this->toNextPhase(); // todo better way?
     }
 
     // todo simplify
-    function debugSkipTo(Player $actualCurrentPlayer, Phase $phase = null, $circleCount = null,
+    function debugSkipTo(SeatWind $goalCurrentSeatWind, Phase $phase = null, $circleCount = null,
                          Tile $mockDiscardTile = null) {
-        if ($this->getAreas()->getCurrentTurn()->getCircleCount() != 1) {
+        if ($this->getAreas()->getTurn()->getCircleCount() != 1) {
             throw new \LogicException('Not implemented.');
         }
 
@@ -92,7 +94,7 @@ class Round {
             throw new \InvalidArgumentException();
         }
 
-        $actualPhase = $phase ?? Phase::getPrivateInstance();
+        $actualPhase = $phase ?? Phase::createPrivate();
         $validPhase = $actualPhase->isPrivateOrPublic();
         if (!$validPhase) {
             throw new \InvalidArgumentException();
@@ -110,12 +112,11 @@ class Round {
             throw new \InvalidArgumentException('Not implemented: consider FourWindDiscardedDraw issue.');
         }
 
-        $isTargetTurn = function () use ($actualCurrentPlayer, $actualPhase) {
+        $isTargetTurn = function () use ($goalCurrentSeatWind, $actualPhase) {
             $currentPhaseState = $this->getPhaseState();
             $currentPhase = $currentPhaseState->getPhase();
-            $currentPlayer = $this->getAreas()->tempGetCurrentPlayer();
-
-            $isTargetTurn = ($currentPlayer == $actualCurrentPlayer) && ($currentPhase == $actualPhase);
+            $currentSeatWind = $this->getAreas()->getCurrentSeatWind();
+            $isTargetTurn = ($currentSeatWind == $goalCurrentSeatWind) && ($currentPhase == $actualPhase);
             $isGameOver = $currentPhase->isOver() && $currentPhaseState->isGameOver($this);
             return $isGameOver || $isTargetTurn;
         };
@@ -143,9 +144,9 @@ class Round {
         return $this->winAnalyzer;
     }
 
-    function getWinResult(Player $player) {
+    function getWinResult(SeatWind $actor) {
         // WinTarget will assert valid player
-        return $this->getWinAnalyzer()->analyzeTarget(new WinTarget($player, $this));
+        return $this->getWinAnalyzer()->analyzeTarget(new WinTarget($actor, $this));
     }
 
     function getPrevailingCurrent() {
@@ -189,8 +190,8 @@ class Round {
             throw new \InvalidArgumentException('Game is over.');
         }
 
-        $keepDealer = $this->getPhaseState()->getRoundResult()->isKeepDealer();
-        $this->reset($keepDealer);
+        $keepDealer = $this->getPhaseState()->getResult()->isKeepDealer();
+        $this->roll($keepDealer);
     }
 
     function getProcessor() {

@@ -13,6 +13,7 @@ use Saki\Command\PrivateCommand\DiscardCommand;
 use Saki\Command\PrivateCommand\WinBySelfCommand;
 use Saki\Command\PublicCommand\WinByOtherCommand;
 use Saki\Game\Round;
+use Saki\Game\SeatWind;
 use Saki\Tile\Tile;
 
 class HelloCommand extends Command {
@@ -20,7 +21,7 @@ class HelloCommand extends Command {
         return [SeatWindParamDeclaration::class, TileParamDeclaration::class];
     }
 
-    function __construct(CommandContext $context, Tile $playerSeatWind, Tile $tile) {
+    function __construct(CommandContext $context, SeatWind $playerSeatWind, Tile $tile) {
         parent::__construct($context, [$playerSeatWind, $tile]);
     }
 
@@ -38,11 +39,11 @@ class HelloCommand extends Command {
         return $this->tile;
     }
 
-    function executable() {
+    protected function executableImpl(CommandContext $context) {
         return true;
     }
 
-    function executeImpl() {
+    protected function executeImpl(CommandContext $context) {
         return 'hello';
     }
 }

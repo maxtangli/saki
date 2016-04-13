@@ -1,35 +1,15 @@
 <?php
 namespace Saki\Command;
 
-use Saki\Game\SeatWind;
-
 abstract class PlayerCommand extends Command {
     // todo constructor validate?
-    function getPhase() {
-        return $this->getContext()->getRound()->getPhaseState()->getPhase();
-    }
-
     function getActor() {
-        return new SeatWind($this->getParam(0));
-    }
-
-    /**
-     * @return Tile
-     */
-    function getActSeatWindTile() { // todo remove
-        return $this->getActor()->getWindTile();
+//        return new SeatWind($this->getParam(0));
+        return $this->getParam(0);
     }
 
     function getActPlayer() { // todo remove
-        return $this->getContext()->getRound()->getPlayerList()->getSeatWindTilePlayer($this->getActSeatWindTile());
-    }
-
-    function getCurrentPlayer() { // todo remove
-        return $this->getContext()->getRound()->getAreas()->tempGetCurrentPlayer();
-    }
-
-    function isCurrentPlayer() { // todo remove
-        return $this->getActPlayer() == $this->getCurrentPlayer();
+        return $this->getContext()->getActorArea()->getPlayer();
     }
 
     //region override Command
@@ -39,8 +19,10 @@ abstract class PlayerCommand extends Command {
         return $context;
     }
 
-    function executable() {
-        return $this->matchPhase() && $this->matchActor() && $this->matchOther();
+    protected function executableImpl(CommandContext $context) {
+        return $this->matchPhase($context)
+        && $this->matchActor($context)
+        && $this->matchOther($context);
     }
 
     function execute() {
@@ -50,10 +32,10 @@ abstract class PlayerCommand extends Command {
     //endregion
 
     //region subclass hooks
-    abstract function matchPhase();
+    abstract protected function matchPhase(CommandContext $context);
 
-    abstract function matchActor();
+    abstract protected function matchActor(CommandContext $context);
 
-    abstract function matchOther();
+    abstract protected function matchOther(CommandContext $context);
     //endregion
 }

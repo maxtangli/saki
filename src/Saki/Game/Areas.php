@@ -17,15 +17,13 @@ use Saki\Util\Utils;
  * @package Saki\Game
  */
 class Areas {
-    // temp
-    private $playerList; // todo remove
     // variable
     /**
      * An ArrayList of player count Area, order by ascend initial SeatWind.
      * Design note: Areas not implement as ArrayList since Area's order varies by Round.
      * @var ArrayList
      */
-    private $areaList;
+    private $areaList; // todo lock
     private $reachPoints;
     // round variable
     private $currentTurn;
@@ -37,12 +35,11 @@ class Areas {
     function __construct(Wall $wall, PlayerList $playerList) {
         // immutable
         $this->areaList = new ArrayList();
-        $this->playerList = $playerList;
         $playerList->walk(function (Player $player) { // todo remove PlayerList in Areas
-            $getTarget = function () use ($player) {
-                return $this->getTarget($player);
+            $getTarget = function (SeatWind $seatWind) {
+                return $this->getTarget($seatWind);
             };
-            $area = new Area($getTarget, $player->getInitialSeatWind(), $player->getInitialPoint());
+            $area = new Area($getTarget, $player);
             $player->setArea($area);
             $this->areaList->insertLast($area);
         });
@@ -58,10 +55,13 @@ class Areas {
         $this->declareHistory = new DeclareHistory();
     }
 
-    function reset(SeatWind $nextDealer) {
+    /**
+     * @param bool $keepDealer
+     */
+    function roll(bool $keepDealer) {
         // variable
-        $this->areaList->walk(function (Area $area) use ($nextDealer) {
-            $area->reset($area->getSeatWind()->toNextSelf($nextDealer));
+        $this->areaList->walk(function (Area $area) use ($keepDealer) {
+            $area->roll($area->getSeatWind()->toRolled($keepDealer));
         });
         // $this->reachPoints not changed
 
@@ -73,15 +73,26 @@ class Areas {
         $this->declareHistory->reset();
     }
 
-    /**
-     * used in YakuTestData
-     * todo move into Hand logic?
-     * @param Player $player
-     * @param TileList $private
-     * @param MeldList|null $declare Use current if null.
-     * @param Tile|null $targetTile
-     */
-    function debugSetPrivate(Player $player, TileList $private,
+    function debugInit(SeatWind $nextDealerInitialSeatWind) {
+        // variable
+        $nextDealerArea = $this->getAreaByInitial($nextDealerInitialSeatWind);
+        $nextDealerSeatWind = $nextDealerArea->getSeatWind();
+        $this->areaList->walk(function (Area $area) use ($nextDealerSeatWind) {
+            $area->debugInit($area->getSeatWind()->toNextSelf($nextDealerSeatWind));
+        });
+        $this->reachPoints = 0;
+
+        // round variable
+        $this->currentTurn = Turn::createFirst();
+        $this->wall->reset(true);
+        $this->target = Target::createNull();
+        $this->openHistory->reset();
+        $this->declareHistory->reset();
+    }
+
+    // todo move into Hand logic?
+    // $declare Use current if null.
+    function debugSetPrivate(SeatWind $actor, TileList $private,
                              MeldList $declare = null, Tile $targetTile = null) {
         $validPrivate = $private->getHandSize()->isPrivate();
         if (!$validPrivate) {
@@ -93,26 +104,28 @@ class Areas {
             throw new \InvalidArgumentException();
         }
 
+        $area = $this->getArea($actor);
+
         $currentTargetTile = $this->target->getTile();
         $actualTargetTile = $targetTile ??
             ($private->valueExist($currentTargetTile) ? $currentTargetTile : $private->getLast());
         $actualPublic = $private->getCopy()->remove($actualTargetTile);
-        $actualDeclare = $declare ?? $player->getArea()->getHand()->getDeclare();
+        $actualDeclare = $declare ?? $area->getHand()->getDeclare();
 
-        $player->getArea()->debugSet($actualPublic, $actualDeclare);
-        $this->setTargetData($this->target->toSetValue($actualTargetTile));
+        $area->debugSet($actualPublic, $actualDeclare);
+        $this->setTarget($this->target->toSetValue($actualTargetTile));
     }
 
     // todo move into Hand logic?
     // Used in: MockHandCommand, TileParamDeclaration
-    function debugMockHand(Player $player, TileList $replace) {
+    function debugMockHand(SeatWind $actor, TileList $replace) {
         if ($replace->count() == 14) {
-            $this->debugSetPrivate($player, $replace);
+            $this->debugSetPrivate($actor, $replace);
             return;
         }
 
         $replaceIndexes = range(0, $replace->count() - 1);
-        $area = $player->getArea();
+        $area = $this->getArea($actor);
         $hand = $area->getHand();
         $public = $hand->getPublic()->getCopy()
             ->replaceAt($replaceIndexes, $replace->toArray());
@@ -121,14 +134,16 @@ class Areas {
         $area->debugSet($public, $declare);
     }
 
-    function tempGetCurrentPlayer() {
-        return $this->playerList->getPlayer($this->getCurrentTurn()->getSeatWind());
-    }
-
-    function tempGetOffsetPlayer(int $offset) {
-        $currentSeatWind = $this->getCurrentTurn()->getSeatWind();
-        $offsetSeatWind = $currentSeatWind->toNext($offset);
-        return $this->playerList->getPlayer($offsetSeatWind);
+    /**
+     * @return PointFacade
+     */
+    function getPointFacade() {
+        $seatWindList = SeatWind::createList($this->areaList->count());
+        $items = $seatWindList->select(function (SeatWind $seatWind) {
+            $point = $this->getArea($seatWind)->getPoint();
+            return new PointFacadeItem($seatWind, $point);
+        })->toArray();
+        return new PointFacade($items);
     }
 
     /**
@@ -142,14 +157,27 @@ class Areas {
     }
 
     /**
+     * @param SeatWind $initialSeatWind
+     * @return Area
+     */
+    function getAreaByInitial(SeatWind $initialSeatWind) {
+        return $this->areaList->getSingle(function (Area $area) use ($initialSeatWind) {
+            return $area->getPlayer()->getInitialSeatWind() == $initialSeatWind;
+        });
+    }
+
+    /**
+     * @return Area
+     */
+    function getDealerArea() {
+        return $this->getArea(SeatWind::createEast());
+    }
+
+    /**
      * @return Area
      */
     function getCurrentArea() {
-        return $this->getArea($this->getCurrentTurn()->getSeatWind());
-    }
-
-    function getDealerArea() {
-        return $this->getArea(SeatWind::createEast());
+        return $this->getArea($this->getCurrentSeatWind());
     }
 
     /**
@@ -169,31 +197,43 @@ class Areas {
     /**
      * @return Turn
      */
-    function getCurrentTurn() {
+    function getTurn() {
         return $this->currentTurn;
     }
 
     /**
+     * @return SeatWind
+     */
+    function getCurrentSeatWind() {
+        return $this->getTurn()->getSeatWind();
+    }
+
+    /**
+     * Roll to $seatWind and handle CircleCount update if $seatWind is not current.
+     * Do nothing otherwise.
      * @param SeatWind $seatWind
      */
     function toSeatWind(SeatWind $seatWind) {
         $this->currentTurn = $this->currentTurn->toSeatWind($seatWind);
     }
 
+    /**
+     * @return Wall
+     */
     function getWall() {
         return $this->wall;
     }
 
-    protected function getTarget(Player $player) {
+    protected function getTarget(SeatWind $seatWind) {
         $seeTarget = $this->target->exist()
-            && $this->target->isOwner($player->getArea()->getSeatWind());
+            && $this->target->isOwner($seatWind);
         return $seeTarget ? $this->target : Target::createNull();
     }
 
     /**
      * @param Target $target
      */
-    protected function setTargetData(Target $target) {
+    protected function setTarget(Target $target) {
         $this->target = $target;
     }
 
@@ -209,7 +249,7 @@ class Areas {
      * @param bool $isDiscard
      */
     protected function recordOpen(Tile $tile, bool $isDiscard) {
-        $this->openHistory->record(new OpenRecord($this->getCurrentTurn(), $tile, $isDiscard));
+        $this->openHistory->record(new OpenRecord($this->getTurn(), $tile, $isDiscard));
     }
 
     function getDeclareHistory() {
@@ -217,75 +257,66 @@ class Areas {
     }
 
     protected function recordDeclare() {
-        $this->declareHistory->recordDeclare($this->getCurrentTurn());
+        $this->declareHistory->recordDeclare($this->getTurn());
     }
 
     function getOutsideRemainTileAmount(Tile $tile) { // todo move
-        $allPlayerDiscard = $this->playerList->getAggregated(TileList::fromString(''), function (TileList $l, Player $player) {
-            return $l->insertLast($player->getArea()->getDiscard()->toArray());
+        $allDiscarded = (new TileList())->fromSelectMany($this->areaList, function (Area $area) {
+            return $area->getDiscard()->toArray();
         });
 
         $totalCount = $this->getWall()->getTileSet()->getCount(Utils::toPredicate($tile));
-        $discardCount = $allPlayerDiscard->getCount(Utils::toPredicate($tile));
+        $discardCount = $allDiscarded->getCount(Utils::toPredicate($tile));
         $remainCount = $totalCount - $discardCount;
         return max(0, $remainCount); // note: in tests $remainCount may be negative because of mocking.
     }
 
-    function isFirstTurnWin(Player $targetPlayer) { // todo move
-        $reachStatus = $targetPlayer->getArea()->getReachStatus();
-        if (!$reachStatus->isReach()) {
+    function isFirstTurnWin(SeatWind $actor) { // todo move
+        $reachStatus = $this->getArea($actor)->getReachStatus();
+        if (!$reachStatus->isFirstTurn($this->getTurn())) {
             return false;
         }
 
-        $reachTurn = $reachStatus->getReachTurn();
-        $reachNextTurn = new Turn(
-            $reachTurn->getCircleCount() + 1,
-            $targetPlayer->getArea()->getSeatWind()
-        );
-        $currentTurn = $this->getCurrentTurn();
-        $isSameOrNextCircleCount = $currentTurn->isBeforeOrSame($reachNextTurn);
-
-        $noDeclareSinceReach = !$this->getDeclareHistory()->hasDeclare($reachTurn);
-        return $isSameOrNextCircleCount && $noDeclareSinceReach;
+        $noDeclareSinceReach = !$this->getDeclareHistory()
+            ->hasDeclare($reachStatus->getReachTurn());
+        return $noDeclareSinceReach;
     }
 
     function drawInitForAll() {
-        // each player draw initial tiles, notice NOT to trigger turn changes by avoid calling PlayerList->toPlayer()
+        // notice do NOT trigger turn changes
         $drawTileCounts = [4, 4, 4, 1];
         foreach ($drawTileCounts as $drawTileCount) {
-            foreach ($this->playerList as $player) {
-                /** @var Player $player */
-                $player = $player;
+            $this->areaList->walk(function (Area $area) use ($drawTileCount) {
                 $newTiles = $this->getWall()->drawInit($drawTileCount);
-                $player->getArea()->drawInit($newTiles);
-            }
+                $area->drawInit($newTiles);
+            });
         }
-        // no target until now
+        // no target
     }
 
-    function draw(Player $player) {
+    function draw(SeatWind $actor) {
         $newTile = $this->getWall()->draw();
-        $player->getArea()->draw($newTile);
+        $this->getArea($actor)->draw($newTile);
 
-        $this->setTargetData(
-            new Target($newTile, TargetType::create(TargetType::DRAW), $player->getArea()->getSeatWind())
+        $this->setTarget(
+            new Target($newTile, TargetType::create(TargetType::DRAW), $actor)
         );
     }
 
-    function drawReplacement(Player $player) {
+    function drawReplacement(SeatWind $actor) {
         $newTile = $this->getWall()->drawReplacement();
-        $player->getArea()->draw($newTile);
+        $this->getArea($actor)->draw($newTile);
 
-        $this->setTargetData(
-            new Target($newTile, TargetType::create(TargetType::REPLACEMENT), $player->getArea()->getSeatWind())
+        $this->setTarget(
+            new Target($newTile, TargetType::create(TargetType::REPLACEMENT), $actor)
         );
     }
 
-    function discard(Player $player, Tile $selfTile) {
-        $player->getArea()->discard($selfTile);
+    function discard(SeatWind $actor, Tile $selfTile) {
+        $this->getArea($actor)->discard($selfTile);
 
-        $this->setTargetData(
-            new Target($selfTile, TargetType::create(TargetType::DISCARD), $player->getArea()->getSeatWind())
+        $this->setTarget(
+            new Target($selfTile, TargetType::create(TargetType::DISCARD), $actor)
         );
 
         $this->recordOpen($selfTile, true);
@@ -293,10 +324,10 @@ class Areas {
 
     /**
      * WARNING: assume some conditions validated by caller
-     * @param Player $player
+     * @param SeatWind $actor
      * @param Tile $selfTile
      */
-    function reach(Player $player, Tile $selfTile) {
+    function reach(SeatWind $actor, Tile $selfTile) {
         /**
          * https://ja.wikipedia.org/wiki/%E7%AB%8B%E7%9B%B4
          * 条件
@@ -309,17 +340,19 @@ class Areas {
          * - * 4人全員が立直をかけた場合、四家立直として流局となる（四家立直による途中流局を認めないルールもあり、その場合は続行される）。
          */
 
-        $notReachYet = !$player->getArea()->getReachStatus()->isReach();
+        $area = $this->getArea($actor);
+
+        $notReachYet = !$area->getReachStatus()->isReach();
         if (!$notReachYet) { // Area
             throw new \InvalidArgumentException('Reach condition violated: not reach yet.');
         }
 
-        $isConcealed = $player->getArea()->getHand()->getDeclare()->count() == 0;
+        $isConcealed = $area->getHand()->getDeclare()->count() == 0;
         if (!$isConcealed) { // Area
             throw new \InvalidArgumentException('Reach condition violated: is isConcealed.');
         }
 
-        $enoughPoint = $player->getArea()->getPoint() >= 1000;
+        $enoughPoint = $area->getPoint() >= 1000;
         if (!$enoughPoint) { // Area
             throw new \InvalidArgumentException('Reach condition violated: at least 1000 point.');
         }
@@ -329,131 +362,93 @@ class Areas {
             throw new \InvalidArgumentException('Reach condition violated: at least 1 draw tile chance.');
         }
 
-        $player->getArea()->discard($selfTile);
-
-        $this->setTargetData(
-            new Target($selfTile, TargetType::create(TargetType::DISCARD), $player->getArea()->getSeatWind())
+        $area->discard($selfTile);
+        $this->setTarget(
+            new Target($selfTile, TargetType::create(TargetType::DISCARD), $area->getSeatWind())
+        );
+        $area->setReachStatus(
+            new ReachStatus($this->getTurn())
         );
 
-        $player->getArea()->setReachStatus(
-            new ReachStatus($this->getCurrentTurn())
-        );
-
-        $player->getArea()->setPoint($player->getArea()->getPoint() - 1000);
+        $area->setPoint($area->getPoint() - 1000);
         $this->setReachPoints($this->getReachPoints() + 1000);
 
         $this->recordOpen($selfTile, true);
     }
 
-    function concealedKong(Player $actPlayer, Tile $selfTile) {
+    function concealedKong(SeatWind $actor, Tile $selfTile) {
         $handTiles = [$selfTile, $selfTile, $selfTile, $selfTile];
-        $actPlayer->getArea()->declareMeld(QuadMeldType::create(), true, $handTiles, null, null);
+        $this->getArea($actor)->declareMeld(QuadMeldType::create(), true, $handTiles, null, null);
 
-        $this->drawReplacement($actPlayer); // set target
+        $this->drawReplacement($actor); // set target
 
         $this->recordDeclare();
     }
 
-    function plusKongBefore(Player $actPlayer, Tile $selfTile) {
-        $target = $actPlayer->getArea()->tempGenKongTargetData($selfTile);
+    function plusKongBefore(SeatWind $actor, Tile $selfTile) {
+        $target = $this->getArea($actor)->tempGenKongTarget($selfTile);
 
-        $this->setTargetData($target);
+        $this->setTarget($target);
     }
 
-    function plusKongAfter(Player $actPlayer, Tile $plusKongBeforeTile) { // todo remove $plusKongBeforeTile
-        $this->setTargetData(
+    function plusKongAfter(SeatWind $actor, Tile $plusKongBeforeTile) { // todo remove $plusKongBeforeTile
+        $this->setTarget(
             $this->target->toSetValue(null, TargetType::create(TargetType::KEEP))
         ); // todo belong to where: here? plusKongCommand? PublicPhaseState?
 
         $declaredMeld = new Meld([$plusKongBeforeTile, $plusKongBeforeTile, $plusKongBeforeTile]);
-        $actPlayer->getArea()->declareMeld(QuadMeldType::create(), null, null, $plusKongBeforeTile, $declaredMeld);
+        $this->getArea($actor)->declareMeld(QuadMeldType::create(), null, null, $plusKongBeforeTile, $declaredMeld);
 
-        $this->drawReplacement($actPlayer); // set target
+        $this->drawReplacement($actor); // set target
 
         $this->recordOpen($plusKongBeforeTile, false);
         $this->recordDeclare();
     }
 
-    function chow(Player $actPlayer, Tile $selfTile1, Tile $selfTile2, Player $targetPlayer) {
-        $this->assertNextPlayer($actPlayer, $targetPlayer);
-        $targetPlayerArea = $targetPlayer->getArea();
-        $actPlayerArea = $actPlayer->getArea();
+    function chow(SeatWind $actor, Tile $selfTile1, Tile $selfTile2) {
+//        $this->assertNextPlayer($player, $targetPlayer);
+        $targetArea = $this->getCurrentArea();
+        $playerArea = $this->getArea($actor);
 
         $handTiles = [$selfTile1, $selfTile2];
-        $targetTile = $targetPlayerArea->getDiscard()->getLast(); // validate
-        $actPlayerArea->declareMeld(RunMeldType::create(), false, $handTiles, $targetTile, null); // validate
-        $targetPlayerArea->removeDiscardLast();
+        $targetTile = $targetArea->getDiscard()->getLast(); // validate
+        $playerArea->declareMeld(RunMeldType::create(), false, $handTiles, $targetTile, null); // validate
+        $targetArea->removeDiscardLast();
 
-        $keepTargetData = $actPlayerArea->tempGenKeepTargetData();
-        $this->setTargetData($keepTargetData);
+        $keepTarget = $playerArea->tempGenKeepTarget();
+        $this->setTarget($keepTarget);
 
         $this->recordDeclare();
     }
 
-    function pong(Player $actPlayer, Player $targetPlayer) {
-        $this->assertDifferentPlayer($actPlayer, $targetPlayer);
-        $targetPlayerArea = $targetPlayer->getArea();
-        $actPlayerArea = $actPlayer->getArea();
+    function pong(SeatWind $actor) {
+//        $this->assertDifferentPlayer($player, $targetPlayer);
+        $targetArea = $this->getCurrentArea();
+        $playerArea = $this->getArea($actor);
 
-        $targetTile = $targetPlayerArea->getDiscard()->getLast(); // validate
+        $targetTile = $targetArea->getDiscard()->getLast(); // validate
         $handTiles = [$targetTile, $targetTile];
-        $actPlayerArea->declareMeld(TripleMeldType::create(), false, $handTiles, $targetTile, null); // validate
-        $targetPlayerArea->removeDiscardLast();
+        $playerArea->declareMeld(TripleMeldType::create(), false, $handTiles, $targetTile, null); // validate
+        $targetArea->removeDiscardLast();
 
-        $keepTargetData = $actPlayerArea->tempGenKeepTargetData();
-        $this->setTargetData($keepTargetData);
+        $keepTarget = $playerArea->tempGenKeepTarget();
+        $this->setTarget($keepTarget);
 
         $this->recordDeclare();
     }
 
-    function bigKong(Player $actPlayer, Player $targetPlayer) {
-        $this->assertDifferentPlayer($actPlayer, $targetPlayer);
-        $targetPlayerArea = $targetPlayer->getArea();
-        $actPlayerArea = $actPlayer->getArea();
+    function bigKong(SeatWind $actor) {
+//        $this->assertDifferentPlayer($player, $targetPlayer);
+        $targetArea = $this->getCurrentArea();
+        $playerArea = $this->getArea($actor);
 
-        $targetTile = $targetPlayerArea->getDiscard()->getLast(); // validate
+        $targetTile = $targetArea->getDiscard()->getLast(); // validate
         $handTiles = [$targetTile, $targetTile, $targetTile];
-        $actPlayerArea->declareMeld(QuadMeldType::create(), false, $handTiles, $targetTile, null); // validate
-        $targetPlayerArea->removeDiscardLast();
+        $playerArea->declareMeld(QuadMeldType::create(), false, $handTiles, $targetTile, null); // validate
+        $targetArea->removeDiscardLast();
 
-        $this->drawReplacement($actPlayer); // set target
-
-        $this->recordDeclare();
-    }
-
-    function smallKong(Player $actPlayer, Player $targetPlayer) {
-        $this->assertDifferentPlayer($actPlayer, $targetPlayer);
-        $currentPlayerArea = $targetPlayer->getArea();
-        $playerArea = $actPlayer->getArea();
-
-        $targetTile = $currentPlayerArea->getDiscard()->getLast(); // validate
-        $declaredMeld = new Meld([$targetTile, $targetTile, $targetTile]);
-        $playerArea->declareMeld(QuadMeldType::create(), false, null, $targetTile, $declaredMeld); // validate
-        $currentPlayerArea->removeDiscardLast();
-
-        $this->drawReplacement($actPlayer); // set target
+        $this->drawReplacement($actor); // set target
 
         $this->recordDeclare();
     }
-
-    protected function assertNextPlayer() {
-    }
-//    protected function assertNextPlayer(Player $nextPlayer, Player $prePlayer) {
-//        list($iNext, $iPre) = $this->playerList->getIndex([$nextPlayer, $prePlayer]);
-//        $valid = ($iNext == ($iPre + 1));
-//        if (!$valid) {
-//            throw new \InvalidArgumentException(
-//                sprintf('[%s] should be next of [%s]', $nextPlayer, $prePlayer)
-//            );
-//        }
-//    }
-
-    protected function assertDifferentPlayer() {
-    }
-//    protected function assertDifferentPlayer(Player $player, Player $otherPlayer) {
-//        $valid = $player != $otherPlayer;
-//        if (!$valid) {
-//            throw new \InvalidArgumentException();
-//        }
-//    }
 }

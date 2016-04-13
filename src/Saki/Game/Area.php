@@ -8,12 +8,13 @@ use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 
 /**
- * A roundly reset area for a player.
+ * A roundly reset area own by a player.
  * @package Saki\Game
  */
 class Area {
     // immutable
     private $getTarget;
+    private $player;
     // game variable
     private $seatWind;
     private $seatWindTurn;
@@ -26,16 +27,16 @@ class Area {
 
     /**
      * @param callable $getTarget
-     * @param SeatWind $seatWind
-     * @param int $initialPoint
+     * @param Player $player
      */
-    function __construct(callable $getTarget, SeatWind $seatWind, int $initialPoint) {
+    function __construct(callable $getTarget, Player $player) {
         // immutable
         $this->getTarget = $getTarget;
+        $this->player = $player;
         // game variable
-        $this->seatWind = $seatWind;
+        $this->seatWind = $player->getInitialSeatWind();
         $this->seatWindTurn = 0;
-        $this->point = $initialPoint;
+        $this->point = $player->getInitialPoint();
         // round variable
         $this->public = new TileList();
         $this->discardLocked = (new TileList())->lock();
@@ -46,12 +47,24 @@ class Area {
     /**
      * @param SeatWind $seatWind
      */
-    function reset(SeatWind $seatWind) {
+    function roll(SeatWind $seatWind) {
         // game variable
         $keepDealer = $this->seatWind->isDealer() && $seatWind->isDealer();
         $this->seatWind = $seatWind;
         $this->seatWindTurn = $keepDealer ? $this->seatWindTurn + 1 : 0;
         // $this->point not change
+        // round variable
+        $this->public->removeAll();
+        $this->discardLocked->unlock()->removeAll()->lock();
+        $this->declare->removeAll();
+        $this->reachStatus = ReachStatus::createNotReach();
+    }
+
+    function debugInit(SeatWind $seatWind) {
+        // game variable
+        $this->seatWind = $seatWind;
+        $this->seatWindTurn = 0;
+        $this->point = $this->getPlayer()->getInitialPoint();
         // round variable
         $this->public->removeAll();
         $this->discardLocked->unlock()->removeAll()->lock();
@@ -72,6 +85,13 @@ class Area {
 
         $this->public->fromSelect($public);
         $this->declare->fromSelect($declare);
+    }
+
+    /**
+     * @return Player
+     */
+    function getPlayer() {
+        return $this->player;
     }
 
     /**
@@ -111,7 +131,7 @@ class Area {
     protected function getTarget() {
         $f = $this->getTarget;
         /** @var Target $target */
-        $target = $f();
+        $target = $f($this->getSeatWind());
 
         if ($target->exist() && !$target->isOwner($this->getSeatWind())) {
             throw new \LogicException();
@@ -177,7 +197,7 @@ class Area {
         $this->discardLocked->unlock()->removeLast()->lock();
     }
 
-    function tempGenKeepTargetData() {
+    function tempGenKeepTarget() {
         $lastTile = $this->public->getLast(); // validate
         $this->public->remove($lastTile);
         return new Target(
@@ -185,7 +205,7 @@ class Area {
         );
     }
 
-    function tempGenKongTargetData(Tile $kongSelfTile) {
+    function tempGenKongTarget(Tile $kongSelfTile) {
         $this->public->fromSelect($this->getPublicPlusTarget()->remove($kongSelfTile)); // validate
         return new Target(
             $kongSelfTile, TargetType::create(TargetType::KONG), $this->getSeatWind()

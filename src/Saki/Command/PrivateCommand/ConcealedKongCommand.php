@@ -5,6 +5,7 @@ use Saki\Command\CommandContext;
 use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\ParamDeclaration\TileParamDeclaration;
 use Saki\Command\PrivateCommand;
+use Saki\Game\SeatWind;
 use Saki\Tile\Tile;
 
 class ConcealedKongCommand extends PrivateCommand {
@@ -12,7 +13,7 @@ class ConcealedKongCommand extends PrivateCommand {
         return [SeatWindParamDeclaration::class, TileParamDeclaration::class];
     }
 
-    function __construct(CommandContext $context, Tile $playerSeatWind, Tile $tile) {
+    function __construct(CommandContext $context, SeatWind $playerSeatWind, Tile $tile) {
         parent::__construct($context, [$playerSeatWind, $tile]);
     }
 
@@ -23,13 +24,13 @@ class ConcealedKongCommand extends PrivateCommand {
         return $this->getParam(1);
     }
 
-    function matchOther() {
+    protected function matchOther(CommandContext $context) {
         return true; // todo
     }
 
-    function executeImpl() {
-        $r = $this->getContext()->getRound();
-        $r->getAreas()->concealedKong($this->getActPlayer(), $this->getTile());
+    protected function executeImpl(CommandContext $context) {
+        $r = $context->getRound();
+        $r->getAreas()->concealedKong($this->getActor(), $this->getTile());
         // stay in private phase
     }
 }

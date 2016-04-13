@@ -1,22 +1,22 @@
 <?php
-namespace Saki\RoundResult;
+namespace Saki\Result;
 
 use Saki\Game\Player;
 
-abstract class RoundResult {
+abstract class Result {
     /**
      * @var Player[]
      */
     private $players;
     private $originPoints;
-    private $roundResultType;
+    private $ResultType;
 
-    function __construct(array $players, RoundResultType $roundResultType) {
+    function __construct(array $players, ResultType $ResultType) {
         if (count($players) != 4) {
-            throw new \InvalidArgumentException();
+            throw new \BadMethodCallException('todo');
         }
         $this->players = $players;
-        $this->roundResultType = $roundResultType;
+        $this->ResultType = $ResultType;
         $this->originPoints = array_map(function (Player $player) {
             return $player->getArea()->getPoint();
         }, $players);
@@ -26,8 +26,8 @@ abstract class RoundResult {
         return $this->players;
     }
 
-    function getRoundResultType() {
-        return $this->roundResultType;
+    function getResultType() {
+        return $this->ResultType;
     }
 
     private function getOriginPoint(Player $player) {

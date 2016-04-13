@@ -19,12 +19,12 @@ class MockNextDrawCommand extends Command {
         return $this->getParam(0);
     }
 
-    function executable() {
+    protected function executableImpl(CommandContext $context) {
         $wall = $this->getContext()->getRound()->getAreas()->getWall();
         return $wall->getRemainTileCount() > 0;
     }
 
-    function executeImpl() {
+    protected function executeImpl(CommandContext $context) {
         $wall = $this->getContext()->getRound()->getAreas()->getWall();
         $wall->debugSetNextDrawTile($this->getMockTile());
     }

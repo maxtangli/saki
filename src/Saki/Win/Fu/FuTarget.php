@@ -44,11 +44,11 @@ class FuTarget {
         return $this->subTarget->isConcealed();
     }
 
-    function getSeatWind() {
+    function getSeatWindTile() {
         return $this->subTarget->getSeatWindTile();
     }
 
-    function getPrevailingWind() {
+    function getPrevailingWindTile() {
         return $this->subTarget->getPrevailingWindTile();
     }
 }

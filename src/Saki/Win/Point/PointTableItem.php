@@ -1,31 +1,53 @@
 <?php
-namespace Saki\RoundResult;
+namespace Saki\Win\Point;
 
+/** todo support 2 or 3 player
+ * @package Saki\Result
+ */
 class PointTableItem {
     private $basePoint;
 
-    function __construct($basePoint) {
+    /**
+     * @param int $basePoint
+     */
+    function __construct(int $basePoint) {
         $this->basePoint = $basePoint;;
     }
 
+    /**
+     * @return int
+     */
     function getBasePoint() {
         return $this->basePoint;
     }
 
-    function getReceivePoint($receiverIsDealer, $winBySelf) {
+    /**
+     * @param bool $receiverIsDealer
+     * @param bool $winBySelf
+     * @return int
+     */
+    function getReceivePoint(bool $receiverIsDealer, bool $winBySelf) {
         if (!$winBySelf) {
             return $this->getPayPoint($receiverIsDealer, $winBySelf, false);
         } else {
             if ($receiverIsDealer) {
                 return 3 * $this->getPayPoint($receiverIsDealer, $winBySelf, false);
             } else {
-                return 2 * $this->getPayPoint($receiverIsDealer, $winBySelf, false) + $this->getPayPoint($receiverIsDealer, $winBySelf, true);
+                return 2 * $this->getPayPoint($receiverIsDealer, $winBySelf, false)
+                + $this->getPayPoint($receiverIsDealer, $winBySelf, true);
             }
         }
     }
 
-    function getPayPoint($receiverIsDealer, $winBySelf, $payerIsDealer) {
-        if ($receiverIsDealer && $payerIsDealer) {
+    /**
+     * @param bool $receiverIsDealer
+     * @param bool $winBySelf
+     * @param bool $payerIsDealer
+     * @return int
+     */
+    function getPayPoint(bool $receiverIsDealer, bool $winBySelf, bool $payerIsDealer) {
+        $valid = !($receiverIsDealer && $payerIsDealer);
+        if (!$valid) {
             throw new \InvalidArgumentException();
         }
 

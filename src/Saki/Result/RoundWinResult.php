@@ -1,12 +1,12 @@
 <?php
-namespace Saki\RoundResult;
+namespace Saki\Result;
 
 use Saki\Game\Player;
 use Saki\Util\ArrayList;
 use Saki\Win\WinResult;
 use Saki\Win\WinState;
 
-class WinRoundResult extends RoundResult {
+class RoundWinResult extends Result {
     // note: createXXX()'s param check is not fully strict since it seems no harm
 
     /**
@@ -15,7 +15,7 @@ class WinRoundResult extends RoundResult {
      * @param WinResult $winResult
      * @param int $accumulatedReachCount
      * @param int $seatWindTurn
-     * @return WinRoundResult
+     * @return RoundWinResult
      */
     static function createWinBySelf(array $players, Player $winPlayer, WinResult $winResult, $accumulatedReachCount, $seatWindTurn) {
         if ($winResult->getWinState() != WinState::create(WinState::WIN_BY_SELF)) {
@@ -25,7 +25,7 @@ class WinRoundResult extends RoundResult {
             return $player != $winPlayer;
         }));
         return new self($players, [$winPlayer], [$winResult], $losePlayers, $accumulatedReachCount, $seatWindTurn,
-            RoundResultType::create(RoundResultType::WIN_BY_SELF));
+            ResultType::create(ResultType::WIN_BY_SELF));
     }
 
     /**
@@ -35,24 +35,24 @@ class WinRoundResult extends RoundResult {
      * @param Player $losePlayer
      * @param int $accumulatedReachCount
      * @param int $seatWindTurn
-     * @return WinRoundResult
+     * @return RoundWinResult
      */
     static function createWinByOther(array $players, Player $winPlayer, WinResult $winResult, Player $losePlayer, $accumulatedReachCount, $seatWindTurn) {
         if ($winResult->getWinState() != WinState::create(WinState::WIN_BY_OTHER)) {
             throw new \InvalidArgumentException();
         }
         return new self($players, [$winPlayer], [$winResult], [$losePlayer], $accumulatedReachCount, $seatWindTurn,
-            RoundResultType::create(RoundResultType::WIN_BY_OTHER));
+            ResultType::create(ResultType::WIN_BY_OTHER));
     }
 
     /**
      * @param Player[] $players
      * @param Player[] $winPlayers
-     * @param WinResult[] $winResults
+     * @param RoundWinResult[] $winResults
      * @param Player $losePlayer
      * @param int $accumulatedReachCount
      * @param int $seatWindTurn
-     * @return WinRoundResult
+     * @return RoundWinResult
      */
     static function createMultiWinByOther(array $players, array $winPlayers, array $winResults, Player $losePlayer, $accumulatedReachCount, $seatWindTurn) {
         foreach ($winResults as $winResult) {
@@ -66,8 +66,8 @@ class WinRoundResult extends RoundResult {
             throw new \InvalidArgumentException();
         }
 
-        $winTypeValue = $winPlayerCount == 2 ? RoundResultType::DOUBLE_WIN_BY_OTHER : RoundResultType::TRIPLE_WIN_BY_OTHER;
-        $winType = RoundResultType::create($winTypeValue);
+        $winTypeValue = $winPlayerCount == 2 ? ResultType::DOUBLE_WIN_BY_OTHER : ResultType::TRIPLE_WIN_BY_OTHER;
+        $winType = ResultType::create($winTypeValue);
 
         return new self($players, $winPlayers, $winResults, [$losePlayer], $accumulatedReachCount, $seatWindTurn, $winType);
     }
@@ -82,13 +82,13 @@ class WinRoundResult extends RoundResult {
     /**
      * @param Player[] $players
      * @param Player[] $winPlayers
-     * @param WinResult[] $winResults
+     * @param RoundWinResult[] $winResults
      * @param Player[] $losePlayers
      * @param int $accumulatedReachCount
      * @param int $seatWindTurn
-     * @param RoundResultType $winType
+     * @param ResultType $winType
      */
-    function __construct(array $players, array $winPlayers, array $winResults, array $losePlayers, $accumulatedReachCount, $seatWindTurn, RoundResultType $winType) {
+    function __construct(array $players, array $winPlayers, array $winResults, array $losePlayers, $accumulatedReachCount, $seatWindTurn, ResultType $winType) {
         if (!$winType->isWin()) {
             throw new \InvalidArgumentException();
         }
@@ -172,7 +172,7 @@ class WinRoundResult extends RoundResult {
     }
 
     function getTableItemDeltaInt(Player $player) {
-        $isWinBySelf = $this->getRoundResultType()->getValue() == RoundResultType::WIN_BY_SELF;
+        $isWinBySelf = $this->getResultType()->getValue() == ResultType::WIN_BY_SELF;
         if ($this->isWinPlayer($player)) {
             $pointItem = $this->getWinAnalyzerResult($player)->getPointItem();
             $receiverIsDealer = $player->getArea()->getSeatWind()->isDealer();

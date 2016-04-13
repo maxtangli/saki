@@ -4,28 +4,24 @@ namespace Saki\Phase;
 use Saki\Game\Phase;
 use Saki\Game\Player;
 use Saki\Game\Round;
-use Saki\RoundResult\RoundResult;
+use Saki\Result\Result;
 
 class OverPhaseState extends PhaseState {
-    private $roundResult;
+    private $Result;
 
-    function __construct(RoundResult $roundResult) {
-        $this->roundResult = $roundResult;
+    function __construct(Result $Result) {
+        $this->Result = $Result;
     }
 
-    function getRoundResult() {
-        return $this->roundResult;
-    }
-
-    function getPhase() {
-        return Phase::getOverInstance();
+    function getResult() {
+        return $this->Result;
     }
 
     function isGameOver(Round $round) {
-        $playerList = $round->getPlayerList();
+        $pointFacade = $round->getAreas()->getPointFacade();
         $prevailingCurrent = $round->getPrevailingCurrent();
 
-        if ($playerList->hasMinusPointPlayer()) {
+        if ($pointFacade->hasMinus()) {
             return true;
         }
 
@@ -37,20 +33,20 @@ class OverPhaseState extends PhaseState {
             return true; // todo right? write detailed rule doc
         } // else isNormalLast or isSuddenDeath
 
-        if ($playerList->areTiledForTop()) {
+        if ($pointFacade->hasTiledTop()) {
             return false;
         }
 
-        $topPlayer = $playerList->getSingleTopPlayer();
-        $isTopPlayerEnoughPoint = $topPlayer->getArea()->getPoint() >= 30000; // todo wrap in rule class
-        if (!$isTopPlayerEnoughPoint) {
+        $topItem = $pointFacade->getSingleTop();
+        $isTopEnoughPoint = $topItem->getPoint() >= 30000; // todo wrap in rule class
+        if (!$isTopEnoughPoint) {
             return false;
         } // else isTopPlayerEnoughPoint
 
-        $result = $round->getPhaseState()->getRoundResult();
-        $keepDealer = $result->isKeepDealer();
-        $dealerIsTopPlayer = $playerList->getEastPlayer() == $topPlayer;
-        return (!$keepDealer || $dealerIsTopPlayer);
+        // todo
+        $isDealerTop = $topItem->getSeatWind()->isDealer();
+        $result = $round->getPhaseState()->getResult();
+        return !($result->isKeepDealer()) || $isDealerTop;
     }
 
     /**
@@ -66,12 +62,17 @@ class OverPhaseState extends PhaseState {
         return $round->getGameData()->getFinalPointStrategy()->getFinalPointItems($target);
     }
 
+    //region PhaseState impl
+    function getPhase() {
+        return Phase::createOver();
+    }
+
     function getDefaultNextState(Round $round) {
         throw new \LogicException('No nextState exists in OverPhaseState.');
     }
 
     function enter(Round $round) {
-        $result = $this->getRoundResult();
+        $result = $this->getResult();
         // modify points
         foreach ($round->getPlayerList() as $player) {
             /** @var Player $player */
@@ -80,7 +81,7 @@ class OverPhaseState extends PhaseState {
             $player->getArea()->setPoint($afterPoint);
         }
         // clear accumulatedReachCount if isWin
-        if ($result->getRoundResultType()->isWin()) {
+        if ($result->getResultType()->isWin()) {
             // todo added to player already or not?
             $round->getAreas()->setReachPoints(0);
         }
@@ -88,4 +89,5 @@ class OverPhaseState extends PhaseState {
 
     function leave(Round $round) {
     }
+    //endregion
 }

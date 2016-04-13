@@ -37,12 +37,13 @@ class DeclareHistory {
     }
 
     /**
-     * @param Turn $fromTurn
+     * @param Turn|null $fromTurn
      * @return bool
      */
-    function hasDeclare(Turn $fromTurn) {
+    function hasDeclare(Turn $fromTurn = null) {
+        $actualFromTurn = $fromTurn ?? Turn::createFirst();
         return $this->list->isEmpty() ?
             false :
-            $fromTurn->isBeforeOrSame($this->list->getLast());
+            $actualFromTurn->isBeforeOrSame($this->list->getLast());
     }
 }

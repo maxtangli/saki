@@ -22,13 +22,29 @@ use Saki\Util\Utils;
 
 /**
  * goal
- * - separate command logic into classes
- * - provide string-style-command to support tests, terminal, replay
+ * - separate command logic into classes.
+ * - provide string-style-command to support tests, terminal, replay.
  *
  * @package Saki\Command
  */
 abstract class Command {
     //region parser
+    /**
+     * @return string
+     */
+    static function getName() {
+        // Saki\Command\DiscardCommand -> discard
+        $cls = get_called_class();
+        $s = substr($cls, strrpos($cls, '\\') + 1);
+        $s = str_replace('Command', '', $s);
+        $s = lcfirst($s);
+        return $s;
+    }
+
+    /**
+     * @param string $line
+     * @return string
+     */
     static function parseName(string $line) {
         $tokens = Utils::explodeSafe(' ', $line);
         if (empty($tokens)) {
@@ -39,6 +55,11 @@ abstract class Command {
         return $name;
     }
 
+    /**
+     * @param CommandContext $context
+     * @param string $line
+     * @return static
+     */
     static function fromString(CommandContext $context, string $line) {
         $name = static::parseName($line);
         if ($name !== static::getName()) {
@@ -73,15 +94,9 @@ abstract class Command {
         return new static(...$objects);
     }
 
-    static function getName() {
-        // Saki\Command\DiscardCommand -> discard
-        $cls = get_called_class();
-        $s = substr($cls, strrpos($cls, '\\') + 1);
-        $s = str_replace('Command', '', $s);
-        $s = lcfirst($s);
-        return $s;
-    }
-
+    /**
+     * @return string
+     */
     function __toString() {
         $tokens = array_map(function ($param) {
             return is_object($param) ? $param->__toString() : $param;
@@ -92,24 +107,31 @@ abstract class Command {
 
     //endregion
 
-    static function getParamDeclarations() {
-        // since abstract static function not allowed
-        throw new \BadMethodCallException('Unimplemented static::getParamDeclarations().');
-    }
-
+    /**
+     * @return bool
+     */
     static function isDebug() {
         $cls = get_called_class();
         $hasDebugToken = strpos($cls, 'Debug') !== false;
         return $hasDebugToken;
     }
 
+    /**
+     * Used in: PublicCommand.matchPhase()
+     * @return bool
+     */
     static function isWinByOther() {
         $cls = get_called_class();
         $hasWinByOtherToken = strpos($cls, 'WinByOther') !== false;
         return $hasWinByOtherToken;
     }
 
-    private $context;
+    static function getParamDeclarations() {
+        // since abstract static function not allowed
+        throw new \BadMethodCallException('Unimplemented static::getParamDeclarations().');
+    }
+
+    private $context; // todo to be or not to be?
     private $params = [];
 
     function __construct(CommandContext $context, array $params = []) {
@@ -135,7 +157,11 @@ abstract class Command {
         return $this->params[$i];
     }
 
-    abstract function executable();
+    function executable() {
+        return $this->executableImpl($this->getContext());
+    }
+
+    abstract protected function executableImpl(CommandContext $context);
 
     function execute() {
         if (!$this->executable()) {
@@ -144,8 +170,8 @@ abstract class Command {
                     , __FUNCTION__, $this->__toString())
             );
         }
-        $this->executeImpl();
+        $this->executeImpl($this->getContext());
     }
 
-    abstract function executeImpl();
+    abstract protected function executeImpl(CommandContext $context);
 }

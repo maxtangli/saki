@@ -70,6 +70,7 @@ class Turn implements Immutable {
     }
 
     /**
+     * Return Turn after rolling to $goalSeatWind.
      * @param SeatWind $goalSeatWind
      * @return $this|Turn
      */
@@ -84,10 +85,24 @@ class Turn implements Immutable {
     }
 
     /**
+     * @return Turn
+     */
+    function toNextCicleOfThis() {
+        return new Turn($this->getCircleCount() + 1, $this->getSeatWind());
+    }
+
+    /**
      * @return int
      */
     function getCircleCount() {
         return $this->circleCount;
+    }
+
+    /**
+     * @return bool
+     */
+    function isFirstCircle() {
+        return $this->getCircleCount() == 1;
     }
 
     /**

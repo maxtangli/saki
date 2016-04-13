@@ -18,10 +18,11 @@ class FuAnalyzerTest extends PHPUnit_Framework_TestCase {
         $handMeldList = MeldList::fromString('123p,CC,(FFF)');
 
         $r = new Round();
-        $player = $r->getAreas()->tempGetCurrentPlayer();
-        $r->getAreas()->debugSetPrivate($player, $hand, $declareMeldList, $targetTile);
+        $current = $r->getAreas()->getCurrentSeatWind();
+        $actor = $current;
+        $r->getAreas()->debugSetPrivate($current, $hand, $declareMeldList, $targetTile);
 
-        $subTarget = new WinSubTarget($handMeldList, $player, $r);
+        $subTarget = new WinSubTarget($handMeldList, $actor, $r);
         $yakuList = new YakuItemList();
         $waitingType = WaitingType::create(WaitingType::ONE_SIDE_RUN_WAITING);
         $target = new FuTarget($subTarget, $yakuList, $waitingType);

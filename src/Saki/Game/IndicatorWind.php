@@ -2,6 +2,7 @@
 namespace Saki\Game;
 
 use Saki\Tile\Tile;
+use Saki\Util\ArrayList;
 use Saki\Util\ComparableIndex;
 use Saki\Util\Immutable;
 
@@ -78,12 +79,22 @@ abstract class IndicatorWind implements Immutable {
         return new static(Tile::fromString('N'));
     }
 
+    /**
+     * @param int $n
+     * @return ArrayList Return an ArrayList of static with $n values start from static::createEast();
+     */
+    static function createList(int $n) {
+        return (new ArrayList(range(1, $n)))->select(function (int $index) {
+            return static::fromIndex($index);
+        });
+    }
+
     private $wind;
 
     /**
      * @param Tile $wind
      */
-    function __construct(Tile $wind) {
+    function __construct(Tile $wind) { // todo multiton pattern
         if (!$wind->isWind()) {
             throw new \InvalidArgumentException();
         }

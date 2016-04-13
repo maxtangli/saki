@@ -42,11 +42,11 @@ class MockDeadWallCommand extends Command {
         return $this->getParam(2);
     }
 
-    function executable() {
+    protected function executableImpl(CommandContext $context) {
         return true;
     }
 
-    function executeImpl() {
+    protected function executeImpl(CommandContext $context) {
         $deadWall = $this->getContext()->getRound()->getAreas()->getWall()->getDeadWall();
         $deadWall->reset($this->getTileList(), $this->getOpenedDoraIndicatorCount(), $this->getUraDoraOpened());
     }

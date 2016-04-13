@@ -5,7 +5,7 @@ use Saki\Command\CommandContext;
 use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\ParamDeclaration\TileListParamDeclaration;
 use Saki\Command\PlayerCommand;
-use Saki\Tile\Tile;
+use Saki\Game\SeatWind;
 use Saki\Tile\TileList;
 
 class MockHandCommand extends PlayerCommand {
@@ -13,7 +13,7 @@ class MockHandCommand extends PlayerCommand {
         return [SeatWindParamDeclaration::class, TileListParamDeclaration::class];
     }
 
-    function __construct(CommandContext $context, Tile $seatWind, TileList $mockTileList) {
+    function __construct(CommandContext $context, SeatWind $seatWind, TileList $mockTileList) {
         parent::__construct($context, [$seatWind, $mockTileList]);
     }
 
@@ -24,18 +24,19 @@ class MockHandCommand extends PlayerCommand {
         return $this->getParam(1);
     }
 
-    function matchPhase() {
-        return $this->getPhase()->isPrivateOrPublic();
+    protected function matchPhase(CommandContext $context) {
+        return $context->getPhase()->isPrivateOrPublic();
     }
 
-    function matchActor() {
+    protected function matchActor(CommandContext $context) {
         return true;
     }
 
-    function matchOther() {
+    protected function matchOther(CommandContext $context) {
+        $context = $this->getContext();
         $mockTileList = $this->getMockTileList();
 
-        $hand = $this->getActPlayer()->getArea()->getHand();
+        $hand = $context->getActorHand();
         if ($mockTileList->count() <= $hand->getPublic()->count()) {
             return true;
         }
@@ -49,8 +50,8 @@ class MockHandCommand extends PlayerCommand {
         return false;
     }
 
-    function executeImpl() {
-        $areas = $this->getContext()->getRound()->getAreas();
-        $areas->debugMockHand($this->getActPlayer(), $this->getMockTileList());
+    protected function executeImpl(CommandContext $context) {
+        $areas = $this->getContext()->getAreas();
+        $areas->debugMockHand($this->getActor(), $this->getMockTileList());
     }
 }

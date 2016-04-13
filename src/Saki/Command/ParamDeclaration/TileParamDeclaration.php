@@ -24,15 +24,11 @@ class TileParamDeclaration extends ParamDeclaration {
             list(, $seatWindString, $remainParamString) = $matches;
 
             $seatWind = (new SeatWindParamDeclaration($this->getContext(), $seatWindString))->toObject();
-
-            $player = $round->getPlayerList()->getSeatWindTilePlayer($seatWind);
-            $areas = $round->getAreas();
-
             if (preg_match('/s-(.+):(.+)/', $remainParamString, $matches)) {
                 list(, $mockTileListString, $tileString) = $matches;
                 $tileList = TileList::fromString($mockTileListString);
 
-                $areas->debugMockHand($player, $tileList);
+                $round->getAreas()->debugMockHand($seatWind, $tileList);
 
                 $tile = Tile::fromString($tileString); // validate
                 return $tile;

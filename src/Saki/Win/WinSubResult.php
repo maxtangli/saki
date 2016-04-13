@@ -1,9 +1,9 @@
 <?php
 namespace Saki\Win;
 
-use Saki\RoundResult\PointLevel;
-use Saki\RoundResult\PointTable;
 use Saki\Util\Comparable;
+use Saki\Win\Point\PointLevel;
+use Saki\Win\Point\PointTable;
 use Saki\Win\Yaku\YakuItemList;
 
 class WinSubResult {

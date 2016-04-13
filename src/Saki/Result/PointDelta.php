@@ -1,7 +1,7 @@
 <?php
-namespace Saki\RoundResult;
+namespace Saki\Result;
 
-class PointDelta {
+class PointDelta { // todo remove
     private $before;
     private $deltaInt;
 

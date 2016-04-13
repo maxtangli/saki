@@ -291,10 +291,19 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
     }
 
     /**
-     * @param callable $predicate
+     * @param callable|null $predicate
      * @return mixed
      */
-    function getSingle(callable $predicate) {
+    function getSingle(callable $predicate = null) {
+        if ($predicate === null) {
+            if (count($this->innerArray) != 1) {
+                throw new \BadMethodCallException(
+                    sprintf('Bad method call of getSingle($predicate) on [%s], 0 matches.', $this)
+                );
+            }
+            return $this->innerArray[0];
+        }
+
         $result = $this->getSingleOrDefault($predicate, null);
         if ($result === null) {
             throw new \BadMethodCallException(
@@ -304,7 +313,7 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
         return $result;
     }
 
-    /**
+    /** todo allow null predicate
      * @param callable $predicate
      * @param $default
      * @return mixed
@@ -690,6 +699,7 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
      * @return $this
      */
     function walk(callable $callable) {
+//        $this->assertWritable(); todo not so good
         array_walk($this->innerArray, $callable);
         return $this;
     }
@@ -729,6 +739,7 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
      * @return $this
      */
     function take(int $indexFrom, int $n = null) {
+        $this->assertWritable();
         $takeCount = $n ?? $this->count() - $indexFrom;
         $indexTo = $indexFrom + $takeCount - 1;
         if (!$this->indexExist([$indexFrom, $indexTo])) {
@@ -761,6 +772,20 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
         }
         return $this;
     }
+
+    /**
+     * @param callable|null $comparator
+     * @return $this For empty $this, nothing happen.
+     */
+    function orderByDescending(callable $comparator = null) {
+        $this->assertWritable();
+        if ($comparator === null) {
+            rsort($this->innerArray);
+        } else {
+            usort($this->innerArray, $this->util_revertComparator($comparator));
+        }
+        return $this;
+    }
     //endregion
 
     //region util
@@ -785,6 +810,16 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
             throw new \InvalidArgumentException();
         }
         return $originIsArray ? $values : $values[0];
+    }
+
+    /**
+     * @param callable $comparator
+     * @return \Closure
+     */
+    protected function util_revertComparator(callable $comparator) {
+        return function ($v1, $v2) use ($comparator) {
+            return -$comparator($v1, $v2);
+        };
     }
     //endregion
 }

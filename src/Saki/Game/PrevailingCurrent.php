@@ -31,7 +31,7 @@ class PrevailingCurrent {
      * @param bool $keepDealer
      * @return $this|PrevailingCurrent
      */
-    function toReset(bool $keepDealer) {
+    function toRolled(bool $keepDealer) {
         if ($keepDealer) {
             return $this;
         }
@@ -52,7 +52,7 @@ class PrevailingCurrent {
      * @param PrevailingStatus $status
      * @return PrevailingCurrent
      */
-    function toDebugReset(PrevailingStatus $status) {
+    function toDebugInited(PrevailingStatus $status) {
         return new PrevailingCurrent($this->getContext(), $status);
     }
 

@@ -10,7 +10,7 @@ class Player {
     private $no;
     private $initialPoint;
     private $initialSeatWind;
-    // initialized by Areas
+    // initialized by Areas todo remove
     private $area;
 
     /**
@@ -28,8 +28,7 @@ class Player {
      * @return string
      */
     function __toString() {
-        return sprintf('p%s%s-%s-%s',
-            $this->getNo(), $this->getInitialSeatWind(), $this->getArea()->getSeatWind(), $this->getArea()->getPoint());
+        return sprintf('p%s', $this->getNo());
     }
 
     /**

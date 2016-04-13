@@ -1,6 +1,6 @@
 <?php
 
-use Saki\RoundResult\PointTable;
+use Saki\Win\Point\PointTable;
 
 class PointTableTest extends PHPUnit_Framework_TestCase {
     /**

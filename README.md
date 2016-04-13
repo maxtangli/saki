@@ -180,7 +180,7 @@ rush 13 point table 4.6h
 - [x] point table 3.3h
 - [x] analyze 0.6h
 - [x] refactor PlayerList 0.4h
-- [x] bug: RoundResult.getOriginPoint() 0.3h
+- [x] bug: Result.getOriginPoint() 0.3h
 
 rush 14 next round 1.4h
 
@@ -190,7 +190,7 @@ rush 14 next round 1.4h
 - [x] refactor: move $wall into RoundData 0.1h
 - [x] analyzerTarget constructor: add $roundData 0.1h
 - [x] toNextRound() 0.2h
-- [x] roundResult->getNextPlayer() 0.3h
+- [x] Result->getNextPlayer() 0.3h
 
 rush 15 game over 1.8h
 
@@ -209,7 +209,7 @@ rush 17 win issues 1.6h
 - [x] reach point
 - [x] round n point 0.3h
 - [x] game over: minus point 0.1h
-- [x] WinRoundResult 0.5h
+- [x] WinResult 0.5h
 - [x] public phase: win on other 
 - [x] public phase: multiple win on other 0.4h
 - [x] test design 0.3h
@@ -275,12 +275,12 @@ rush 24 WinByOther, MultipleWinByOther 1h
 
 - [x] round.winByOther 0.2h
 - [x] test MultipleWinByOther 0.3h
-- [x] refactor: remove WinRoundResult subclasses 0.3h
+- [x] refactor: remove WinResult subclasses 0.3h
 - [x] test Round.winByXXX 0.2h
 
-rush 25 OnTheWayDrawRoundResult 1.5h
+rush 25 AbortiveDrawResult 1.5h
 
-- [x] add RoundResultType 0.4h
+- [x] add ResultType 0.4h
 - [x] 9-kind 9-tile drawn, keep dealer 0.2h
 - [x] four wind drawn, keep dealer 0.3h
 - [x] four kong drawn, keep dealer 0.4h
@@ -314,13 +314,13 @@ rush 27 refactor: concealed 1.7h
 
 rush 28 refactor for beauty 5.9h
 
-- [x] refactor: move Round.roundResult into RoundData 0.2h
+- [x] refactor: move Round.Result into RoundData 0.2h
 - [x] refactor: organize WinTarget 0.2h
 - [x] refactor: organize Areas, PlayerArea 0.2h
 
 - [x] TurnManager 0.7h
 - [x] Roller 1.4h
-- [x] refactor: move RoundData.$roundResult into $turnManager 0.1h
+- [x] refactor: move RoundData.$Result into $turnManager 0.1h
 - [x] refactor: move RoundData.$phase into $turnManager 0.2h
 - [x] refactor: move RoundData.$playerList's rolling role into $turnManager 1.2h
 
@@ -668,7 +668,7 @@ rush 57 move Player.point, TurnManger into Areas 4.6h
 - [x] try adapt DiscardCommand 1h
 - [x] remove TurnManger 1.2h // with a self-managed Turn abstraction, TurnManager no longer required!
 
-rush 58 refactor Turn concerned: part2
+rush 58 refactor Turn concerned: part2 7.6h
 
 - [x] add ComparableIndex 0.2h
 - [x] refactor Tile.getWindOffsetFrom/To 0.3h
@@ -680,27 +680,27 @@ rush 58 refactor Turn concerned: part2
 
 - [x] move SeatWindTurn into Area 0.4h
 - [x] add PrevailingContext 1.8h
-- [ ] test PrevailingCurrent 0.1h
 
 - [x] refactor Util/ 0.2h
 
-refactor status
+rush 59 refactor remove Player usage 7.4h
 
-module      | process
------------ | -----
-Command     | 0%
-FinalPoint  | 0%
-Game        | ing
-Meld        | done
-Phase       | 0%
-RoundResult | 0%
-Tile        | remove HandSize
-Util        | remove ComparablePriority
-Win         | ing
+- [x] failed refactor 0.5h
+- [x] remove Areas Command usage 0.7h
+- [x] remove phase usage 0.3h
+- [x] remove Areas debugSet usage 0.5h
+- [x] remove WinTarget usage 0.6h
+- [x] remove Areas other usage 1.6h
 
-rush remove Player usage
+- [x] remove PlayerList.getXXXWind 1.1h
+- [x] add PointFacade 1.4h
+- [x] refactor Command/ 0.7h
 
-- [ ] remove Player usage by SeatWind
+rush 60 refactor Result
+
+- [x] rename 0.2h
+- [x] review Point/ 0.5h // it appears to be well designed since no modification required after 6 months.
+- [ ] review Result 0.2h
 
 rush refactor Saki/Win/ part3
 
@@ -719,7 +719,7 @@ rush refactor: etc
 
 - [ ] refactor tests
 - [ ] fix: mockHand target tile vs robQuadPhase target tile
-- [ ] refactor: RoundResult
+- [ ] refactor: Result
 - [ ] refactor: move DrawPoint logic into separate class
 - [ ] refactor: simplify reset(),debugReset(),toNextPhase() 0.2h
 
@@ -740,6 +740,20 @@ rush public command roller
 rush command candidates
 
 - [ ] XXXCommand::getExecutables($player) // maybe better to exist in AI class?
+
+refactor process
+
+module      | refactor process
+----------- | -----
+Command     | 0%
+FinalPoint  | 0%
+Game        | ing
+Meld        | done
+Phase       | 0%
+Result | 0%
+Tile        | remove HandSize
+Util        | remove ComparablePriority
+Win         | ing
 
 rush UI
 rush network

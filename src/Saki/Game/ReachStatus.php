@@ -38,6 +38,24 @@ class ReachStatus implements Immutable {
     }
 
     /**
+     * @return bool
+     */
+    function isDoubleReach() {
+        return $this->isReach() &&
+        $this->getReachTurn()->isFirstCircle();
+    }
+
+    /**
+     * @param Turn $turn
+     * @return bool
+     */
+    function isFirstTurn(Turn $turn) {
+        // validate isReach
+        return $this->isReach() &&
+        $turn->isBeforeOrSame($this->getReachTurn()->toNextCicleOfThis());
+    }
+
+    /**
      * @return Turn
      */
     function getReachTurn() {
@@ -45,12 +63,5 @@ class ReachStatus implements Immutable {
             throw new \LogicException();
         }
         return $this->reachTurn;
-    }
-
-    /**
-     * @return bool
-     */
-    function isDoubleReach() {
-        return $this->isReach() && $this->getReachTurn()->getCircleCount() == 1;
     }
 }

@@ -1,11 +1,12 @@
 <?php
 namespace Saki\Command;
 
+use Saki\Game\Areas;
 use Saki\Game\Round;
 use Saki\Game\SeatWind;
 
 /**
- * A context where Command can execute.
+ * A context where Command execute.
  * @package Saki\Command
  */
 class CommandContext {
@@ -26,20 +27,7 @@ class CommandContext {
         return $this->round;
     }
 
-    /**
-     * @return \Saki\Game\Areas
-     */
-    function getAreas() {
-        return $this->getRound()->getAreas();
-    }
-
-    //region sugar methods
-    function getCurrentArea() {
-        return $this->getRound()->getAreas()->getCurrentArea();
-    }
-    //endregion
-
-    //region Actor concerned
+    //region Actor
     /**
      * WARNING: assume no concurrency of Command processing.
      * @param SeatWind $seatWind
@@ -63,6 +51,37 @@ class CommandContext {
         }
         return $this->bindActor;
     }
+    //endregion
+
+    //region non-Actor sugar methods
+    /**
+     * @return Areas
+     */
+    function getAreas() {
+        return $this->getRound()->getAreas();
+    }
+
+    function getTurn() {
+        return $this->getAreas()->getTurn();
+    }
+
+    function getPhase() {
+        return $this->getRound()->getPhaseState()->getPhase();
+    }
+
+    function getCurrentSeatWind() {
+        return $this->getAreas()->getCurrentSeatWind();
+    }
+
+    function getCurrentArea() {
+        return $this->getAreas()->getCurrentArea();
+    }
+    //endregion
+
+    //region Actor sugar methods
+    function isActorCurrent() {
+        return $this->getAreas()->getCurrentSeatWind() == $this->getActor();
+    }
 
     function getActorArea() {
         return $this->getRound()->getAreas()->getArea($this->getActor());
@@ -71,5 +90,10 @@ class CommandContext {
     function getActorHand() {
         return $this->getActorArea()->getHand();
     }
+
     //endregion
+
+    function tempGetCurrentPlayer() {
+        return $this->getAreas()->getCurrentArea()->getPlayer();
+    }
 }

@@ -6,7 +6,7 @@ class PrevailingCurrentTest extends PHPUnit_Framework_TestCase {
     function testPrevailingCurrent() {
         $r = new Round();
         for ($nTodo = 3; $nTodo > 0; --$nTodo) {
-            $r->reset(false);
+            $r->roll(false);
         }
 
         $current = $r->getPrevailingCurrent();

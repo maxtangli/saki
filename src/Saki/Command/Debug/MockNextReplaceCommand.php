@@ -19,12 +19,12 @@ class MockNextReplaceCommand extends Command {
         return $this->getParam(0);
     }
 
-    function executable() {
+    protected function executableImpl(CommandContext $context) {
         // todo deadWall logic
         return true;
     }
 
-    function executeImpl() {
+    protected function executeImpl(CommandContext $context) {
         $wall = $this->getContext()->getRound()->getAreas()->getWall();
         $wall->debugSetNextReplaceTile($this->getMockTile());
     }

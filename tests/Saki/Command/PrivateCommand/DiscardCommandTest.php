@@ -20,6 +20,6 @@ class DiscardCommandTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($validCommand->executable());
 
         $validCommand->execute();
-        $this->assertEquals(Phase::getPublicInstance(), $r->getPhaseState()->getPhase());
+        $this->assertEquals(Phase::createPublic(), $r->getPhaseState()->getPhase());
     }
 }

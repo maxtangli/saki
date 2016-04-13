@@ -4,9 +4,13 @@ namespace Saki\Phase;
 use Saki\Game\Phase;
 use Saki\Game\Round;
 
+/**
+ * @package Saki\Phase
+ */
 class NullPhaseState extends PhaseState {
+    //region PhaseState impl
     function getPhase() {
-        return Phase::getNullInstance();
+        return Phase::createNull();
     }
 
     function getDefaultNextState(Round $round) {
@@ -14,10 +18,11 @@ class NullPhaseState extends PhaseState {
     }
 
     function enter(Round $round) {
-        // todo do what? write detailed next time
+        // do nothing
     }
 
     function leave(Round $round) {
         // do nothing
     }
+    //endregion
 }

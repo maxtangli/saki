@@ -5,6 +5,7 @@ use Saki\Command\CommandContext;
 use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\ParamDeclaration\TileParamDeclaration;
 use Saki\Command\PrivateCommand;
+use Saki\Game\SeatWind;
 use Saki\Phase\PrivatePhaseState;
 use Saki\Phase\PublicPhaseState;
 use Saki\Tile\Tile;
@@ -14,7 +15,7 @@ class PlusKongCommand extends PrivateCommand {
         return [SeatWindParamDeclaration::class, TileParamDeclaration::class];
     }
 
-    function __construct(CommandContext $context, Tile $playerSeatWind, Tile $tile) {
+    function __construct(CommandContext $context, SeatWind $playerSeatWind, Tile $tile) {
         parent::__construct($context, [$playerSeatWind, $tile]);
     }
 
@@ -25,27 +26,29 @@ class PlusKongCommand extends PrivateCommand {
         return $this->getParam(1);
     }
 
-    function matchOther() {
+    protected function matchOther(CommandContext $context) {
         return true; // todo
     }
 
-    function executeImpl() {
-        $r = $this->getContext()->getRound();
+    protected function executeImpl(CommandContext $context) {
+        $r = $context->getRound();
+        $actor = $this->getActor();
+        $tile = $this->getTile();
 
         // set target tile
-        $r->getAreas()->plusKongBefore($this->getActPlayer(), $this->getTile());
+        $context->getAreas()->plusKongBefore($actor, $tile);
 
-        // to RobAQuadPhase
+        // to RobQuadPhase
         $robQuadPhase = new PublicPhaseState();
 
         $robQuadPhase->setRobQuad(true);
 
         $postLeave = function () use ($r) {
-            $r->getAreas()->plusKongAfter($this->getActPlayer(), $this->getTile());
+            $r->getAreas()->plusKongAfter($this->getActor(), $this->getTile());
         };
         $robQuadPhase->setPostLeave($postLeave);
 
-        $retPrivatePhase = new PrivatePhaseState($this->getActPlayer(), false, true);
+        $retPrivatePhase = new PrivatePhaseState($actor, false, true);
         $robQuadPhase->setCustomNextState($retPrivatePhase);
 
         $r->toNextPhase($robQuadPhase);

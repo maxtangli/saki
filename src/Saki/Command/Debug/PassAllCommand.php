@@ -13,11 +13,11 @@ class PassAllCommand extends Command {
         parent::__construct($context, []);
     }
 
-    function executable() {
+    protected function executableImpl(CommandContext $context) {
         return $this->getContext()->getRound()->getPhaseState()->getPhase()->isPublic();
     }
 
-    function executeImpl() {
+    protected function executeImpl(CommandContext $context) {
         $this->getContext()->getRound()->toNextPhase();
     }
 }

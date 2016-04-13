@@ -1,11 +1,11 @@
 <?php
-namespace Saki\RoundResult;
+namespace Saki\Result;
 
 use Saki\Game\Player;
 
-class OnTheWayDrawRoundResult extends RoundResult {
-    function __construct(array $players, RoundResultType $drawType) {
-        if (!$drawType->isOnTheWayDraw()) {
+class AbortiveDrawResult extends Result {
+    function __construct(array $players, ResultType $drawType) {
+        if (!$drawType->isAbortiveDraw()) {
             throw new \InvalidArgumentException();
         }
 

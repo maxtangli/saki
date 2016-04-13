@@ -1,30 +1,44 @@
 <?php
-namespace Saki\RoundResult;
+namespace Saki\Win\Point;
 
 use Saki\Util\Singleton;
 
+/**
+ * @package Saki\Result
+ */
 class PointTable extends Singleton {
     private $fus = [20, 25, 30, 40, 50, 60, 70, 80, 90, 100, 110];
     private $fans = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
 
+    /**
+     * @return int[]
+     */
     function getFus() {
         return $this->fus;
     }
 
+    /**
+     * @return int[]
+     */
     function getFans() {
         return $this->fans;
     }
 
-    function getPointItem($fan, $fu = null) {
+    /**
+     * @param int $fan
+     * @param int|null $fu
+     * @return PointTableItem
+     */
+    function getPointItem(int $fan, int $fu = null) {
         $pointLevel = PointLevel::fromFanAndFu($fan, $fu);
-        if ($pointLevel == PointLevel::create(PointLevel::NONE)) {
+        if ($pointLevel->isNone()) {
             $basePoint = $fu * intval(pow(2, $fan + 2));
         } elseif (!$pointLevel->isYakuMan()) {
             $m = [
-                PointLevel::MAN_GAN => 2000,
-                PointLevel::HANE_MAN => 3000,
-                PointLevel::BAI_MAN => 4000,
-                PointLevel::SAN_BAI_MAN => 6000,
+                PointLevel::MANGAN => 2000,
+                PointLevel::HANEMAN => 3000,
+                PointLevel::BAIMAN => 4000,
+                PointLevel::SANBAIMAN => 6000,
             ];
             $basePoint = $m[$pointLevel->getValue()];
         } else {

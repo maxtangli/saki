@@ -2,6 +2,7 @@
 
 use Saki\Game\Player;
 use Saki\Game\Round;
+use Saki\Game\SeatWind;
 use Saki\Tile\Tile;
 
 class AreasTest extends PHPUnit_Framework_TestCase {
@@ -9,8 +10,8 @@ class AreasTest extends PHPUnit_Framework_TestCase {
         $r = new Round();
         $pro = $r->getProcessor();
         $pro->process('mockHand E 123456789m12344p');
-        $areaE = $r->getPlayerList()->getEastPlayer()->getArea();
-        $areaS = $r->getPlayerList()->getSouthPlayer()->getArea();
+        $areaE = $r->getAreas()->getArea(SeatWind::createEast());
+        $areaS = $r->getAreas()->getArea(SeatWind::createSouth());
 
         // E private phase, hand E
         $handE = $areaE->getHand();
@@ -39,11 +40,13 @@ class AreasTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('123456789p1234s', $handS->getPublic()->toFormatString(true));
     }
 
-    function testSeatWindAssign() {
+    function testPointFacade() {
         $r = new Round();
-        $initialWindTileList = $r->getPlayerList()->toArrayList(function (Player $player) {
-            return $player->getArea()->getSeatWind()->getWindTile();
-        });
-        $this->assertEquals(Tile::getWindList()->toArray(), $initialWindTileList->toArray());
+        $areas = $r->getAreas();
+        $facade = $areas->getPointFacade();
+        
+        $this->assertFalse($facade->hasMinus());
+        $this->assertTrue($facade->hasTiledTop());
+        $this->assertEquals(25000, $facade->getFirst()->getPoint());
     }
 }

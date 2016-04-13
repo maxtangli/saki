@@ -29,16 +29,6 @@ class Utils {
     }
 
     /**
-     * @param string $class
-     * @return string
-     */
-    static function getClassNamePart(string $class) {
-        // A\B\XXClass -> XXClass
-        $lastSeparatorPos = strrpos($class, '\\');
-        return substr($class, $lastSeparatorPos + 1);
-    }
-
-    /**
      * @param string $delimiter
      * @param string $string
      * @return string[]

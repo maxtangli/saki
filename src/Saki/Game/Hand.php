@@ -20,7 +20,7 @@ use Saki\Util\Immutable;
  *
  * @package Saki\Hand
  */
-class Hand implements Immutable {
+class Hand implements Immutable { // todo facade better?
     private $public;
     private $declare;
     private $target;

@@ -5,6 +5,7 @@ use Saki\Command\CommandContext;
 use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\ParamDeclaration\TileParamDeclaration;
 use Saki\Command\PrivateCommand;
+use Saki\Game\SeatWind;
 use Saki\Tile\Tile;
 
 class ReachCommand extends PrivateCommand {
@@ -12,7 +13,7 @@ class ReachCommand extends PrivateCommand {
         return [SeatWindParamDeclaration::class, TileParamDeclaration::class];
     }
 
-    function __construct(CommandContext $context, Tile $playerSeatWind, Tile $tile) {
+    function __construct(CommandContext $context, SeatWind $playerSeatWind, Tile $tile) {
         parent::__construct($context, [$playerSeatWind, $tile]);
     }
 
@@ -23,32 +24,28 @@ class ReachCommand extends PrivateCommand {
         return $this->getParam(1);
     }
 
-    function matchOther() {
+    protected function matchOther(CommandContext $context) {
         // todo not accurate now
 
         // assert waiting after discard
-        $analyzer = $this->getContext()->getRound()->getWinAnalyzer()->getWaitingAnalyzer();
-        $handList = $this->getActPlayer()->getArea()->getHand()->getPrivate();
-        $futureWaitingList = $analyzer->analyzePrivate($handList, $this->getActPlayer()->getArea()->getHand()->getDeclare());
+        $analyzer = $context->getRound()->getWinAnalyzer()->getWaitingAnalyzer();
+        $actorHand = $context->getActorHand();
+        $futureWaitingList = $analyzer->analyzePrivate($actorHand->getPrivate(), $actorHand->getDeclare());
         $isWaiting = $futureWaitingList->count() > 0;
         if (!$isWaiting) {
             return false;
-//            throw new \InvalidArgumentException('Reach condition violated: is waiting.');
         }
 
         $isValidTile = $futureWaitingList->isForWaitingDiscardedTile($this->getTile());
         if (!$isValidTile) {
             return false;
-//            throw new \InvalidArgumentException(
-//                sprintf('Reach condition violated: invalid discard tile [%s].', $selfTile)
-//            );
         }
 
         return true;
     }
 
-    function executeImpl() {
-        $this->getContext()->getRound()->getAreas()->reach($this->getActPlayer(), $this->getTile());
-        $this->getContext()->getRound()->toNextPhase();
+    protected function executeImpl(CommandContext $context) {
+        $context->getAreas()->reach($this->getActor(), $this->getTile());
+        $context->getRound()->toNextPhase();
     }
 }

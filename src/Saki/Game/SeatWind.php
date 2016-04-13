@@ -13,10 +13,18 @@ class SeatWind extends IndicatorWind {
      * @param SeatWind $nextDealer
      * @return SeatWind
      */
-    function toNextSelf(SeatWind $nextDealer) {
+    function toNextSelf(SeatWind $nextDealer) { // todo remove
         // diff keeps when dealer rolls
         $dealerToThis = $nextDealer->getOffsetTo($this);
         return self::createEast()->toNext($dealerToThis);
+    }
+
+    /**
+     * @param bool $keepDealer
+     * @return SeatWind
+     */
+    function toRolled(bool $keepDealer) {
+        return $keepDealer ? $this : $this->toNext(-1);
     }
 
     /**

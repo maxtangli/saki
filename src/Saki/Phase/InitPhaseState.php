@@ -3,23 +3,30 @@ namespace Saki\Phase;
 
 use Saki\Game\Phase;
 use Saki\Game\Round;
+use Saki\Game\SeatWind;
 
+/**
+ * @package Saki\Phase
+ */
 class InitPhaseState extends PhaseState {
+    //region PhaseState impl
     function getPhase() {
-        return Phase::getInitInstance();
+        return Phase::createInit();
     }
 
     function getDefaultNextState(Round $round) {
-        $nextPlayer = $round->getPlayerList()->getEastPlayer();
+        $nextActor = SeatWind::createEast();
         $shouldDrawTile = true;
-        return new PrivatePhaseState($nextPlayer, $shouldDrawTile, true);
+        return new PrivatePhaseState($nextActor, $shouldDrawTile, true);
     }
 
     function enter(Round $round) {
+        // todo move shuffle logic into here
         $round->getAreas()->drawInitForAll();
     }
 
     function leave(Round $round) {
         // do nothing
     }
+    //endregion
 }

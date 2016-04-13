@@ -4,33 +4,32 @@ namespace Saki\Command\PrivateCommand;
 use Saki\Command\CommandContext;
 use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\PrivateCommand;
+use Saki\Game\SeatWind;
 use Saki\Phase\OverPhaseState;
-use Saki\RoundResult\WinRoundResult;
-use Saki\Tile\Tile;
+use Saki\Result\RoundWinResult;
 
 class WinBySelfCommand extends PrivateCommand {
     static function getParamDeclarations() {
         return [SeatWindParamDeclaration::class];
     }
 
-    function __construct(CommandContext $context, Tile $playerSeatWind) {
+    function __construct(CommandContext $context, SeatWind $playerSeatWind) {
         parent::__construct($context, [$playerSeatWind]);
     }
 
-    function matchOther() {
+    protected function matchOther(CommandContext $context) {
         // todo
         return true;
     }
 
-    function executeImpl() {
-        $round = $this->getContext()->getRound();
+    protected function executeImpl(CommandContext $context) {
+        $round = $context->getRound();
 
-        $result = WinRoundResult::createWinBySelf(
+        $result = RoundWinResult::createWinBySelf(
             $round->getPlayerList()->toArray(),
             $this->getActPlayer(),
-            $round->getWinResult($this->getActPlayer()),
+            $round->getWinResult($this->getActor()),
             $round->getAreas()->getReachPoints() / 1000,
-//            $round->getPrevailingCurrent()->getStatus()->getSeatWindTurn()
             $round->getAreas()->getDealerArea()->getSeatWindTurn()
         );
         $round->toNextPhase(new OverPhaseState($result));

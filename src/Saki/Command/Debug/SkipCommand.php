@@ -18,12 +18,12 @@ class SkipCommand extends Command {
         return $this->getParam(0);
     }
 
-    function executable() {
+    protected function executableImpl(CommandContext $context) {
         $r = $this->getContext()->getRound();
         return $r->getPhaseState()->getPhase()->isPrivate();
     }
 
-    function executeImpl() {
+    protected function executeImpl(CommandContext $context) {
         $r = $this->getContext()->getRound();
         $pro = $r->getProcessor();
         $nTodo = $this->getSkipCount();

@@ -5,9 +5,9 @@ use Saki\Game\Phase;
 use Saki\Game\Player;
 use Saki\Game\Round;
 use Saki\Meld\QuadMeldType;
-use Saki\RoundResult\ExhaustiveDrawRoundResult;
-use Saki\RoundResult\OnTheWayDrawRoundResult;
-use Saki\RoundResult\RoundResultType;
+use Saki\Result\AbortiveDrawResult;
+use Saki\Result\ExhaustiveDrawResult;
+use Saki\Result\ResultType;
 use Saki\Util\ArrayList;
 
 class PublicPhaseState extends PhaseState {
@@ -36,14 +36,15 @@ class PublicPhaseState extends PhaseState {
         $this->postLeave = $postLeave;
     }
 
+    //region PhaseState impl
     function getPhase() {
-        return Phase::getPublicInstance();
+        return Phase::createPublic();
     }
 
     function getDefaultNextState(Round $round) {
-        $nextPlayer = $round->getAreas()->tempGetOffsetPlayer(1);
+        $nextActor = $round->getAreas()->getTurn()->getSeatWind()->toNext(); // todo simplify
         $shouldDrawTile = true;
-        return new PrivatePhaseState($nextPlayer, $shouldDrawTile);
+        return new PrivatePhaseState($nextActor, $shouldDrawTile);
     }
 
     function enter(Round $round) {
@@ -54,6 +55,8 @@ class PublicPhaseState extends PhaseState {
         $this->handleDraw($round);
         call_user_func($this->getPostLeave());
     }
+
+    //endregion
 
     protected function handleDraw(Round $round) {
         $drawResult = $this->getDrawResult($round);
@@ -80,20 +83,20 @@ class PublicPhaseState extends PhaseState {
                 $isWaiting = $waitingTileList->count() > 0;
                 return $isWaiting;
             }, $players);
-            $result = new ExhaustiveDrawRoundResult($players, $isWaitingStates);
+            $result = new ExhaustiveDrawResult($players, $isWaitingStates);
             return $result;
         }
 
         // FourWindDraw
-        $isFirstRound = $round->getAreas()->getCurrentTurn()->getCircleCount() == 1;
+        $isFirstRound = $round->getAreas()->getTurn()->isFirstCircle();
         if ($isFirstRound) {
             $allDiscardTileList = $round->getAreas()->getOpenHistory()->getAllDiscard();
             if ($allDiscardTileList->count() == 4) {
                 $allDiscardTileList->distinct();
                 $isFourSameWindDiscard = $allDiscardTileList->count() == 1 && $allDiscardTileList[0]->isWind();
                 if ($isFourSameWindDiscard) {
-                    $result = new OnTheWayDrawRoundResult($round->getPlayerList()->toArray(),
-                        RoundResultType::create(RoundResultType::FOUR_WIND_DRAW));
+                    $result = new AbortiveDrawResult($round->getPlayerList()->toArray(),
+                        ResultType::create(ResultType::FOUR_WIND_DRAW));
                     return $result;
                 }
             }
@@ -104,8 +107,8 @@ class PublicPhaseState extends PhaseState {
             return $player->getArea()->getReachStatus()->isReach();
         });
         if ($isFourReachDraw) {
-            $result = new OnTheWayDrawRoundResult($round->getPlayerList()->toArray(),
-                RoundResultType::create(RoundResultType::FOUR_REACH_DRAW));
+            $result = new AbortiveDrawResult($round->getPlayerList()->toArray(),
+                ResultType::create(ResultType::FOUR_REACH_DRAW));
             return $result;
         }
 
@@ -120,8 +123,8 @@ class PublicPhaseState extends PhaseState {
 
         $isFourKongDraw = $kongCount >= 4 && $kongPlayerCount >= 2;
         if ($isFourKongDraw) {
-            $result = new OnTheWayDrawRoundResult($round->getPlayerList()->toArray(),
-                RoundResultType::create(RoundResultType::FOUR_KONG_DRAW));
+            $result = new AbortiveDrawResult($round->getPlayerList()->toArray(),
+                ResultType::create(ResultType::FOUR_KONG_DRAW));
             return $result;
         }
 
