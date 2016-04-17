@@ -4,7 +4,7 @@ namespace Saki\Phase;
 use Saki\Game\Phase;
 use Saki\Game\Player;
 use Saki\Game\Round;
-use Saki\Result\Result;
+use Saki\Win\Result\Result;
 
 class OverPhaseState extends PhaseState {
     private $Result;

@@ -4,7 +4,7 @@ use Saki\Game\Phase;
 use Saki\Game\PrevailingStatus;
 use Saki\Game\Round;
 use Saki\Meld\Meld;
-use Saki\Result\ResultType;
+use Saki\Win\Result\ResultType;
 
 class KongConcernedTest extends PHPUnit_Framework_TestCase {
     function testConcealedKong() {

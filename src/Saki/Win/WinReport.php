@@ -3,9 +3,9 @@ namespace Saki\Win;
 
 use Saki\Win\Yaku\YakuItemList;
 
-class WinResult extends WinSubResult {
+class WinReport extends WinSubReport {
     static function createNotWin() {
-        return new WinResult(
+        return new WinReport(
             WinState::create(WinState::NOT_WIN),
             new YakuItemList(),
             0

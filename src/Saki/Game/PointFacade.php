@@ -2,15 +2,30 @@
 namespace Saki\Game;
 
 use Saki\Util\ArrayList;
+use Saki\Util\Immutable;
 use Saki\Util\ReadonlyArrayList;
 
 /**
  * @package Saki\Game
  */
-class PointFacade extends ArrayList {
+class PointFacade extends ArrayList implements Immutable {
     use ReadonlyArrayList;
 
     // todo good constructor style 
+
+    /**
+     * @return PointFacade
+     */
+    function toOrderByPointDescend() {
+        return $this->getCopy()->orderByDescending(PointFacadeItem::getComparator());
+    }
+
+    /**
+     * @return PointFacade
+     */
+    function toOrderBySeatWind() {
+        return $this->getCopy()->orderByAscending(PointFacadeItem::getComparatorBySeatWind());
+    }
 
     /**
      * Used in: isGameOver.

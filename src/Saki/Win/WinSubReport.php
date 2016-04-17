@@ -2,15 +2,16 @@
 namespace Saki\Win;
 
 use Saki\Util\Comparable;
+use Saki\Win\Point\FanAndFu;
 use Saki\Win\Point\PointLevel;
 use Saki\Win\Point\PointTable;
 use Saki\Win\Yaku\YakuItemList;
 
-class WinSubResult {
+class WinSubReport {
     use Comparable;
 
     function compareTo($other) {
-        /** @var WinSubResult $other */
+        /** @var WinSubReport $other */
         $other = $other;
 
         $winStateDiff = $this->getWinState()->compareTo($other->getWinState());
@@ -50,6 +51,10 @@ class WinSubResult {
         return $this->yakuList;
     }
 
+    function getFanAndFu() {
+        return new FanAndFu($this->getYakuList()->getTotalFan(), $this->fu);
+    }
+    
     function getFu() {
         return $this->fu;
     }
@@ -63,6 +68,6 @@ class WinSubResult {
     }
 
     function getPointItem() {
-        return PointTable::create()->getPointItem($this->getFan(), $this->getFu());
+        return PointTable::create()->getPointItem($this->getFanAndFu());
     }
 }

@@ -7,7 +7,7 @@ use Saki\Command\PrivateCommand;
 use Saki\Command\PublicCommand;
 use Saki\Game\SeatWind;
 use Saki\Phase\OverPhaseState;
-use Saki\Result\RoundWinResult;
+use Saki\Win\Result\WinResult;
 
 class WinByOtherCommand extends PublicCommand {
     static function getParamDeclarations() {
@@ -25,10 +25,10 @@ class WinByOtherCommand extends PublicCommand {
     protected function executeImpl(CommandContext $context) {
         $round = $this->getContext()->getRound();
 
-        $result = RoundWinResult::createWinByOther(
+        $result = WinResult::createWinByOther(
             $round->getPlayerList()->toArray(),
             $this->getActPlayer(),
-            $round->getWinResult($this->getActor()),
+            $round->getWinReport($this->getActor()),
             $context->tempGetCurrentPlayer(),
             $round->getAreas()->getReachPoints() / 1000,
             $round->getAreas()->getDealerArea()->getSeatWindTurn());

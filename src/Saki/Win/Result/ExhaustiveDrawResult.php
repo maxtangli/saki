@@ -1,5 +1,5 @@
 <?php
-namespace Saki\Result;
+namespace Saki\Win\Result;
 
 use Saki\Game\Player;
 use Saki\Util\ArrayList;

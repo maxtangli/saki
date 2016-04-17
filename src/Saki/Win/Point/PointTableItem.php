@@ -1,7 +1,8 @@
 <?php
 namespace Saki\Win\Point;
 
-/** todo support 2 or 3 player
+/** todo support 2 or 3 players cases
+ * Calculate Winner or Loser's point change without multi-win case.
  * @package Saki\Result
  */
 class PointTableItem {
@@ -22,6 +23,68 @@ class PointTableItem {
     }
 
     /**
+     * @param bool $isWinBySelf
+     * @param bool $winnerIsDealer
+     * @return int A positive number means winner's point change.
+     */
+    function getWinnerPointChange(bool $isWinBySelf, bool $winnerIsDealer) {
+        if ($isWinBySelf && $winnerIsDealer) {
+            return 3 * -$this->getLoserPointChange($isWinBySelf, $winnerIsDealer, false);
+        }
+
+        // - 胜者收入：基本点x(胜者为庄家?6:4)。
+        $ratio = $winnerIsDealer ? 6 : 4;
+        $rawPoint = $this->getBasePoint() * $ratio;
+        return $this->util_toFinalPoint($rawPoint);
+    }
+
+    /**
+     * @param bool $isWinBySelf
+     * @param bool $winnerIsDealer
+     * @param bool $loserIsDealer
+     * @return int A negative number means loser's point change.
+     */
+    function getLoserPointChange(bool $isWinBySelf, bool $winnerIsDealer, bool $loserIsDealer) {
+        $ratioMap = [
+            // $isWinBySelf =>
+            //  $winnerIsDealer => $loserIsDealer => $ratio
+            true => [
+                true => [true => 'error', false => 2,],
+                false => [true => 2, false => 1,],
+            ],
+            false => [
+                true => [true => 'error', false => 'all',],
+                false => [true => 'all', false => 'all',],
+            ],
+        ];
+
+        $ratio = $ratioMap[$isWinBySelf][$winnerIsDealer][$loserIsDealer];
+        if (is_int($ratio)) {
+            $rawPoint = -$this->getBasePoint() * $ratio;
+            return $this->util_toFinalPoint($rawPoint);
+        } elseif ($ratio === 'error') {
+            throw new \InvalidArgumentException(
+                sprintf('Invalid argument $isWinBySelf[%s], $winnerIsDealer[%s], $loserIsDealer[%s].'
+                    , $isWinBySelf, $winnerIsDealer, $loserIsDealer)
+            );
+        } elseif ($ratio === 'all') {
+            return -$this->getWinnerPointChange($isWinBySelf, $winnerIsDealer);
+        } else {
+            throw new \LogicException();
+        }
+    }
+
+    /**
+     * 切り上げ. e.x.640->700
+     * @param int $rawPoint
+     * @return int
+     */
+    protected function util_toFinalPoint(int $rawPoint) {
+        $sgn = $rawPoint / abs($rawPoint);
+        return intval(ceil(abs($rawPoint) / 100) * 100) * $sgn;
+    }
+
+    /** todo remove
      * @param bool $receiverIsDealer
      * @param bool $winBySelf
      * @return int
@@ -39,7 +102,7 @@ class PointTableItem {
         }
     }
 
-    /**
+    /** todo remove
      * @param bool $receiverIsDealer
      * @param bool $winBySelf
      * @param bool $payerIsDealer
@@ -51,16 +114,6 @@ class PointTableItem {
             throw new \InvalidArgumentException();
         }
 
-        /**
-         * https://ja.wikipedia.org/wiki/%E9%BA%BB%E9%9B%80%E3%81%AE%E5%BE%97%E7%82%B9%E8%A8%88%E7%AE%97
-         * 各自の負担額の計算式
-         * 基本点「子のツモ和了が発生した時に、他の子が支払う点数」
-         * 子のロン和了の点数            ＝    基本点 x4
-         * 親のロン和了の点数            ＝    基本点 x6
-         * 子のツモ和了の時の子の払い    ＝    基本点 x1 (総計 x4)
-         * 子のツモ和了の時の親の払い    ＝    基本点 x2 (総計 x4)
-         * 親のツモ和了の時の子の払い    ＝    基本点 x2 (総計 x6)
-         */
         if ($winBySelf) {
             $ratio = ($receiverIsDealer || $payerIsDealer) ? 2 : 1;
         } else {

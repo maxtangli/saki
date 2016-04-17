@@ -8,7 +8,7 @@ use Saki\Win\Yaku\Yaku;
  * 門前清自摸和
  * @package Saki\Win\Yaku\Fan1
  */
-class ConcealedSelfDrawYaku extends Yaku {
+class FullyConcealedHandYaku extends Yaku {
     function getConcealedFan() {
         return 1;
     }

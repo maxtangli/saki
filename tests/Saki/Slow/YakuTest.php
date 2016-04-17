@@ -10,7 +10,7 @@ use Saki\Tile\Tile;
 use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\Fan1\AllRunsYaku;
 use Saki\Win\Yaku\Fan1\AllSimplesYaku;
-use Saki\Win\Yaku\Fan1\ConcealedSelfDrawYaku;
+use Saki\Win\Yaku\Fan1\FullyConcealedHandYaku;
 use Saki\Win\Yaku\Fan1\DoraYaku;
 use Saki\Win\Yaku\Fan1\DoubleRunYaku;
 use Saki\Win\Yaku\Fan1\FirstTurnWinYaku;
@@ -97,12 +97,12 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
             // not without honor
             [new YakuTestData('234m,456m,888s,EE', '789m'), AllSimplesYaku::create(), false],
 
-            // test ConcealedSelfDrawYaku
-            [new YakuTestData('123m,456m,77m,88m,11s,55s', null, '1s'), ConcealedSelfDrawYaku::create(), true],
+            // test FullyConcealedHandYaku
+            [new YakuTestData('123m,456m,77m,88m,11s,55s', null, '1s'), FullyConcealedHandYaku::create(), true],
             // not isConcealed
-            [new YakuTestData('123m,77m,88m,11s,55s', '333m', '1s'), ConcealedSelfDrawYaku::create(), false],
+            [new YakuTestData('123m,77m,88m,11s,55s', '333m', '1s'), FullyConcealedHandYaku::create(), false],
             // not selfDraw
-            [new YakuTestData('123m,456m,77m,88m,11s,55s', null, '1s', 'E', 'W'), ConcealedSelfDrawYaku::create(), false],
+            [new YakuTestData('123m,456m,77m,88m,11s,55s', null, '1s', 'E', 'W'), FullyConcealedHandYaku::create(), false],
 
             // test DoubleRunYaku
             [new YakuTestData('123m,123m,77m,88m,11s,EE', null, 'E'), DoubleRunYaku::create(), true],
@@ -412,7 +412,7 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         // S discard, E may win
         $pro->process('discard S S:s-1m:1m');
 
-        $yakuList = $r->getWinResult(SeatWind::createEast())->getYakuList()->toYakuList();
+        $yakuList = $r->getWinReport(SeatWind::createEast())->getYakuList()->toYakuList();
 
         $this->assertContains(ReachYaku::create(), $yakuList, $yakuList);
     }
@@ -426,7 +426,7 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         // S discard, E may win
         $pro->process('discard S S:s-1m:1m');
 
-        $yakuList = $r->getWinResult(SeatWind::createEast())->getYakuList()->toYakuList();
+        $yakuList = $r->getWinReport(SeatWind::createEast())->getYakuList()->toYakuList();
 
         $this->assertNotContains(ReachYaku::create(), $yakuList, $yakuList);
         $this->assertContains(DoubleReachYaku::create(), $yakuList, $yakuList);
@@ -446,7 +446,7 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(Tile::fromString('1m'), $areaS->getHand()->getTarget()->getTile());
 
         // S winBySelf FirstTurnWin
-        $yakuList = $r->getWinResult($r->getAreas()->getCurrentSeatWind())->getYakuList()->toYakuList();
+        $yakuList = $r->getWinReport($r->getAreas()->getCurrentSeatWind())->getYakuList()->toYakuList();
         $this->assertContains(FirstTurnWinYaku::create(), $yakuList, $yakuList);
     }
 
@@ -455,7 +455,7 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         $pro = $r->getProcessor();
 
         $pro->process('mockNextReplace 5m; concealedKong E E:s-123s456s789s7777m5m:7m');
-        $yakuList = $r->getWinResult($r->getAreas()->getCurrentSeatWind())->getYakuList()->toYakuList();
+        $yakuList = $r->getWinReport($r->getAreas()->getCurrentSeatWind())->getYakuList()->toYakuList();
         $this->assertContains(KingSTileWinYaku::create(), $yakuList, $yakuList);
     }
 
@@ -475,7 +475,7 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(Tile::fromString('1m'), $areaW->getHand()->getTarget()->getTile());
 
         // robAQuad exist
-        $yakuList = $r->getWinResult(SeatWind::createWest())->getYakuList()->toYakuList();
+        $yakuList = $r->getWinReport(SeatWind::createWest())->getYakuList()->toYakuList();
         $this->assertContains(RobbingAQuadYaku::create(), $yakuList, $yakuList);
     }
 
@@ -493,12 +493,12 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         $pro->process('skip 4; mockDeadWall EEEE1919293949s 5 false; mockHand E 222789s789m12345m');
 
         // rely other yakus
-        $yakuList = $r->getWinResult(SeatWind::createEast())->getYakuList()->toYakuList();
+        $yakuList = $r->getWinReport(SeatWind::createEast())->getYakuList()->toYakuList();
         $this->assertEmpty($yakuList);
 
         // fan count
         $pro->process('mockHand E 222789s789m12355m');
-        $yakuItemList = $r->getWinResult(SeatWind::createEast())->getYakuList();
+        $yakuItemList = $r->getWinReport(SeatWind::createEast())->getYakuList();
         $yakuList = $yakuItemList->toYakuList();
         $this->assertContains(DoraYaku::create(), $yakuList, $yakuList);
         $expectFan = 1 + 6; // selfDraw + 6 dora
@@ -511,12 +511,12 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         $pro->process('skip 4; mockDeadWall EEEE9191929394s 5 true; mockHand E 222789s789m12345m');
 
         // rely other yakus
-        $yakuList = $r->getWinResult(SeatWind::createEast())->getYakuList()->toYakuList();
+        $yakuList = $r->getWinReport(SeatWind::createEast())->getYakuList()->toYakuList();
         $this->assertEmpty($yakuList);
 
         // fan count
         $pro->process('mockHand E 222789s789m12355m');
-        $yakuItemList = $r->getWinResult(SeatWind::createEast())->getYakuList();
+        $yakuItemList = $r->getWinReport(SeatWind::createEast())->getYakuList();
         $yakuList = $yakuItemList->toYakuList();
         $this->assertContains(UraDoraYaku::create(), $yakuList, $yakuList);
         $expectFan = 1 + 6; // selfDraw + 6 uraDora
@@ -529,12 +529,12 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         $pro->process('skip 4; mockDeadWall EEEE9999999999s 1 false; mockHand E 222789s789m12340m');
 
         // rely other yakus
-        $yakuList = $r->getWinResult(SeatWind::createEast())->getYakuList()->toYakuList();
+        $yakuList = $r->getWinReport(SeatWind::createEast())->getYakuList()->toYakuList();
         $this->assertEmpty($yakuList);
 
         // fan count
         $pro->process('mockHand E 222789s789m12300m');
-        $yakuItemList = $r->getWinResult(SeatWind::createEast())->getYakuList();
+        $yakuItemList = $r->getWinReport(SeatWind::createEast())->getYakuList();
         $yakuList = $yakuItemList->toYakuList();
         $this->assertContains(RedDoraYaku::create(), $yakuList, $yakuList);
         $expectFan = 3; // selfDraw + 6 uraDora

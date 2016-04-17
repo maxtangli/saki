@@ -74,21 +74,21 @@ class WinAnalyzer {
     /**
      * Find all possible WinSubResults and merge them into a final WinResult.
      * @param WinTarget $target
-     * @return WinResult
+     * @return WinReport
      */
-    function analyzeTarget(WinTarget $target) {
+    function analyze(WinTarget $target) {
         // 1. handTileList target -> handMeldList's List
         $handTileList = $target->getPrivateHand();
         $handMeldCombinationList = $this->getHandMeldCombinationAnalyzer()
             ->analyzeMeldCombinationList($handTileList);
         if ($handMeldCombinationList->isEmpty()) {
-            return WinResult::createNotWin();
+            return WinReport::createNotWin();
         }
 
         // 2. handMeldList's List -> subTargetList -> subResultList
         $subResultSelector = function (MeldList $handMeldList) use ($target) {
             $subTarget = $target->toSubTarget($handMeldList);
-            return $this->analyzeSubTarget($subTarget);
+            return $this->analyzeSub($subTarget);
         };
         $subResultList = (new ArrayList())->fromSelect($handMeldCombinationList, $subResultSelector);
 
@@ -102,8 +102,8 @@ class WinAnalyzer {
          * todo waiting-but-not-win case
          */
 
-        /** @var WinSubResult $targetSubResult */
-        $targetSubResult = $subResultList->getMax(WinSubResult::getComparator());
+        /** @var WinSubReport $targetSubResult */
+        $targetSubResult = $subResultList->getMax(WinSubReport::getComparator());
 
         $finalYakuList = $targetSubResult->getYakuList();
         $finalFu = $targetSubResult->getFu();
@@ -119,7 +119,7 @@ class WinAnalyzer {
             }
         }
 
-        $finalResult = new WinResult($finalWinState, $finalYakuList, $finalFu);
+        $finalResult = new WinReport($finalWinState, $finalYakuList, $finalFu);
         return $finalResult;
     }
 
@@ -127,19 +127,19 @@ class WinAnalyzer {
      * Find WinSubResult.
      * Note that furiten is not considered in this phase for performance.
      * @param WinSubTarget $subTarget
-     * @return WinSubResult
+     * @return WinSubReport
      */
-    function analyzeSubTarget(WinSubTarget $subTarget) {
+    function analyzeSub(WinSubTarget $subTarget) {
         // case1: not win
         $tileSeries = $this->getTileSeriesAnalyzer()->analyzeTileSeries($subTarget->getAllMeldList());
         if (!$tileSeries->isExist()) {
-            return new WinSubResult(WinState::create(WinState::NOT_WIN), new YakuItemList(), 0);
+            return new WinSubReport(WinState::create(WinState::NOT_WIN), new YakuItemList(), 0);
         }
 
         // case2: no yaku false win
         $yakuList = $this->getYakuAnalyzer()->analyzeYakuList($subTarget);
         if ($yakuList->count() == 0) {
-            return new WinSubResult(WinState::create(WinState::NO_YAKU_FALSE_WIN), new YakuItemList(), 0);
+            return new WinSubReport(WinState::create(WinState::NO_YAKU_FALSE_WIN), new YakuItemList(), 0);
         }
 
         // case3: win by self or win by other
@@ -150,7 +150,7 @@ class WinAnalyzer {
         $fuResult = FuAnalyzer::create()->getResult($fuTarget);
         $fu = $fuResult->getTotalFu();
 
-        return new WinSubResult($winState, $yakuList, $fu);
+        return new WinSubReport($winState, $yakuList, $fu);
     }
 
     /**

@@ -1,61 +1,63 @@
 <?php
-namespace Saki\Result;
+namespace Saki\Win\Result;
 
 use Saki\Game\Player;
+use Saki\Game\PlayerType;
+use Saki\Game\SeatWind;
 use Saki\Util\ArrayList;
-use Saki\Win\WinResult;
+use Saki\Win\WinReport;
 use Saki\Win\WinState;
 
-class RoundWinResult extends Result {
+class WinResult extends Result {
     // note: createXXX()'s param check is not fully strict since it seems no harm
 
     /**
      * @param Player[] $players
      * @param Player $winPlayer
-     * @param WinResult $winResult
+     * @param WinReport $winReport
      * @param int $accumulatedReachCount
      * @param int $seatWindTurn
-     * @return RoundWinResult
+     * @return WinResult
      */
-    static function createWinBySelf(array $players, Player $winPlayer, WinResult $winResult, $accumulatedReachCount, $seatWindTurn) {
-        if ($winResult->getWinState() != WinState::create(WinState::WIN_BY_SELF)) {
+    static function createWinBySelf(array $players, Player $winPlayer, WinReport $winReport, $accumulatedReachCount, $seatWindTurn) {
+        if ($winReport->getWinState() != WinState::create(WinState::WIN_BY_SELF)) {
             throw new \InvalidArgumentException();
         }
         $losePlayers = array_values(array_filter($players, function (Player $player) use ($winPlayer) {
             return $player != $winPlayer;
         }));
-        return new self($players, [$winPlayer], [$winResult], $losePlayers, $accumulatedReachCount, $seatWindTurn,
+        return new self($players, [$winPlayer], [$winReport], $losePlayers, $accumulatedReachCount, $seatWindTurn,
             ResultType::create(ResultType::WIN_BY_SELF));
     }
 
     /**
      * @param Player[] $players
      * @param Player $winPlayer
-     * @param WinResult $winResult
+     * @param WinReport $winReport
      * @param Player $losePlayer
      * @param int $accumulatedReachCount
      * @param int $seatWindTurn
-     * @return RoundWinResult
+     * @return WinResult
      */
-    static function createWinByOther(array $players, Player $winPlayer, WinResult $winResult, Player $losePlayer, $accumulatedReachCount, $seatWindTurn) {
-        if ($winResult->getWinState() != WinState::create(WinState::WIN_BY_OTHER)) {
+    static function createWinByOther(array $players, Player $winPlayer, WinReport $winReport, Player $losePlayer, $accumulatedReachCount, $seatWindTurn) {
+        if ($winReport->getWinState() != WinState::create(WinState::WIN_BY_OTHER)) {
             throw new \InvalidArgumentException();
         }
-        return new self($players, [$winPlayer], [$winResult], [$losePlayer], $accumulatedReachCount, $seatWindTurn,
+        return new self($players, [$winPlayer], [$winReport], [$losePlayer], $accumulatedReachCount, $seatWindTurn,
             ResultType::create(ResultType::WIN_BY_OTHER));
     }
 
     /**
      * @param Player[] $players
      * @param Player[] $winPlayers
-     * @param RoundWinResult[] $winResults
+     * @param WinResult[] $winReports
      * @param Player $losePlayer
      * @param int $accumulatedReachCount
      * @param int $seatWindTurn
-     * @return RoundWinResult
+     * @return WinResult
      */
-    static function createMultiWinByOther(array $players, array $winPlayers, array $winResults, Player $losePlayer, $accumulatedReachCount, $seatWindTurn) {
-        foreach ($winResults as $winResult) {
+    static function createMultiWinByOther(array $players, array $winPlayers, array $winReports, Player $losePlayer, $accumulatedReachCount, $seatWindTurn) {
+        foreach ($winReports as $winResult) {
             if ($winResult->getWinState() != WinState::create(WinState::WIN_BY_OTHER)) {
                 throw new \InvalidArgumentException();
             }
@@ -69,7 +71,7 @@ class RoundWinResult extends Result {
         $winTypeValue = $winPlayerCount == 2 ? ResultType::DOUBLE_WIN_BY_OTHER : ResultType::TRIPLE_WIN_BY_OTHER;
         $winType = ResultType::create($winTypeValue);
 
-        return new self($players, $winPlayers, $winResults, [$losePlayer], $accumulatedReachCount, $seatWindTurn, $winType);
+        return new self($players, $winPlayers, $winReports, [$losePlayer], $accumulatedReachCount, $seatWindTurn, $winType);
     }
 
     private $players;
@@ -82,7 +84,7 @@ class RoundWinResult extends Result {
     /**
      * @param Player[] $players
      * @param Player[] $winPlayers
-     * @param RoundWinResult[] $winResults
+     * @param WinResult[] $winResults
      * @param Player[] $losePlayers
      * @param int $accumulatedReachCount
      * @param int $seatWindTurn

@@ -6,4 +6,4 @@ require_once __DIR__.'/vendor/autoload.php';
 date_default_timezone_set('Asia/Tokyo');
 
 // tests
-require_once __DIR__.'/tests/testUtils.php';
+require_once __DIR__.'/tests/SakiTestCase.php';

@@ -14,7 +14,7 @@ use Saki\Win\Yaku\YakuSet;
  * @package Saki\Game
  */
 class GameData implements Immutable {
-    private $playerCount;
+    private $playerType;
     private $prevailingContext;
     private $initialPoint;
     private $finalPointStrategy;
@@ -25,11 +25,11 @@ class GameData implements Immutable {
      * default: 4 player, east game, 25000-30000 initial point,
      */
     function __construct() {
-        $playerCount = 4;
+        $playerType = PlayerType::create(4);
 
-        $this->playerCount = $playerCount;
+        $this->playerType = $playerType;
         $this->prevailingContext = new PrevailingContext(
-            $playerCount, PrevailingType::create(PrevailingType::EAST)
+            $playerType, PrevailingType::create(PrevailingType::EAST)
         );
         $this->initialPoint = 25000;
         $this->finalPointStrategy = new CompositeFinalPointStrategy([
@@ -41,10 +41,10 @@ class GameData implements Immutable {
     }
 
     /**
-     * @return int
+     * @return PlayerType
      */
-    function getPlayerCount() {
-        return $this->playerCount;
+    function getPlayerType() {
+        return $this->playerType;
     }
 
     /**

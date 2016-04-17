@@ -17,7 +17,7 @@ class FuritenTest extends SakiTestCase {
     protected function assertFuritenImpl(bool $isFuriten, Round $r, string $seatWind, ...$scripts) {
         $r->getProcessor()->process(...$scripts);
         
-        $winState = $r->getWinResult(SeatWind::fromString($seatWind))->getWinState();
+        $winState = $r->getWinReport(SeatWind::fromString($seatWind))->getWinState();
         if ($isFuriten) {
             $this->assertEquals(WinState::create(WinState::FURITEN_FALSE_WIN), $winState);
         } else {

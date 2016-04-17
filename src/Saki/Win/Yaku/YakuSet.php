@@ -6,7 +6,7 @@ use Saki\Util\ReadonlyArrayList;
 use Saki\Win\TileSeries;
 use Saki\Win\Yaku\Fan1\AllRunsYaku;
 use Saki\Win\Yaku\Fan1\AllSimplesYaku;
-use Saki\Win\Yaku\Fan1\ConcealedSelfDrawYaku;
+use Saki\Win\Yaku\Fan1\FullyConcealedHandYaku;
 use Saki\Win\Yaku\Fan1\DoraYaku;
 use Saki\Win\Yaku\Fan1\DoubleRunYaku;
 use Saki\Win\Yaku\Fan1\FirstTurnWinYaku;
@@ -68,7 +68,7 @@ class YakuSet extends ArrayList {
                 // Fan1
                 AllRunsYaku::create(),
                 AllSimplesYaku::create(),
-                ConcealedSelfDrawYaku::create(),
+                FullyConcealedHandYaku::create(),
                 DoraYaku::create(),
                 DoubleRunYaku::create(),
                 FirstTurnWinYaku::create(),

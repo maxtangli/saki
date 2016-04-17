@@ -18,13 +18,6 @@ class YakuItemList extends ArrayList {
 
     function normalize() {
         // if exist yaku-man yaku, remove all not-yaku-man yaku
-//        $yakuManItems = $this->toFilteredArray(function (YakuItem $yakuItem) {
-//            return $yakuItem->getYaku()->isYakuMan();
-//        });
-//        if (count($yakuManItems) > 0) {
-//            $this->setInnerArray($yakuManItems);
-//        }
-
         $yakuManItemList = (new ArrayList($this->toArray()))->where(function (YakuItem $yakuItem) {
             return $yakuItem->getYaku()->isYakuMan();
         });

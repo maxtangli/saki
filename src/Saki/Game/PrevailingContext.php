@@ -14,11 +14,11 @@ class PrevailingContext implements Immutable {
     private $prevailingType;
 
     /**
-     * @param int $playerCount
+     * @param PlayerType $playerType
      * @param PrevailingType $prevailingType
      */
-    function __construct(int $playerCount, PrevailingType $prevailingType) {
-        $this->playerCount = $playerCount;
+    function __construct(PlayerType $playerType, PrevailingType $prevailingType) {
+        $this->playerCount = $playerType->getValue();
         $this->prevailingType = $prevailingType;
     }
 

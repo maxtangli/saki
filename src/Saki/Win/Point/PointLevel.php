@@ -4,7 +4,7 @@ namespace Saki\Win\Point;
 use Saki\Util\Enum;
 
 /**
- * @package Saki\Result
+ * @package Saki\Win\Result
  */
 class PointLevel extends Enum {
     const NONE = 1;
@@ -48,11 +48,11 @@ class PointLevel extends Enum {
             case 8:
             case 9:
             case 10:
-                $v = self::HANEMAN;
+                $v = self::BAIMAN;
                 break;
             case 11:
             case 12:
-                $v = self::HANEMAN;
+                $v = self::SANBAIMAN;
                 break;
             default:
                 if ($fan >= 39) {

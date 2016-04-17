@@ -1,10 +1,10 @@
 <?php
-namespace Saki\Result;
+namespace Saki\Win\Result;
 
 use Saki\Util\Enum;
 
 /**
- * @package Saki\Result
+ * @package Saki\Win\Result
  */
 class ResultType extends Enum {
     const WIN_BY_SELF = 0;

@@ -39,7 +39,7 @@ class Round {
         $this->prevailingCurrent = new PrevailingCurrent($gameData->getPrevailingContext());
 
         // round variable
-        $this->playerList = new PlayerList($gameData->getPlayerCount(), $gameData->getInitialPoint());
+        $this->playerList = new PlayerList($gameData->getPlayerType(), $gameData->getInitialPoint());
         $wall = new Wall($gameData->getTileSet());
 
         $this->areas = new Areas($wall, $this->playerList);
@@ -144,9 +144,9 @@ class Round {
         return $this->winAnalyzer;
     }
 
-    function getWinResult(SeatWind $actor) {
+    function getWinReport(SeatWind $actor) {
         // WinTarget will assert valid player
-        return $this->getWinAnalyzer()->analyzeTarget(new WinTarget($actor, $this));
+        return $this->getWinAnalyzer()->analyze(new WinTarget($actor, $this));
     }
 
     function getPrevailingCurrent() {

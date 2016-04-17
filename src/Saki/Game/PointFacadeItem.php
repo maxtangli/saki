@@ -2,11 +2,13 @@
 namespace Saki\Game;
 
 use Saki\Util\Comparable;
+use Saki\Util\Immutable;
 
 /**
  * @package Saki\Game
  */
-class PointFacadeItem {
+class PointFacadeItem implements Immutable {
+    //region Comparable impl
     use Comparable; // design note: do not use ComparableSequence to avoid confusion.
 
     function compareTo($other) {
@@ -18,6 +20,16 @@ class PointFacadeItem {
         }
 
         return $this->getSeatWind()->compareTo($other->getSeatWind());
+    }
+    //endregion
+
+    /**
+     * @return \Closure
+     */
+    static function getComparatorBySeatWind() {
+        return function (PointFacadeItem $v1, PointFacadeItem $v2) {
+            return $v1->getSeatWind()->compareTo($v2->getSeatWind());
+        };
     }
 
     private $seatWind;

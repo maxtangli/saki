@@ -5,10 +5,10 @@ use Saki\Game\Phase;
 use Saki\Game\Player;
 use Saki\Game\Round;
 use Saki\Meld\QuadMeldType;
-use Saki\Result\AbortiveDrawResult;
-use Saki\Result\ExhaustiveDrawResult;
-use Saki\Result\ResultType;
 use Saki\Util\ArrayList;
+use Saki\Win\Result\AbortiveDrawResult;
+use Saki\Win\Result\ExhaustiveDrawResult;
+use Saki\Win\Result\ResultType;
 
 class PublicPhaseState extends PhaseState {
     private $robQuad;

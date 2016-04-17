@@ -3,23 +3,20 @@ namespace Saki\Game;
 
 use Saki\Util\ArrayList;
 use Saki\Util\ReadonlyArrayList;
-use Saki\Util\Utils;
 
 class PlayerList extends ArrayList {
     use ReadonlyArrayList;
 
     static function createStandard() {
-        return new PlayerList(4, 25000);
+        return new PlayerList(PlayerType::create(4), 25000);
     }
 
     /**
-     * @param int $n
+     * @param PlayerType $playerType
      * @param int $initialPoint
      */
-    function __construct(int $n, int $initialPoint) {
-        if (!Utils::inRange($n, 1, 4)) {
-            throw new \InvalidArgumentException();
-        }
+    function __construct(PlayerType $playerType, int $initialPoint) {
+        $n = $playerType->getValue();
 
         $data = [
             [1, $initialPoint, SeatWind::fromString('E')],

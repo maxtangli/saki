@@ -6,8 +6,8 @@ use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\PrivateCommand;
 use Saki\Game\SeatWind;
 use Saki\Phase\OverPhaseState;
-use Saki\Result\AbortiveDrawResult;
-use Saki\Result\ResultType;
+use Saki\Win\Result\AbortiveDrawResult;
+use Saki\Win\Result\ResultType;
 
 class NineNineDrawCommand extends PrivateCommand {
     static function getParamDeclarations() {

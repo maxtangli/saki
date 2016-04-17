@@ -699,8 +699,24 @@ rush 59 refactor remove Player usage 7.4h
 rush 60 refactor Result
 
 - [x] rename 0.2h
+
 - [x] review Point/ 0.5h // it appears to be well designed since no modification required after 6 months.
-- [ ] review Result 0.2h
+
+- [x] review Result 0.4h
+- [x] refactor ResultTest 0.4h
+
+- [x] rewrite ExhaustiveDrawResult 1.1h
+- [x] rewrite AbortiveDrawResult 0.1h
+- [x] rewrite WinResult: part1 1.1h // require more direct design
+
+- [x] analyze point calculate 1.5h
+- [x] rewrite PointTableItem 0.5h // so happy to write clever code!
+- [x] test PointTableItem 0.6h // so happy to write clever test!
+
+- [x] rewrite WinResult: part2 1.2h
+- [x] bug: failed to consider ceil issues when WinBySelf! 0.5h// so terrible ...
+- [ ] introduce terms: tsumo, ron.
+- [ ] test and refactor WinResult 0.5h
 
 rush refactor Saki/Win/ part3
 
@@ -743,21 +759,30 @@ rush command candidates
 
 refactor process
 
-module      | refactor process
+module      | process
 ----------- | -----
-Command     | 0%
-FinalPoint  | 0%
+Command     | ing
+FinalPoint  |
 Game        | ing
-Meld        | done
-Phase       | 0%
-Result | 0%
+Meld        | ok
+Phase       |
 Tile        | remove HandSize
-Util        | remove ComparablePriority
+Util        | ok
 Win         | ing
+Win\Fu      |
+Win\Point   | ok
+Win\Result  | ing
+Win\Yaku    |
 
-rush UI
-rush network
-rush learn from other projects
+future function process
+
+module      | process
+----------- | -----
+UI          |
+network     |
+demo        |
+other pj    |
+
 rush rule.md doc
 
 - [ ] rule 0.6h

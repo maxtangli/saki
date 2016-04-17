@@ -2,9 +2,9 @@
 
 use Saki\Game\Phase;
 use Saki\Game\Round;
-use Saki\Result\ExhaustiveDrawResult;
-use Saki\Result\ResultType;
 use Saki\Tile\TileList;
+use Saki\Win\Result\ExhaustiveDrawResult;
+use Saki\Win\Result\ResultType;
 
 class RoundDrawTest extends PHPUnit_Framework_TestCase {
     function testExhaustiveDraw() {

@@ -1,5 +1,5 @@
 <?php
-namespace Saki\Result;
+namespace Saki\Win\Result;
 
 class PointDelta { // todo remove
     private $before;
