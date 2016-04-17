@@ -19,7 +19,7 @@ class WinResult extends Result {
      * @param int $seatWindTurn
      * @return WinResult
      */
-    static function createWinBySelf(array $players, Player $winPlayer, WinReport $winReport, $accumulatedReachCount, $seatWindTurn) {
+    static function createTsumo(array $players, Player $winPlayer, WinReport $winReport, $accumulatedReachCount, $seatWindTurn) {
         if ($winReport->getWinState() != WinState::create(WinState::WIN_BY_SELF)) {
             throw new \InvalidArgumentException();
         }
@@ -39,7 +39,7 @@ class WinResult extends Result {
      * @param int $seatWindTurn
      * @return WinResult
      */
-    static function createWinByOther(array $players, Player $winPlayer, WinReport $winReport, Player $losePlayer, $accumulatedReachCount, $seatWindTurn) {
+    static function createRon(array $players, Player $winPlayer, WinReport $winReport, Player $losePlayer, $accumulatedReachCount, $seatWindTurn) {
         if ($winReport->getWinState() != WinState::create(WinState::WIN_BY_OTHER)) {
             throw new \InvalidArgumentException();
         }
@@ -56,7 +56,7 @@ class WinResult extends Result {
      * @param int $seatWindTurn
      * @return WinResult
      */
-    static function createMultiWinByOther(array $players, array $winPlayers, array $winReports, Player $losePlayer, $accumulatedReachCount, $seatWindTurn) {
+    static function createMultiRon(array $players, array $winPlayers, array $winReports, Player $losePlayer, $accumulatedReachCount, $seatWindTurn) {
         foreach ($winReports as $winResult) {
             if ($winResult->getWinState() != WinState::create(WinState::WIN_BY_OTHER)) {
                 throw new \InvalidArgumentException();
@@ -174,18 +174,18 @@ class WinResult extends Result {
     }
 
     function getTableItemDeltaInt(Player $player) {
-        $isWinBySelf = $this->getResultType()->getValue() == ResultType::WIN_BY_SELF;
+        $isTsumo = $this->getResultType()->getValue() == ResultType::WIN_BY_SELF;
         if ($this->isWinPlayer($player)) {
             $pointItem = $this->getWinAnalyzerResult($player)->getPointItem();
             $receiverIsDealer = $player->getArea()->getSeatWind()->isDealer();
-            return $pointItem->getReceivePoint($receiverIsDealer, $isWinBySelf);
+            return $pointItem->getReceivePoint($receiverIsDealer, $isTsumo);
         } elseif ($this->isLosePlayer($player)) {
             $totalPayPoint = 0;
             foreach ($this->getWinPlayers() as $winPlayer) {
                 $pointItem = $this->getWinAnalyzerResult($winPlayer)->getPointItem();
                 $receiverIsDealer = $winPlayer->getArea()->getSeatWind()->isDealer();
                 $payerIsDealer = $player->getArea()->getSeatWind()->isDealer();
-                $payPoint = -$pointItem->getPayPoint($receiverIsDealer, $isWinBySelf, $payerIsDealer);
+                $payPoint = -$pointItem->getPayPoint($receiverIsDealer, $isTsumo, $payerIsDealer);
                 $totalPayPoint += $payPoint;
             }
             return $totalPayPoint;

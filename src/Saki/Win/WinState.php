@@ -5,7 +5,7 @@ use Saki\Util\ComparablePriority;
 use Saki\Util\Enum;
 
 class WinState extends Enum {
-    static function getWinBySelfOrOther(bool $isPrivate) {
+    static function getTsumoOrOther(bool $isPrivate) {
         $v = $isPrivate ? self::WIN_BY_SELF : self::WIN_BY_OTHER;
         return self::create($v);
     }

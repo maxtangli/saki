@@ -120,10 +120,10 @@ abstract class Command {
      * Used in: PublicCommand.matchPhase()
      * @return bool
      */
-    static function isWinByOther() {
+    static function isRon() {
         $cls = get_called_class();
-        $hasWinByOtherToken = strpos($cls, 'WinByOther') !== false;
-        return $hasWinByOtherToken;
+        $hasRonToken = strpos($cls, 'Ron') !== false;
+        return $hasRonToken;
     }
 
     static function getParamDeclarations() {

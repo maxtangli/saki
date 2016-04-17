@@ -143,7 +143,7 @@ class WinAnalyzer {
         }
 
         // case3: win by self or win by other
-        $winState = WinState::getWinBySelfOrOther($subTarget->isPrivatePhase());
+        $winState = WinState::getTsumoOrOther($subTarget->isPrivatePhase());
 
         $waitingType = $tileSeries->getWaitingType($subTarget->getAllMeldList(), $subTarget->getTileOfTargetTile(), $subTarget->getDeclaredMeldList());
         $fuTarget = new FuTarget($subTarget, $yakuList, $waitingType);

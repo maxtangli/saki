@@ -18,9 +18,9 @@ class NewWinResultTest extends SakiTestCase {
         NewWinResult $result, string $actorString
     ) {
         $actor = SeatWind::fromString($actorString);
-        $this->assertEquals($tableChange, $result->getTablePointChange($actor));
-        $this->assertEquals($reachChange, $result->getReachPointsChange($actor));
-        $this->assertEquals($seatChange, $result->getSeatWindTurnPointChange($actor));
+        $this->assertEquals($tableChange, $result->getTableChange($actor));
+        $this->assertEquals($reachChange, $result->getReachChange($actor));
+        $this->assertEquals($seatChange, $result->getSeatChange($actor));
         $this->assertEquals($tableChange + $reachChange + $seatChange, $result->getPointChange($actor));
     }
 
@@ -36,10 +36,9 @@ class NewWinResultTest extends SakiTestCase {
         }
     }
 
-    function testDealerWinBySelf() {
-        $fanAndFu = new FanAndFu(1, 40);
-        $input = WinResultInput::createWinBySelf(
-            [SeatWind::createEast(), $fanAndFu],
+    function testDealerTsumo() {
+        $input = WinResultInput::createTsumo(
+            [SeatWind::createEast(), new FanAndFu(1, 40)],
             [SeatWind::createSouth(), SeatWind::createWest(), SeatWind::createNorth()],
             1000,
             1
@@ -53,15 +52,70 @@ class NewWinResultTest extends SakiTestCase {
         ], $result);
     }
 
-    function testDealerWinByOther() {
+    function testDealerRon() {
+        $input = WinResultInput::createRon(
+            [[SeatWind::createEast(), new FanAndFu(1, 40)]],
+            SeatWind::createSouth(),
+            [SeatWind::createWest(), SeatWind::createNorth()],
+            1000,
+            1
+        );
+        $result = new NewWinResult($input);
+        $this->assertAllPointChange([
+            [2000, 1000, 300],
+            [-2000, 0, -300],
+            [0, 0, 0],
+            [0, 0, 0],
+        ], $result);
     }
 
-    function testLeisureWinBySelf() {
+    function testLeisureTsumo() {
+        $input = WinResultInput::createTsumo(
+            [SeatWind::createSouth(), new FanAndFu(2, 40)],
+            [SeatWind::createEast(), SeatWind::createWest(), SeatWind::createNorth()],
+            1000,
+            1
+        );
+        $result = new NewWinResult($input);
+        $this->assertAllPointChange([
+            [-1300, 0, -100],
+            [2700, 1000, 300],
+            [-700, 0, -100],
+            [-700, 0, -100],
+        ], $result);
     }
 
-    function testLeisureWinByOther() {
+    function testLeisureRon() {
+        $input = WinResultInput::createRon(
+            [[SeatWind::createSouth(), new FanAndFu(2, 40)]],
+            SeatWind::createWest(),
+            [SeatWind::createEast(), SeatWind::createNorth()],
+            1000,
+            1
+        );
+        $result = new NewWinResult($input);
+        $this->assertAllPointChange([
+            [0, 0, 0],
+            [2600, 1000, 300],
+            [-2600, 0, -300],
+            [0, 0, 0],
+        ], $result);
     }
 
-    function testMultipleWinByOther() {
+    function testMultipleRon() {
+        $input = WinResultInput::createRon(
+            [[SeatWind::createEast(), new FanAndFu(1, 40)], [SeatWind::createSouth(), new FanAndFu(2, 40)]],
+            SeatWind::createWest(),
+            [SeatWind::createNorth()],
+            1000,
+            1
+        );
+        $result = new NewWinResult($input);
+        $this->assertAllPointChange([
+            [2000, 1000, 300],
+            [2600, 0, 300],
+            [-2000 - 2600, 0, -300 - 300],
+            [0, 0, 0],
+        ], $result);
     }
 }

@@ -9,11 +9,11 @@ class FuResult {
     private $pairFu;
     private $waitingTypeFu;
     private $concealedFu;
-    private $winBySelfFu;
+    private $tsumoFu;
     private $roughTotalFu;
     private $totalFu;
 
-    function __construct($specialYakuTotalFu, $baseFu, $winSetFu, $winSetFuResults, $pairFu, $waitingTypeFu, $concealedFu, $winBySelfFu, $roughTotalFu, $totalFu) {
+    function __construct($specialYakuTotalFu, $baseFu, $winSetFu, $winSetFuResults, $pairFu, $waitingTypeFu, $concealedFu, $tsumoFu, $roughTotalFu, $totalFu) {
         $this->specialYakuTotalFu = $specialYakuTotalFu;
         $this->baseFu = $baseFu;
         $this->winSetFu = $winSetFu;
@@ -21,7 +21,7 @@ class FuResult {
         $this->pairFu = $pairFu;
         $this->waitingTypeFu = $waitingTypeFu;
         $this->concealedFu = $concealedFu;
-        $this->winBySelfFu = $winBySelfFu;
+        $this->tsumoFu = $tsumoFu;
         $this->roughTotalFu = $roughTotalFu;
         $this->totalFu = $totalFu;
     }
@@ -57,8 +57,8 @@ class FuResult {
         return $this->concealedFu;
     }
 
-    function getWinBySelfFu() {
-        return $this->winBySelfFu;
+    function getTsumoFu() {
+        return $this->tsumoFu;
     }
 
     function getRoughTotalFu() {

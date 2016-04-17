@@ -10,7 +10,7 @@ class FuritenTest extends SakiTestCase {
         $this->assertFuritenImpl(true, $r, $seatWind, ...$scripts);
     }
 
-    function assertWinByOther(Round $r, string $seatWind, ...$scripts) {
+    function assertRon(Round $r, string $seatWind, ...$scripts) {
         $this->assertFuritenImpl(false, $r, $seatWind, ...$scripts);
     }
 
@@ -76,7 +76,7 @@ class FuritenTest extends SakiTestCase {
         $r = new Round();
 
         // setup reach
-        $this->assertWinByOther(
+        $this->assertRon(
             $r, 'E',
             'reach E E:s-123m456m789m23s55sE:E',
             'passAll; discard S S:s-1s:1s'
@@ -109,7 +109,7 @@ class FuritenTest extends SakiTestCase {
         // other discarded in one turn
         $r = new Round();
         // setup
-        $this->assertWinByOther(
+        $this->assertRon(
             $r, 'S',
             'discard E E:s-E:E'
             , 'passAll; discard S S:s-123m456m789m23s55sE:E'
@@ -126,7 +126,7 @@ class FuritenTest extends SakiTestCase {
             'passAll; discard E E:s-4s:4s'
         );
         // not furiten after self's discard
-        $this->assertWinByOther(
+        $this->assertRon(
             $r, 'S',
             'mockNextDraw E; passAll; discard S E'
             , 'passAll; discard W W:s-1s:1s'

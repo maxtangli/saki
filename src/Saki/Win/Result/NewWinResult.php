@@ -32,29 +32,33 @@ class NewWinResult extends NewResult {
     }
 
     function getPointChange(SeatWind $seatWind) {
-        return $this->getTablePointChange($seatWind)
-        + $this->getReachPointsChange($seatWind)
-        + $this->getSeatWindTurnPointChange($seatWind);
+        return $this->getTableChange($seatWind)
+        + $this->getReachChange($seatWind)
+        + $this->getSeatChange($seatWind);
     }
 
     //endregion
 
-    function getTablePointChange(SeatWind $seatWind) {
+    /**
+     * @param SeatWind $seatWind
+     * @return int
+     */
+    function getTableChange(SeatWind $seatWind) {
         // winner: $pointItem->getWinnerChange()
         // loser: sum each winner.$pointItem->getLoserChange()
         // irrelevant: 0
         $input = $this->getInput();
-        $isWinBySelf = $input->isWinBySelf();
+        $isTsumo = $input->isTsumo();
         $item = $input->getItem($seatWind);
         if ($item->isWinner()) {
             $winnerItem = $item;
             return $winnerItem->getPointTableItem()
-                ->getWinnerPointChange($isWinBySelf, $winnerItem->isDealer());
+                ->getWinnerPointChange($isTsumo, $winnerItem->isDealer());
         } elseif ($item->isLoser()) {
             $loserItem = $item;
-            $selector = function (WinResultInputItem $winnerItem) use ($isWinBySelf, $loserItem) {
+            $selector = function (WinResultInputItem $winnerItem) use ($isTsumo, $loserItem) {
                 return $winnerItem->getPointTableItem()
-                    ->getLoserPointChange($isWinBySelf, $winnerItem->isDealer(), $loserItem->isDealer());
+                    ->getLoserPointChange($isTsumo, $winnerItem->isDealer(), $loserItem->isDealer());
             };
             return $input->getWinnerItemList()->getSum($selector);
         } else {
@@ -66,7 +70,7 @@ class NewWinResult extends NewResult {
      * @param SeatWind $seatWind
      * @return int
      */
-    function getReachPointsChange(SeatWind $seatWind) {
+    function getReachChange(SeatWind $seatWind) {
         // nearest winner: $reachPoints
         // not nearest winner, loser, irrelevant: 0
         $input = $this->getInput();
@@ -79,17 +83,20 @@ class NewWinResult extends NewResult {
      * @param SeatWind $seatWind
      * @return int
      */
-    function getSeatWindTurnPointChange(SeatWind $seatWind) {
-        // winner: $seatWindTurn * 300 / winnerCount
-        // loser: - $seatWindTurn * 300 / loserCount
+    function getSeatChange(SeatWind $seatWind) {
+        // total = seatWindTurn * 300
+        // winner: total
+        // loser: tsumo ? - total / loserCount : total * winnerCount
         // irrelevant: 0
         $input = $this->getInput();
         $item = $input->getItem($seatWind);
         $total = $input->getSeatWindTurn() * 300; // always dividable by 1/2/3
         if ($item->isWinner()) {
-            return intval($total / $input->getWinnerCount());
+            return intval($total);
         } elseif ($item->isLoser()) {
-            return -intval($total / $input->getLoserCount());
+            return $input->isTsumo()
+                ? -intval($total / $input->getLoserCount())
+                : -intval($total * $input->getWinnerCount());
         } else {
             return 0;
         }

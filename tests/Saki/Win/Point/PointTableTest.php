@@ -23,12 +23,6 @@ class PointTableTest extends PHPUnit_Framework_TestCase {
     function testItem() {
         $fanAndFu = new FanAndFu(1, 40);
         $item = PointTable::create()->getPointItem($fanAndFu);
-        // dealer win
-        $this->assertEquals(2100, $item->getWinnerPointChange(true, true));
-        $this->assertEquals(2000, $item->getWinnerPointChange(false, true));
-        // leisure win
-        $this->assertEquals(1300, $item->getWinnerPointChange(true, false));
-        $this->assertEquals(1300, $item->getWinnerPointChange(false, false));
         // dealer lose
         $this->assertEquals(-700, $item->getLoserPointChange(true, false, true));
         $this->assertEquals(-1300, $item->getLoserPointChange(false, false, true));
@@ -37,5 +31,12 @@ class PointTableTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(-400, $item->getLoserPointChange(true, false, false));
         $this->assertEquals(-2000, $item->getLoserPointChange(false, true, false));
         $this->assertEquals(-1300, $item->getLoserPointChange(false, false, false));
+
+        // dealer win
+        $this->assertEquals(2100, $item->getWinnerPointChange(true, true));
+        $this->assertEquals(2000, $item->getWinnerPointChange(false, true));
+        // leisure win
+        $this->assertEquals(1500, $item->getWinnerPointChange(true, false));
+        $this->assertEquals(1300, $item->getWinnerPointChange(false, false));
     }
 }

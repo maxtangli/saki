@@ -271,10 +271,10 @@ rush 23 WinAnalyzer: furiten 14.7h
 - [x] add reach turn 0.5h
 - [x] furiten final test 1.3h // finally this long long rush finished !
 
-rush 24 WinByOther, MultipleWinByOther 1h
+rush 24 Ron, MultipleRon 1h
 
-- [x] round.winByOther 0.2h
-- [x] test MultipleWinByOther 0.3h
+- [x] round.ron 0.2h
+- [x] test MultipleRon 0.3h
 - [x] refactor: remove WinResult subclasses 0.3h
 - [x] test Round.winByXXX 0.2h
 
@@ -353,7 +353,7 @@ rush 31 benchmark 1.4h
 rush 32 refactor RoundTest 0.6h
 
 - [x] optimize: remove unnecessary setUp() 0.3h // 1300ms -> 1160ms, -140ms
-- [x] optimize: merge testToNextRound into testWinBySelf by avoid 1 winBySelf op // 1160ms -> 1020ms, -140s
+- [x] optimize: merge testToNextRound into testTsumo by avoid 1 tsumo op // 1160ms -> 1020ms, -140s
 - [x] measure testExhaustiveDraw 0.2h // it's ok
 - [x] optimize: split slow parts into RoundWinTest 0.1h // conclusion: It's all WinAnalyzer's fault!
 
@@ -479,7 +479,7 @@ rush 42 add RobbingAQuadYaku 5.1h
 - [x] RobbingAQuadPhase 0.4h
 
 - [x] analyze 0.1h
-- [x] robAQuadPhase: winByOtherCommand only 0.1h
+- [x] robAQuadPhase: ronCommand only 0.1h
 
 - [x] robAQuadPhase: target tile, robAQuadYaku 0.5h
 - [x] test: targetTile,robAQuad
@@ -714,9 +714,10 @@ rush 60 refactor Result
 - [x] test PointTableItem 0.6h // so happy to write clever test!
 
 - [x] rewrite WinResult: part2 1.2h
-- [x] bug: failed to consider ceil issues when WinBySelf! 0.5h// so terrible ...
-- [ ] introduce terms: tsumo, ron.
-- [ ] test and refactor WinResult 0.5h
+- [x] bug: failed to consider ceil issues when Tsumo! 0.5h// so terrible ...
+- [x] introduce terms: tsumo, ron.
+- [x] test and refactor WinResult 1.1h
+- [ ] adapt WinResult
 
 rush refactor Saki/Win/ part3
 

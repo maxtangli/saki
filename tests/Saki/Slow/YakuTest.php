@@ -445,7 +445,7 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         $areaS = $r->getAreas()->getArea(SeatWind::createSouth());
         $this->assertEquals(Tile::fromString('1m'), $areaS->getHand()->getTarget()->getTile());
 
-        // S winBySelf FirstTurnWin
+        // S tsumo FirstTurnWin
         $yakuList = $r->getWinReport($r->getAreas()->getCurrentSeatWind())->getYakuList()->toYakuList();
         $this->assertContains(FirstTurnWinYaku::create(), $yakuList, $yakuList);
     }

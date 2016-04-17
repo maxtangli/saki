@@ -10,8 +10,8 @@ use Saki\Command\Debug\MockHandCommand;
 use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\ParamDeclaration\TileParamDeclaration;
 use Saki\Command\PrivateCommand\DiscardCommand;
-use Saki\Command\PrivateCommand\WinBySelfCommand;
-use Saki\Command\PublicCommand\WinByOtherCommand;
+use Saki\Command\PrivateCommand\TsumoCommand;
+use Saki\Command\PublicCommand\RonCommand;
 use Saki\Game\Round;
 use Saki\Game\SeatWind;
 use Saki\Tile\Tile;
@@ -76,8 +76,8 @@ class CommandTest extends \PHPUnit_Framework_TestCase {
         $this->assertTrue(MockHandCommand::isDebug());
     }
 
-    function testIsWinByOther() {
-        $this->assertFalse(WinBySelfCommand::isWinByOther());
-        $this->assertTrue(WinByOtherCommand::isWinByOther());
+    function testIsRon() {
+        $this->assertFalse(TsumoCommand::isRon());
+        $this->assertTrue(RonCommand::isRon());
     }
 }

@@ -26,21 +26,21 @@ class FuAnalyzer extends Singleton {
             $pairFu = $this->getPairFu($target->getPairMeld(), $target->getSeatWindTile(), $target->getPrevailingWindTile());
             $waitingTypeFu = $this->getWaitingTypeFu($target->getWaitingType());
             $concealedFu = $this->getConcealedFu($target->isConcealed());
-            $winBySelfFu = $this->getWinBySelfFu($target->isSelfPhase());
-            $roughTotalFu = $baseFu + $winSetFu + $pairFu + $waitingTypeFu + $concealedFu + $winBySelfFu;
+            $tsumoFu = $this->getTsumoFu($target->isSelfPhase());
+            $roughTotalFu = $baseFu + $winSetFu + $pairFu + $waitingTypeFu + $concealedFu + $tsumoFu;
             $totalFu = $this->roughToTotal($roughTotalFu);
-            return new FuResult($specialYakuTotalFu, $baseFu, $winSetFu, $winSetFuResults, $pairFu, $waitingTypeFu, $concealedFu, $winBySelfFu, $roughTotalFu, $totalFu);
+            return new FuResult($specialYakuTotalFu, $baseFu, $winSetFu, $winSetFuResults, $pairFu, $waitingTypeFu, $concealedFu, $tsumoFu, $roughTotalFu, $totalFu);
         }
     }
 
-    function getSpecialYakuTotalFu(YakuItemList $yakuList, $winBySelf) {
+    function getSpecialYakuTotalFu(YakuItemList $yakuList, $tsumo) {
         if ($yakuList->getTotalFan() > 4) {
             return 0;
         }
 
         // 平和
         if ($yakuList->valueExist(AllRunsYaku::create())) {
-            if ($winBySelf) { // ツモ平和	一律20符
+            if ($tsumo) { // ツモ平和	一律20符
                 return 20;
             } else { // 喰い平和	一律30符
                 return 30;
@@ -141,8 +141,8 @@ class FuAnalyzer extends Singleton {
         return $isConcealed ? 10 : 0; // 門前加符	10符
     }
 
-    function getWinBySelfFu($isWinBySelf) {
-        return $isWinBySelf ? 2 : 0; // ツモ符	2符
+    function getTsumoFu($isTsumo) {
+        return $isTsumo ? 2 : 0; // ツモ符	2符
     }
 
     function roughToTotal($roughFu) {

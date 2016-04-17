@@ -29,7 +29,7 @@ class ResultTest extends SakiTestCase {
         return $yakuList;
     }
 
-    function testWinBySelf() {
+    function testTsumo() {
         $round = $this->getInitRound();
         $playerList = $round->getPlayerList();
         $players = $playerList->toArray();
@@ -41,7 +41,7 @@ class ResultTest extends SakiTestCase {
 
 
         // 40符3番 親 7700 / 2600all,
-        $r = WinResult::createWinBySelf($players, $playerList[0], $winResult, 0, 0);
+        $r = WinResult::createTsumo($players, $playerList[0], $winResult, 0, 0);
         $expected = [
             [$playerList[0], 2600 * 3],
             [$playerList[1], -2600],
@@ -53,7 +53,7 @@ class ResultTest extends SakiTestCase {
         }
 
         // accumulatedReachCount + seatWindTurn
-        $r = WinResult::createWinBySelf($players, $playerList[0], $winResult, 2, 2);
+        $r = WinResult::createTsumo($players, $playerList[0], $winResult, 2, 2);
         $expected = [
             [$playerList[0], 2600 * 3 + 2000 + 600],
             [$playerList[1], -2600 - 200],
@@ -65,7 +65,7 @@ class ResultTest extends SakiTestCase {
         }
 
         // 40符3番 子 5200 / 1300+1300+2600
-        $r = WinResult::createWinBySelf($players, $playerList[1], $winResult, 0, 0);
+        $r = WinResult::createTsumo($players, $playerList[1], $winResult, 0, 0);
         $expected = [
             [$playerList[0], -2600],
             [$playerList[1], 2600 + 1300 + 1300],
@@ -77,7 +77,7 @@ class ResultTest extends SakiTestCase {
         }
     }
 
-    function testWinByOther() {
+    function testRon() {
         $r = $this->getInitRound();
         $playerList = $r->getPlayerList();
         $players = $playerList->toArray();
@@ -87,7 +87,7 @@ class ResultTest extends SakiTestCase {
         $this->assertFanAndFu(3, 40, $winResult);
 
         // 40符3番 親 7700 / 2600all,
-        $r = WinResult::createWinByOther($players, $players[0], $winResult, $players[1], 0, 0);
+        $r = WinResult::createRon($players, $players[0], $winResult, $players[1], 0, 0);
         $expected = [
             [$playerList[0], 7700],
             [$playerList[1], -7700],
@@ -99,7 +99,7 @@ class ResultTest extends SakiTestCase {
         }
 
         // 2,2
-        $r = WinResult::createWinByOther($players, $players[0], $winResult, $players[1], 2, 2);
+        $r = WinResult::createRon($players, $players[0], $winResult, $players[1], 2, 2);
         $expected = [
             [$playerList[0], 7700 + 2000 + 600],
             [$playerList[1], -7700 - 600],
@@ -111,7 +111,7 @@ class ResultTest extends SakiTestCase {
         }
 
         // 40符3番 子 5200 / 1300+1300+2600
-        $r = WinResult::createWinByOther($players, $players[1], $winResult, $players[0], 0, 0);
+        $r = WinResult::createRon($players, $players[1], $winResult, $players[0], 0, 0);
         $expected = [
             [$playerList[0], -5200],
             [$playerList[1], 5200],
@@ -123,7 +123,7 @@ class ResultTest extends SakiTestCase {
         }
     }
 
-    function testMultiWinByOther() {
+    function testMultiRon() {
         $r = $this->getInitRound();
         $playerList = $r->getPlayerList();
         $players = $playerList->toArray();
@@ -133,7 +133,7 @@ class ResultTest extends SakiTestCase {
         $this->assertFanAndFu(3, 40, $winResult);
 
         // 40符3番 親 7700, 子 5200
-        $r = WinResult::createMultiWinByOther($players, [$players[0], $players[1]], [$winResult, $winResult], $players[3], 0, 0);
+        $r = WinResult::createMultiRon($players, [$players[0], $players[1]], [$winResult, $winResult], $players[3], 0, 0);
         $expected = [
             [$playerList[0], 7700],
             [$playerList[1], 5200],
@@ -145,7 +145,7 @@ class ResultTest extends SakiTestCase {
         }
 
         // 40符3番 親 7700, 子 5200
-        $r = WinResult::createMultiWinByOther($players, [$players[0], $players[1]], [$winResult, $winResult], $players[3], 2, 2);
+        $r = WinResult::createMultiRon($players, [$players[0], $players[1]], [$winResult, $winResult], $players[3], 2, 2);
         $expected = [
             [$playerList[0], 7700 + 1000 + 600],
             [$playerList[1], 5200 + 1000 + 600],

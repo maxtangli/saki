@@ -26,8 +26,8 @@ class PointTable extends Singleton {
                 $fanAndfu = new FanAndFu($fan, $fu);
                 $item = $this->getPointItem($fanAndfu);
                 $winnerChange = $item->getWinnerPointChange(false, true);
-                $loserChangeWhenWinBySelf = $item->getLoserPointChange(true, true, false);
-                $result[$fan][$fu] = [$winnerChange, $loserChangeWhenWinBySelf];
+                $loserChangeWhenTsumo = $item->getLoserPointChange(true, true, false);
+                $result[$fan][$fu] = [$winnerChange, $loserChangeWhenTsumo];
             }
         }
         return $result;
@@ -43,9 +43,9 @@ class PointTable extends Singleton {
                 $fanAndfu = new FanAndFu($fan, $fu);
                 $item = $this->getPointItem($fanAndfu);
                 $winnerChange = $item->getWinnerPointChange(false, false);
-                $leisureLoserChangeWhenWinBySelf = $item->getLoserPointChange(true, false, false);
-                $dealerLoserChangeWhenWinBySelf = $item->getLoserPointChange(true, false, true);
-                $result[$fan][$fu] = [$winnerChange, $leisureLoserChangeWhenWinBySelf, $dealerLoserChangeWhenWinBySelf];
+                $leisureLoserChangeWhenTsumo = $item->getLoserPointChange(true, false, false);
+                $dealerLoserChangeWhenTsumo = $item->getLoserPointChange(true, false, true);
+                $result[$fan][$fu] = [$winnerChange, $leisureLoserChangeWhenTsumo, $dealerLoserChangeWhenTsumo];
             }
         }
         return $result;

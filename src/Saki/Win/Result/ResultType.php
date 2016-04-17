@@ -21,13 +21,13 @@ class ResultType extends Enum {
      * @return bool
      */
     function isWin() {
-        return $this->isWinBySelf() || $this->isWinByOther();
+        return $this->isTsumo() || $this->isRon();
     }
 
     /**
      * @return bool
      */
-    function isWinBySelf() {
+    function isTsumo() {
         return $this->isTargetValue([
             self::WIN_BY_SELF
         ]);
@@ -36,7 +36,7 @@ class ResultType extends Enum {
     /**
      * @return bool
      */
-    function isWinByOther() {
+    function isRon() {
         return $this->isTargetValue([
             self::WIN_BY_OTHER,
             self::DOUBLE_WIN_BY_OTHER,
@@ -47,7 +47,7 @@ class ResultType extends Enum {
     /**
      * @return bool
      */
-    function isMultiWinByOther() {
+    function isMultiRon() {
         return $this->isTargetValue([
             self::DOUBLE_WIN_BY_OTHER,
             self::TRIPLE_WIN_BY_OTHER

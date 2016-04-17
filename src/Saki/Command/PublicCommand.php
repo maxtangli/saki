@@ -9,7 +9,7 @@ abstract class PublicCommand extends PlayerCommand {
         }
 
         if ($phaseState->isRobQuad()) {
-            return $this->isWinByOther();
+            return $this->isRon();
         }
 
         return true;

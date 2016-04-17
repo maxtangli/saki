@@ -5,7 +5,7 @@ use Saki\Util\MsTimer;
 require_once __DIR__ . '/../bootstrap.php';
 
 $ratioMap = [
-    // $isWinBySelf =>
+    // $isTsumo =>
     //  $winnerIsDealer => $loserIsDealer => $ratio
     true => [
         true => [true => 'error', false => 2,],

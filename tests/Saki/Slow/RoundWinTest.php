@@ -7,14 +7,14 @@ use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 
 class RoundWinTest extends PHPUnit_Framework_TestCase {
-    function testWinBySelf() {
+    function testTsumo() {
         // setup
         $r = new Round();
         $pro = $r->getProcessor();
         // setup
         $r->getAreas()->debugSetPrivate($r->getAreas()->getCurrentSeatWind(), TileList::fromString('123m456m789m123s55s'));
         // execute
-        $pro->process('winBySelf E');
+        $pro->process('tsumo E');
         // phase changed
         $this->assertEquals(Phase::create(Phase::OVER_PHASE), $r->getPhaseState()->getPhase());
         // point changed
@@ -29,15 +29,15 @@ class RoundWinTest extends PHPUnit_Framework_TestCase {
         // todo test initial state
     }
 
-    function testWinByOther() {
+    function testRon() {
         $r = new Round();
         $pro = $r->getProcessor();
-        $pro->process('discard E E:s-4s:4s; mockHand S 123m456m789m23s55s; winByOther S');
+        $pro->process('discard E E:s-4s:4s; mockHand S 123m456m789m23s55s; ron S');
         $this->assertTrue($r->getPhaseState()->getResult()->getResultType()->isWin());
     }
 
     // todo refactor MultiWin
-//    function Round.multiWinByOther(array $players) {
+//    function Round.multiRon(array $players) {
 //        $playerArray = new ArrayList($players);
 //        $playerArray->walk(function (Player $player) {
 //            $this->assertPublicPhase($player);
@@ -46,7 +46,7 @@ class RoundWinTest extends PHPUnit_Framework_TestCase {
 //        $winResults = $playerArray->toArray(function (Player $player) {
 //            return $this->getWinResult($player);
 //        });
-//        $result = WinResult::createMultiWinByOther(
+//        $result = WinResult::createMultiRon(
 //            $this->getPlayerList()->toArray(), $players, $winResults, $this->getCurrentPlayer(),
 //            $this->getRoundData()->getTileAreas()->getAccumulatedReachCount(),
 //            $this->getRoundData()->getPrevailingWindData()->getSeatWindTurn());
@@ -54,12 +54,12 @@ class RoundWinTest extends PHPUnit_Framework_TestCase {
 //        $this->getRoundData()->toNextPhase(new OverPhaseState($result));
 //    }
 //
-//    function testMultiWinByOther() {
+//    function testMultiRon() {
 //        $r = new Round();
 //        $r->debugDiscardByReplace($r->getAreas()->tempGetCurrentPlayer(), Tile::fromString('4s'));
 //        $r->getRoundData()->getTileAreas()->debugSetPublic($r->getPlayerList()[1], TileList::fromString('123m456m789m23s55s'));
 //        $r->getRoundData()->getTileAreas()->debugSetPublic($r->getPlayerList()[2], TileList::fromString('123m456m789m23s55s'));
-//        $r->multiWinByOther([$r->getPlayerList()[1], $r->getPlayerList()[2]]);
+//        $r->multiRon([$r->getPlayerList()[1], $r->getPlayerList()[2]]);
 //        $this->assertTrue($r->getRoundData()->getPhaseState()->getResult()->getResultType()->isWin());
 //    }
 
@@ -71,9 +71,9 @@ class RoundWinTest extends PHPUnit_Framework_TestCase {
         $r->roll(false);
         // todo replace reset() by debugReset()
 
-        // E Player winBySelf, but point not over 30000
+        // E Player tsumo, but point not over 30000
         $r->getAreas()->debugSetPrivate($r->getAreas()->getCurrentSeatWind(), TileList::fromString('123m456m789m123s55s'), null, Tile::fromString('2m'));
-        $r->getProcessor()->process('winBySelf E');
+        $r->getProcessor()->process('tsumo E');
         $r->getAreas()->getCurrentArea()->setPoint('25000');
         $this->assertFalse($r->getPhaseState()->isGameOver($r));
 

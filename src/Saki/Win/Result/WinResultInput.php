@@ -17,7 +17,7 @@ class WinResultInput {
      * @param int $seatWindTurn
      * @return WinResultInput
      */
-    static function createWinBySelf($winnerPair, array $others, int $reachPoints, int $seatWindTurn) {
+    static function createTsumo($winnerPair, array $others, int $reachPoints, int $seatWindTurn) {
         list($winner, $fuAndCount) = $winnerPair;
         $itemList = (new ArrayList())
             ->insertLast(
@@ -39,7 +39,7 @@ class WinResultInput {
      * @param int $seatWindTurn
      * @return WinResultInput
      */
-    static function createWinByOther(array $winnerPairs, SeatWind $loser, array $others, int $reachPoints, int $seatWindTurn) {
+    static function createRon(array $winnerPairs, SeatWind $loser, array $others, int $reachPoints, int $seatWindTurn) {
         $itemList = (new ArrayList())
             ->insertLast(
                 (new ArrayList($winnerPairs))->select(function (array $winnerPair) {
@@ -56,19 +56,19 @@ class WinResultInput {
         return new self(false, $itemList, $reachPoints, $seatWindTurn);
     }
 
-    private $isWinBySelf;
+    private $isTsumo;
     private $itemList;
     private $reachPoints;
     private $seatWindTurn;
 
     /**
-     * @param bool $isWinBySelf
+     * @param bool $isTsumo
      * @param ArrayList $itemList
      * @param int $reachPoints
      * @param int $seatWindTurn
      */
-    function __construct(bool $isWinBySelf, ArrayList $itemList, int $reachPoints, int $seatWindTurn) {
-        $this->isWinBySelf = $isWinBySelf;
+    function __construct(bool $isTsumo, ArrayList $itemList, int $reachPoints, int $seatWindTurn) {
+        $this->isTsumo = $isTsumo;
         $this->itemList = $itemList;
         $this->reachPoints = $reachPoints;
         $this->seatWindTurn = $seatWindTurn;
@@ -77,8 +77,8 @@ class WinResultInput {
     /**
      * @return bool
      */
-    function isWinBySelf() {
-        return $this->isWinBySelf;
+    function isTsumo() {
+        return $this->isTsumo;
     }
 
     /**
@@ -107,7 +107,7 @@ class WinResultInput {
      */
     function getResultType() {
         return ResultType::create(
-            $this->isWinBySelf()
+            $this->isTsumo()
                 ? ResultType::WIN_BY_SELF
                 : ResultType::WIN_BY_OTHER
         );
@@ -129,7 +129,11 @@ class WinResultInput {
             return $item->getSeatWind() == $seatWind;
         });
     }
-
+    
+    /**
+     * @param SeatWind $seatWind
+     * @return bool
+     */
     function isNearestWinner(SeatWind $seatWind) {
         // double $itemList to ensure finding in one loop
         $itemList = $this->getItemList()->getCopy()

@@ -43,7 +43,7 @@ class FuAnalyzerTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(2, $result->getPairFu());
         $this->assertEquals(2, $result->getWaitingTypeFu());
         $this->assertEquals(0, $result->getConcealedFu());
-        $this->assertEquals(2, $result->getWinBySelfFu());
+        $this->assertEquals(2, $result->getTsumoFu());
         $this->assertEquals(46, $result->getRoughTotalFu());
         $this->assertEquals(50, $result->getTotalFu());
     }

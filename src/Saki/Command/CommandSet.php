@@ -13,12 +13,12 @@ use Saki\Command\PrivateCommand\DiscardCommand;
 use Saki\Command\PrivateCommand\NineNineDrawCommand;
 use Saki\Command\PrivateCommand\PlusKongCommand;
 use Saki\Command\PrivateCommand\ReachCommand;
-use Saki\Command\PrivateCommand\WinBySelfCommand;
+use Saki\Command\PrivateCommand\TsumoCommand;
 use Saki\Command\PublicCommand\BigKongCommand;
 use Saki\Command\PublicCommand\ChowCommand;
 use Saki\Command\PublicCommand\PongCommand;
 use Saki\Command\PublicCommand\SmallKongCommand;
-use Saki\Command\PublicCommand\WinByOtherCommand;
+use Saki\Command\PublicCommand\RonCommand;
 use Saki\Util\ArrayList;
 use Saki\Util\ReadonlyArrayList;
 
@@ -34,13 +34,13 @@ class CommandSet extends ArrayList {
                     ConcealedKongCommand::class,
                     PlusKongCommand::class,
                     ReachCommand::class,
-                    WinBySelfCommand::class,
+                    TsumoCommand::class,
                     NineNineDrawCommand::class,
                     // public
                     ChowCommand::class,
                     PongCommand::class,
                     BigKongCommand::class,
-                    WinByOtherCommand::class,
+                    RonCommand::class,
                     // debug
                     MockNextReplaceCommand::class,
                     MockDeadWallCommand::class,
