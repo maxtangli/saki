@@ -1,70 +1,61 @@
 <?php
 namespace Saki\Win\Result;
 
-use Saki\Game\Player;
-use Saki\Game\PointFacade;
+use Saki\Game\PlayerType;
 use Saki\Game\SeatWind;
+use Saki\Util\Immutable;
 
-abstract class Result {
+/**
+ * @package Saki\Win\Result
+ */
+abstract class Result implements Immutable {
+    private $playerCount;
+    private $resultType;
+
     /**
-     * @var Player[]
+     * @param PlayerType $playerType
+     * @param ResultType $resultResultType
      */
-    private $players;
-    private $originPoints;
-    private $ResultType;
-
-    function __construct(array $players, ResultType $ResultType) {
-        if (count($players) != 4) {
-            throw new \BadMethodCallException('todo');
-        }
-        $this->players = $players;
-        $this->ResultType = $ResultType;
-        $this->originPoints = array_map(function (Player $player) {
-            return $player->getArea()->getPoint();
-        }, $players);
-    }
-
-    function getPlayers() {
-        return $this->players;
-    }
-
-    function getResultType() {
-        return $this->ResultType;
-    }
-
-    private function getOriginPoint(Player $player) {
-        $k = array_search($player, $this->players);
-        if ($k === false) {
-            throw new \InvalidArgumentException();
-        }
-        return $this->originPoints[$k];
-    }
-
-    protected function getOriginDealerPlayer() {
-        foreach ($this->getPlayers() as $player) {
-            if ($player->getArea()->getSeatWind()->isDealer()) {
-                return $player;
-            }
-        }
-        throw new \LogicException();
+    function __construct(PlayerType $playerType, ResultType $resultResultType) {
+        $this->playerCount = $playerType->getValue();
+        $this->resultType = $resultResultType;
     }
 
     /**
-     * @param Player $player
-     * @return PointDelta
-     */
-    final function getPointDelta(Player $player) {
-        return new PointDelta($this->getOriginPoint($player), $this->getPointDeltaInt($player));
-    }
-
-    /**
-     * @param Player $player
      * @return int
      */
-    abstract function getPointDeltaInt(Player $player);
+    function getPlayerCount() {
+        return $this->playerCount;
+    }
 
+    /**
+     * @return ResultType
+     */
+    function getResultType() {
+        return $this->resultType;
+    }
+
+    /**
+     * @return array An array to indicate point changes in format e.x. ['E' => -1000 ...].
+     */
+    function getPointChangeMap() {
+        $keyList = SeatWind::createList($this->getPlayerCount()); // todo refactor
+        $valueList = $keyList->toArrayList(function (SeatWind $seatWind) {
+            return $this->getPointChange($seatWind);
+        });
+        return array_combine($keyList->toArray(), $valueList->toArray());
+    }
+
+    //region subclass hook
     /**
      * @return bool
      */
     abstract function isKeepDealer();
+
+    /**
+     * @param SeatWind $seatWind
+     * @return int
+     */
+    abstract function getPointChange(SeatWind $seatWind);
+    //endregion
 }

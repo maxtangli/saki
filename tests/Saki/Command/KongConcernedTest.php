@@ -26,7 +26,7 @@ class KongConcernedTest extends PHPUnit_Framework_TestCase {
         );
 
         $areaBefore = $r->getAreas()->getCurrentArea();
-        
+
         // robQuad phase
         $pro->process('plusKong S S:s-1m:1m');
         $this->assertEquals(Phase::createPublic(), $r->getPhaseState()->getPhase());

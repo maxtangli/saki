@@ -1,17 +1,17 @@
 <?php
 
 use Saki\Meld\Meld;
-use Saki\Meld\MeldCombinationAnalyzer;
+use Saki\Meld\MeldListAnalyzer;
 use Saki\Meld\RunMeldType;
 use Saki\Tile\TileList;
 
-class MeldCombinationAnalyzerTest extends PHPUnit_Framework_TestCase {
+class MeldListAnalyzerTest extends PHPUnit_Framework_TestCase {
     /**
      * @dataProvider getMeldCompositionsProvider
      */
     function testGetMeldCompositions($expectedMeldListStrings, $tilesStr, $meldTypes) {
-        $r = new MeldCombinationAnalyzer($meldTypes, 0, false);
-        $combinationList = $r->analyzeMeldCombinationList(TileList::fromString($tilesStr));
+        $r = new MeldListAnalyzer($meldTypes, 0, false);
+        $combinationList = $r->analyzeMeldListList(TileList::fromString($tilesStr));
         $actualMeldListStrings = array_map(function ($v) {
             return $v->__toString();
         }, $combinationList->toArray());
@@ -45,12 +45,12 @@ class MeldCombinationAnalyzerTest extends PHPUnit_Framework_TestCase {
     }
 
     function testConcealed() {
-        $r = new MeldCombinationAnalyzer([RunMeldType::create()], 0, true);
-        $combinationList = $r->analyzeMeldCombinationList(TileList::fromString('123s'));
+        $r = new MeldListAnalyzer([RunMeldType::create()], 0, true);
+        $combinationList = $r->analyzeMeldListList(TileList::fromString('123s'));
         $this->assertEquals(Meld::fromString('(123s)'), $combinationList[0][0]);
 
-        $r = new MeldCombinationAnalyzer([RunMeldType::create()], 0, false);
-        $combinationList = $r->analyzeMeldCombinationList(TileList::fromString('123s'));
+        $r = new MeldListAnalyzer([RunMeldType::create()], 0, false);
+        $combinationList = $r->analyzeMeldListList(TileList::fromString('123s'));
         $this->assertEquals(Meld::fromString('123s'), $combinationList[0][0]);
     }
 }

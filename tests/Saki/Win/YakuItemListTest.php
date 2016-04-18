@@ -15,7 +15,7 @@ class MockYaku extends Yaku {
         return 1;
     }
 
-    public function getRequiredTileSeries() {
+    public function getRequiredSeries() {
         return [];
     }
 
@@ -33,7 +33,7 @@ class MockYaku2 extends Yaku {
         return 3;
     }
 
-    public function getRequiredTileSeries() {
+    public function getRequiredSeries() {
         return [];
     }
 
@@ -55,7 +55,7 @@ class MockYakuMan extends Yaku {
         return 13;
     }
 
-    public function getRequiredTileSeries() {
+    public function getRequiredSeries() {
         return [];
     }
 

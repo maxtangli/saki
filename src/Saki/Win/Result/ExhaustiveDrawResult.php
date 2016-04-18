@@ -1,73 +1,82 @@
 <?php
 namespace Saki\Win\Result;
 
-use Saki\Game\Player;
-use Saki\Util\ArrayList;
-use Saki\Util\Utils;
+use Saki\Game\PlayerType;
+use Saki\Game\SeatWind;
 
+/**
+ * @package Saki\Win\Result
+ */
 class ExhaustiveDrawResult extends Result {
-    private $players;
-    private $isWaitings;
-
     /**
-     * @param Player[] $players
-     * @param bool[] $isWaitings
+     * @param bool[] $waitingArray
+     * @return ExhaustiveDrawResult
      */
-    function __construct(array $players, array $isWaitings) {
-        parent::__construct($players, ResultType::create(ResultType::EXHAUSTIVE_DRAW));
-        $valid = count($players) == count($isWaitings);
-        if (!$valid) {
-            throw new \InvalidArgumentException();
-        }
-        $this->players = $players;
-        $this->isWaitings = $isWaitings;
+    static function fromWaitingArray(array $waitingArray) {
+        $keys = PlayerType::create(count($waitingArray))->getSeatWindList()->toArray();
+        $waitingMap = array_combine($keys, $waitingArray);
+        return new self($waitingMap);
     }
 
-    /**
-     * @param Player $player
-     * @return PointDelta
-     */
-    function getPointDeltaInt(Player $player) {
-        /**
-         * https://ja.wikipedia.org/wiki/麻雀の点
-         * 不聴罰符（ノーテンばっぷ）
-         * - ノーテン罰符は常に計3000点である。
-         * - 3000点をノーテンの者が等分して払い、その3000点を聴牌していた者が等分して受け取る。
-         * - 和了点のような親か子での違いはない。
-         */
-        $waitingCount = $this->getIsWaitingCount();
-        $notWaitingCount = $this->getNotWaitingCount();
-        if ($waitingCount == 0 || $notWaitingCount == 0) {
-            return 0;
-        } else {
-            $totalDelta = 3000;
-            $delta = $this->isWaiting($player) ? $totalDelta / $waitingCount : -$totalDelta / $notWaitingCount;
-            return $delta;
-        }
-    }
+    private $waitingMap;
 
     /**
-     * @return Player
+     * @param array $waitingMap An array in format: ['E' => $isWaiting ...].
      */
+    function __construct(array $waitingMap) {
+        // todo validate
+        $this->waitingMap = $waitingMap;
+        $playerType = PlayerType::create(count($waitingMap));
+        $resultType = ResultType::create(ResultType::EXHAUSTIVE_DRAW);
+        parent::__construct($playerType, $resultType);
+    }
+
+    //region impl
     function isKeepDealer() {
-        return $this->isWaiting($this->getOriginDealerPlayer());
+        return $this->isDealerWaiting();
     }
 
-    function isWaiting(Player $player) {
-        $i = array_search($player, $this->players, false);
-        if ($i === false) {
-            throw new \InvalidArgumentException();
+    function getPointChange(SeatWind $seatWind) {
+        list($waitingCount, $notWaitingCount) = $this->getCounts();
+
+        if ($waitingCount == 0) {
+            return 0;
         }
-        return $this->isWaitings[$i];
+
+        // 3000 points from notWaiting players to waiting players
+        return $this->isWaiting($seatWind)
+            ? 3000 / $notWaitingCount
+            : -3000 / $waitingCount;
+    }
+    //endregion
+
+    /**
+     * @return bool
+     */
+    protected function isDealerWaiting() {
+        return $this->isWaiting(SeatWind::createEast());
     }
 
-    function getIsWaitingCount() {
-        $isWaitingList = new ArrayList($this->isWaitings);
-        $targetValue = true;
-        return $isWaitingList->getCount(Utils::toPredicate($targetValue));
+    /**
+     * @param SeatWind $seatWind
+     * @return bool
+     */
+    protected function isWaiting(SeatWind $seatWind) {
+        return $this->waitingMap[$seatWind->__toString()];
     }
 
-    function getNotWaitingCount() {
-        return count($this->isWaitings) - $this->getIsWaitingCount();
+    /**
+     * @return int[] Return an array in format: [$waitingCount, $notWaitingCount].
+     */
+    protected function getCounts() {
+        $yes = $no = 0;
+        foreach ($this->waitingMap as $v) {
+            if ($v) {
+                ++$yes;
+            } else {
+                ++$no;
+            }
+        }
+        return [$yes, $no];
     }
 }

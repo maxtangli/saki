@@ -2,22 +2,34 @@
 namespace Saki\Phase;
 
 use Saki\Game\Phase;
-use Saki\Game\Player;
 use Saki\Game\Round;
 use Saki\Win\Result\Result;
 
+/**
+ * @package Saki\Phase
+ */
 class OverPhaseState extends PhaseState {
-    private $Result;
+    private $result;
 
-    function __construct(Result $Result) {
-        $this->Result = $Result;
+    /**
+     * @param Result $result
+     */
+    function __construct(Result $result) {
+        $this->result = $result;
     }
 
+    /**
+     * @return Result
+     */
     function getResult() {
-        return $this->Result;
+        return $this->result;
     }
 
-    function isGameOver(Round $round) {
+    /**
+     * @param Round $round
+     * @return bool
+     */
+    function isGameOver(Round $round) { // todo refactor into simpler ver
         $pointFacade = $round->getAreas()->getPointFacade();
         $prevailingCurrent = $round->getPrevailingCurrent();
 
@@ -73,17 +85,14 @@ class OverPhaseState extends PhaseState {
 
     function enter(Round $round) {
         $result = $this->getResult();
+        $areas = $round->getAreas();
+
         // modify points
-        foreach ($round->getPlayerList() as $player) {
-            /** @var Player $player */
-            $player = $player;
-            $afterPoint = $result->getPointDelta($player)->getAfter();
-            $player->getArea()->setPoint($afterPoint);
-        }
+        $areas->applyPointChangeMap($result->getPointChangeMap());
+
         // clear accumulatedReachCount if isWin
         if ($result->getResultType()->isWin()) {
-            // todo added to player already or not?
-            $round->getAreas()->setReachPoints(0);
+            $areas->setReachPoints(0);
         }
     }
 

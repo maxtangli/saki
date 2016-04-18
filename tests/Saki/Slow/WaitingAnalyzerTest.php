@@ -5,27 +5,25 @@ use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 use Saki\Util\ArrayList;
 use Saki\Win\FutureWaiting;
-use Saki\Win\WinAnalyzer;
-use Saki\Win\Yaku\YakuSet;
 
-class WaitingAnalyzerTest extends \PHPUnit_Framework_TestCase {
+class WaitingAnalyzerTest extends SakiTestCase {
     /**
      * @dataProvider publicDataProvider
      */
-    function testPublicData($onHandTileListString, $declaredMeldListString, $expected) {
-        $winAnalyzer = new WinAnalyzer(YakuSet::createStandard());
-        $waitingTileAnalyzer = $winAnalyzer->getWaitingAnalyzer();
+    function testPublicData($onHandTileListString, $declareString, $expected) {
+        $r = $this->getInitRound();
+        $waitingAnalyzer = $r->getGameData()->getWinAnalyzer()->getWaitingAnalyzer();
 
-        $handTileList = TileList::fromString($onHandTileListString);
-        $declaredMeldList = MeldList::fromString($declaredMeldListString);
+        $public = TileList::fromString($onHandTileListString);
+        $declare = MeldList::fromString($declareString);
 
-        $waitingTileList = $waitingTileAnalyzer->analyzePublic($handTileList, $declaredMeldList);
+        $waitingTileList = $waitingAnalyzer->analyzePublic($public, $declare);
         $waitingTileStrings = (new ArrayList())->fromSelect($waitingTileList, function (Tile $waitingTile) {
             return $waitingTile->__toString();
         })->toArray();
         $this->assertEquals($expected, $waitingTileStrings,
             sprintf('[%s],[%s],[%s],[%s]',
-                $onHandTileListString, $declaredMeldListString, implode(',', $expected), implode(',', $waitingTileStrings)));
+                $onHandTileListString, $declareString, implode(',', $expected), implode(',', $waitingTileStrings)));
     }
 
     function publicDataProvider() {
@@ -44,19 +42,19 @@ class WaitingAnalyzerTest extends \PHPUnit_Framework_TestCase {
     /**
      * @dataProvider privateDataProvider
      */
-    function testPrivateData($onHandTileListString, $declaredMeldListString, $expected) {
-        $winAnalyzer = new WinAnalyzer(YakuSet::createStandard());
-        $waitingTileAnalyzer = $winAnalyzer->getWaitingAnalyzer();
-        $handTileList = TileList::fromString($onHandTileListString);
-        $declaredMeldList = MeldList::fromString($declaredMeldListString);
+    function testPrivateData($onHandTileListString, $declareString, $expected) {
+        $r = $this->getInitRound();
+        $waitingAnalyzer = $r->getGameData()->getWinAnalyzer()->getWaitingAnalyzer();
+        $private = TileList::fromString($onHandTileListString);
+        $declare = MeldList::fromString($declareString);
 
-        $futureWaitingList = $waitingTileAnalyzer->analyzePrivate($handTileList, $declaredMeldList);
+        $futureWaitingList = $waitingAnalyzer->analyzePrivate($private, $declare);
         $discardedTileStrings = (new ArrayList())->fromSelect($futureWaitingList, function (FutureWaiting $futureWaiting) {
             return $futureWaiting->getDiscardedTile()->__toString();
         })->toArray();
         $this->assertEquals($expected, $discardedTileStrings,
             sprintf('[%s],[%s],[%s],[%s]',
-                $onHandTileListString, $declaredMeldListString, implode(',', $expected), implode(',', $discardedTileStrings)));
+                $onHandTileListString, $declareString, implode(',', $expected), implode(',', $discardedTileStrings)));
     }
 
     function privateDataProvider() {

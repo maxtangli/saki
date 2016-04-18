@@ -4,7 +4,7 @@ namespace Saki\Win\Yaku;
 
 use Saki\Util\ArrayList;
 use Saki\Util\Singleton;
-use Saki\Win\TileSeries;
+use Saki\Win\Series;
 use Saki\Win\WinSubTarget;
 
 /**
@@ -56,9 +56,9 @@ abstract class Yaku extends Singleton {
     }
 
     /**
-     * @return TileSeries[] design note: seems array is not required ...
+     * @return Series[] design note: seems array is not required ...
      */
-    abstract function getRequiredTileSeries();
+    abstract function getRequiredSeries();
 
     /**
      * @param WinSubTarget $subTarget
@@ -74,7 +74,7 @@ abstract class Yaku extends Singleton {
      */
     final function getFan(WinSubTarget $subTarget) {
         $matchAll = $this->matchConcealed($subTarget)
-            && $this->matchTileSeries($subTarget)
+            && $this->matchSeries($subTarget)
             && $this->matchOther($subTarget);
         if (!$matchAll) {
             return 0;
@@ -104,16 +104,16 @@ abstract class Yaku extends Singleton {
      * @param WinSubTarget $subTarget
      * @return bool
      */
-    final protected function matchTileSeries(WinSubTarget $subTarget) {
-        $requiredTileSeries = $this->getRequiredTileSeries();
-        if (empty($requiredTileSeries)) {
+    final protected function matchSeries(WinSubTarget $subTarget) {
+        $requiredSeries = $this->getRequiredSeries();
+        if (empty($requiredSeries)) {
             return true;
         }
 
-        // todo move getTileSeries into $subTarget
+        // todo move getSeries into $subTarget
         $allMeldList = $subTarget->getAllMeldList();
-        return (new ArrayList($requiredTileSeries))->any(function (TileSeries $tileSeries) use ($allMeldList) {
-            return $tileSeries->existIn($allMeldList);
+        return (new ArrayList($requiredSeries))->any(function (Series $series) use ($allMeldList) {
+            return $series->existIn($allMeldList);
         });
     }
 

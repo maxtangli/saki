@@ -28,7 +28,8 @@ class ReachCommand extends PrivateCommand {
         // todo not accurate now
 
         // assert waiting after discard
-        $analyzer = $context->getRound()->getWinAnalyzer()->getWaitingAnalyzer();
+        $winAnalyzer = $context->getRound()->getGameData()->getWinAnalyzer();
+        $analyzer = $winAnalyzer->getWaitingAnalyzer();
         $actorHand = $context->getActorHand();
         $futureWaitingList = $analyzer->analyzePrivate($actorHand->getPrivate(), $actorHand->getDeclare());
         $isWaiting = $futureWaitingList->count() > 0;

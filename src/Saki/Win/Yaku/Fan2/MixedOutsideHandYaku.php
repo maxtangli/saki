@@ -1,7 +1,7 @@
 <?php
 namespace Saki\Win\Yaku\Fan2;
 
-use Saki\Win\TileSeries;
+use Saki\Win\Series;
 use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\Yaku;
 
@@ -18,8 +18,8 @@ class MixedOutsideHandYaku extends Yaku {
         return 1;
     }
 
-    function getRequiredTileSeries() {
-        return [TileSeries::create(TileSeries::FOUR_WIN_SET_AND_ONE_PAIR)];
+    function getRequiredSeries() {
+        return [Series::create(Series::FOUR_WIN_SET_AND_ONE_PAIR)];
     }
 
     protected function matchOther(WinSubTarget $subTarget) {

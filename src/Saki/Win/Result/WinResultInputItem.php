@@ -88,7 +88,7 @@ class WinResultInputItem {
     function isDealer() {
         return $this->getSeatWind()->isDealer();
     }
-    
+
     /**
      * @return PointTableItem
      */

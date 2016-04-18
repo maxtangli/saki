@@ -13,7 +13,7 @@ class ThreeQuadsYaku extends Yaku {
         return 2;
     }
 
-    function getRequiredTileSeries() {
+    function getRequiredSeries() {
         return [];
     }
 

@@ -14,7 +14,7 @@ class FullFlushYaku extends Yaku {
         return 5;
     }
 
-    function getRequiredTileSeries() {
+    function getRequiredSeries() {
         return [];
     }
 

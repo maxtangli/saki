@@ -129,7 +129,7 @@ class WinResultInput {
             return $item->getSeatWind() == $seatWind;
         });
     }
-    
+
     /**
      * @param SeatWind $seatWind
      * @return bool

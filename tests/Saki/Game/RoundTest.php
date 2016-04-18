@@ -4,8 +4,6 @@ use Saki\FinalPoint\FinalPointStrategyTarget;
 use Saki\Game\Phase;
 use Saki\Game\Player;
 use Saki\Game\Round;
-use Saki\Game\SeatWind;
-use Saki\Meld\Meld;
 
 class RoundTest extends PHPUnit_Framework_TestCase {
     function testNew() {

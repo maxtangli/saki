@@ -1,8 +1,8 @@
 <?php
 namespace Saki\Win;
 
-use Saki\Meld\MeldCombinationAnalyzer;
 use Saki\Meld\MeldList;
+use Saki\Meld\MeldListAnalyzer;
 use Saki\Meld\PairMeldType;
 use Saki\Meld\RunMeldType;
 use Saki\Meld\TripleMeldType;
@@ -21,18 +21,18 @@ use Saki\Win\Yaku\YakuSet;
  */
 class WinAnalyzer {
     private $yakuAnalyzer;
-    private $tileSeriesAnalyzer;
+    private $seriesAnalyzer;
     private $waitingAnalyzer;
-    private $handMeldCombinationAnalyzer;
+    private $handMeldListAnalyzer;
 
     /**
      * @param YakuSet $yakuSet
      */
     function __construct(YakuSet $yakuSet) {
         $this->yakuAnalyzer = new YakuAnalyzer($yakuSet);
-        $this->tileSeriesAnalyzer = new TileSeriesAnalyzer($yakuSet->getTileSeriesList()->toArray());
+        $this->seriesAnalyzer = new SeriesAnalyzer($yakuSet->getSeriesList()->toArray());
         $this->waitingAnalyzer = new WaitingAnalyzer(
-            $this->tileSeriesAnalyzer
+            $this->seriesAnalyzer
         );
 
         $handMeldTypes = [
@@ -40,7 +40,7 @@ class WinAnalyzer {
             TripleMeldType::create(),
             PairMeldType::create(),
         ];
-        $this->handMeldCombinationAnalyzer = new MeldCombinationAnalyzer($handMeldTypes);
+        $this->handMeldListAnalyzer = new MeldListAnalyzer($handMeldTypes);
     }
 
     /**
@@ -51,10 +51,10 @@ class WinAnalyzer {
     }
 
     /**
-     * @return TileSeriesAnalyzer
+     * @return SeriesAnalyzer
      */
-    function getTileSeriesAnalyzer() {
-        return $this->tileSeriesAnalyzer;
+    function getSeriesAnalyzer() {
+        return $this->seriesAnalyzer;
     }
 
     /**
@@ -65,10 +65,10 @@ class WinAnalyzer {
     }
 
     /**
-     * @return MeldCombinationAnalyzer
+     * @return MeldListAnalyzer
      */
-    function getHandMeldCombinationAnalyzer() {
-        return $this->handMeldCombinationAnalyzer;
+    function getHandMeldListAnalyzer() {
+        return $this->handMeldListAnalyzer;
     }
 
     /**
@@ -79,9 +79,9 @@ class WinAnalyzer {
     function analyze(WinTarget $target) {
         // 1. handTileList target -> handMeldList's List
         $handTileList = $target->getPrivateHand();
-        $handMeldCombinationList = $this->getHandMeldCombinationAnalyzer()
-            ->analyzeMeldCombinationList($handTileList);
-        if ($handMeldCombinationList->isEmpty()) {
+        $handMeldListList = $this->getHandMeldListAnalyzer()
+            ->analyzeMeldListList($handTileList);
+        if ($handMeldListList->isEmpty()) {
             return WinReport::createNotWin();
         }
 
@@ -90,7 +90,7 @@ class WinAnalyzer {
             $subTarget = $target->toSubTarget($handMeldList);
             return $this->analyzeSub($subTarget);
         };
-        $subResultList = (new ArrayList())->fromSelect($handMeldCombinationList, $subResultSelector);
+        $subResultList = (new ArrayList())->fromSelect($handMeldListList, $subResultSelector);
 
         /**
          * 3. merge subResults into final result:
@@ -131,8 +131,8 @@ class WinAnalyzer {
      */
     function analyzeSub(WinSubTarget $subTarget) {
         // case1: not win
-        $tileSeries = $this->getTileSeriesAnalyzer()->analyzeTileSeries($subTarget->getAllMeldList());
-        if (!$tileSeries->isExist()) {
+        $series = $this->getSeriesAnalyzer()->analyzeSeries($subTarget->getAllMeldList());
+        if (!$series->isExist()) {
             return new WinSubReport(WinState::create(WinState::NOT_WIN), new YakuItemList(), 0);
         }
 
@@ -145,7 +145,7 @@ class WinAnalyzer {
         // case3: win by self or win by other
         $winState = WinState::getTsumoOrOther($subTarget->isPrivatePhase());
 
-        $waitingType = $tileSeries->getWaitingType($subTarget->getAllMeldList(), $subTarget->getTileOfTargetTile(), $subTarget->getDeclaredMeldList());
+        $waitingType = $series->getWaitingType($subTarget->getAllMeldList(), $subTarget->getTileOfTargetTile(), $subTarget->getDeclaredMeldList());
         $fuTarget = new FuTarget($subTarget, $yakuList, $waitingType);
         $fuResult = FuAnalyzer::create()->getResult($fuTarget);
         $fu = $fuResult->getTotalFu();

@@ -2,12 +2,12 @@
 
 use Saki\Game\SeatWind;
 use Saki\Win\Point\FanAndFu;
-use Saki\Win\Result\NewWinResult;
+use Saki\Win\Result\WinResult;
 use Saki\Win\Result\WinResultInput;
 
 class NewWinResultTest extends SakiTestCase {
     /**
-     * @param NewWinResult $result
+     * @param WinResult $result
      * @param string $actorString
      * @param int $tableChange
      * @param int $reachChange
@@ -15,20 +15,24 @@ class NewWinResultTest extends SakiTestCase {
      */
     protected function assertPointChange(
         int $tableChange, int $reachChange, int $seatChange,
-        NewWinResult $result, string $actorString
+        WinResult $result, string $actorString
     ) {
         $actor = SeatWind::fromString($actorString);
         $this->assertEquals($tableChange, $result->getTableChange($actor));
         $this->assertEquals($reachChange, $result->getReachChange($actor));
         $this->assertEquals($seatChange, $result->getSeatChange($actor));
-        $this->assertEquals($tableChange + $reachChange + $seatChange, $result->getPointChange($actor));
+
+        $totalChange = $tableChange + $reachChange + $seatChange;
+        $this->assertEquals($totalChange, $result->getPointChange($actor));
+
+        $this->assertEquals($totalChange, $result->getPointChangeMap()[$actor->__toString()]);
     }
 
     /**
      * @param array $expected
-     * @param NewWinResult $result
+     * @param WinResult $result
      */
-    protected function assertAllPointChange(array $expected, NewWinResult $result) {
+    protected function assertAllPointChange(array $expected, WinResult $result) {
         foreach ($expected as $i => list($tableChange, $reachChange, $seatChange)) {
             $actor = SeatWind::fromIndex($i + 1);
             $this->assertPointChange($tableChange, $reachChange, $seatChange,
@@ -43,7 +47,7 @@ class NewWinResultTest extends SakiTestCase {
             1000,
             1
         );
-        $result = new NewWinResult($input);
+        $result = new WinResult($input);
         $this->assertAllPointChange([
             [2100, 1000, 300],
             [-700, 0, -100],
@@ -60,7 +64,7 @@ class NewWinResultTest extends SakiTestCase {
             1000,
             1
         );
-        $result = new NewWinResult($input);
+        $result = new WinResult($input);
         $this->assertAllPointChange([
             [2000, 1000, 300],
             [-2000, 0, -300],
@@ -76,7 +80,7 @@ class NewWinResultTest extends SakiTestCase {
             1000,
             1
         );
-        $result = new NewWinResult($input);
+        $result = new WinResult($input);
         $this->assertAllPointChange([
             [-1300, 0, -100],
             [2700, 1000, 300],
@@ -93,7 +97,7 @@ class NewWinResultTest extends SakiTestCase {
             1000,
             1
         );
-        $result = new NewWinResult($input);
+        $result = new WinResult($input);
         $this->assertAllPointChange([
             [0, 0, 0],
             [2600, 1000, 300],
@@ -110,7 +114,7 @@ class NewWinResultTest extends SakiTestCase {
             1000,
             1
         );
-        $result = new NewWinResult($input);
+        $result = new WinResult($input);
         $this->assertAllPointChange([
             [2000, 1000, 300],
             [2600, 0, 300],

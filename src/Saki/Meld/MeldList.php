@@ -120,7 +120,7 @@ class MeldList extends ArrayList {
         });
     }
 
-    //region tileSeries
+    //region series
     /**
      * @return bool
      */

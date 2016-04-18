@@ -1,9 +1,7 @@
 <?php
 
-use Saki\Game\Player;
 use Saki\Game\Round;
 use Saki\Game\SeatWind;
-use Saki\Tile\Tile;
 
 class AreasTest extends PHPUnit_Framework_TestCase {
     function testGetHand() {
@@ -44,7 +42,7 @@ class AreasTest extends PHPUnit_Framework_TestCase {
         $r = new Round();
         $areas = $r->getAreas();
         $facade = $areas->getPointFacade();
-        
+
         $this->assertFalse($facade->hasMinus());
         $this->assertTrue($facade->hasTiledTop());
         $this->assertEquals(25000, $facade->getFirst()->getPoint());

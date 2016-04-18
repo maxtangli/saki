@@ -17,7 +17,7 @@ class AllSimplesYaku extends Yaku {
         return 1;
     }
 
-    function getRequiredTileSeries() {
+    function getRequiredSeries() {
         return [];
     }
 

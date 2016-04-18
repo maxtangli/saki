@@ -1,7 +1,7 @@
 <?php
 namespace Saki\Win\Yaku\Fan1;
 
-use Saki\Win\TileSeries;
+use Saki\Win\Series;
 use Saki\Win\WaitingType;
 use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\Yaku;
@@ -19,9 +19,9 @@ class AllRunsYaku extends Yaku {
         return 0;
     }
 
-    function getRequiredTileSeries() {
+    function getRequiredSeries() {
         return [
-            TileSeries::create(TileSeries::FOUR_WIN_SET_AND_ONE_PAIR)
+            Series::create(Series::FOUR_WIN_SET_AND_ONE_PAIR)
         ];
     }
 
@@ -36,7 +36,7 @@ class AllRunsYaku extends Yaku {
          */
         $isFourRunAndOnePair = $subTarget->getAllMeldList()->isFourRunAndOnePair();
 
-        $waitingType = TileSeries::create(TileSeries::FOUR_WIN_SET_AND_ONE_PAIR)->getWaitingType(
+        $waitingType = Series::create(Series::FOUR_WIN_SET_AND_ONE_PAIR)->getWaitingType(
             $subTarget->getAllMeldList(), $subTarget->getTileOfTargetTile(), $subTarget->getDeclaredMeldList()
         );
         return $isFourRunAndOnePair

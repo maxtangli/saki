@@ -8,6 +8,7 @@ use Saki\Command\PublicCommand;
 use Saki\Game\SeatWind;
 use Saki\Phase\OverPhaseState;
 use Saki\Win\Result\WinResult;
+use Saki\Win\Result\WinResultInput;
 
 class RonCommand extends PublicCommand {
     static function getParamDeclarations() {
@@ -23,15 +24,18 @@ class RonCommand extends PublicCommand {
     }
 
     protected function executeImpl(CommandContext $context) {
-        $round = $this->getContext()->getRound();
+        $round = $context->getRound();
+        $actor = $this->getActor();
+        $current = $context->getCurrentSeatWind();
+        $areas = $context->getAreas();
 
-        $result = WinResult::createRon(
-            $round->getPlayerList()->toArray(),
-            $this->getActPlayer(),
-            $round->getWinReport($this->getActor()),
-            $context->tempGetCurrentPlayer(),
-            $round->getAreas()->getReachPoints() / 1000,
-            $round->getAreas()->getDealerArea()->getSeatWindTurn());
+        $result = new WinResult(WinResultInput::createRon(
+            [[$actor, $round->getWinReport($actor)->getFanAndFu()]],
+            $current,
+            $areas->getOtherSeatWinds([$actor, $current]),
+            $areas->getReachPoints(),
+            $areas->getDealerArea()->getSeatWindTurn()
+        ));
         $round->toNextPhase(
             new OverPhaseState($result)
         );

@@ -21,6 +21,21 @@ use Saki\Util\Immutable;
  * @package Saki\Hand
  */
 class Hand implements Immutable { // todo facade better?
+    /**
+     * @param TileList $private
+     * @param MeldList $declare
+     * @return Hand
+     */
+    static function debugFromPrivate(TileList $private, MeldList $declare) {
+        $public = $private->getCopy()->removeLast();
+        $target = new Target(
+            $private->getLast(),
+            TargetType::create(TargetType::KEEP),
+            SeatWind::createEast()
+        );
+        return new self($public, $declare, $target);
+    }
+
     private $public;
     private $declare;
     private $target;

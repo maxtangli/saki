@@ -23,7 +23,7 @@ class UraDoraYaku extends Yaku {
         return $doraFacade->getHandUraDoraFan($privateFull);
     }
 
-    function getRequiredTileSeries() {
+    function getRequiredSeries() {
         return [];
     }
 

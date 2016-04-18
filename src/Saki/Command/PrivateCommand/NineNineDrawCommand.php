@@ -25,8 +25,10 @@ class NineNineDrawCommand extends PrivateCommand {
     }
 
     protected function executeImpl(CommandContext $context) {
-        $result = new AbortiveDrawResult($context->getRound()->getPlayerList()->toArray(),
-            ResultType::create(ResultType::NINE_NINE_DRAW));
+        $result = new AbortiveDrawResult(
+            $context->getRound()->getGameData()->getPlayerType(),
+            ResultType::create(ResultType::NINE_NINE_DRAW)
+        );
         $context->getRound()->toNextPhase(new OverPhaseState($result));
     }
 }

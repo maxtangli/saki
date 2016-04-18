@@ -23,7 +23,7 @@ class RedDoraYaku extends Yaku {
         return $doraFacade->getHandRedDoraFan($privateFull);
     }
 
-    function getRequiredTileSeries() {
+    function getRequiredSeries() {
         return [];
     }
 

@@ -13,7 +13,7 @@ class AllHonorsYaku extends Yaku {
         return 13;
     }
 
-    function getRequiredTileSeries() {
+    function getRequiredSeries() {
         return [];
     }
 

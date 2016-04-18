@@ -6,17 +6,16 @@ use Saki\Command\CommandParser;
 use Saki\Command\CommandProcessor;
 use Saki\Command\CommandSet;
 use Saki\Phase\NullPhaseState;
+use Saki\Phase\OverPhaseState;
 use Saki\Phase\PhaseState;
 use Saki\Phase\PrivatePhaseState;
 use Saki\Phase\PublicPhaseState;
 use Saki\Tile\Tile;
-use Saki\Win\WinAnalyzer;
 use Saki\Win\WinTarget;
 
 class Round {
     // immutable
     private $gameData;
-    private $winAnalyzer;
     private $processor;
     // game variable
     private $prevailingCurrent;
@@ -30,7 +29,6 @@ class Round {
         // immutable
         $gameData = new GameData();
         $this->gameData = $gameData;
-        $this->winAnalyzer = new WinAnalyzer($gameData->getYakuSet());
         $this->processor = new CommandProcessor(
             new CommandParser(new CommandContext($this), CommandSet::createStandard())
         );
@@ -140,13 +138,13 @@ class Round {
         return $this->gameData;
     }
 
-    function getWinAnalyzer() {
-        return $this->winAnalyzer;
-    }
-
     function getWinReport(SeatWind $actor) {
         // WinTarget will assert valid player
-        return $this->getWinAnalyzer()->analyze(new WinTarget($actor, $this));
+        return $this->getGameData()->getWinAnalyzer()->analyze(new WinTarget($actor, $this));
+    }
+
+    function getProcessor() {
+        return $this->processor;
     }
 
     function getPrevailingCurrent() {
@@ -192,10 +190,6 @@ class Round {
 
         $keepDealer = $this->getPhaseState()->getResult()->isKeepDealer();
         $this->roll($keepDealer);
-    }
-
-    function getProcessor() {
-        return $this->processor;
     }
 }
 

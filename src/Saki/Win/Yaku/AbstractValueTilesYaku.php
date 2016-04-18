@@ -13,7 +13,7 @@ abstract class AbstractValueTilesYaku extends Yaku {
         return 1;
     }
 
-    function getRequiredTileSeries() {
+    function getRequiredSeries() {
         return [];
     }
 

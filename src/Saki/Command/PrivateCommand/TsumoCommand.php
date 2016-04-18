@@ -7,6 +7,7 @@ use Saki\Command\PrivateCommand;
 use Saki\Game\SeatWind;
 use Saki\Phase\OverPhaseState;
 use Saki\Win\Result\WinResult;
+use Saki\Win\Result\WinResultInput;
 
 class TsumoCommand extends PrivateCommand {
     static function getParamDeclarations() {
@@ -24,14 +25,15 @@ class TsumoCommand extends PrivateCommand {
 
     protected function executeImpl(CommandContext $context) {
         $round = $context->getRound();
+        $actor = $this->getActor();
+        $areas = $round->getAreas();
 
-        $result = WinResult::createTsumo(
-            $round->getPlayerList()->toArray(),
-            $this->getActPlayer(),
-            $round->getWinReport($this->getActor()),
-            $round->getAreas()->getReachPoints() / 1000,
-            $round->getAreas()->getDealerArea()->getSeatWindTurn()
-        );
+        $result = new WinResult(WinResultInput::createTsumo(
+            [$actor, $round->getWinReport($actor)->getFanAndFu()],
+            $areas->getOtherSeatWinds([$actor]),
+            $areas->getReachPoints(),
+            $areas->getDealerArea()->getSeatWindTurn()
+        ));
         $round->toNextPhase(new OverPhaseState($result));
     }
 }

@@ -11,7 +11,7 @@ use Saki\Util\Enum;
  * Used in: no-yaku-false-win WinResult.
  * @package Saki\Win
  */
-class TileSeries extends Enum {
+class Series extends Enum {
     const NOT_TILE_SERIES = 0;
     const FOUR_WIN_SET_AND_ONE_PAIR = 1;
     const SEVEN_PAIRS = 2;
@@ -49,14 +49,14 @@ class TileSeries extends Enum {
      * todo introduce Hand class which reduce param counts
      * @param MeldList $allMeldList
      * @param Tile $winTile
-     * @param MeldList $declaredMeldList
+     * @param MeldList $declare
      * @return WaitingType
      */
-    function getWaitingType(MeldList $allMeldList, Tile $winTile, MeldList $declaredMeldList) {
+    function getWaitingType(MeldList $allMeldList, Tile $winTile, MeldList $declare) {
         $this->assertValidAllMeldList($allMeldList);
 
-        $handMeldList = $declaredMeldList->isEmpty() ? $allMeldList->getCopy()
-            : $allMeldList->getCopy()->remove($declaredMeldList->toArray());
+        $handMeldList = $declare->isEmpty() ? $allMeldList->getCopy()
+            : $allMeldList->getCopy()->remove($declare->toArray());
 
         if (!$handMeldList->tileExist($winTile) || !$this->existIn($allMeldList)) {
             return WaitingType::create(WaitingType::NOT_WAITING);

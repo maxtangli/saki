@@ -54,7 +54,7 @@ class WinSubReport {
     function getFanAndFu() {
         return new FanAndFu($this->getYakuList()->getTotalFan(), $this->fu);
     }
-    
+
     function getFu() {
         return $this->fu;
     }

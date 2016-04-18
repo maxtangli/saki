@@ -13,7 +13,7 @@ class ThreeColorRunsYaku extends Yaku {
         return 1;
     }
 
-    function getRequiredTileSeries() {
+    function getRequiredSeries() {
         return [];
     }
 

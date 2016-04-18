@@ -38,6 +38,7 @@ abstract class PhaseState {
     abstract function getPhase();
 
     /**
+     * @param Round $round
      * @return PhaseState
      */
     abstract function getDefaultNextState(Round $round);

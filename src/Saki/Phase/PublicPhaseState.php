@@ -2,14 +2,11 @@
 namespace Saki\Phase;
 
 use Saki\Game\Phase;
-use Saki\Game\Player;
 use Saki\Game\Round;
-use Saki\Meld\QuadMeldType;
-use Saki\Util\ArrayList;
-use Saki\Win\Result\AbortiveDrawResult;
-use Saki\Win\Result\ExhaustiveDrawResult;
-use Saki\Win\Result\ResultType;
 
+/**
+ * @package Saki\Phase
+ */
 class PublicPhaseState extends PhaseState {
     private $robQuad;
     private $postLeave;
@@ -20,20 +17,46 @@ class PublicPhaseState extends PhaseState {
         };
     }
 
+    /**
+     * @return bool
+     */
     function isRobQuad() {
         return $this->robQuad;
     }
 
+    /**
+     * @param bool $robQuad
+     */
     function setRobQuad(bool $robQuad) {
         $this->robQuad = $robQuad;
     }
 
+    /**
+     * @return \Closure
+     */
     function getPostLeave() {
         return $this->postLeave;
     }
 
+    /**
+     * @param callable $postLeave
+     */
     function setPostLeave(callable $postLeave) {
         $this->postLeave = $postLeave;
+    }
+
+    /**
+     * @param Round $round
+     */
+    protected function handleDraw(Round $round) {
+        $drawAnalyzer = $round->getGameData()->getDrawAnalyzer();
+        $drawOrFalse = $drawAnalyzer->analyzeDrawOrFalse($round);
+        if ($drawOrFalse !== false) {
+            $drawResult = $drawOrFalse->getResult($round);
+            $this->setCustomNextState(new OverPhaseState($drawResult));
+        } else {
+            // do nothing
+        }
     }
 
     //region PhaseState impl
@@ -55,79 +78,5 @@ class PublicPhaseState extends PhaseState {
         $this->handleDraw($round);
         call_user_func($this->getPostLeave());
     }
-
     //endregion
-
-    protected function handleDraw(Round $round) {
-        $drawResult = $this->getDrawResult($round);
-        if ($drawResult) {
-            $this->setCustomNextState(new OverPhaseState($drawResult));
-        }
-    }
-
-    protected function getDrawResult(Round $round) {
-        // todo move to DrawRuler
-
-        // ExhaustiveDraw todo test shouldDrawTile==false case
-        $nextState = $this->getNextState($round);
-        $isExhaustiveDraw = $nextState->getPhase()->isPrivate()
-            && $nextState->shouldDrawTile()
-            && $round->getAreas()->getWall()->getRemainTileCount() == 0;
-        if ($isExhaustiveDraw) {
-            $players = $round->getPlayerList()->toArray();
-            $waitingAnalyzer = $round->getWinAnalyzer()->getWaitingAnalyzer();
-            $isWaitingStates = array_map(function (Player $player) use ($waitingAnalyzer, $round) {
-                $a13StyleHandTileList = $player->getArea()->getHand()->getPublic();
-                $declaredMeldList = $player->getArea()->getHand()->getDeclare();
-                $waitingTileList = $waitingAnalyzer->analyzePublic($a13StyleHandTileList, $declaredMeldList);
-                $isWaiting = $waitingTileList->count() > 0;
-                return $isWaiting;
-            }, $players);
-            $result = new ExhaustiveDrawResult($players, $isWaitingStates);
-            return $result;
-        }
-
-        // FourWindDraw
-        $isFirstRound = $round->getAreas()->getTurn()->isFirstCircle();
-        if ($isFirstRound) {
-            $allDiscardTileList = $round->getAreas()->getOpenHistory()->getAllDiscard();
-            if ($allDiscardTileList->count() == 4) {
-                $allDiscardTileList->distinct();
-                $isFourSameWindDiscard = $allDiscardTileList->count() == 1 && $allDiscardTileList[0]->isWind();
-                if ($isFourSameWindDiscard) {
-                    $result = new AbortiveDrawResult($round->getPlayerList()->toArray(),
-                        ResultType::create(ResultType::FOUR_WIND_DRAW));
-                    return $result;
-                }
-            }
-        }
-
-        // FourReachDraw
-        $isFourReachDraw = $round->getPlayerList()->all(function (Player $player) {
-            return $player->getArea()->getReachStatus()->isReach();
-        });
-        if ($isFourReachDraw) {
-            $result = new AbortiveDrawResult($round->getPlayerList()->toArray(),
-                ResultType::create(ResultType::FOUR_REACH_DRAW));
-            return $result;
-        }
-
-        // FourKongDraw: more than 4 declared-kong-meld by at least 2 targetList
-        $declaredKongCountList = (new ArrayList())->fromSelect($round->getPlayerList(), function (Player $player) {
-            return $player->getArea()->getHand()->getDeclare()->toFiltered([QuadMeldType::create()])->count();
-        });
-        $kongCount = $declaredKongCountList->getSum();
-        $kongPlayerCount = (new ArrayList())->fromSelect($declaredKongCountList)->where(function ($n) {
-            return $n > 0;
-        })->count();
-
-        $isFourKongDraw = $kongCount >= 4 && $kongPlayerCount >= 2;
-        if ($isFourKongDraw) {
-            $result = new AbortiveDrawResult($round->getPlayerList()->toArray(),
-                ResultType::create(ResultType::FOUR_KONG_DRAW));
-            return $result;
-        }
-
-        return false;
-    }
 }

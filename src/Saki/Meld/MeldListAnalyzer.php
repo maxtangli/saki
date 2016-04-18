@@ -9,7 +9,7 @@ use Saki\Util\ArrayList;
  * Analyze all possible meld combinations for a given TileList and conditions.
  * @package Saki\Meld
  */
-class MeldCombinationAnalyzer {
+class MeldListAnalyzer {
     private $meldTypes;
     private $allowPureWeakCount;
     private $toConcealed;
@@ -45,7 +45,7 @@ class MeldCombinationAnalyzer {
      * @param TileList $tileList
      * @return ArrayList Return an ArrayList of MeldList, where each MeldList means a meld combination.
      */
-    function analyzeMeldCombinationList(TileList $tileList) {
+    function analyzeMeldListList(TileList $tileList) {
         $orderedTileList = $tileList->getCopy()->orderByTileID();
         $meldLists = $this->analyzeMeldTypesImpl(
             $orderedTileList,
@@ -156,8 +156,9 @@ class MeldCombinationAnalyzer {
         }
 
         // with begin, try to turn remain tiles into melds
-        $nextAllowPureWeakCount = $beginMeld->getWinSetType()->isPureWeak() ?
-            $allowPureWeakCount - 1 : $allowPureWeakCount;
+        $nextAllowPureWeakCount = $beginMeld->getWinSetType()->isPureWeak()
+            ? $allowPureWeakCount - 1
+            : $allowPureWeakCount;
         $remainMeldLists = $this->analyzeMeldTypesImpl(
             $remainTileOrderedList, $meldTypes, $nextAllowPureWeakCount, $toConcealed
         );

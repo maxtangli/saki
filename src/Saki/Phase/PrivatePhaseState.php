@@ -17,7 +17,7 @@ class PrivatePhaseState extends PhaseState {
      * PrivatePhaseState constructor.
      * @param SeatWind $actor
      * @param bool $shouldDrawTile
-     * @param bool $isCurrent
+     * @param bool $isCurrent // todo simpler way, may remove?
      */
     function __construct(SeatWind $actor, bool $shouldDrawTile, bool $isCurrent = false) {
         $this->actor = $actor;
@@ -25,14 +25,23 @@ class PrivatePhaseState extends PhaseState {
         $this->isCurrent = $isCurrent;
     }
 
+    /**
+     * @return SeatWind
+     */
     function getActor() {
         return $this->actor;
     }
 
+    /**
+     * @return bool
+     */
     function shouldDrawTile() {
         return $this->shouldDrawTile;
     }
 
+    /**
+     * @return bool
+     */
     function isCurrent() {
         return $this->isCurrent;
     }

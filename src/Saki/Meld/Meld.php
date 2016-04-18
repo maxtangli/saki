@@ -295,7 +295,7 @@ class Meld extends TileList implements Immutable {
     /**
      * @return TileList
      */
-    function getWaitingTileList() {
+    function getWaiting() {
         return $this->getMeldType()->getWaitingTileList($this);
     }
 

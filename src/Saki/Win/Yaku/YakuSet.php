@@ -3,13 +3,13 @@ namespace Saki\Win\Yaku;
 
 use Saki\Util\ArrayList;
 use Saki\Util\ReadonlyArrayList;
-use Saki\Win\TileSeries;
+use Saki\Win\Series;
 use Saki\Win\Yaku\Fan1\AllRunsYaku;
 use Saki\Win\Yaku\Fan1\AllSimplesYaku;
-use Saki\Win\Yaku\Fan1\FullyConcealedHandYaku;
 use Saki\Win\Yaku\Fan1\DoraYaku;
 use Saki\Win\Yaku\Fan1\DoubleRunYaku;
 use Saki\Win\Yaku\Fan1\FirstTurnWinYaku;
+use Saki\Win\Yaku\Fan1\FullyConcealedHandYaku;
 use Saki\Win\Yaku\Fan1\GreenValueTilesYaku;
 use Saki\Win\Yaku\Fan1\KingSTileWinYaku;
 use Saki\Win\Yaku\Fan1\PrevailingWindYaku;
@@ -123,12 +123,12 @@ class YakuSet extends ArrayList {
     }
 
     /**
-     * @return ArrayList An ArrayList of TileSeries required by any Yaku in YakuSet.
+     * @return ArrayList An ArrayList of Series required by any Yaku in YakuSet.
      */
-    function getTileSeriesList() {
+    function getSeriesList() {
         return (new ArrayList())->fromSelectMany($this, function (Yaku $yaku) {
-            return $yaku->getRequiredTileSeries();
-        })->insertFirst(TileSeries::create(TileSeries::FOUR_WIN_SET_AND_ONE_PAIR))
+            return $yaku->getRequiredSeries();
+        })->insertFirst(Series::create(Series::FOUR_WIN_SET_AND_ONE_PAIR))
             ->distinct();
     }
 }

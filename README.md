@@ -48,8 +48,9 @@ rush 36-40 | 24.6h
 rush 41-45 | 15.3h
 rush 46-50 | 24.0h
 rush 51-55 | 21.5h
-rush 56-60 | ing
-     total | 252.8h + ing
+rush 56-60 | 33.0h
+rush 61-65 | ing
+     total |285.8h + ing
 
 ## rush history
 
@@ -244,7 +245,7 @@ rush 21 refactor tons, fix bugs 8h
 - [x] refactor MeldType, add MeldType.getWaitingType(): 1.5h
 - [x] Meld.fromWeakMeldWaitingType(): 0.6h
 - [x] refactor MeldList isFourXXXAndOneXXX(): 0.6h
-- [x] refactor TileSeriesType: 2.1h
+- [x] refactor SeriesType: 2.1h
 
 rush 22 fix getMeldCompositions() 1.5h
 
@@ -254,7 +255,7 @@ rush 22 fix getMeldCompositions() 1.5h
 rush 23 WinAnalyzer: furiten 14.7h
 
 - [x] analyze waiting and furiten 2.2h
-- [x] TileSeries.getWaitingTiles 1.3h // unnecessary?
+- [x] Series.getWaitingTiles 1.3h // unnecessary?
 - [x] refactor: analyzeWaitingTiles 2.1h
 - [x] refactor: move Utils.ArrayXXX into ArrayLikeObject 0.5h
 - [x] refactor: compareTo 1.3h
@@ -320,7 +321,7 @@ rush 28 refactor for beauty 5.9h
 
 - [x] TurnManager 0.7h
 - [x] Roller 1.4h
-- [x] refactor: move RoundData.$Result into $turnManager 0.1h
+- [x] refactor: move RoundData.$result into $turnManager 0.1h
 - [x] refactor: move RoundData.$phase into $turnManager 0.2h
 - [x] refactor: move RoundData.$playerList's rolling role into $turnManager 1.2h
 
@@ -522,7 +523,7 @@ rush 45 refactor: remove TileSortedList 1.7h
 - [x] WeakMeldType.getWaitingTiles 0.4h
 
 - [x] furuteWaiting 
-- [x] tileSeries 0.1h
+- [x] series 0.1h
 
 - [x] remove 0.2h
 
@@ -582,9 +583,9 @@ rush 49 all yaku: thirteen orphans 1.8h
 
 rush 50 refactor Saki/Win/ part1 2.1h
 
-- [x] remove needless XXXTileSeries 0.3h
-- [x] TileSeries 0.4h
-- [x] TileSeriesAnalyzer 0.3h
+- [x] remove needless XXXSeries 0.3h
+- [x] Series 0.4h
+- [x] SeriesAnalyzer 0.3h
 - [x] WinAnalyzer 1.1h
 
 rush 51 all yaku: HeavenlyWin, EarthlyWin, HumanlyWin 0.9h
@@ -647,7 +648,7 @@ rush 55 refactor Saki/Win/ part2 1.7h
 - [x] isFuriten 0.7h
 - [x] fix turnFuriten bug 0.5h
 
-- [x] TileSeriesAnalyzer, Yaku 0.3h
+- [x] SeriesAnalyzer, Yaku 0.3h
 
 rush 56 refactor Turn concerned: part1 2.3h
 
@@ -696,7 +697,7 @@ rush 59 refactor remove Player usage 7.4h
 - [x] add PointFacade 1.4h
 - [x] refactor Command/ 0.7h
 
-rush 60 refactor Result
+rush 60 refactor Result 10.1h
 
 - [x] rename 0.2h
 
@@ -717,11 +718,22 @@ rush 60 refactor Result
 - [x] bug: failed to consider ceil issues when Tsumo! 0.5h// so terrible ...
 - [x] introduce terms: tsumo, ron.
 - [x] test and refactor WinResult 1.1h
-- [ ] adapt WinResult
 
-rush refactor Saki/Win/ part3
+- [x] adapt WinResult 0.8h
+- [x] review and refactor 0.1h
 
-- [ ] WaitingAnalyzer 0.4h
+rush 61 refactor Draw/ 1.7h
+
+- [x] add Draw 0.4h
+- [x] add DrawAnalyzer 0.3h
+- [x] review and refactor 1h
+
+rush 62 refactor WaitingAnalyzer
+
+- [x] refactor WaitingAnalyzer 2.1h
+- [ ] analyzePrivate faster algorithm?
+
+rush refactor Win/
 
 - [ ] WinTarget, WinResult
 - [ ] Fu
@@ -766,14 +778,15 @@ Command     | ing
 FinalPoint  |
 Game        | ing
 Meld        | ok
-Phase       |
+Phase       | ing
 Tile        | remove HandSize
 Util        | ok
 Win         | ing
-Win\Fu      |
-Win\Point   | ok
-Win\Result  | ing
-Win\Yaku    |
+Win/Draw    | ing
+Win/Fu      |
+Win/Point   | ok
+Win/Result  | ok
+Win/Yaku    |
 
 future function process
 

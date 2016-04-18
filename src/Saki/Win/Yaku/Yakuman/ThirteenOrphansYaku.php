@@ -1,7 +1,7 @@
 <?php
 namespace Saki\Win\Yaku\Yakuman;
 
-use Saki\Win\TileSeries;
+use Saki\Win\Series;
 use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\Yaku;
 
@@ -14,9 +14,9 @@ class ThirteenOrphansYaku extends Yaku {
         return 13;
     }
 
-    function getRequiredTileSeries() {
+    function getRequiredSeries() {
         return [
-            TileSeries::create(TileSeries::THIRTEEN_ORPHANS)
+            Series::create(Series::THIRTEEN_ORPHANS)
         ];
     }
 

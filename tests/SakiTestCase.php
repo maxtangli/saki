@@ -2,6 +2,7 @@
 
 use Saki\Game\PrevailingStatus;
 use Saki\Game\Round;
+use Saki\Win\Result\ResultType;
 
 class SakiTestCase extends \PHPUnit_Framework_TestCase {
     //region override
@@ -34,5 +35,14 @@ class SakiTestCase extends \PHPUnit_Framework_TestCase {
      */
     static function getCurrentRound() {
         return self::$r ?? self::getInitRound();
+    }
+
+    /**
+     * @param int $resultTypeValue
+     */
+    function assertResultType(int $resultTypeValue) {
+        $expected = ResultType::create($resultTypeValue);
+        $actual = $this->getCurrentRound()->getPhaseState()->getResult()->getResultType();
+        $this->assertEquals($expected, $actual);
     }
 }

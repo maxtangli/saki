@@ -17,7 +17,7 @@ class DoubleRunYaku extends Yaku {
         return 0;
     }
 
-    function getRequiredTileSeries() {
+    function getRequiredSeries() {
         return [];
     }
 

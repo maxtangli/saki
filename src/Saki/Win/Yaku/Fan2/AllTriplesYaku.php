@@ -1,7 +1,7 @@
 <?php
 namespace Saki\Win\Yaku\Fan2;
 
-use Saki\Win\TileSeries;
+use Saki\Win\Series;
 use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\Yaku;
 
@@ -14,9 +14,9 @@ class AllTriplesYaku extends Yaku {
         return 2;
     }
 
-    function getRequiredTileSeries() {
+    function getRequiredSeries() {
         return [
-            TileSeries::create(TileSeries::FOUR_WIN_SET_AND_ONE_PAIR)
+            Series::create(Series::FOUR_WIN_SET_AND_ONE_PAIR)
         ];
     }
 

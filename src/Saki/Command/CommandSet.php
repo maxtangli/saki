@@ -17,8 +17,8 @@ use Saki\Command\PrivateCommand\TsumoCommand;
 use Saki\Command\PublicCommand\BigKongCommand;
 use Saki\Command\PublicCommand\ChowCommand;
 use Saki\Command\PublicCommand\PongCommand;
-use Saki\Command\PublicCommand\SmallKongCommand;
 use Saki\Command\PublicCommand\RonCommand;
+use Saki\Command\PublicCommand\SmallKongCommand;
 use Saki\Util\ArrayList;
 use Saki\Util\ReadonlyArrayList;
 

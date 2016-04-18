@@ -10,10 +10,10 @@ use Saki\Tile\Tile;
 use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\Fan1\AllRunsYaku;
 use Saki\Win\Yaku\Fan1\AllSimplesYaku;
-use Saki\Win\Yaku\Fan1\FullyConcealedHandYaku;
 use Saki\Win\Yaku\Fan1\DoraYaku;
 use Saki\Win\Yaku\Fan1\DoubleRunYaku;
 use Saki\Win\Yaku\Fan1\FirstTurnWinYaku;
+use Saki\Win\Yaku\Fan1\FullyConcealedHandYaku;
 use Saki\Win\Yaku\Fan1\GreenValueTilesYaku;
 use Saki\Win\Yaku\Fan1\KingSTileWinYaku;
 use Saki\Win\Yaku\Fan1\PrevailingWindYaku;
@@ -288,7 +288,7 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
             // test AllGreenYaku
             [new YakuTestData('234s,234s,FF', '666s,888s'), AllGreenYaku::create(), true],
             [new YakuTestData('222s,333s,444s,666s,88s'), AllGreenYaku::create(), true],
-            // not 41 tileSeries
+            // not 41 series
             [new YakuTestData('22s,22s,33s,44s,66s,88s,FF'), AllGreenYaku::create(), false],
             // not all green tiles
             [new YakuTestData('222s,333s,FF', '666s,111s'), AllGreenYaku::create(), false],
@@ -302,7 +302,7 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
 
             // test AllTerminalsYaku
             [new YakuTestData('111m,999m,11s', '111p,999p'), AllTerminalsYaku::create(), true],
-            // not 41 tileSeries
+            // not 41 series
             [new YakuTestData('11m,11m,99m,11p,99p,11s,99s'), AllTerminalsYaku::create(), false],
             // not all terminals
             [new YakuTestData('EEE,999m,11s', '111p,999p'), AllTerminalsYaku::create(), false],
@@ -584,7 +584,7 @@ class YakuTestData {
 
         $this->currentSeatWind = SeatWind::fromString($currentString ?? 'E');
         $this->actorSeatWind = $actorString !== null ? SeatWind::fromString($actorString) : $this->currentSeatWind;
-        
+
         $prevailingWind = PrevailingWind::fromString($prevailingWindString ?? 'E');
         $this->roundDebugResetData = new PrevailingStatus($prevailingWind, 1, 0);
     }

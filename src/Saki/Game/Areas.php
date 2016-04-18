@@ -147,6 +147,23 @@ class Areas {
     }
 
     /**
+     * @param array $pointChangeMap
+     */
+    function applyPointChangeMap(array $pointChangeMap) {
+        $this->areaList->walk(function (Area $area) use ($pointChangeMap) {
+            $pointChange = $pointChangeMap[$area->getSeatWind()->__toString()];
+            $area->setPoint($area->getPoint() + $pointChange);
+        });
+    }
+
+    /**
+     * @return ArrayList
+     */
+    function getAreaList() {
+        return $this->areaList;
+    }
+
+    /**
      * @param SeatWind $seatWind
      * @return Area
      */
@@ -206,6 +223,15 @@ class Areas {
      */
     function getCurrentSeatWind() {
         return $this->getTurn()->getSeatWind();
+    }
+
+    /**
+     * @param SeatWind[] $excludes
+     * @return SeatWind[]
+     */
+    function getOtherSeatWinds(array $excludes) {
+        return SeatWind::createList($this->areaList->count())
+            ->remove($excludes)->toArray();
     }
 
     /**

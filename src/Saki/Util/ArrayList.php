@@ -215,6 +215,20 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
     }
 
     /**
+     * @param callable $predicate
+     * @param $default
+     * @return mixed
+     */
+    function getFirstOrDefault(callable $predicate, $default) {
+        foreach ($this->innerArray as $v) {
+            if ($predicate($v)) {
+                return $v;
+            }
+        }
+        return $default;
+    }
+
+    /**
      * @param int $n
      * @return array
      */
@@ -381,7 +395,7 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
      * @return bool
      */
     function isUnique() {
-        return array_unique($this->innerArray) == $this - $this->innerArray;
+        return count(array_unique($this->innerArray)) == count($this->innerArray);
     }
 
     /**
