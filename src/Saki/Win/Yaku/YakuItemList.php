@@ -3,6 +3,9 @@ namespace Saki\Win\Yaku;
 
 use Saki\Util\ArrayList;
 
+/**
+ * @package Saki\Win\Yaku
+ */
 class YakuItemList extends ArrayList {
     function toYakuList() {
         return (new ArrayList())->fromSelect($this, function (YakuItem $yakuItem) {
@@ -10,12 +13,18 @@ class YakuItemList extends ArrayList {
         });
     }
 
+    /**
+     * @return int
+     */
     function getTotalFan() {
         return $this->getSum(function (YakuItem $item) {
             return $item->getFan();
         });
     }
 
+    /**
+     * 
+     */
     function normalize() {
         // if exist yaku-man yaku, remove all not-yaku-man yaku
         $yakuManItemList = (new ArrayList($this->toArray()))->where(function (YakuItem $yakuItem) {
@@ -42,5 +51,7 @@ class YakuItemList extends ArrayList {
         ) {
             $this->removeAll();
         }
+        
+        return $this;
     }
 }

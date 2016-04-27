@@ -48,7 +48,7 @@ class RoundWinTest extends PHPUnit_Framework_TestCase {
 //        });
 //        $result = WinResult::createMultiRon(
 //            $this->getPlayerList()->toArray(), $players, $winResults, $this->getCurrentPlayer(),
-//            $this->getRoundData()->getTileAreas()->getAccumulatedReachCount(),
+//            $this->getRoundData()->getTileAreas()->getAccumulatedRiichiCount(),
 //            $this->getRoundData()->getPrevailingWindData()->getSeatWindTurn());
 //        // phase
 //        $this->getRoundData()->toNextPhase(new OverPhaseState($result));

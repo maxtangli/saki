@@ -83,27 +83,31 @@ class WinTarget {
         return $this->round->getAreas()->getWall()->getRemainTileCount();
     }
 
-    function getPublicHand() {
+    function getHand() {
+        return $this->getAreas()->getArea($this->getActor())->getHand();
+    }
+    
+    function getPublicHand() { // todo remove
         return $this->getAreas()->getArea($this->getActor())->getHand()->getPublic();
     }
 
-    function getPrivateHand() {
+    function getPrivateHand() { // todo remove
         return $this->getAreas()->getArea($this->getActor())->getHand()->getPrivate();
     }
 
-    function getPrivateComplete() {
+    function getPrivateComplete() { // todo remove
         return $this->getAreas()->getArea($this->getActor())->getHand()->getPrivatePlusDeclare();
     }
 
-    function getDeclaredMeldList() {
+    function getDeclaredMeldList() { // todo remove
         return $this->getAreas()->getArea($this->getActor())->getHand()->getDeclare();
     }
 
-    function isConcealed() {
+    function isConcealed() { // todo remove
         return $this->getAreas()->getArea($this->getActor())->getHand()->isConcealed();
     }
 
-    function getTileOfTargetTile() {
+    function getTileOfTargetTile() { // todo remove
         return $this->getActArea()->getHand()->getTarget()->getTile();
     }
 
@@ -111,35 +115,35 @@ class WinTarget {
         return $this->getAreas()->getArea($this->getActor())->getDiscardedReference();
     }
 
-    function getReachStatus() {
-        return $this->getAreas()->getArea($this->getActor())->getReachStatus();
+    function getRiichiStatus() {
+        return $this->getAreas()->getArea($this->getActor())->getRiichiStatus();
     }
 
-    function isKingSTileWin() {
-        return $this->getActArea()->getHand()->getTarget()->isKingSTile();
+    function isAfterAKong() {
+        return $this->getActArea()->getHand()->getTarget()->isAfterAKong();
     }
 
-    function isRobbingAQuadWin() {
-        return $this->getActArea()->getHand()->getTarget()->isRobQuadTile();
+    function isRobbingAKong() {
+        return $this->getActArea()->getHand()->getTarget()->isRobbingAKong();
     }
 
     function isFirstTurnWin() {
         return $this->round->getAreas()->isFirstTurnWin($this->getActor());
     }
 
-    function isHeavenlyWin() {
+    function isBlessingOfHeaven() {
         return $this->isFirstTurnNoDeclare($this->getSeatWind())
         && $this->round->getPhaseState()->getPhase()->isPrivate()
         && $this->getActArea()->getSeatWind()->isDealer();
     }
 
-    function isEarthlyWin() {
+    function isBlessingOfEarth() {
         return $this->isFirstTurnNoDeclare($this->getSeatWind())
         && $this->round->getPhaseState()->getPhase()->isPrivate()
         && $this->getActArea()->getSeatWind()->isLeisureFamily();
     }
 
-    function isHumanlyWin() {
+    function isBlessingOfMan() {
         return $this->isFirstTurnNoDeclare($this->getSeatWind())
         && $this->round->getPhaseState()->getPhase()->isPublic()
         && $this->getActArea()->getDiscard()->isEmpty();

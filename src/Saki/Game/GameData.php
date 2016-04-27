@@ -1,13 +1,12 @@
 <?php
 namespace Saki\Game;
 
-use Saki\FinalPoint\CompositeFinalPointStrategy;
-use Saki\FinalPoint\MoundFinalPointStrategy;
-use Saki\FinalPoint\RankingHorseFinalPointStrategy;
-use Saki\FinalPoint\RankingHorseType;
 use Saki\Tile\TileSet;
 use Saki\Util\Immutable;
 use Saki\Win\Draw\DrawAnalyzer;
+use Saki\Win\Score\CompositeScoreStrategy;
+use Saki\Win\Score\OkaScoreStrategy;
+use Saki\Win\Score\RankUmaScoreStrategy;
 use Saki\Win\WinAnalyzer;
 use Saki\Win\Yaku\YakuSet;
 
@@ -19,13 +18,12 @@ class GameData implements Immutable {
     // specified
     private $playerType;
     private $prevailingContext;
-    private $initialPoint;
-    private $finalPointStrategy;
+    private $scoreStrategy;
     private $tileSet;
     private $yakuSet;
     // generated
     private $winAnalyzer;
-    private $drawAnalyzer; // todo should be specified
+    private $drawAnalyzer;
 
     /**
      * default: 4 player, east game, 25000-30000 initial point,
@@ -33,15 +31,15 @@ class GameData implements Immutable {
     function __construct() {
         // specified
         $playerType = PlayerType::create(4);
+        $pointSetting = new PointSetting($playerType, 25000, 30000);
 
         $this->playerType = $playerType;
         $this->prevailingContext = new PrevailingContext(
             $playerType, PrevailingType::create(PrevailingType::EAST)
         );
-        $this->initialPoint = 25000;
-        $this->finalPointStrategy = new CompositeFinalPointStrategy([
-            RankingHorseFinalPointStrategy::fromType(RankingHorseType::create(RankingHorseType::UMA_10_20)),
-            new MoundFinalPointStrategy(25000, 30000),
+        $this->scoreStrategy = new CompositeScoreStrategy($pointSetting, [
+            new RankUmaScoreStrategy($pointSetting),
+            new OkaScoreStrategy($pointSetting)
         ]);
         $this->tileSet = TileSet::createStandard();
         $this->yakuSet = YakuSet::createStandard();
@@ -65,17 +63,10 @@ class GameData implements Immutable {
     }
 
     /**
-     * @return int
+     * @return CompositeScoreStrategy
      */
-    function getInitialPoint() {
-        return $this->initialPoint;
-    }
-
-    /**
-     * @return CompositeFinalPointStrategy
-     */
-    function getFinalPointStrategy() {
-        return $this->finalPointStrategy;
+    function getScoreStrategy() {
+        return $this->scoreStrategy;
     }
 
     /**

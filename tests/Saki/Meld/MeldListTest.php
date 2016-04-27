@@ -47,11 +47,11 @@ class MeldListTest extends PHPUnit_Framework_TestCase {
     }
 
     function testOutsideHand() {
-        $this->assertTrue(Meld::fromString('123m')->isAnyTerminalOrHonor());
-        $this->assertTrue(Meld::fromString('789s')->isAnyTerminalOrHonor());
-        $this->assertTrue(Meld::fromString('EE')->isAnyTerminalOrHonor());
-        $this->assertTrue(Meld::fromString('EEE')->isAnyTerminalOrHonor());
-        $this->assertTrue(Meld::fromString('EEEE')->isAnyTerminalOrHonor());
+        $this->assertTrue(Meld::fromString('123m')->isAnyTermOrHonour());
+        $this->assertTrue(Meld::fromString('789s')->isAnyTermOrHonour());
+        $this->assertTrue(Meld::fromString('EE')->isAnyTermOrHonour());
+        $this->assertTrue(Meld::fromString('EEE')->isAnyTermOrHonour());
+        $this->assertTrue(Meld::fromString('EEEE')->isAnyTermOrHonour());
         $this->assertTrue(MeldList::fromString('123m,789m,123s,789s,EE')->isOutsideHand(false));
     }
 
@@ -77,7 +77,7 @@ class MeldListTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($meldList->valueExist([Meld::fromString('123m'), Meld::fromString('456m')], Meld::getEqual(false)));
         $this->assertTrue($meldList->valueExist([Meld::fromString('123m'), Meld::fromString('456m'), Meld::fromString('789m')], Meld::getEqual(false)));
 
-        $this->assertTrue($meldList->isFullStraight());
+        $this->assertTrue($meldList->isPureStraight());
 
         // different isConcealed case
 
@@ -89,6 +89,6 @@ class MeldListTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($meldList->valueExist([Meld::fromString('123m'), Meld::fromString('456m')], Meld::getEqual(false)));
         $this->assertTrue($meldList->valueExist([Meld::fromString('123m'), Meld::fromString('456m'), Meld::fromString('789m')], Meld::getEqual(false)));
 
-        $this->assertTrue($meldList->isFullStraight());
+        $this->assertTrue($meldList->isPureStraight());
     }
 }

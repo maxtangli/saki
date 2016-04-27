@@ -6,7 +6,7 @@ use Saki\Util\Utils;
 
 class TileType extends Enum {
     const REGEX_SUIT_TYPE = '[smp]';
-    const REGEX_HONOR_TYPE = '[ESWNCPF]';
+    const REGEX_HONOUR_TYPE = '[ESWNCPF]';
     /**
      * Tile ID concerned
      */
@@ -44,7 +44,7 @@ class TileType extends Enum {
         return $this->getValue() <= 300;
     }
 
-    function isHonor() {
+    function isHonour() {
         return Utils::inRange($this->getValue(), 410, 530);
     }
 

@@ -13,11 +13,11 @@ class WinResultInput {
     /**
      * @param $winnerPair
      * @param array $others
-     * @param int $reachPoints
+     * @param int $riichiPoints
      * @param int $seatWindTurn
      * @return WinResultInput
      */
-    static function createTsumo($winnerPair, array $others, int $reachPoints, int $seatWindTurn) {
+    static function createTsumo($winnerPair, array $others, int $riichiPoints, int $seatWindTurn) {
         list($winner, $fuAndCount) = $winnerPair;
         $itemList = (new ArrayList())
             ->insertLast(
@@ -28,18 +28,18 @@ class WinResultInput {
                     return WinResultInputItem::createLoser($seatWind);
                 })->toArray()
             );
-        return new self(true, $itemList, $reachPoints, $seatWindTurn);
+        return new self(true, $itemList, $riichiPoints, $seatWindTurn);
     }
 
     /**
      * @param array $winnerPairs
      * @param SeatWind $loser
      * @param array $others
-     * @param int $reachPoints
+     * @param int $riichiPoints
      * @param int $seatWindTurn
      * @return WinResultInput
      */
-    static function createRon(array $winnerPairs, SeatWind $loser, array $others, int $reachPoints, int $seatWindTurn) {
+    static function createRon(array $winnerPairs, SeatWind $loser, array $others, int $riichiPoints, int $seatWindTurn) {
         $itemList = (new ArrayList())
             ->insertLast(
                 (new ArrayList($winnerPairs))->select(function (array $winnerPair) {
@@ -53,24 +53,24 @@ class WinResultInput {
                     return WinResultInputItem::createIrrelevant($seatWind);
                 })->toArray()
             );
-        return new self(false, $itemList, $reachPoints, $seatWindTurn);
+        return new self(false, $itemList, $riichiPoints, $seatWindTurn);
     }
 
     private $isTsumo;
     private $itemList;
-    private $reachPoints;
+    private $riichiPoints;
     private $seatWindTurn;
 
     /**
      * @param bool $isTsumo
      * @param ArrayList $itemList
-     * @param int $reachPoints
+     * @param int $riichiPoints
      * @param int $seatWindTurn
      */
-    function __construct(bool $isTsumo, ArrayList $itemList, int $reachPoints, int $seatWindTurn) {
+    function __construct(bool $isTsumo, ArrayList $itemList, int $riichiPoints, int $seatWindTurn) {
         $this->isTsumo = $isTsumo;
         $this->itemList = $itemList;
-        $this->reachPoints = $reachPoints;
+        $this->riichiPoints = $riichiPoints;
         $this->seatWindTurn = $seatWindTurn;
     }
 
@@ -91,8 +91,8 @@ class WinResultInput {
     /**
      * @return int
      */
-    function getReachPoints() {
-        return $this->reachPoints;
+    function getRiichiPoints() {
+        return $this->riichiPoints;
     }
 
     /**

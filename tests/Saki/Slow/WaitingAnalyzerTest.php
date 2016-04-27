@@ -4,7 +4,7 @@ use Saki\Meld\MeldList;
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 use Saki\Util\ArrayList;
-use Saki\Win\FutureWaiting;
+use Saki\Win\Waiting\FutureWaiting;
 
 class WaitingAnalyzerTest extends SakiTestCase {
     /**
@@ -50,7 +50,7 @@ class WaitingAnalyzerTest extends SakiTestCase {
 
         $futureWaitingList = $waitingAnalyzer->analyzePrivate($private, $declare);
         $discardedTileStrings = (new ArrayList())->fromSelect($futureWaitingList, function (FutureWaiting $futureWaiting) {
-            return $futureWaiting->getDiscardedTile()->__toString();
+            return $futureWaiting->getDiscard()->__toString();
         })->toArray();
         $this->assertEquals($expected, $discardedTileStrings,
             sprintf('[%s],[%s],[%s],[%s]',

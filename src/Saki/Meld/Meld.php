@@ -5,6 +5,7 @@ use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 use Saki\Util\Immutable;
 use Saki\Util\ReadonlyArrayList;
+use Saki\Win\Waiting\WaitingType;
 
 /**
  * A not empty TileList under one MeldType.
@@ -251,6 +252,16 @@ class Meld extends TileList implements Immutable {
         $weakMeldTileList = $this->toTileList()->remove($waitingTile);
         $weakMeld = new Meld($weakMeldTileList->toArray(), null, $this->isConcealed());
         return $weakMeld;
+    }
+
+    /**
+     * @param Tile $waitingTile
+     * @return WaitingType
+     */
+    function getWeakMeldWaitingType(Tile $waitingTile) {
+        return $this->canToWeakMeld($waitingTile)
+            ? $this->toWeakMeld($waitingTile)->getWaitingType()
+            : WaitingType::create(WaitingType::NOT_WAITING);
     }
     //endregion
 

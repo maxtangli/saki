@@ -2,10 +2,9 @@
 
 use Saki\FinalPoint\FinalPointStrategyTarget;
 use Saki\Game\Phase;
-use Saki\Game\Player;
 use Saki\Game\Round;
 
-class RoundTest extends PHPUnit_Framework_TestCase {
+class RoundTest extends SakiTestCase {
     function testNew() {
         $r = new Round();
 
@@ -18,38 +17,17 @@ class RoundTest extends PHPUnit_Framework_TestCase {
         // todo
     }
 
-    function testGetFinalPointItems() {
+    function testOver() {
         $r = new Round();
-        $points = [
-//            ['E', 31100],
-//            ['S', 24400],
-//            ['W', 22300],
-//            ['N', 22200]
-            31100, 24400, 22300, 22200
-        ];
+        $r->roll(false);
+        $r->roll(false);
+        $r->roll(false);
 
-        foreach ($r->getPlayerList() as $k => $player) {
-            /** @var Player $player */
-            $player = $player;
-            $player->getArea()->setPoint($points[$k]);
-        }
-
-        $expected = [
-            [1, 42],
-            [2, 4],
-            [3, -18],
-            [4, -28],
-        ];
-
-        // todo should test on GameOver state
-        $target = new FinalPointStrategyTarget($r->getPlayerList());
-        $items = $r->getGameData()->getFinalPointStrategy()->getFinalPointItems($target);
-        foreach ($r->getPlayerList() as $k => $player) {
-            $item = $items[$k];
-            list($expectedRank, $expectedPoint) = [$expected[$k][0], $expected[$k][1]];
-            $this->assertEquals($expectedRank, $item->getRank());
-            $this->assertEquals($expectedPoint, $item->getFinalPointNumber());
-        }
+        $pro = $r->getProcessor();
+        $pro->process('mockHand E 123456789m12355s; tsumo E');
+        $this->assertTrue($r->getPhaseState()->isGameOver($r));
+        $f = $r->getPhaseState()->getFinalScore($r);
+        // todo
     }
 
     function testChow() {

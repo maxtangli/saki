@@ -10,19 +10,19 @@ class NewWinResultTest extends SakiTestCase {
      * @param WinResult $result
      * @param string $actorString
      * @param int $tableChange
-     * @param int $reachChange
+     * @param int $riichiChange
      * @param int $seatChange
      */
     protected function assertPointChange(
-        int $tableChange, int $reachChange, int $seatChange,
+        int $tableChange, int $riichiChange, int $seatChange,
         WinResult $result, string $actorString
     ) {
         $actor = SeatWind::fromString($actorString);
         $this->assertEquals($tableChange, $result->getTableChange($actor));
-        $this->assertEquals($reachChange, $result->getReachChange($actor));
+        $this->assertEquals($riichiChange, $result->getRiichiChange($actor));
         $this->assertEquals($seatChange, $result->getSeatChange($actor));
 
-        $totalChange = $tableChange + $reachChange + $seatChange;
+        $totalChange = $tableChange + $riichiChange + $seatChange;
         $this->assertEquals($totalChange, $result->getPointChange($actor));
 
         $this->assertEquals($totalChange, $result->getPointChangeMap()[$actor->__toString()]);
@@ -33,9 +33,9 @@ class NewWinResultTest extends SakiTestCase {
      * @param WinResult $result
      */
     protected function assertAllPointChange(array $expected, WinResult $result) {
-        foreach ($expected as $i => list($tableChange, $reachChange, $seatChange)) {
+        foreach ($expected as $i => list($tableChange, $riichiChange, $seatChange)) {
             $actor = SeatWind::fromIndex($i + 1);
-            $this->assertPointChange($tableChange, $reachChange, $seatChange,
+            $this->assertPointChange($tableChange, $riichiChange, $seatChange,
                 $result, $actor);
         }
     }

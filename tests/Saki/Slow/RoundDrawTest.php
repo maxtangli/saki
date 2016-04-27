@@ -10,7 +10,7 @@ class RoundDrawTest extends SakiTestCase {
         $pro = $r->getProcessor();
 
         $validTileList = TileList::fromString('19m19p15559sESWNC');
-        $this->assertTrue($validTileList->isNineKindsOfTerminalOrHonor());
+        $this->assertTrue($validTileList->isNineKindsOfTermOrHonour());
 
         $pro->process('mockHand E 19m19p15559sESWNC; nineNineDraw E');
         $this->assertResultType(ResultType::NINE_NINE_DRAW);
@@ -28,7 +28,7 @@ class RoundDrawTest extends SakiTestCase {
 
     // FourKongDraw tested in KongConcernedTest
 
-//    function testFourReachDraw() { // comment out since slow
+//    function testFourRiichiDraw() { // comment out since slow
 //        $r = $this->getInitRound();
 //        $pro = $r->getProcessor();
 //        $pro->process(

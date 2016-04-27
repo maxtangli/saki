@@ -17,7 +17,12 @@ class Target {
         $obj->creator = null;
         return $obj;
     }
-
+    
+    // todo remove
+    static function temp_debugCreate(Tile $tile) {
+        return new self($tile, TargetType::create(TargetType::KEEP), SeatWind::createEast());
+    }
+    
     private $tile;
     private $type;
     private $creator;
@@ -33,6 +38,9 @@ class Target {
         $this->creator = $creator;
     }
 
+    /**
+     * @return string
+     */
     function __toString() {
         return $this->exist()
             ? sprintf('%s,%s,%s', $this->getTile(), $this->getType(), $this->getCreator())
@@ -95,14 +103,14 @@ class Target {
     /**
      * @return bool
      */
-    function isKingSTile() {
+    function isAfterAKong() {
         return $this->getType()->getValue() == TargetType::REPLACEMENT;
     }
 
     /**
      * @return bool
      */
-    function isRobQuadTile() {
+    function isRobbingAKong() {
         return $this->getType()->getValue() == TargetType::KONG;
     }
 

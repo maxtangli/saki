@@ -23,7 +23,7 @@ class Area {
     private $public;
     private $discardLocked; // locked to support safe pass by reference
     private $declare;
-    private $reachStatus;
+    private $riichiStatus;
 
     /**
      * @param callable $getTarget
@@ -41,7 +41,7 @@ class Area {
         $this->public = new TileList();
         $this->discardLocked = (new TileList())->lock();
         $this->declare = new MeldList();
-        $this->reachStatus = ReachStatus::createNotReach();
+        $this->riichiStatus = RiichiStatus::createNotRiichi();
     }
 
     /**
@@ -57,7 +57,7 @@ class Area {
         $this->public->removeAll();
         $this->discardLocked->unlock()->removeAll()->lock();
         $this->declare->removeAll();
-        $this->reachStatus = ReachStatus::createNotReach();
+        $this->riichiStatus = RiichiStatus::createNotRiichi();
     }
 
     function debugInit(SeatWind $seatWind) {
@@ -69,7 +69,7 @@ class Area {
         $this->public->removeAll();
         $this->discardLocked->unlock()->removeAll()->lock();
         $this->declare->removeAll();
-        $this->reachStatus = ReachStatus::createNotReach();
+        $this->riichiStatus = RiichiStatus::createNotRiichi();
     }
 
     /**
@@ -166,18 +166,18 @@ class Area {
     }
 
     /**
-     * @return ReachStatus
+     * @return RiichiStatus
      */
-    function getReachStatus() {
-        return $this->reachStatus;
+    function getRiichiStatus() {
+        return $this->riichiStatus;
     }
 
     //region operations
     /**
-     * @param ReachStatus $reachStatus
+     * @param RiichiStatus $riichiStatus
      */
-    function setReachStatus(ReachStatus $reachStatus) {
-        $this->reachStatus = $reachStatus;
+    function setRiichiStatus(RiichiStatus $riichiStatus) {
+        $this->riichiStatus = $riichiStatus;
     }
 
     function drawInit(array $tiles) {

@@ -39,7 +39,7 @@ class FuResult {
     }
 
     /**
-     * @return WinSetFuResult[]
+     * @return MeldFuResult[]
      */
     function getWinSetFuResults() {
         return $this->winSetFuResults;

@@ -71,13 +71,13 @@ class FuritenTest extends SakiTestCase {
         );
     }
 
-    function testReach() {
+    function testRiichi() {
         $r = new Round();
 
         // setup reach
         $this->assertRon(
             $r, 'E',
-            'reach E E:s-123m456m789m23s55sE:E',
+            'riichi E E:s-123m456m789m23s55sE:E',
             'passAll; discard S S:s-1s:1s'
         );
         // furiten by other discard after reach

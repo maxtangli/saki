@@ -2,7 +2,7 @@
 namespace Saki\Win\Fu;
 
 use Saki\Meld\Meld;
-use Saki\Win\WaitingType;
+use Saki\Win\Waiting\WaitingType;
 use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\YakuItemList;
 

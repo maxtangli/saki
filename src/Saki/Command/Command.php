@@ -23,7 +23,7 @@ use Saki\Util\Utils;
 /**
  * goal
  * - separate command logic into classes.
- * - provide string-style-command to support tests, terminal, replay.
+ * - provide string-style-command to support tests, term, replay.
  *
  * @package Saki\Command
  */

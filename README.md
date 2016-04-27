@@ -2,37 +2,6 @@
 
 A japanese-mahjong server.
 
-## remind
-
-- each refactor plan is a chance of learning, be hungry
-- be clear about any action's meaning, do NOT waste time.
-
-## good practice
-
-goal
-
-- good learning: reinvent all wheels without reference to exist algorithm and libraries, 
-though reuse wheels is an important ability that should be mastered via other projects.
-
-before coding
-
-- time management: todo-list, time-input statistics.
-- requirement control: kiss, important first.
-- it should be easy: feeling hard means abnormal, ex.x unclear requirement? bad design? 
-
-coding
-
-- agile development: incremental + kiss + tdd + refactor + design. e.x. notImplementedException.
-- three and out design: if bad smells come at 3rd times, redesign by refactoring. 
-- test as code: kiss, refactor, design. e.x. dataProvider, customAssert, TestUtils. ng. copy-paste everywhere.
-- performance: avoid early optimization, optimize when tests are slow, use a profiler.
-
-naming conventions
-
-- constructor(): new members and set to default state
-- init(): set members to default state, without constructor()'s new operations cost.
-- reset($params): set members to specified state defined by $params and current members state.
-
 ## rush statistics
 
 rush       | hours
@@ -56,7 +25,7 @@ rush 61-65 | ing
 
 rush 0 scribble 1.5h
 
-- [x] terms in english
+- [x] terminals in english
 - [x] new a Tile
 - [x] Tile.toString()
 - [x] new a Hand
@@ -151,14 +120,14 @@ rush 10 first yaku impl: all runs yaku 7.8h
 
 - [x] pseudocode 3.5h
 - [x] yaku.xls 1.5h
-- [x] refactor: rename terms to follow yaku names 0.5h
+- [x] refactor: rename terminals to follow yaku names 0.5h
 - [x] organize code 1.0h
 - [x] is4WinSetAnd1Pair() 0.2h
 - [x] allRunsYaku 1.1h
 
 rush 11 more yaku 2.2h
 
-- [x] ReachYaku 0.7h
+- [x] RiichiYaku 0.7h
 - [x] WinState 0.7h
 - [x] ValueTilesYaku 0.6h
 - [x] AllSimplesYaku
@@ -220,7 +189,7 @@ rush 18 refactor 5h
 - [x] refactor: point strategy 2h
 - [x] refactor: Areas 0.5h
 - [x] refactor: PrevailingWindData 1.5h
-- [x] refactor: accumulatedReachCount, remove unnecessary methods in Round&RoundData. 0.8h
+- [x] refactor: accumulatedRiichiCount, remove unnecessary methods in Round&RoundData. 0.8h
 - [x] bug: getTopPlayer() is wrong when same point top players exist 0.2h
 
 rush 19 WinAnalyzer issues 8.2h
@@ -334,7 +303,7 @@ rush 29 all yaku: reach concerned 2.8h
 - [x] DeclareHistory 0.3h
 - [x] Turn 0.4h
 - [x] YakuSet 0.6h // batch is not necessary and too much labour here
-- [x] test reach, doubleReach 0.4h
+- [x] test reach, doubleRiichi 0.4h
 - [x] bug: wrongly turn into over phase after pass N's public phase 0.1h // It's not a bug but test case results in FourWindDraw!
 - [x] FirstTurnWinYaku 0.5h
 - [x] test FirstTurnWinYaku 0.2h // wrongly written pastTurn <= 0, should be pastTurn < = 1
@@ -610,7 +579,7 @@ rush 52 refactor Area: introduce Hand 12.5h // a terrible trip ...
 3. inline method: hasTargetData() // main benefit
 - [x] Area.getTarget ? 1.2h // terrible ...
 
-- [x] extract class: ReachStatus 0.1h
+- [x] extract class: RiichiStatus 0.1h
 - [x] lock discard 0.1h
 
 - [x] add TargetData.TargetType 0.3h
@@ -633,7 +602,7 @@ rush 53 refactor SeatWind 2.6h
 
 rush 54 refactor reach concerned 3.8h
 
-- [x] adapt ReachStatus 0.3h
+- [x] adapt RiichiStatus 0.3h
 - [x] adapt DeclareHistory 0.1h
 - [x] refactor DeclareHistory 0.4h // my most satisfied class!
 
@@ -660,7 +629,7 @@ rush 56 refactor Turn concerned: part1 2.3h
 
 rush 57 move Player.point, TurnManger into Areas 4.6h
 
-- [x] know terms and rename 1h
+- [x] know terminals and rename 1h
 - [x] move Player.point into Area 0.8h
 - [x] refactor Areas.reachPoints 0.2h
 - [x] refactor Areas.recordOpen 0.2h
@@ -694,7 +663,7 @@ rush 59 refactor remove Player usage 7.4h
 - [x] remove Areas other usage 1.6h
 
 - [x] remove PlayerList.getXXXWind 1.1h
-- [x] add PointFacade 1.4h
+- [x] add PointList 1.4h
 - [x] refactor Command/ 0.7h
 
 rush 60 refactor Result 10.1h
@@ -716,7 +685,7 @@ rush 60 refactor Result 10.1h
 
 - [x] rewrite WinResult: part2 1.2h
 - [x] bug: failed to consider ceil issues when Tsumo! 0.5h// so terrible ...
-- [x] introduce terms: tsumo, ron.
+- [x] introduce terminals: tsumo, ron.
 - [x] test and refactor WinResult 1.1h
 
 - [x] adapt WinResult 0.8h
@@ -728,39 +697,50 @@ rush 61 refactor Draw/ 1.7h
 - [x] add DrawAnalyzer 0.3h
 - [x] review and refactor 1h
 
-rush 62 refactor WaitingAnalyzer
+rush 62 refactor Win/ 3.5h
 
 - [x] refactor WaitingAnalyzer 2.1h
-- [ ] analyzePrivate faster algorithm?
+- [x] refactor SeriesAnalyzer 0.3h
+- [x] refactor Series 0.8h
 
-rush refactor Win/
+- [x] refactor Win/Waiting 0.3h
+// todo confirm order rule
 
-- [ ] WinTarget, WinResult
-- [ ] Fu
+rush 63 rewrite Win/Score 2.3h
+
+- [x] ScoreStrategy // 1.3h
+- [x] test // 0.7h
+- [x] adapt ScoreStrategy 0.3h
+// todo confirm final score rule
 
 rush refactor Areas
 
-- [ ] etc 0.3h
+- [x] etc 0.5h
 - [ ] refactor createMeld logic
 - [ ] move Areas logic into XXCommand
-
-rush refactor: etc
-
-- [ ] refactor tests
-- [ ] fix: mockHand target tile vs robQuadPhase target tile
-- [ ] refactor: Result
-- [ ] refactor: move DrawPoint logic into separate class
-- [ ] refactor: simplify reset(),debugReset(),toNextPhase() 0.2h
 
 rush red dora: meld issue
 
 - [ ] adapt discard/createMeld logic
 
+rush refactor Win/
+
+- [ ] refactor Win/Yaku
+
+- [ ] refactor YakuAnalyzer 0.3h
+- [ ] WinTarget, WinResult
+
 rush all yaku: tests
 
-- [ ] test and fix FinalTileWin Fish/Moon 0.1h // ? what's wrong
+- [ ] test and fix BottomOfTheSea Fish/Moon 0.1h // ? what's wrong
 - [ ] test HeavenlyWin, EarthlyWin, HumanlyWin
 - [ ] refactor yaku tests
+
+rush refactor: etc
+
+- [ ] refactor tests
+- [ ] fix: mockHand target tile vs robQuadPhase target tile
+- [ ] refactor: simplify reset(),debugReset(),toNextPhase() 0.2h
 
 rush public command roller
 
@@ -775,17 +755,19 @@ refactor process
 module      | process
 ----------- | -----
 Command     | ing
-FinalPoint  |
 Game        | ing
 Meld        | ok
 Phase       | ing
 Tile        | remove HandSize
 Util        | ok
 Win         | ing
-Win/Draw    | ing
+Win/Draw    | ok
 Win/Fu      |
 Win/Point   | ok
 Win/Result  | ok
+Win/Score   | ok
+Win/Series  | ok
+Win/Waiting | ok
 Win/Yaku    |
 
 future function process
@@ -801,5 +783,5 @@ rush rule.md doc
 
 - [ ] rule 0.6h
 - [ ] tile 0.6h
-- [ ] yaku 1.5h
+- [ ] yaku 2.8h
 - [ ] furiten 0.8h

@@ -1,7 +1,10 @@
 <?php
 
+use Saki\Game\PointItem;
 use Saki\Game\PrevailingStatus;
 use Saki\Game\Round;
+use Saki\Game\SeatWind;
+use Saki\Win\Point\PointList;
 use Saki\Win\Result\ResultType;
 
 class SakiTestCase extends \PHPUnit_Framework_TestCase {
@@ -36,13 +39,27 @@ class SakiTestCase extends \PHPUnit_Framework_TestCase {
     static function getCurrentRound() {
         return self::$r ?? self::getInitRound();
     }
-
-    /**
-     * @param int $resultTypeValue
-     */
+    
     function assertResultType(int $resultTypeValue) {
         $expected = ResultType::create($resultTypeValue);
         $actual = $this->getCurrentRound()->getPhaseState()->getResult()->getResultType();
         $this->assertEquals($expected, $actual);
+    }
+    
+    function assertPointItem(string $seatWindString, int $point, int $rank, PointItem $pointItem) {
+        $this->assertEquals(SeatWind::fromString($seatWindString), $pointItem->getSeatWind());
+        $this->assertEquals($point, $pointItem->getPoint());
+        $this->assertEquals($rank, $pointItem->getRank());
+    }
+
+    /**
+     * @param array $expectItems
+     * @param PointList $pointList
+     */
+    function assertPointList(array $expectItems, PointList $pointList) {
+        foreach ($expectItems as $i => list($seatWindString, $point, $rank)) {
+            $pointItem = $pointList[$i];
+            $this->assertPointItem($seatWindString, $point, $rank, $pointItem);
+        }
     }
 }

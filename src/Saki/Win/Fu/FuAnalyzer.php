@@ -5,8 +5,8 @@ use Saki\Meld\Meld;
 use Saki\Meld\MeldList;
 use Saki\Tile\Tile;
 use Saki\Util\Singleton;
-use Saki\Win\WaitingType;
-use Saki\Win\Yaku\Fan1\AllRunsYaku;
+use Saki\Win\Waiting\WaitingType;
+use Saki\Win\Yaku\Fan1\PinfuYaku;
 use Saki\Win\Yaku\Fan2\SevenPairsYaku;
 use Saki\Win\Yaku\YakuItemList;
 
@@ -39,7 +39,7 @@ class FuAnalyzer extends Singleton {
         }
 
         // 平和
-        if ($yakuList->valueExist(AllRunsYaku::create())) {
+        if ($yakuList->valueExist(PinfuYaku::create())) {
             if ($tsumo) { // ツモ平和	一律20符
                 return 20;
             } else { // 喰い平和	一律30符
@@ -83,10 +83,10 @@ class FuAnalyzer extends Singleton {
          */
         if ($winSetMeld->isTripleOrQuad()) {
             $baseFu = 2;
-            $terminalRatio = $winSetMeld[0]->isTerminalOrHonor() ? 2 : 1;
+            $termRatio = $winSetMeld[0]->isTermOrHonour() ? 2 : 1;
             $concealedRatio = $winSetMeld->isConcealed() ? 2 : 1;
             $quadRatio = $winSetMeld->isQuad() ? 4 : 1;
-            $meldFu = $baseFu * $terminalRatio * $concealedRatio * $quadRatio;
+            $meldFu = $baseFu * $termRatio * $concealedRatio * $quadRatio;
             return $meldFu;
         } else {
             return 0;

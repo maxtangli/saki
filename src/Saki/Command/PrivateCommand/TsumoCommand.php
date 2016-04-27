@@ -31,7 +31,7 @@ class TsumoCommand extends PrivateCommand {
         $result = new WinResult(WinResultInput::createTsumo(
             [$actor, $round->getWinReport($actor)->getFanAndFu()],
             $areas->getOtherSeatWinds([$actor]),
-            $areas->getReachPoints(),
+            $areas->getRiichiPoints(),
             $areas->getDealerArea()->getSeatWindTurn()
         ));
         $round->toNextPhase(new OverPhaseState($result));

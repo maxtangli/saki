@@ -4,12 +4,11 @@ namespace Saki\Game;
 use Saki\Util\ArrayList;
 use Saki\Util\ReadonlyArrayList;
 
+/**
+ * @package Saki\Game
+ */
 class PlayerList extends ArrayList {
     use ReadonlyArrayList;
-
-    static function createStandard() {
-        return new PlayerList(PlayerType::create(4), 25000);
-    }
 
     /**
      * @param PlayerType $playerType

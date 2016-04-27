@@ -20,4 +20,13 @@ trait Comparable {
             return $v1->compareTo($v2);
         };
     }
+
+    /**
+     * @return \Closure
+     */
+    static function getRevertComparator() {
+        return function ($v1, $v2) {
+            return -$v1->compareTo($v2);
+        };
+    }
 }

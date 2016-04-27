@@ -11,6 +11,8 @@ use Saki\Tile\TileList;
 use Saki\Util\ArrayList;
 use Saki\Win\Fu\FuAnalyzer;
 use Saki\Win\Fu\FuTarget;
+use Saki\Win\Series\SeriesAnalyzer;
+use Saki\Win\Waiting\WaitingAnalyzer;
 use Saki\Win\Yaku\YakuAnalyzer;
 use Saki\Win\Yaku\YakuItemList;
 use Saki\Win\Yaku\YakuSet;
@@ -145,7 +147,8 @@ class WinAnalyzer {
         // case3: win by self or win by other
         $winState = WinState::getTsumoOrOther($subTarget->isPrivatePhase());
 
-        $waitingType = $series->getWaitingType($subTarget->getAllMeldList(), $subTarget->getTileOfTargetTile(), $subTarget->getDeclaredMeldList());
+//        $waitingType = $series->getWaitingType($subTarget->getAllMeldList(), $subTarget->getTileOfTargetTile(), $subTarget->getDeclaredMeldList());
+        $waitingType = $series->getWaitingType($subTarget->getSubHand());
         $fuTarget = new FuTarget($subTarget, $yakuList, $waitingType);
         $fuResult = FuAnalyzer::create()->getResult($fuTarget);
         $fu = $fuResult->getTotalFu();
@@ -183,11 +186,11 @@ class WinAnalyzer {
         }
 
         // reach furiten: other open TileList since self reach contains target tile
-        $reachStatus = $target->getReachStatus();
-        if ($reachStatus->isReach()) { // ng case 2: since self reach
-            $reachTurn = $reachStatus->getReachTurn();
-            $otherOpenListSinceReach = $openHistory->getOther($mySeatWind, $reachTurn);
-            if ($otherOpenListSinceReach->any($isNgTile)) {
+        $riichiStatus = $target->getRiichiStatus();
+        if ($riichiStatus->isRiichi()) { // ng case 2: since self reach
+            $riichiTurn = $riichiStatus->getRiichiTurn();
+            $otherOpenListSinceRiichi = $openHistory->getOther($mySeatWind, $riichiTurn);
+            if ($otherOpenListSinceRiichi->any($isNgTile)) {
                 return true;
             }
         }

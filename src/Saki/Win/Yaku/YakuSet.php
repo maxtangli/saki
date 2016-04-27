@@ -3,54 +3,54 @@ namespace Saki\Win\Yaku;
 
 use Saki\Util\ArrayList;
 use Saki\Util\ReadonlyArrayList;
-use Saki\Win\Series;
-use Saki\Win\Yaku\Fan1\AllRunsYaku;
+use Saki\Win\Series\Series;
+use Saki\Win\Yaku\Fan1\PinfuYaku;
 use Saki\Win\Yaku\Fan1\AllSimplesYaku;
 use Saki\Win\Yaku\Fan1\DoraYaku;
-use Saki\Win\Yaku\Fan1\DoubleRunYaku;
+use Saki\Win\Yaku\Fan1\PureDoubleChowYaku;
 use Saki\Win\Yaku\Fan1\FirstTurnWinYaku;
 use Saki\Win\Yaku\Fan1\FullyConcealedHandYaku;
-use Saki\Win\Yaku\Fan1\GreenValueTilesYaku;
-use Saki\Win\Yaku\Fan1\KingSTileWinYaku;
+use Saki\Win\Yaku\Fan1\DragonPungGreenYaku;
+use Saki\Win\Yaku\Fan1\AfterAKongWinYaku;
 use Saki\Win\Yaku\Fan1\PrevailingWindYaku;
-use Saki\Win\Yaku\Fan1\ReachYaku;
+use Saki\Win\Yaku\Fan1\RiichiYaku;
 use Saki\Win\Yaku\Fan1\RedDoraYaku;
-use Saki\Win\Yaku\Fan1\RedValueTilesYaku;
-use Saki\Win\Yaku\Fan1\RobbingAQuadYaku;
+use Saki\Win\Yaku\Fan1\DragonPungRedYaku;
+use Saki\Win\Yaku\Fan1\RobbingAKongYaku;
 use Saki\Win\Yaku\Fan1\SeatWindYaku;
 use Saki\Win\Yaku\Fan1\UraDoraYaku;
-use Saki\Win\Yaku\Fan1\WhiteValueTilesYaku;
-use Saki\Win\Yaku\Fan2\AllTerminalsAndHonorsYaku;
-use Saki\Win\Yaku\Fan2\AllTriplesYaku;
-use Saki\Win\Yaku\Fan2\DoubleReachYaku;
-use Saki\Win\Yaku\Fan2\FullStraightYaku;
+use Saki\Win\Yaku\Fan1\DragonPungWhiteYaku;
+use Saki\Win\Yaku\Fan2\AllTerminalsAndHonoursYaku;
+use Saki\Win\Yaku\Fan2\AllPungsYaku;
+use Saki\Win\Yaku\Fan2\DoubleRiichiYaku;
+use Saki\Win\Yaku\Fan2\PureStraightYaku;
 use Saki\Win\Yaku\Fan2\LittleThreeDragonsYaku;
-use Saki\Win\Yaku\Fan2\MixedOutsideHandYaku;
+use Saki\Win\Yaku\Fan2\OutsideHandYaku;
 use Saki\Win\Yaku\Fan2\SevenPairsYaku;
-use Saki\Win\Yaku\Fan2\ThreeColorRunsYaku;
-use Saki\Win\Yaku\Fan2\ThreeColorTriplesYaku;
-use Saki\Win\Yaku\Fan2\ThreeConcealedTriplesYaku;
-use Saki\Win\Yaku\Fan2\ThreeQuadsYaku;
+use Saki\Win\Yaku\Fan2\MixedTripleChowYaku;
+use Saki\Win\Yaku\Fan2\TriplePungYaku;
+use Saki\Win\Yaku\Fan2\ThreeConcealedPungsYaku;
+use Saki\Win\Yaku\Fan2\ThreeKongsYaku;
 use Saki\Win\Yaku\Fan3\HalfFlushYaku;
-use Saki\Win\Yaku\Fan3\PureOutsideHandYaku;
-use Saki\Win\Yaku\Fan3\TwoDoubleRunYaku;
+use Saki\Win\Yaku\Fan3\TerminalsInAllSetsYaku;
+use Saki\Win\Yaku\Fan3\TwicePureDoubleChowYaku;
 use Saki\Win\Yaku\Fan6\FullFlushYaku;
 use Saki\Win\Yaku\Yakuman\AllGreenYaku;
-use Saki\Win\Yaku\Yakuman\AllHonorsYaku;
+use Saki\Win\Yaku\Yakuman\AllHonoursYaku;
 use Saki\Win\Yaku\Yakuman\AllTerminalsYaku;
 use Saki\Win\Yaku\Yakuman\BigFourWindsYaku;
 use Saki\Win\Yaku\Yakuman\BigThreeDragonsYaku;
-use Saki\Win\Yaku\Yakuman\EarthlyWinYaku;
-use Saki\Win\Yaku\Yakuman\FourConcealedTriplesYaku;
-use Saki\Win\Yaku\Yakuman\FourQuadsYaku;
-use Saki\Win\Yaku\Yakuman\HeavenlyWinYaku;
-use Saki\Win\Yaku\Yakuman\HumanlyWinYaku;
+use Saki\Win\Yaku\Yakuman\BlessingOfEarthYaku;
+use Saki\Win\Yaku\Yakuman\FourConcealedPungsYaku;
+use Saki\Win\Yaku\Yakuman\FourKongsYaku;
+use Saki\Win\Yaku\Yakuman\BlessingOfHeavenYaku;
+use Saki\Win\Yaku\Yakuman\BlessingOfManYaku;
 use Saki\Win\Yaku\Yakuman\NineGatesYaku;
-use Saki\Win\Yaku\Yakuman\SmallFourWindsYaku;
+use Saki\Win\Yaku\Yakuman\LittleFourWindsYaku;
 use Saki\Win\Yaku\Yakuman\ThirteenOrphansYaku;
-use Saki\Win\Yaku\Yakuman2\FourConcealedTriplesOnePairWaitingYaku;
+use Saki\Win\Yaku\Yakuman2\PureFourConcealedPungsYaku;
 use Saki\Win\Yaku\Yakuman2\PureNineGatesYaku;
-use Saki\Win\Yaku\Yakuman2\ThirteenOrphansPairWaitingYaku;
+use Saki\Win\Yaku\Yakuman2\PureThirteenOrphansYaku;
 
 /**
  * The yakus set used in a game.
@@ -66,58 +66,58 @@ class YakuSet extends ArrayList {
     static function createStandard() {
         self::$standardInstance = self::$standardInstance ?? new self([
                 // Fan1
-                AllRunsYaku::create(),
+                PinfuYaku::create(),
                 AllSimplesYaku::create(),
                 FullyConcealedHandYaku::create(),
                 DoraYaku::create(),
-                DoubleRunYaku::create(),
+                PureDoubleChowYaku::create(),
                 FirstTurnWinYaku::create(),
-                GreenValueTilesYaku::create(),
-                KingSTileWinYaku::create(),
-                ReachYaku::create(),
+                DragonPungGreenYaku::create(),
+                AfterAKongWinYaku::create(),
+                RiichiYaku::create(),
                 RedDoraYaku::create(),
-                RedValueTilesYaku::create(),
-                RobbingAQuadYaku::create(),
+                DragonPungRedYaku::create(),
+                RobbingAKongYaku::create(),
                 PrevailingWindYaku::create(),
                 SeatWindYaku::create(),
                 UraDoraYaku::create(),
-                WhiteValueTilesYaku::create(),
+                DragonPungWhiteYaku::create(),
                 // Fan2
-                AllTerminalsAndHonorsYaku::create(),
-                AllTriplesYaku::create(),
-                DoubleReachYaku::create(),
-                FullStraightYaku::create(),
+                AllTerminalsAndHonoursYaku::create(),
+                AllPungsYaku::create(),
+                DoubleRiichiYaku::create(),
+                PureStraightYaku::create(),
                 LittleThreeDragonsYaku::create(),
-                MixedOutsideHandYaku::create(),
+                OutsideHandYaku::create(),
                 SevenPairsYaku::create(),
-                ThreeColorRunsYaku::create(),
-                ThreeColorTriplesYaku::create(),
-                ThreeConcealedTriplesYaku::create(),
-                ThreeQuadsYaku::create(),
+                MixedTripleChowYaku::create(),
+                TriplePungYaku::create(),
+                ThreeConcealedPungsYaku::create(),
+                ThreeKongsYaku::create(),
                 // Fan3
                 HalfFlushYaku::create(),
-                PureOutsideHandYaku::create(),
-                TwoDoubleRunYaku::create(),
+                TerminalsInAllSetsYaku::create(),
+                TwicePureDoubleChowYaku::create(),
                 // Fan6
                 FullFlushYaku::create(),
                 // Yakuman
                 AllGreenYaku::create(),
-                AllHonorsYaku::create(),
+                AllHonoursYaku::create(),
                 AllTerminalsYaku::create(),
                 BigFourWindsYaku::create(),
                 BigThreeDragonsYaku::create(),
-                EarthlyWinYaku::create(),
-                FourConcealedTriplesYaku::create(),
-                FourQuadsYaku::create(),
-                HeavenlyWinYaku::create(),
-                HumanlyWinYaku::create(),
+                BlessingOfEarthYaku::create(),
+                FourConcealedPungsYaku::create(),
+                FourKongsYaku::create(),
+                BlessingOfHeavenYaku::create(),
+                BlessingOfManYaku::create(),
                 NineGatesYaku::create(),
-                SmallFourWindsYaku::create(),
+                LittleFourWindsYaku::create(),
                 ThirteenOrphansYaku::create(),
                 // Yakuman2
-                FourConcealedTriplesOnePairWaitingYaku::create(),
+                PureFourConcealedPungsYaku::create(),
                 PureNineGatesYaku::create(),
-                ThirteenOrphansPairWaitingYaku::create(),
+                PureThirteenOrphansYaku::create(),
             ]);
         return self::$standardInstance;
     }

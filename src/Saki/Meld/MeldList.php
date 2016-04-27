@@ -156,7 +156,7 @@ class MeldList extends ArrayList {
      * @param bool|false $requireConcealedTripleOrQuad
      * @return bool
      */
-    function isFourTripleOrQuadAndOnePair(bool $requireConcealedTripleOrQuad = false) {
+    function isFourPungsOrKongsAndAPair(bool $requireConcealedTripleOrQuad = false) {
         $this->assertCompletePrivateHandCount();
 
         $concealedFlag = $requireConcealedTripleOrQuad ? true : null;
@@ -172,13 +172,13 @@ class MeldList extends ArrayList {
 
     //region yaku: run, three color, thirteen orphan
     /**
-     * @param bool $isTwoDoubleRun
+     * @param bool $isTwoDoubleChow
      * @return bool
      */
-    function isDoubleRun(bool $isTwoDoubleRun) {
+    function isDoubleChow(bool $isTwoDoubleChow) {
         $this->assertCompletePrivateHandCount();
 
-        $requiredDoubleRunCount = $isTwoDoubleRun ? 2 : 1;
+        $requiredDoubleChowCount = $isTwoDoubleChow ? 2 : 1;
 
         $runMeldList = $this->toFiltered([RunMeldType::create()]);
         $keySelector = function (Meld $runMeld) {
@@ -186,17 +186,17 @@ class MeldList extends ArrayList {
             return $runMeld->toFormatString($considerConcealed);
         };
         $counts = $runMeldList->getCounts($keySelector); // ['123s' => 2 ...]
-        $doubleRunCount = (new ArrayList(array_values($counts)))->getCount(function (int $n) {
+        $doubleChowCount = (new ArrayList(array_values($counts)))->getCount(function (int $n) {
             return $n >= 2;
         });
 
-        return $doubleRunCount >= $requiredDoubleRunCount;
+        return $doubleChowCount >= $requiredDoubleChowCount;
     }
 
     /**
      * @return bool
      */
-    function isFullStraight() {
+    function isPureStraight() {
         $this->assertCompletePrivateHandCount();
         $targetMeldsList = new ArrayList([
             [Meld::fromString('123m'), Meld::fromString('456m'), Meld::fromString('789m')],
@@ -212,7 +212,7 @@ class MeldList extends ArrayList {
     /**
      * @return bool
      */
-    function isThreeColorRuns() {
+    function isMixedTripleChow() {
         $this->assertCompletePrivateHandCount();
         $runList = $this->toFiltered([RunMeldType::create()]);
         return $runList->isThreeColorSuits();
@@ -221,7 +221,7 @@ class MeldList extends ArrayList {
     /**
      * @return bool
      */
-    function isThreeColorTripleOrQuads() {
+    function isTriplePungOrKong() {
         $this->assertCompletePrivateHandCount();
         $suitTripleOrQuadList = $this->toFiltered([TripleMeldType::create(), QuadMeldType::create()])
             ->where(function (Meld $meld) {
@@ -288,7 +288,7 @@ class MeldList extends ArrayList {
     /**
      * @return bool
      */
-    function isThreeConcealedTripleOrQuads() {
+    function isThreeConcealedPungsOrKongs() {
         $this->assertCompletePrivateHandCount();
         $isConcealedTripleOrQuad = $this->getPredicate([TripleMeldType::create(), QuadMeldType::create()], true);
         $concealedTripleOrQuadCount = $this->getCount($isConcealedTripleOrQuad);
@@ -299,7 +299,7 @@ class MeldList extends ArrayList {
      * @param bool $isFour
      * @return bool
      */
-    function isThreeOrFourQuads(bool $isFour) {
+    function isThreeOrFourKongs(bool $isFour) {
         $this->assertCompletePrivateHandCount();
         $n = $isFour ? 4 : 3;
         $quadCount = $this->getCount($this->getPredicate([QuadMeldType::create()]));
@@ -320,7 +320,7 @@ class MeldList extends ArrayList {
         }
 
         $isOutsideMeld = function (Meld $meld) use ($isPure) {
-            return $isPure ? $meld->isAnyTerminal() : $meld->isAnyTerminalOrHonor();
+            return $isPure ? $meld->isAnyTerm() : $meld->isAnyTermOrHonour();
         };
         return $this->all($isOutsideMeld);
     }
@@ -330,32 +330,32 @@ class MeldList extends ArrayList {
      */
     function isAllTerminals() {
         $this->assertCompletePrivateHandCount();
-        $isAllTerminalMeld = function (Meld $meld) {
-            return $meld->isAllTerminal();
+        $isAllTermMeld = function (Meld $meld) {
+            return $meld->isAllTerm();
         };
-        return $this->all($isAllTerminalMeld);
+        return $this->all($isAllTermMeld);
     }
 
     /**
      * @return bool
      */
-    function isAllHonors() {
+    function isAllHonours() {
         $this->assertCompletePrivateHandCount();
-        $isAllHonorMeld = function (Meld $meld) {
-            return $meld->isAllHonor();
+        $isAllHonourMeld = function (Meld $meld) {
+            return $meld->isAllHonour();
         };
-        return $this->all($isAllHonorMeld);
+        return $this->all($isAllHonourMeld);
     }
 
     /**
      * @return bool
      */
-    function isAllTerminalsAndHonors() {
+    function isAllTerminalsAndHonours() {
         $this->assertCompletePrivateHandCount();
-        $isAllTerminalOrHonorMeld = function (Meld $meld) {
-            return $meld->isAllTerminalOrHonor();
+        $isAllTermOrHonourMeld = function (Meld $meld) {
+            return $meld->isAllTermOrHonour();
         };
-        return $this->all($isAllTerminalOrHonorMeld);
+        return $this->all($isAllTermOrHonourMeld);
     }
 
     /**

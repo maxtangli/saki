@@ -1,6 +1,7 @@
 <?php
 namespace Saki\Phase;
 
+use Saki\FinalPoint\FinalPointStrategyTarget;
 use Saki\Game\Phase;
 use Saki\Game\Round;
 use Saki\Win\Result\Result;
@@ -30,10 +31,10 @@ class OverPhaseState extends PhaseState {
      * @return bool
      */
     function isGameOver(Round $round) { // todo refactor into simpler ver
-        $pointFacade = $round->getAreas()->getPointFacade();
+        $pointList = $round->getAreas()->getPointList();
         $prevailingCurrent = $round->getPrevailingCurrent();
 
-        if ($pointFacade->hasMinus()) {
+        if ($pointList->hasMinus()) {
             return true;
         }
 
@@ -45,11 +46,11 @@ class OverPhaseState extends PhaseState {
             return true; // todo right? write detailed rule doc
         } // else isNormalLast or isSuddenDeath
 
-        if ($pointFacade->hasTiledTop()) {
+        if ($pointList->hasTiledTop()) {
             return false;
         }
 
-        $topItem = $pointFacade->getSingleTop();
+        $topItem = $pointList->getSingleTop();
         $isTopEnoughPoint = $topItem->getPoint() >= 30000; // todo wrap in rule class
         if (!$isTopEnoughPoint) {
             return false;
@@ -63,15 +64,16 @@ class OverPhaseState extends PhaseState {
 
     /**
      * @param Round $round
-     * @return \Saki\FinalPoint\FinalPointItem[]
+     * @return \Saki\Win\Point\PointList
      */
-    function getFinalPointItems(Round $round) {
+    function getFinalScore(Round $round) {
         if (!$this->isGameOver($round)) {
             throw new \InvalidArgumentException('Game is not over.');
         }
 
-        $target = new FinalPointStrategyTarget($round->getPlayerList());
-        return $round->getGameData()->getFinalPointStrategy()->getFinalPointItems($target);
+        $scoreStrategy = $round->getGameData()->getScoreStrategy();
+        $raw = $round->getAreas()->getPointList();
+        return $scoreStrategy->rawToFinal($raw);
     }
 
     //region PhaseState impl
@@ -90,9 +92,9 @@ class OverPhaseState extends PhaseState {
         // modify points
         $areas->applyPointChangeMap($result->getPointChangeMap());
 
-        // clear accumulatedReachCount if isWin
+        // clear accumulatedRiichiCount if isWin
         if ($result->getResultType()->isWin()) {
-            $areas->setReachPoints(0);
+            $areas->setRiichiPoints(0);
         }
     }
 

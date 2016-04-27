@@ -33,7 +33,7 @@ class WinResult extends Result {
 
     function getPointChange(SeatWind $seatWind) {
         return $this->getTableChange($seatWind)
-        + $this->getReachChange($seatWind)
+        + $this->getRiichiChange($seatWind)
         + $this->getSeatChange($seatWind);
     }
 
@@ -70,12 +70,12 @@ class WinResult extends Result {
      * @param SeatWind $seatWind
      * @return int
      */
-    function getReachChange(SeatWind $seatWind) {
-        // nearest winner: $reachPoints
+    function getRiichiChange(SeatWind $seatWind) {
+        // nearest winner: $riichiPoints
         // not nearest winner, loser, irrelevant: 0
         $input = $this->getInput();
         return $input->isNearestWinner($seatWind)
-            ? $input->getReachPoints()
+            ? $input->getRiichiPoints()
             : 0;
     }
 

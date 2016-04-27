@@ -22,6 +22,6 @@ class BigFourWindsYaku extends Yaku {
     }
 
     function getExcludedYakus() {
-        return [SmallFourWindsYaku::create()];
+        return [LittleFourWindsYaku::create()];
     }
 }

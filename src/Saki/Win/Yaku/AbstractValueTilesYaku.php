@@ -18,7 +18,8 @@ abstract class AbstractValueTilesYaku extends Yaku {
     }
 
     protected function matchOther(WinSubTarget $subTarget) {
-        return $subTarget->getAllMeldList()->isValueTiles($this->getValueTile($subTarget));
+        return $subTarget->getAllMeldList()
+            ->isValueTiles($this->getValueTile($subTarget));
     }
 
     /**

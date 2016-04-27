@@ -1,7 +1,7 @@
 <?php
 namespace Saki\Win\Yaku\Yakuman;
 
-use Saki\Win\Series;
+use Saki\Win\Series\Series;
 use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\Yaku;
 

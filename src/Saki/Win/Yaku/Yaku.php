@@ -4,7 +4,7 @@ namespace Saki\Win\Yaku;
 
 use Saki\Util\ArrayList;
 use Saki\Util\Singleton;
-use Saki\Win\Series;
+use Saki\Win\Series\Series;
 use Saki\Win\WinSubTarget;
 
 /**
@@ -15,7 +15,7 @@ abstract class Yaku extends Singleton {
      * @return string
      */
     final function __toString() {
-        // Saki\Win\Yaku\ReachYaku -> Reach
+        // Saki\Win\Yaku\RiichiYaku -> Riichi
         $cls = get_called_class();
         $s = substr($cls, strrpos($cls, '\\') + 1);
         $s = str_replace('Yaku', '', $s);

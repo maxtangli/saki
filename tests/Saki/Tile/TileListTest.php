@@ -79,7 +79,7 @@ class TileListTest extends PHPUnit_Framework_TestCase {
         return [
             [['1m', '1p', '1s', 'E', 'C'], '1m1p1sEC'], // keep order
             [['1m', '1m', '1m',], '111m'], // short write
-            [['1m', '1m', '1m', 'E'], '111mE'],  // short write with Honor
+            [['1m', '1m', '1m', 'E'], '111mE'],  // short write with Honour
         ];
     }
 

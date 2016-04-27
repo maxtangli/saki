@@ -14,9 +14,9 @@ class DrawAnalyzer {
     static function createStandard() {
         self::$standardInstance = self::$standardInstance ?? new self([
                 FourWindDraw::create(),
-                FourReachDraw::create(),
+                FourRiichiDraw::create(),
                 FourKongDraw::create(),
-                ExhaustiveDraw::create(), // low priority than FourReachDraw and FourKongDraw
+                ExhaustiveDraw::create(), // low priority than FourRiichiDraw and FourKongDraw
             ]);
         return self::$standardInstance;
     }

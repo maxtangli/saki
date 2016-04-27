@@ -38,10 +38,10 @@ class AreasTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('123456789p1234s', $handS->getPublic()->toFormatString(true));
     }
 
-    function testPointFacade() {
+    function testPointList() {
         $r = new Round();
         $areas = $r->getAreas();
-        $facade = $areas->getPointFacade();
+        $facade = $areas->getPointList();
 
         $this->assertFalse($facade->hasMinus());
         $this->assertTrue($facade->hasTiledTop());

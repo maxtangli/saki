@@ -37,7 +37,7 @@ class Round {
         $this->prevailingCurrent = new PrevailingCurrent($gameData->getPrevailingContext());
 
         // round variable
-        $this->playerList = new PlayerList($gameData->getPlayerType(), $gameData->getInitialPoint());
+        $this->playerList = new PlayerList($gameData->getPlayerType(), $gameData->getScoreStrategy()->getPointSetting()->getInitialPoint());
         $wall = new Wall($gameData->getTileSet());
 
         $this->areas = new Areas($wall, $this->playerList);
@@ -192,4 +192,3 @@ class Round {
         $this->roll($keepDealer);
     }
 }
-

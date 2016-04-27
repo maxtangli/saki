@@ -12,7 +12,7 @@ use Saki\Command\PrivateCommand\ConcealedKongCommand;
 use Saki\Command\PrivateCommand\DiscardCommand;
 use Saki\Command\PrivateCommand\NineNineDrawCommand;
 use Saki\Command\PrivateCommand\PlusKongCommand;
-use Saki\Command\PrivateCommand\ReachCommand;
+use Saki\Command\PrivateCommand\RiichiCommand;
 use Saki\Command\PrivateCommand\TsumoCommand;
 use Saki\Command\PublicCommand\BigKongCommand;
 use Saki\Command\PublicCommand\ChowCommand;
@@ -33,7 +33,7 @@ class CommandSet extends ArrayList {
                     DiscardCommand::class,
                     ConcealedKongCommand::class,
                     PlusKongCommand::class,
-                    ReachCommand::class,
+                    RiichiCommand::class,
                     TsumoCommand::class,
                     NineNineDrawCommand::class,
                     // public

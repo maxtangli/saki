@@ -176,6 +176,10 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
      * @return bool whether indexes exist or not. For empty indexes, return true.
      */
     function indexExist($indexOrIndexes) {
+        if (count($indexOrIndexes) == 0) {
+            return true;
+        }
+
         $indexes = $this->util_boxing($indexOrIndexes);
 
         $valid = count($indexes) > 0 && (array_unique($indexes) == $indexes);

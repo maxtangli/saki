@@ -12,7 +12,7 @@ use Saki\Meld\WeakRunMeldType;
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 use Saki\Util\ArrayList;
-use Saki\Win\WaitingType;
+use Saki\Win\Waiting\WaitingType;
 
 class MeldTypeTest extends PHPUnit_Framework_TestCase {
     function testToString() {

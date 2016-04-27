@@ -4,28 +4,42 @@ namespace Saki\Win\Yaku;
 
 use Saki\Win\WinSubTarget;
 
+/**
+ * @package Saki\Win\Yaku
+ */
 class YakuAnalyzer {
     private $yakuSet;
 
+    /**
+     * @param YakuSet $yakuSet
+     */
     function __construct(YakuSet $yakuSet) {
         $this->yakuSet = $yakuSet;
     }
 
+    /**
+     * @return YakuSet
+     */
     function getYakuSet() {
         return $this->yakuSet;
     }
 
+    /**
+     * @param WinSubTarget $subTarget
+     * @return YakuItemList
+     */
     function analyzeYakuList(WinSubTarget $subTarget) {
-        $yakuList = new YakuItemList();
-        /** @var Yaku[] $yakus */
-        $yakus = $this->getYakuSet()->toArray();
-        foreach ($yakus as $yaku) {
-            $actualFan = $yaku->getFan($subTarget);
-            if ($actualFan > 0) {
-                $yakuList->insertLast(new YakuItem($yaku, $actualFan));
-            }
-        }
-        $yakuList->normalize(); // remove mutually-excluded yaku
-        return $yakuList;
+        $yakuExist = function (Yaku $yaku) use ($subTarget) {
+            return $yaku->existIn($subTarget);
+        };
+        $existYakuList = $this->getYakuSet()->toArrayList()
+            ->where($yakuExist);
+
+        $toYakuItem = function (Yaku $yaku) use ($subTarget) {
+            return new YakuItem($yaku, $yaku->getFan($subTarget));
+        };
+        $yakuItemList = (new YakuItemList())->fromSelect($existYakuList, $toYakuItem);
+        
+        return $yakuItemList->normalize();
     }
 }

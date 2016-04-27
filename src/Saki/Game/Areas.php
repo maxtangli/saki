@@ -11,6 +11,7 @@ use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 use Saki\Util\ArrayList;
 use Saki\Util\Utils;
+use Saki\Win\Point\PointList;
 
 /**
  * Provide collaborate operations on 1 Wall and 2-4 Area.
@@ -19,12 +20,11 @@ use Saki\Util\Utils;
 class Areas {
     // variable
     /**
-     * An ArrayList of player count Area, order by ascend initial SeatWind.
-     * Design note: Areas not implement as ArrayList since Area's order varies by Round.
+     * An ArrayList of Area, same size with PlayerList, order by ascend initial SeatWind.
      * @var ArrayList
      */
     private $areaList; // todo lock
-    private $reachPoints;
+    private $riichiPoints;
     // round variable
     private $currentTurn;
     private $wall;
@@ -35,17 +35,16 @@ class Areas {
     function __construct(Wall $wall, PlayerList $playerList) {
         // immutable
         $this->areaList = new ArrayList();
-        $playerList->walk(function (Player $player) { // todo remove PlayerList in Areas
+        $playerList->walk(function (Player $player) {
             $getTarget = function (SeatWind $seatWind) {
                 return $this->getTarget($seatWind);
             };
             $area = new Area($getTarget, $player);
-            $player->setArea($area);
             $this->areaList->insertLast($area);
         });
 
         // variable
-        $this->reachPoints = 0;
+        $this->riichiPoints = 0;
 
         // round variable
         $this->currentTurn = Turn::createFirst();
@@ -63,7 +62,7 @@ class Areas {
         $this->areaList->walk(function (Area $area) use ($keepDealer) {
             $area->roll($area->getSeatWind()->toRolled($keepDealer));
         });
-        // $this->reachPoints not changed
+        // $this->riichiPoints not changed
 
         // round variable
         $this->currentTurn = Turn::createFirst();
@@ -80,7 +79,7 @@ class Areas {
         $this->areaList->walk(function (Area $area) use ($nextDealerSeatWind) {
             $area->debugInit($area->getSeatWind()->toNextSelf($nextDealerSeatWind));
         });
-        $this->reachPoints = 0;
+        $this->riichiPoints = 0;
 
         // round variable
         $this->currentTurn = Turn::createFirst();
@@ -135,15 +134,15 @@ class Areas {
     }
 
     /**
-     * @return PointFacade
+     * @return PointList
      */
-    function getPointFacade() {
+    function getPointList() {
         $seatWindList = SeatWind::createList($this->areaList->count());
-        $items = $seatWindList->select(function (SeatWind $seatWind) {
+        $pointPairs = $seatWindList->select(function (SeatWind $seatWind) {
             $point = $this->getArea($seatWind)->getPoint();
-            return new PointFacadeItem($seatWind, $point);
+            return [$seatWind, $point];
         })->toArray();
-        return new PointFacade($items);
+        return PointList::fromPointPairs($pointPairs);
     }
 
     /**
@@ -200,15 +199,15 @@ class Areas {
     /**
      * @return int
      */
-    function getReachPoints() {
-        return $this->reachPoints;
+    function getRiichiPoints() {
+        return $this->riichiPoints;
     }
 
     /**
-     * @param int $reachPoints
+     * @param int $riichiPoints
      */
-    function setReachPoints(int $reachPoints) {
-        $this->reachPoints = $reachPoints;
+    function setRiichiPoints(int $riichiPoints) {
+        $this->riichiPoints = $riichiPoints;
     }
 
     /**
@@ -298,14 +297,14 @@ class Areas {
     }
 
     function isFirstTurnWin(SeatWind $actor) { // todo move
-        $reachStatus = $this->getArea($actor)->getReachStatus();
-        if (!$reachStatus->isFirstTurn($this->getTurn())) {
+        $riichiStatus = $this->getArea($actor)->getRiichiStatus();
+        if (!$riichiStatus->isFirstTurn($this->getTurn())) {
             return false;
         }
 
-        $noDeclareSinceReach = !$this->getDeclareHistory()
-            ->hasDeclare($reachStatus->getReachTurn());
-        return $noDeclareSinceReach;
+        $noDeclareSinceRiichi = !$this->getDeclareHistory()
+            ->hasDeclare($riichiStatus->getRiichiTurn());
+        return $noDeclareSinceRiichi;
     }
 
     function drawInitForAll() {
@@ -353,7 +352,7 @@ class Areas {
      * @param SeatWind $actor
      * @param Tile $selfTile
      */
-    function reach(SeatWind $actor, Tile $selfTile) {
+    function riichi(SeatWind $actor, Tile $selfTile) {
         /**
          * https://ja.wikipedia.org/wiki/%E7%AB%8B%E7%9B%B4
          * 条件
@@ -368,36 +367,36 @@ class Areas {
 
         $area = $this->getArea($actor);
 
-        $notReachYet = !$area->getReachStatus()->isReach();
-        if (!$notReachYet) { // Area
-            throw new \InvalidArgumentException('Reach condition violated: not reach yet.');
+        $notRiichiYet = !$area->getRiichiStatus()->isRiichi();
+        if (!$notRiichiYet) { // Area
+            throw new \InvalidArgumentException('Riichi condition violated: not reach yet.');
         }
 
         $isConcealed = $area->getHand()->getDeclare()->count() == 0;
         if (!$isConcealed) { // Area
-            throw new \InvalidArgumentException('Reach condition violated: is isConcealed.');
+            throw new \InvalidArgumentException('Riichi condition violated: is isConcealed.');
         }
 
         $enoughPoint = $area->getPoint() >= 1000;
         if (!$enoughPoint) { // Area
-            throw new \InvalidArgumentException('Reach condition violated: at least 1000 point.');
+            throw new \InvalidArgumentException('Riichi condition violated: at least 1000 point.');
         }
 
         $hasDrawTileChance = $this->getWall()->getRemainTileCount() >= 4;
         if (!$hasDrawTileChance) { // TilesArea
-            throw new \InvalidArgumentException('Reach condition violated: at least 1 draw tile chance.');
+            throw new \InvalidArgumentException('Riichi condition violated: at least 1 draw tile chance.');
         }
 
         $area->discard($selfTile);
         $this->setTarget(
             new Target($selfTile, TargetType::create(TargetType::DISCARD), $area->getSeatWind())
         );
-        $area->setReachStatus(
-            new ReachStatus($this->getTurn())
+        $area->setRiichiStatus(
+            new RiichiStatus($this->getTurn())
         );
 
         $area->setPoint($area->getPoint() - 1000);
-        $this->setReachPoints($this->getReachPoints() + 1000);
+        $this->setRiichiPoints($this->getRiichiPoints() + 1000);
 
         $this->recordOpen($selfTile, true);
     }

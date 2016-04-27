@@ -54,8 +54,8 @@ class PointTableItem {
                 false => [true => 2, false => 1,],
             ],
             false => [
-                true => [true => 'error', false => 'all',],
-                false => [true => 'all', false => 'all',],
+                true => [true => 'error', false => 6,],
+                false => [true => 4, false => 4,],
             ],
         ];
 
@@ -68,10 +68,6 @@ class PointTableItem {
                 sprintf('Invalid argument $isTsumo[%s], $winnerIsDealer[%s], $loserIsDealer[%s].'
                     , $isTsumo, $winnerIsDealer, $loserIsDealer)
             );
-        } elseif ($ratio === 'all') {
-            $ratio = $winnerIsDealer ? 6 : 4;
-            $rawPoint = $this->getBasePoint() * $ratio;
-            return -$this->util_toFinalPoint($rawPoint);
         } else {
             throw new \LogicException();
         }

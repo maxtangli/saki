@@ -35,11 +35,16 @@ class Hand implements Immutable { // todo facade better?
         );
         return new self($public, $declare, $target);
     }
-
+    
     private $public;
     private $declare;
     private $target;
 
+    /**
+     * @param TileList $public
+     * @param MeldList $declare
+     * @param Target $target
+     */
     function __construct(TileList $public, MeldList $declare, Target $target) {
         if (!$public->getHandSize()->isPublic()) {
             throw new \InvalidArgumentException(

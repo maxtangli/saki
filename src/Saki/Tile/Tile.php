@@ -16,8 +16,8 @@ class Tile implements Immutable {
 
     const REGEX_SUIT_NUMBER = '[0-9]'; // 0 means red dora 5
     const REGEX_SUIT_TILE = '(' . self::REGEX_SUIT_NUMBER . TileType::REGEX_SUIT_TYPE . ')';
-    const REGEX_HONOR_TILE = TileType::REGEX_HONOR_TYPE;
-    const REGEX_TILE = '(' . self::REGEX_SUIT_TILE . '|' . self::REGEX_HONOR_TILE . ')';
+    const REGEX_HONOUR_TILE = TileType::REGEX_HONOUR_TYPE;
+    const REGEX_TILE = '(' . self::REGEX_SUIT_TILE . '|' . self::REGEX_HONOUR_TILE . ')';
 
     static function validString(string $s) {
         $regex = '/^' . self::REGEX_TILE . '$/';
@@ -48,7 +48,7 @@ class Tile implements Immutable {
     protected static function valid(TileType $tileType, $number = null, bool $isRedDora = false) {
         if ($tileType->isSuit()) {
             return is_int($number) && Utils::inRange($number, 1, 9) && ($isRedDora === false || $number === 5);
-        } elseif ($tileType->isHonor()) {
+        } elseif ($tileType->isHonour()) {
             return $number === null && $isRedDora == false;
         } else {
             throw new \LogicException();
@@ -172,8 +172,8 @@ class Tile implements Immutable {
         return $this->getTileType()->isSuit();
     }
 
-    function isHonor() {
-        return $this->getTileType()->isHonor();
+    function isHonour() {
+        return $this->getTileType()->isHonour();
     }
 
     function isWind() {
@@ -188,12 +188,12 @@ class Tile implements Immutable {
         return $this->isSuit() && !in_array($this->getNumber(), [1, 9]);
     }
 
-    function isTerminal() {
+    function isTerm() {
         return $this->isSuit() && in_array($this->getNumber(), [1, 9]);
     }
 
-    function isTerminalOrHonor() {
-        return $this->isTerminal() || $this->isHonor();
+    function isTermOrHonour() {
+        return $this->isTerm() || $this->isHonour();
     }
 
     /**

@@ -33,7 +33,7 @@ class RonCommand extends PublicCommand {
             [[$actor, $round->getWinReport($actor)->getFanAndFu()]],
             $current,
             $areas->getOtherSeatWinds([$actor, $current]),
-            $areas->getReachPoints(),
+            $areas->getRiichiPoints(),
             $areas->getDealerArea()->getSeatWindTurn()
         ));
         $round->toNextPhase(

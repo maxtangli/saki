@@ -10,8 +10,8 @@ use Saki\Util\ArrayList;
 class TileList extends ArrayList {
     const REGEX_EMPTY_LIST = '()';
     const REGEX_SUIT_TOKEN = '(' . Tile::REGEX_SUIT_NUMBER . '+' . TileType::REGEX_SUIT_TYPE . ')';
-    const REGEX_HONOR_TOKEN = Tile::REGEX_HONOR_TILE;
-    const REGEX_NOT_EMPTY_LIST = '(' . self::REGEX_SUIT_TOKEN . '|' . self::REGEX_HONOR_TOKEN . ')+';
+    const REGEX_HONOUR_TOKEN = Tile::REGEX_HONOUR_TILE;
+    const REGEX_NOT_EMPTY_LIST = '(' . self::REGEX_SUIT_TOKEN . '|' . self::REGEX_HONOUR_TOKEN . ')+';
     const REGEX_LIST = '(' . self::REGEX_EMPTY_LIST . '|' . self::REGEX_NOT_EMPTY_LIST . ')';
 
     /**
@@ -42,9 +42,9 @@ class TileList extends ArrayList {
                 array_unshift($tiles, $numberTile);
             } else {
                 $cType = TileType::fromString($c);
-                if ($cType->isHonor()) {
-                    $honorTile = Tile::create($cType);
-                    array_unshift($tiles, $honorTile);
+                if ($cType->isHonour()) {
+                    $honourTile = Tile::create($cType);
+                    array_unshift($tiles, $honourTile);
                 } else {
                     $lastNumberTileType = $cType;
                 }
@@ -162,43 +162,43 @@ class TileList extends ArrayList {
         });
     }
 
-    function isAllTerminal() {
+    function isAllTerm() {
         return $this->all(function (Tile $tile) {
-            return $tile->isTerminal();
+            return $tile->isTerm();
         });
     }
 
-    function isAllTerminalOrHonor() {
+    function isAllTermOrHonour() {
         return $this->all(function (Tile $tile) {
-            return $tile->isTerminalOrHonor();
+            return $tile->isTermOrHonour();
         });
     }
 
-    function isAllHonor() {
+    function isAllHonour() {
         return $this->all(function (Tile $tile) {
-            return $tile->isHonor();
+            return $tile->isHonour();
         });
     }
 
-    function isAnyTerminalOrHonor() {
+    function isAnyTermOrHonour() {
         return $this->any(function (Tile $tile) {
-            return $tile->isTerminalOrHonor();
+            return $tile->isTermOrHonour();
         });
     }
 
-    function isAnyTerminal() {
+    function isAnyTerm() {
         return $this->any(function (Tile $tile) {
-            return $tile->isTerminal();
+            return $tile->isTerm();
         });
     }
 
-    function isNineKindsOfTerminalOrHonor() {
+    function isNineKindsOfTermOrHonour() {
         $this->assertCompletePrivateHand();
 
-        $uniqueTerminalOrHonorCount = $this->getCopy()->where(function (Tile $tile) {
-            return $tile->isTerminalOrHonor();
+        $uniqueTermOrHonourCount = $this->getCopy()->where(function (Tile $tile) {
+            return $tile->isTermOrHonour();
         })->distinct()->count();
-        return $uniqueTerminalOrHonorCount >= 9;
+        return $uniqueTermOrHonourCount >= 9;
     }
 
     function isFlush(bool $isFull) {
@@ -214,8 +214,8 @@ class TileList extends ArrayList {
         $isSuitSameColor = $suitList->getCopy()->select(function (Tile $tile) {
                 return $tile->getTileType();
             })->distinct()->count() == 1;
-        $hasHonor = $suitList->count() != $this->count();
-        return $isSuitSameColor && ($isFull ? !$hasHonor : $hasHonor);
+        $hasHonour = $suitList->count() != $this->count();
+        return $isSuitSameColor && ($isFull ? !$hasHonour : $hasHonour);
     }
 
     function isNineGates(bool $isPure, Tile $targetTile = null) {

@@ -6,7 +6,7 @@ use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 use Saki\Win\Fu\FuAnalyzer;
 use Saki\Win\Fu\FuTarget;
-use Saki\Win\WaitingType;
+use Saki\Win\Waiting\WaitingType;
 use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\YakuItemList;
 
