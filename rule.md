@@ -161,7 +161,7 @@
 个人指令，*PrivateCommand
 - 打牌，Discard：hand -> discard, toPublic
 - 暗杠，ConcealedKong：private -> declare, replace, stayPrivate
-- 加杠，ExtendKong：robbing logic, private -> declare, replace, stayPrivate
+- 加杠，*ExtendKong：robbing logic, private -> declare, replace, stayPrivate
 - 立直，Riichi：reachStatus, hand -> discard, toPublic
 - 九种九牌流局，*NineNineDraw：toOver(result)
 - 自摸和，Tsumo：toOver(result)

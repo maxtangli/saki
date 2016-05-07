@@ -6,8 +6,8 @@ namespace Saki\Util;
  *
  * WARNING
  * - no optimization for size >= 100.
- * - array values not supported.
- * - null values not supported.
+ * - array values NOT supported.
+ * - null values NOT supported.
  *
  * features
  * - support foreach/count/isset/get/set.
@@ -172,7 +172,7 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
 
     //region index properties and getters
     /**
-     * @param int|int[] $indexOrIndexes non-empty, unique indexes.
+     * @param int|int[] $indexOrIndexes unique indexes.
      * @return bool whether indexes exist or not. For empty indexes, return true.
      */
     function indexExist($indexOrIndexes) {
@@ -259,7 +259,7 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
 
     //region value properties and getters
     /**
-     * @param mixed|array $valueOrValues non-empty values.
+     * @param mixed|array $valueOrValues
      * @param callable $equal
      * @return bool whether values exist or not. For duplicated values, return true unless duplicated-count ones exist.
      */

@@ -21,6 +21,7 @@ class ArrayListTest extends \PHPUnit_Framework_TestCase {
         $a = [0, 1, 2, 3, 4, 0];
         $obj = new ArrayList($a);
 
+        $this->assertTrue($obj->indexExist([]));
         $this->assertTrue($obj->indexExist(0));
         $this->assertTrue($obj->indexExist([0]));
         $this->assertTrue($obj->indexExist([0, 5]));
@@ -42,6 +43,7 @@ class ArrayListTest extends \PHPUnit_Framework_TestCase {
         $a = [0, 1, 2, 3, 4, 0];
         $obj = new ArrayList($a);
 
+        $this->assertTrue($obj->valueExist([]));
         $this->assertTrue($obj->valueExist(0));
         $this->assertTrue($obj->valueExist([0]));
         $this->assertTrue($obj->valueExist([0, 0]));
@@ -108,6 +110,7 @@ class ArrayListTest extends \PHPUnit_Framework_TestCase {
 
     function insertProvider() {
         return [
+            [[], [], [], 0], [[1], [1], [], 0],
             [[0], [], 0, 0],
             [[0], [], [0], 0],
             [[0, 0], [], [0, 0], 0],

@@ -211,114 +211,25 @@ class Area {
             $kongSelfTile, TargetType::create(TargetType::KONG), $this->getSeatWind()
         );
     }
-
-    function canDeclareMeld(MeldType $toMeldType,
-                            array $handTiles = null, Tile $otherTile = null, Meld $declaredMeld = null) {
-        // exist handTiles
-        if ($handTiles && !$this->getPublicPlusTarget()->valueExist($handTiles)) {
-            return false;
-        }
-
-        // exist from meld
-        if ($declaredMeld && !$this->declare->valueExist($declaredMeld, Meld::getEqual(false))
-        ) {
-            return false;
-        }
-        
-        // exist tiles can form a fromMeld
-        try {
-            $fromMeld = $declaredMeld ?? new Meld($handTiles);
-        } catch (\InvalidArgumentException $e) {
-            return false;
-        }
-
-        // fromMeld can to target meld
-        $hasWaitingTile = !($handTiles && !$otherTile && !$declaredMeld);
-        if ($hasWaitingTile) {
-            $waitingTile = $otherTile ?? $handTiles[0];
-            return $fromMeld->canToTargetMeld($waitingTile, $toMeldType);
-        } else {
-            return $fromMeld->getMeldType() == $toMeldType;
-        }
-    }
-
+    
     function declareMeld(MeldType $toMeldType, $toConcealed = null,
                          array $handTiles = null, Tile $otherTile = null, Meld $declaredMeld = null) {
-        if (!$this->canDeclareMeld($toMeldType, $handTiles, $otherTile, $declaredMeld)) {
-            throw new \InvalidArgumentException(
-                sprintf('can not declared meld for 
-                $targetMeldType[%s],$targetConcealed[%s],
-                $handTiles[%s],$otherTile[%s],$declaredMeld[%s],
-                $this->public[%s], $this->own[%s]',
-                    $toMeldType, $toConcealed,
-                    implode(',', $handTiles), $otherTile, $declaredMeld,
-                    $this->public, $this->getPublicPlusTarget())
-            );
+        $claim = new Claim($toMeldType, $toConcealed, $handTiles, $otherTile, $declaredMeld);
+
+        $fromPublicPlusTarget = $this->getHand()->getPublicPlusTarget();
+        $fromDeclare = $this->getHand()->getDeclare();
+
+        if (!$claim->valid($fromPublicPlusTarget, $fromDeclare)) {
+            throw new \InvalidArgumentException();
         }
 
-        // get target meld
-        $fromMeld = $declaredMeld ?? new Meld($handTiles);
-        $hasWaitingTile = !($handTiles && !$otherTile && !$declaredMeld);
-        if ($hasWaitingTile) {
-            $waitingTile = $otherTile ?? $handTiles[0];
-            $targetMeld = $fromMeld->toTargetMeld($waitingTile, $toMeldType, $toConcealed);
-        } else {
-            $targetMeld = $fromMeld->toConcealed($toConcealed);
-        }
+        $toPublic = $claim->getToPublic($fromPublicPlusTarget);
+        $toDeclare = $claim->getToDeclare($fromDeclare);
 
-        // remove origin tiles and meld, add new meld
-        if ($handTiles) {
-            $this->public->fromSelect($this->getPublicPlusTarget()->remove($handTiles));
-            if ($otherTile) {
-                $this->public->remove($otherTile); // todo other tile must be target tile
-            }
-        }
+        $this->public->fromSelect($toPublic);
+        $this->declare->fromSelect($toDeclare);
 
-        if ($declaredMeld) {
-            // remove meld ignoring concealed todo right?
-            $this->declare->remove($declaredMeld, Meld::getEqual(false));
-        }
-
-        $this->declare->insertLast($targetMeld);
-        return $targetMeld;
+        return $claim->getToMeld();
     }
     //endregion
-}
-
-/**
- * chow          hand [],other  -> declare, handMeld + other
- * pung          hand [],other  -> declare, handMeld + other
- * kong       hand [],other  -> declare, handMeld + other
- * concealedKong hand []        -> declare, handMeld
- * extendPung    hand 1,declare -> declare, declareMeld + hand1
- * @package Saki\Game
- */
-class Claim {
-    private $toMeldType;
-    private $toConcealed;
-    private $fromTiles;
-    private $fromRequireTarget;
-    private $fromMeld;
-
-    /**
-     * @param $toMeldType
-     * @param $toConcealed
-     * @param $fromTiles
-     * @param $requireTarget
-     * @param $fromMeld
-     */
-    function __construct(MeldType $toMeldType, bool $toConcealed
-        , array $fromTiles, bool $requireTarget, Meld $fromMeld = null) {
-        $this->toMeldType = $toMeldType;
-        $this->toConcealed = $toConcealed;
-        $this->fromTiles = $fromTiles;
-        $this->fromRequireTarget = $requireTarget;
-        $this->fromMeld = $fromMeld;
-    }
-
-    function valid(Hand $hand) {
-    }
-
-    function toClaimed(Hand $hand) {
-    }
 }

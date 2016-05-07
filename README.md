@@ -720,7 +720,7 @@ rush refactor Areas
 
 - [x] refactor RobbingPublicPhaseState 1.5h
 
-- [ ] refactor createMeld logic 0.5h
+- [x] introduce Claim 1.2h
 - [ ] move Areas logic into XXCommand
 
 rush red dora: meld issue
