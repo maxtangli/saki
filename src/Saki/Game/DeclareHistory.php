@@ -4,7 +4,7 @@ namespace Saki\Game;
 use Saki\Util\ArrayList;
 
 /**
- * History of declarations include chow, pong, kong.
+ * History of declarations include chow, pung, kong.
  * Note that current phase is not considered since it do not affects hasDeclare() result.
  * Used in: yaku analyze.
  * @package Saki\Game

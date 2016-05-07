@@ -24,10 +24,13 @@ class FourKongDraw extends Draw {
         $kongPlayerCount = $kongCountList->getCount(function (int $n) {
             return $n > 0;
         });
-
-        $isFourKongDraw = $kongCount >= 4 && $kongPlayerCount >= 2;
+        $isJustAfterKong = $round->getPhaseState()->isJustAfterKong();
+        
+        $isFourKongDraw = $kongCount >= 4 && $kongPlayerCount >= 2
+            && !$isJustAfterKong;
         return $isFourKongDraw;
     }
+    
 
     protected function getResultImpl(Round $round) {
         return new AbortiveDrawResult(

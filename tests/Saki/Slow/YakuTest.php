@@ -1,5 +1,6 @@
 <?php
 
+use Saki\Command\PrivateCommand\DiscardCommand;
 use Saki\Game\Phase;
 use Saki\Game\PrevailingStatus;
 use Saki\Game\PrevailingWind;
@@ -181,7 +182,7 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
             // test LittleThreeDragonsYaku
             [new YakuTestData('CCC,PPP,FF,11m,22m,33m'), LittleThreeDragonsYaku::create(), true],
             [new YakuTestData('CCC,FF,11m,22m,33m', 'PPPP'), LittleThreeDragonsYaku::create(), true],
-            // not 2 pong + 1 pair
+            // not 2 pung + 1 pair
             [new YakuTestData('CCC,PPP,FFF,11m', '789m'), LittleThreeDragonsYaku::create(), false],
 
             // test MixedOutsideHandYaku
@@ -467,7 +468,7 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
             'skip 4',
             'mockHand W 23m123456789s11p',
             'discard E E:s-1m:1m',
-            'mockHand S 11m; pong S; plusKong S S:s-1m:1m'
+            'mockHand S 11m; pung S; extendKong S S:s-1m:1m'
         );
         $areaW = $r->getAreas()->getArea(SeatWind::createWest());
 
@@ -596,7 +597,8 @@ class YakuTestData {
 
     function toWinSubTarget() {
         $r = self::getInitedRound($this->roundDebugResetData);
-
+        $pro = $r->getProcessor();
+        
         // set phase
         $currentSeatWind = $this->currentSeatWind;
         $actorSeatWind = $this->actorSeatWind;
@@ -607,8 +609,14 @@ class YakuTestData {
         $targetTile = $this->targetTile;
         $areas = $r->getAreas();
 
-        $rPhase = $isPrivate ? Phase::createPrivate() : Phase::createPublic();
-        $r->debugSkipTo($currentSeatWind, $rPhase, null, null, $targetTile);
+        while($r->getAreas()->getCurrentSeatWind() != $currentSeatWind) {
+            $pro->process('discard I C; passAll');
+        }
+        if (!$isPrivate) {
+            $pro->process(sprintf('mockHand %s %s; discard %s %s',
+                $currentSeatWind, $targetTile, $currentSeatWind, $targetTile));
+        }
+        
         $actorArea = $areas->getArea($actorSeatWind);
         if ($isPrivate) { // target tile not set
             $private = $handMeldList->toTileList();

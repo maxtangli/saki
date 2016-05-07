@@ -38,11 +38,11 @@ class RoundTest extends SakiTestCase {
         // todo
     }
 
-    function testPong() {
+    function testPung() {
         $r = new Round();
         $pro = $r->getProcessor();
         $pro->process('discard I I:s-1m:1m');
-        $pro->process('mockHand W 11m123456789p13s; pong W');
+        $pro->process('mockHand W 11m123456789p13s; pung W');
         // todo
     }
 }

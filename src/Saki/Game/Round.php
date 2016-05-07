@@ -80,60 +80,6 @@ class Round {
         $this->toNextPhase(); // todo better way?
     }
 
-    // todo simplify
-    function debugSkipTo(SeatWind $goalCurrentSeatWind, Phase $phase = null, $circleCount = null,
-                         Tile $mockDiscardTile = null) {
-        if ($this->getAreas()->getTurn()->getCircleCount() != 1) {
-            throw new \LogicException('Not implemented.');
-        }
-
-        $validCurrentState = $this->getPhaseState()->getPhase()->isPrivateOrPublic();
-        if (!$validCurrentState) {
-            throw new \InvalidArgumentException();
-        }
-
-        $actualPhase = $phase ?? Phase::createPrivate();
-        $validPhase = $actualPhase->isPrivateOrPublic();
-        if (!$validPhase) {
-            throw new \InvalidArgumentException();
-        }
-
-        $actualCircleCount = $circleCount ?? 1;
-        $validActualCircleCount = ($actualCircleCount == 1);
-        if (!$validActualCircleCount) {
-            throw new \InvalidArgumentException('Not implemented.');
-        }
-
-        $actualMockDiscardTile = $mockDiscardTile ?? Tile::fromString('C');
-        $validMockDiscardTile = !$actualMockDiscardTile->isWind();
-        if (!$validMockDiscardTile) {
-            throw new \InvalidArgumentException('Not implemented: consider FourWindDiscardedDraw issue.');
-        }
-
-        $isTargetTurn = function () use ($goalCurrentSeatWind, $actualPhase) {
-            $currentPhaseState = $this->getPhaseState();
-            $currentPhase = $currentPhaseState->getPhase();
-            $currentSeatWind = $this->getAreas()->getCurrentSeatWind();
-            $isTargetTurn = ($currentSeatWind == $goalCurrentSeatWind) && ($currentPhase == $actualPhase);
-            $isGameOver = $currentPhase->isOver() && $currentPhaseState->isGameOver($this);
-            return $isGameOver || $isTargetTurn;
-        };
-
-        $pro = $this->getProcessor();
-        $tileString = $actualMockDiscardTile->__toString();
-        $discardScript = sprintf('discard I I:s-%s:%s', $tileString, $tileString);
-        while (!$isTargetTurn()) {
-            $currentPhase = $this->getPhaseState()->getPhase();
-            if ($currentPhase->isPrivate()) {
-                $pro->process($discardScript);
-            } elseif ($currentPhase->isPublic()) {
-                $pro->process('passAll');
-            } else {
-                throw new \LogicException();
-            }
-        }
-    }
-
     function getGameData() {
         return $this->gameData;
     }

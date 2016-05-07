@@ -8,7 +8,7 @@ use Saki\Command\PublicCommand;
 use Saki\Game\SeatWind;
 use Saki\Phase\PrivatePhaseState;
 
-class PongCommand extends PublicCommand {
+class KongCommand extends PublicCommand {
     static function getParamDeclarations() {
         return [SeatWindParamDeclaration::class];
     }
@@ -22,11 +22,12 @@ class PongCommand extends PublicCommand {
     }
 
     protected function executeImpl(CommandContext $context) {
-        $round = $context->getRound();
+        $r = $context->getRound();
+        
+        $r->getAreas()->kong($this->getActor());
+        $r->getPhaseState()->setJustAfterKong();
 
-        $round->getAreas()->pong($this->getActor());
-        $round->toNextPhase(
-            new PrivatePhaseState($this->getActor(), false)
-        );
+        $actPlayerPrivateState = new PrivatePhaseState($this->getActor(), false);
+        $r->toNextPhase($actPlayerPrivateState);
     }
 }

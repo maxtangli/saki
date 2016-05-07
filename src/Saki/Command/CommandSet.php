@@ -10,15 +10,14 @@ use Saki\Command\Debug\PassAllCommand;
 use Saki\Command\Debug\SkipCommand;
 use Saki\Command\PrivateCommand\ConcealedKongCommand;
 use Saki\Command\PrivateCommand\DiscardCommand;
+use Saki\Command\PrivateCommand\ExtendKongCommand;
 use Saki\Command\PrivateCommand\NineNineDrawCommand;
-use Saki\Command\PrivateCommand\PlusKongCommand;
 use Saki\Command\PrivateCommand\RiichiCommand;
 use Saki\Command\PrivateCommand\TsumoCommand;
-use Saki\Command\PublicCommand\BigKongCommand;
 use Saki\Command\PublicCommand\ChowCommand;
-use Saki\Command\PublicCommand\PongCommand;
+use Saki\Command\PublicCommand\KongCommand;
+use Saki\Command\PublicCommand\PungCommand;
 use Saki\Command\PublicCommand\RonCommand;
-use Saki\Command\PublicCommand\SmallKongCommand;
 use Saki\Util\ArrayList;
 use Saki\Util\ReadonlyArrayList;
 
@@ -32,14 +31,14 @@ class CommandSet extends ArrayList {
                     // private
                     DiscardCommand::class,
                     ConcealedKongCommand::class,
-                    PlusKongCommand::class,
+                    ExtendKongCommand::class,
                     RiichiCommand::class,
                     TsumoCommand::class,
                     NineNineDrawCommand::class,
                     // public
                     ChowCommand::class,
-                    PongCommand::class,
-                    BigKongCommand::class,
+                    PungCommand::class,
+                    KongCommand::class,
                     RonCommand::class,
                     // debug
                     MockNextReplaceCommand::class,

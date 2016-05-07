@@ -184,8 +184,8 @@ class Area {
         $this->public->insertLast($tiles);
     }
 
-    function draw(Tile $tile) { // todo rename to includes replacement
-        // do nothing for public, since $tile will be target tile
+    function drawOrReplace(Tile $tile) {
+        // public no change since $tile will be target tile
     }
 
     function discard(Tile $selfTile) {
@@ -193,7 +193,7 @@ class Area {
         $this->discardLocked->unlock()->insertLast($selfTile)->lock();
     }
 
-    function removeDiscardLast() { // todo remove? furiten logic right?
+    function removeDiscardLast() {
         $this->discardLocked->unlock()->removeLast()->lock();
     }
 
@@ -212,28 +212,19 @@ class Area {
         );
     }
 
-    /**
-     * kongBySelf      hand []        -> declare, handMeld
-     * plusKongBySelf  hand 1,declare -> declare, declareMeld + hand1
-     * chowByOther     hand [],other  -> declare, handMeld + other
-     * pongByOther     hand [],other  -> declare, handMeld + other
-     * kongByOther     hand [],other  -> declare, handMeld + other
-     * plusKongByOther declare,other  -> declare, declareMeld + other
-     */
-    function canDeclareMeld(MeldType $targetMeldType, array $handTiles = null, Tile $otherTile = null, Meld $declaredMeld = null) {
+    function canDeclareMeld(MeldType $toMeldType,
+                            array $handTiles = null, Tile $otherTile = null, Meld $declaredMeld = null) {
         // exist handTiles
         if ($handTiles && !$this->getPublicPlusTarget()->valueExist($handTiles)) {
             return false;
         }
 
-        // exist source meld
-        if ($declaredMeld && !$this->declare->valueExist($declaredMeld, function (Meld $a, Meld $b) {
-                return $a->equalTo($b, false);
-            })
+        // exist from meld
+        if ($declaredMeld && !$this->declare->valueExist($declaredMeld, Meld::getEqual(false))
         ) {
             return false;
         }
-
+        
         // exist tiles can form a fromMeld
         try {
             $fromMeld = $declaredMeld ?? new Meld($handTiles);
@@ -245,21 +236,21 @@ class Area {
         $hasWaitingTile = !($handTiles && !$otherTile && !$declaredMeld);
         if ($hasWaitingTile) {
             $waitingTile = $otherTile ?? $handTiles[0];
-            return $fromMeld->canToTargetMeld($waitingTile, $targetMeldType);
+            return $fromMeld->canToTargetMeld($waitingTile, $toMeldType);
         } else {
-            return $fromMeld->getMeldType() == $targetMeldType;
+            return $fromMeld->getMeldType() == $toMeldType;
         }
     }
 
-    function declareMeld(MeldType $targetMeldType, $targetConcealed = null,
+    function declareMeld(MeldType $toMeldType, $toConcealed = null,
                          array $handTiles = null, Tile $otherTile = null, Meld $declaredMeld = null) {
-        if (!$this->canDeclareMeld($targetMeldType, $handTiles, $otherTile, $declaredMeld)) {
+        if (!$this->canDeclareMeld($toMeldType, $handTiles, $otherTile, $declaredMeld)) {
             throw new \InvalidArgumentException(
                 sprintf('can not declared meld for 
                 $targetMeldType[%s],$targetConcealed[%s],
                 $handTiles[%s],$otherTile[%s],$declaredMeld[%s],
                 $this->public[%s], $this->own[%s]',
-                    $targetMeldType, $targetConcealed,
+                    $toMeldType, $toConcealed,
                     implode(',', $handTiles), $otherTile, $declaredMeld,
                     $this->public, $this->getPublicPlusTarget())
             );
@@ -270,9 +261,9 @@ class Area {
         $hasWaitingTile = !($handTiles && !$otherTile && !$declaredMeld);
         if ($hasWaitingTile) {
             $waitingTile = $otherTile ?? $handTiles[0];
-            $targetMeld = $fromMeld->toTargetMeld($waitingTile, $targetMeldType, $targetConcealed);
+            $targetMeld = $fromMeld->toTargetMeld($waitingTile, $toMeldType, $toConcealed);
         } else {
-            $targetMeld = $fromMeld->toConcealed($targetConcealed);
+            $targetMeld = $fromMeld->toConcealed($toConcealed);
         }
 
         // remove origin tiles and meld, add new meld
@@ -285,9 +276,7 @@ class Area {
 
         if ($declaredMeld) {
             // remove meld ignoring concealed todo right?
-            $this->declare->remove($declaredMeld, function (Meld $a, Meld $b) {
-                return $a->equalTo($b, false);
-            });
+            $this->declare->remove($declaredMeld, Meld::getEqual(false));
         }
 
         $this->declare->insertLast($targetMeld);
@@ -296,3 +285,40 @@ class Area {
     //endregion
 }
 
+/**
+ * chow          hand [],other  -> declare, handMeld + other
+ * pung          hand [],other  -> declare, handMeld + other
+ * kong       hand [],other  -> declare, handMeld + other
+ * concealedKong hand []        -> declare, handMeld
+ * extendPung    hand 1,declare -> declare, declareMeld + hand1
+ * @package Saki\Game
+ */
+class Claim {
+    private $toMeldType;
+    private $toConcealed;
+    private $fromTiles;
+    private $fromRequireTarget;
+    private $fromMeld;
+
+    /**
+     * @param $toMeldType
+     * @param $toConcealed
+     * @param $fromTiles
+     * @param $requireTarget
+     * @param $fromMeld
+     */
+    function __construct(MeldType $toMeldType, bool $toConcealed
+        , array $fromTiles, bool $requireTarget, Meld $fromMeld = null) {
+        $this->toMeldType = $toMeldType;
+        $this->toConcealed = $toConcealed;
+        $this->fromTiles = $fromTiles;
+        $this->fromRequireTarget = $requireTarget;
+        $this->fromMeld = $fromMeld;
+    }
+
+    function valid(Hand $hand) {
+    }
+
+    function toClaimed(Hand $hand) {
+    }
+}

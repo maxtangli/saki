@@ -321,7 +321,7 @@ class Areas {
 
     function draw(SeatWind $actor) {
         $newTile = $this->getWall()->draw();
-        $this->getArea($actor)->draw($newTile);
+        $this->getArea($actor)->drawOrReplace($newTile);
 
         $this->setTarget(
             new Target($newTile, TargetType::create(TargetType::DRAW), $actor)
@@ -330,7 +330,7 @@ class Areas {
 
     function drawReplacement(SeatWind $actor) {
         $newTile = $this->getWall()->drawReplacement();
-        $this->getArea($actor)->draw($newTile);
+        $this->getArea($actor)->drawOrReplace($newTile);
 
         $this->setTarget(
             new Target($newTile, TargetType::create(TargetType::REPLACEMENT), $actor)
@@ -410,23 +410,23 @@ class Areas {
         $this->recordDeclare();
     }
 
-    function plusKongBefore(SeatWind $actor, Tile $selfTile) {
+    function extendKongBefore(SeatWind $actor, Tile $selfTile) {
         $target = $this->getArea($actor)->tempGenKongTarget($selfTile);
 
         $this->setTarget($target);
     }
 
-    function plusKongAfter(SeatWind $actor, Tile $plusKongBeforeTile) { // todo remove $plusKongBeforeTile
+    function extendKongAfter(SeatWind $actor, Tile $extendKongBeforeTile) { // todo remove $extendKongBeforeTile
         $this->setTarget(
             $this->target->toSetValue(null, TargetType::create(TargetType::KEEP))
-        ); // todo belong to where: here? plusKongCommand? PublicPhaseState?
+        ); // todo belong to where: here? extendKongCommand? PublicPhaseState?
 
-        $declaredMeld = new Meld([$plusKongBeforeTile, $plusKongBeforeTile, $plusKongBeforeTile]);
-        $this->getArea($actor)->declareMeld(QuadMeldType::create(), null, null, $plusKongBeforeTile, $declaredMeld);
+        $declaredMeld = new Meld([$extendKongBeforeTile, $extendKongBeforeTile, $extendKongBeforeTile]);
+        $this->getArea($actor)->declareMeld(QuadMeldType::create(), null, null, $extendKongBeforeTile, $declaredMeld);
 
         $this->drawReplacement($actor); // set target
 
-        $this->recordOpen($plusKongBeforeTile, false);
+        $this->recordOpen($extendKongBeforeTile, false);
         $this->recordDeclare();
     }
 
@@ -446,7 +446,7 @@ class Areas {
         $this->recordDeclare();
     }
 
-    function pong(SeatWind $actor) {
+    function pung(SeatWind $actor) {
 //        $this->assertDifferentPlayer($player, $targetPlayer);
         $targetArea = $this->getCurrentArea();
         $playerArea = $this->getArea($actor);
@@ -462,7 +462,7 @@ class Areas {
         $this->recordDeclare();
     }
 
-    function bigKong(SeatWind $actor) {
+    function kong(SeatWind $actor) {
 //        $this->assertDifferentPlayer($player, $targetPlayer);
         $targetArea = $this->getCurrentArea();
         $playerArea = $this->getArea($actor);

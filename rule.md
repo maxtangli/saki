@@ -82,7 +82,7 @@
 
 - 幺九牌：老头牌和字牌的总称，包括：1m、9m、1p、9p、1s、9s、东、南、西、北、中、白、发，共16种。
 
-## 牌的组合
+## 牌的组合，*Meld
 
 - 对子，Pair：2张相同的牌的组合。
 
@@ -107,9 +107,9 @@
 
 - 宝牌指示牌，DoraIndicator：
 - 宝牌，Dora：
-- 里宝牌（*UraDora）：
-- 赤宝牌（*RedDora）：
-- 宝牌类型役（*DoraTypeYaku）：
+- 里宝牌，*UraDora：
+- 赤宝牌，*RedDora：
+- 宝牌类型役，*DoraTypeYaku：
 
 - 洗牌，Mix the tiles
 - 掷骰，Roll two dice
@@ -125,7 +125,7 @@
 - 回合阶段，？：（巡目，当前自风，当前阶段）。
 
 - 手牌
-- 宣告区，MeldedSets
+- 宣告区，MeldedSets，*declare todo
 - 明刻
 - 暗刻
 - 明杠
@@ -135,43 +135,43 @@
 
 ## 单局的流程
 
-空阶段
+空阶段，*NullPhase
 - 进入：1.初始化。
 - 离开：1.进入初始阶段。
 
-初始阶段
+初始阶段，*InitPhase
 - 进入：1.各玩家发牌。
 - 离开：1.进入庄家的个人阶段。
 
-（当前玩家，是否抽牌）的个人阶段
+（当前玩家，是否抽牌）的个人阶段，*PrivatePhase
 - 进入：1.荒牌流局判定。2.修改当前玩家。3.等待当前玩家指令。
 - 离开：1.进入公共阶段。
+
+公共阶段，*PublicPhase
+- 进入：1.等待其它玩家指令。
+- 离开：1.途中流局判定。2.进入（下一玩家,抽牌）的个人阶段。
+
+结束阶段，*OverPhase
+- 进入：1.记录结果，修改分数。
+- 离开：1.进入空阶段。
 
 系统指令
 - 抽牌，Draw：
 
-个人阶段玩家指令
-- 打牌，Discard：Round.toPublic()
-- 暗杠，ConcealedKong：Round.stayPrivate()
-- 加杠，ExtendKong：Round.stayPrivate()
-- 立直，Riichi，*Riichi：Round.toPublic()
-- 九种九牌流局，？：Round.toOver(Result)
-- 自摸和，Tsumo：Round.toOver(Result)
+个人指令，*PrivateCommand
+- 打牌，Discard：hand -> discard, toPublic
+- 暗杠，ConcealedKong：private -> declare, replace, stayPrivate
+- 加杠，ExtendKong：robbing logic, private -> declare, replace, stayPrivate
+- 立直，Riichi：reachStatus, hand -> discard, toPublic
+- 九种九牌流局，*NineNineDraw：toOver(result)
+- 自摸和，Tsumo：toOver(result)
 
-公共阶段
-- 进入：1.等待其它玩家指令。
-- 离开：1.途中流局判定。2.进入（下一玩家,抽牌）的个人阶段。
-
-公共阶段玩家指令
-- 跳过：Round.toPrivate(next player, true) // leavePublic required
-- 吃，Chow：Round.toPrivate(act player, false) // leavePublic ?
-- 碰，Pung：
-- 大明杠，Kong：
-- 荣和，Ron：Round.toOver(Result)
-
-结束阶段
-- 进入：1.记录结果，修改分数。
-- 离开：1.进入空阶段。
+公共指令，*PublicCommand
+- 跳过，Pass：
+- 吃，Chow：public + target -> declare, toPrivate(actor, draw=false)
+- 碰，Pung：public + target -> declare, toPrivate(actor, draw=false)
+- 大明杠，Kong：public + target -> declare, toPrivate(actor, draw=false)
+- 荣和，Ron：toOver(result)
 
 ### 杠指令
 
@@ -179,28 +179,19 @@
 - 有构成杠的牌。
 - 场上的杠少于4个。
 
-伪流程（不考虑四开杠，不考虑抢杠）
-1. 杠宣言成立：向宣言区添加杠子，翻杠宝牌，杠者补牌
-2. a.个人阶段-暗杠、加杠：保持。
-   b.公共阶段-大明杠：进入杠者的不摸牌个人阶段。
+大明杠
+1. 他家公共阶段，杠宣言成立
+*2. 离开公共阶段（无四开杠途流）
+3. 杠者不摸牌个人阶段
 
-伪流程（考虑四开杠，不考虑抢杠）
-1. a.个人阶段-暗杠、加杠：保持。
-   b.公共阶段-大明杠：将postLeave设为加杠逻辑（为避免四开杠判定），进入杠者的不摸牌个人阶段。
-2. 杠宣言成立：向宣言区添加杠子，翻杠宝牌，杠者补牌
+暗杠
+1. 杠者个人阶段，杠宣言成立
 
-流程（考虑四开杠，考虑抢杠）
-1. a.个人阶段-暗杠：保持。
-   b.个人阶段-加杠：进入抢杠的公共阶段，且postLeave设为加杠逻辑，且下一阶段为杠者的不摸牌不计回合个人阶段。
-   c.公共阶段-大明杠：将postLeave设为加杠逻辑（为避免四开杠判定），进入杠者的不摸牌个人阶段。 
-2. 杠宣言成立：向宣言区添加杠子，翻杠宝牌，杠者补牌
-3. 
- a.kongBySelf ：进入抢杠公共阶段，并设置下一阶段为杠者的不抽牌-不计巡-个人阶段
- b.kongByOther：进入抢杠公共阶段，并设置下一阶段为杠者的不抽牌-计巡-个人阶段
-4. 他家轮询抢杠，若和牌本局结束。
-5. 离开抢杠公共阶段（途中流局判定）
-6. 进入事先设好的同一玩家的个人阶段，不摸牌不计回合数
-7. 等待杠者个人指令，岭上开花役有
+加杠：个人，抢杠公共（不判定），[个人]，公共（仅和），判定
+1. 杠者个人阶段，设抢杠目标牌
+2. 抢杠公共阶段（仅限和牌指令）
+*3. 离开抢杠公共阶段（无四开杠途流）
+*4. 杠者不摸牌个人阶段，杠宣言成立 setRobbingPostLeave
 
 # 流局的判定
 
@@ -222,6 +213,11 @@
 
 - 四风连打：第1巡，打出了4张同样的风牌，不存在吃碰杠宣言。
 - 四开杠：场上有4个杠子，且它们属于至少2个玩家。杠指令执行时，在杠者打牌后的公共阶段离开时判定。
+
+大明杠：上一公共（不判定），[个人]，公共（仅和），判定
+暗杠：个人，个人，公共（仅和），判定
+加杠：个人，抢杠公共（不判定），[个人]，公共（仅和），判定
+
 - 四家立直：有4家立直。
 
 # 和牌的判定

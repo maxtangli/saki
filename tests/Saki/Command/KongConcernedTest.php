@@ -14,7 +14,7 @@ class KongConcernedTest extends PHPUnit_Framework_TestCase {
         // todo
     }
 
-    function testPlusKong() {
+    function testExtendKong() {
         // todo detailed test
         $r = new Round();
         $pro = $r->getProcessor();
@@ -22,15 +22,15 @@ class KongConcernedTest extends PHPUnit_Framework_TestCase {
         // execute
         $pro->process(
             'discard E E:s-1m:1m',
-            'mockHand S 11m123456789p13s; pong S'
+            'mockHand S 11m123456789p13s; pung S'
         );
 
         $areaBefore = $r->getAreas()->getCurrentArea();
 
         // robQuad phase
-        $pro->process('plusKong S S:s-1m:1m');
+        $pro->process('extendKong S S:s-1m:1m');
         $this->assertEquals(Phase::createPublic(), $r->getPhaseState()->getPhase());
-        $this->assertTrue($r->getPhaseState()->isRobQuad());
+        $this->assertTrue($r->getPhaseState()->isRonOnly());
 
         // after robQuadPhase
         $pro->process('passAll');
@@ -45,13 +45,13 @@ class KongConcernedTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($areaBefore->getHand()->getDeclare()->valueExist(Meld::fromString('1111m')));
     }
 
-    // todo testPlusKongTargetTile
+    // todo testExtendKongTargetTile
 
-    function testBigKong() {
+    function testKong() {
         $r = new Round();
         $pro = $r->getProcessor();
         $pro->process('discard I I:s-1m:1m');
-        $pro->process('mockHand W 111m; bigKong W');
+        $pro->process('mockHand W 111m; kong W');
         // todo
     }
 
@@ -84,7 +84,7 @@ class KongConcernedTest extends PHPUnit_Framework_TestCase {
             $r->getPhaseState()->getResult()->getResultType()->getValue());
     }
 
-    function testFourKongDrawByPlusKong() {
+    function testFourKongDrawByExtendKong() {
         $r = new Round();
         $r->debugInit(PrevailingStatus::createFirst());
         $pro = $r->getProcessor();
@@ -93,15 +93,15 @@ class KongConcernedTest extends PHPUnit_Framework_TestCase {
             'discard E E:s-1s:1s; passAll',
             'concealedKong S S:s-1111s:1s; discard S S:s-1s:1s; passAll',
             'concealedKong W W:s-1111s:1s; discard W W:s-1s:1s; passAll',
-            'concealedKong N N:s-1111s:1s; discard N N:s-1m:1m; mockHand E 11m; pong E',
-            'plusKong E E:s-1m:1m; passAll; discard E E:s-1m:1m; passAll'
+            'concealedKong N N:s-1111s:1s; discard N N:s-1m:1m; mockHand E 11m; pung E',
+            'extendKong E E:s-1m:1m; passAll; discard E E:s-1m:1m; passAll'
         );
 
         $this->assertEquals(ResultType::FOUR_KONG_DRAW,
             $r->getPhaseState()->getResult()->getResultType()->getValue());
     }
 
-    function testFourKongDrawByBigKong() {
+    function testFourKongDrawByKong() {
         $r = new Round();
         $r->debugInit(PrevailingStatus::createFirst());
         $pro = $r->getProcessor();
@@ -110,7 +110,7 @@ class KongConcernedTest extends PHPUnit_Framework_TestCase {
             'concealedKong E E:s-1111s:1s; discard E E:s-1s:1s; passAll',
             'concealedKong S S:s-1111s:1s; discard S S:s-1s:1s; passAll',
             'concealedKong W W:s-1111s:1s; discard W W:s-1s:1s',
-            'mockHand E 111s; bigKong E'
+            'mockHand E 111s; kong E'
         );
         $this->assertEquals(Phase::createPrivate(), $r->getPhaseState()->getPhase());
 

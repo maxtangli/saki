@@ -7,7 +7,7 @@ use Saki\Util\ComparableSequence;
 use Saki\Util\Immutable;
 
 /**
- * A record for a open operation, where open operation includes discard and plusKong.
+ * A record for a open operation, where open operation includes discard and extendKong.
  * Note that open happens in private phase only, thus Turn.SeatWind means open actor.
  * @package Saki\Game
  */

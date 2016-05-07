@@ -76,7 +76,7 @@ class OpenHistory {
 
     /**
      * Return all player's discard TileList.
-     * Note that Area.discard is not used since it may lacks tiles by chow, pong, kong etc.
+     * Note that Area.discard is not used since it may lacks tiles by chow, pung, kong etc.
      * Used in: FourWindDraw.
      * @return TileList
      */

@@ -60,13 +60,13 @@ class FuritenTest extends SakiTestCase {
         $this->assertFuriten($r, 'E', 'passAll; discard W W:s-4m:4m');
     }
 
-    function testSelfPlusKongCase() {
+    function testSelfExtendKongCase() {
         $r = new Round();
-        // furiten by self plusKong, next turn
+        // furiten by self extendKong, next turn
         $this->assertFuriten(
             $r, 'E',
             'discard E E:s-C:C; passAll',
-            'discard S S:s-1m:1m', 'mockHand E 111m; pong E; plusKong E 1m; passAll',
+            'discard S S:s-1m:1m', 'mockHand E 111m; pung E; extendKong E 1m; passAll',
             'skip 5; mockHand E 23789m44sPPP; discard S S:s-4m:4m'
         );
     }
@@ -145,10 +145,10 @@ class FuritenTest extends SakiTestCase {
         $this->assertEquals(1, $r->getAreas()->getTurn()->getCircleCount());
         $this->assertFuriten(
             $r, 'S',
-            'mockHand E 11sC; pong E; discard E C',
-            'mockHand W CCC; pong W; discard W C',
-            'mockHand E CCC; pong E; discard E C',
-            'mockHand W CC1s; pong W; discard W 1s'
+            'mockHand E 11sC; pung E; discard E C',
+            'mockHand W CCC; pung W; discard W C',
+            'mockHand E CCC; pung E; discard E C',
+            'mockHand W CC1s; pung W; discard W 1s'
         );
         $this->assertEquals(3, $r->getAreas()->getTurn()->getCircleCount());
     }

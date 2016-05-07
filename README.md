@@ -113,8 +113,8 @@ rush 9 concealed triple/quad 2.5h
 - [x] concealed meld 1h
 - [x] refactor: PlayerArea.candidateTile not convenient 0.2h
 - [x] PlayerArea.canXXX 0.3h
-- [x] refactor public phase chow/pong/kong 0.3h
-- [x] private phase: kong, plusKong 0.7h
+- [x] refactor public phase chow/pung/kong 0.3h
+- [x] private phase: kong, extendKong 0.7h
 
 rush 10 first yaku impl: all runs yaku 7.8h
 
@@ -716,7 +716,11 @@ rush 63 rewrite Win/Score 2.3h
 rush refactor Areas
 
 - [x] etc 0.5h
-- [ ] refactor createMeld logic
+- [x] remove Round.debugSkipTo 0.2h
+
+- [x] refactor RobbingPublicPhaseState 1.5h
+
+- [ ] refactor createMeld logic 0.5h
 - [ ] move Areas logic into XXCommand
 
 rush red dora: meld issue
@@ -783,5 +787,6 @@ rush rule.md doc
 
 - [ ] rule 0.6h
 - [ ] tile 0.6h
+- [ ] command 0.6h
 - [ ] yaku 2.8h
 - [ ] furiten 0.8h

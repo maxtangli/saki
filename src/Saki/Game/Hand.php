@@ -14,13 +14,12 @@ use Saki\Util\Immutable;
  * - target : targetData, fromSelf or fromOther.
  * - private: public + targetData which mustExist. Error if targetData not exist. Used in: win analyze.
  * - publicPlusTarget: public + targetData if exist. Used in: create meld. todo: any way to remove?
- * - publicPlusSelfTarget: public + targetData if fromSelf. Used in: debugSetHand. todo: any way to remove?
  * - declare: declared meldList.
  * - privatePlusDeclare: private + declare.toTileList. Used in: some yaku analyze? todo better way
  *
  * @package Saki\Hand
  */
-class Hand implements Immutable { // todo facade better?
+class Hand implements Immutable {
     /**
      * @param TileList $private
      * @param MeldList $declare
@@ -82,7 +81,7 @@ class Hand implements Immutable { // todo facade better?
             ->lock();
     }
 
-    /**
+    /** todo remove
      * @return TileList
      */
     function getPublicPlusTarget() {

@@ -74,11 +74,11 @@ class MeldTest extends PHPUnit_Framework_TestCase {
     }
 
     function testAddKong() {
-        // canPlusKong
+        // canExtendKong
         $meld = Meld::fromString('111m');
         $this->assertTrue($meld->canToTargetMeld(Tile::fromString('1m'), QuadMeldType::create()));
         $this->assertFalse($meld->canToTargetMeld(Tile::fromString('1s'), QuadMeldType::create()));
-        // plusKong get Quad
+        // extendKong get Quad
         $meld2 = $meld->toTargetMeld(Tile::fromString('1m'), QuadMeldType::create());
         $this->assertSame('1111m', $meld2->__toString());
         $this->assertEquals(QuadMeldType::create(), $meld2->getMeldType());

@@ -6,11 +6,10 @@ use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\ParamDeclaration\TileParamDeclaration;
 use Saki\Command\PrivateCommand;
 use Saki\Game\SeatWind;
-use Saki\Phase\PrivatePhaseState;
-use Saki\Phase\PublicPhaseState;
+use Saki\Phase\RobbingPubicPhaseState;
 use Saki\Tile\Tile;
 
-class PlusKongCommand extends PrivateCommand {
+class ExtendKongCommand extends PrivateCommand {
     static function getParamDeclarations() {
         return [SeatWindParamDeclaration::class, TileParamDeclaration::class];
     }
@@ -36,21 +35,13 @@ class PlusKongCommand extends PrivateCommand {
         $tile = $this->getTile();
 
         // set target tile
-        $context->getAreas()->plusKongBefore($actor, $tile);
+        $context->getAreas()->extendKongBefore($actor, $tile);
 
-        // to RobQuadPhase
-        $robQuadPhase = new PublicPhaseState();
-
-        $robQuadPhase->setRobQuad(true);
-
+        // to RobbingPublicPhase
         $postLeave = function () use ($r) {
-            $r->getAreas()->plusKongAfter($this->getActor(), $this->getTile());
+            $r->getAreas()->extendKongAfter($this->getActor(), $this->getTile());
         };
-        $robQuadPhase->setPostLeave($postLeave);
-
-        $retPrivatePhase = new PrivatePhaseState($actor, false, true);
-        $robQuadPhase->setCustomNextState($retPrivatePhase);
-
-        $r->toNextPhase($robQuadPhase);
+        $robbingPublicPhase = new RobbingPubicPhaseState($postLeave);
+        $r->toNextPhase($robbingPublicPhase);
     }
 }

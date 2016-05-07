@@ -76,9 +76,29 @@ class Meld extends TileList implements Immutable {
         };
     }
 
+    /**
+     * @param Tile[] $tiles
+     * @param MeldType|null $meldType
+     * @param bool $concealed
+     * @return bool
+     */
+    static function valid(array $tiles, MeldType $meldType = null, bool $concealed = false) {
+        try {
+            $notUsed = new self($tiles, $meldType, $concealed);
+        } catch (\InvalidArgumentException $e) {
+            return false;
+        }
+        return true;
+    }
+    
     private $meldType;
     private $concealed;
 
+    /**
+     * @param Tile[] $tiles
+     * @param MeldType|null $meldType
+     * @param bool $concealed
+     */
     function __construct(array $tiles, MeldType $meldType = null, bool $concealed = false) {
         $l = (new TileList($tiles))->orderByTileID();
         $actualMeldType = $meldType ?? self::getMeldTypeAnalyzer()->analyzeMeldType($l); // validate

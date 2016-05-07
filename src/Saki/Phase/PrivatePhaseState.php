@@ -12,7 +12,7 @@ class PrivatePhaseState extends PhaseState {
     private $actor;
     private $shouldDrawTile;
     private $isCurrent;
-
+    
     /**
      * PrivatePhaseState constructor.
      * @param SeatWind $actor
@@ -45,7 +45,7 @@ class PrivatePhaseState extends PhaseState {
     function isCurrent() {
         return $this->isCurrent;
     }
-
+    
     //region PhaseState impl
     function getPhase() {
         return Phase::createPrivate();

@@ -8,7 +8,7 @@ use Saki\Command\PublicCommand;
 use Saki\Game\SeatWind;
 use Saki\Phase\PrivatePhaseState;
 
-class BigKongCommand extends PublicCommand {
+class PungCommand extends PublicCommand {
     static function getParamDeclarations() {
         return [SeatWindParamDeclaration::class];
     }
@@ -22,15 +22,11 @@ class BigKongCommand extends PublicCommand {
     }
 
     protected function executeImpl(CommandContext $context) {
-        $r = $context->getRound();
+        $round = $context->getRound();
 
-        // avoid FourKongDraw by postLeave
-        $postLeave = function () use ($r) {
-            $r->getAreas()->bigKong($this->getActor());
-        };
-        $r->getPhaseState()->setPostLeave($postLeave);
-
-        $actPlayerPrivateState = new PrivatePhaseState($this->getActor(), false);
-        $r->toNextPhase($actPlayerPrivateState);
+        $round->getAreas()->pung($this->getActor());
+        $round->toNextPhase(
+            new PrivatePhaseState($this->getActor(), false)
+        );
     }
 }

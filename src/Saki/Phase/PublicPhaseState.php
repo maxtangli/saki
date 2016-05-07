@@ -8,45 +8,33 @@ use Saki\Game\Round;
  * @package Saki\Phase
  */
 class PublicPhaseState extends PhaseState {
-    private $robQuad;
-    private $postLeave;
+    private $justAfterKong;
 
     function __construct() {
-        $this->robQuad = false;
-        $this->postLeave = function () {
-        };
+        $this->justAfterKong = false;
     }
 
     /**
      * @return bool
      */
-    function isRobQuad() {
-        return $this->robQuad;
+    function isJustAfterKong() {
+        return $this->justAfterKong;
+    }
+
+    function setJustAfterKong() {
+        $this->justAfterKong = true;
     }
 
     /**
-     * @param bool $robQuad
+     * @return bool
      */
-    function setRobQuad(bool $robQuad) {
-        $this->robQuad = $robQuad;
-    }
-
-    /**
-     * @return \Closure
-     */
-    function getPostLeave() {
-        return $this->postLeave;
-    }
-
-    /**
-     * @param callable $postLeave
-     */
-    function setPostLeave(callable $postLeave) {
-        $this->postLeave = $postLeave;
+    function isRonOnly() {
+        return false;
     }
 
     /**
      * @param Round $round
+     * @return bool
      */
     protected function handleDraw(Round $round) {
         $drawAnalyzer = $round->getGameData()->getDrawAnalyzer();
@@ -54,8 +42,10 @@ class PublicPhaseState extends PhaseState {
         if ($drawOrFalse !== false) {
             $drawResult = $drawOrFalse->getResult($round);
             $this->setCustomNextState(new OverPhaseState($drawResult));
+            return true;
         } else {
             // do nothing
+            return false;
         }
     }
 
@@ -76,7 +66,7 @@ class PublicPhaseState extends PhaseState {
 
     function leave(Round $round) {
         $this->handleDraw($round);
-        call_user_func($this->getPostLeave());
     }
     //endregion
 }
+
