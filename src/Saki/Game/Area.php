@@ -13,8 +13,9 @@ use Saki\Tile\TileList;
  */
 class Area {
     // immutable
-    private $getTarget;
     private $player;
+    // variable
+    private $targetHolder;
     // game variable
     private $seatWind;
     private $seatWindTurn;
@@ -26,13 +27,14 @@ class Area {
     private $riichiStatus;
 
     /**
-     * @param callable $getTarget
+     * @param TargetHolder $targetHolder
      * @param Player $player
      */
-    function __construct(callable $getTarget, Player $player) {
+    function __construct(TargetHolder $targetHolder, Player $player) {
         // immutable
-        $this->getTarget = $getTarget;
         $this->player = $player;
+        // variable
+        $this->targetHolder = $targetHolder;
         // game variable
         $this->seatWind = $player->getInitialSeatWind();
         $this->seatWindTurn = 0;
@@ -129,10 +131,8 @@ class Area {
      * @return Target A Target own by this Area's SeatWind.
      */
     protected function getTarget() {
-        $f = $this->getTarget;
-        /** @var Target $target */
-        $target = $f($this->getSeatWind());
-
+        $target = $this->targetHolder->getTarget($this->getSeatWind());
+        
         if ($target->exist() && !$target->isOwner($this->getSeatWind())) {
             throw new \LogicException();
         }
@@ -212,8 +212,8 @@ class Area {
         );
     }
     
-    function declareMeld(MeldType $toMeldType, $toConcealed = null,
-                         array $handTiles = null, Tile $otherTile = null, Meld $declaredMeld = null) {
+    function claim(MeldType $toMeldType, $toConcealed = null,
+                   array $handTiles = null, Tile $otherTile = null, Meld $declaredMeld = null) {
         $claim = new Claim($toMeldType, $toConcealed, $handTiles, $otherTile, $declaredMeld);
 
         $fromPublicPlusTarget = $this->getHand()->getPublicPlusTarget();

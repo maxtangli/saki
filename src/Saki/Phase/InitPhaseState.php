@@ -22,7 +22,7 @@ class InitPhaseState extends PhaseState {
 
     function enter(Round $round) {
         // todo move shuffle logic into here
-        $round->getAreas()->drawInitForAll();
+        $round->getAreas()->deal();
     }
 
     function leave(Round $round) {

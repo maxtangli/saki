@@ -28,30 +28,27 @@ class Areas {
     // round variable
     private $currentTurn;
     private $wall;
-    private $target;
+    private $targetHolder;
     private $openHistory;
     private $declareHistory;
 
     function __construct(Wall $wall, PlayerList $playerList) {
-        // immutable
-        $this->areaList = new ArrayList();
-        $playerList->walk(function (Player $player) {
-            $getTarget = function (SeatWind $seatWind) {
-                return $this->getTarget($seatWind);
-            };
-            $area = new Area($getTarget, $player);
-            $this->areaList->insertLast($area);
-        });
-
         // variable
         $this->riichiPoints = 0;
 
         // round variable
         $this->currentTurn = Turn::createFirst();
         $this->wall = $wall;
-        $this->target = Target::createNull();
+        $this->targetHolder = new TargetHolder();
         $this->openHistory = new OpenHistory();
         $this->declareHistory = new DeclareHistory();
+
+        // immutable
+        $this->areaList = new ArrayList();
+        $playerList->walk(function (Player $player) {
+            $area = new Area($this->targetHolder, $player);
+            $this->areaList->insertLast($area);
+        });
     }
 
     /**
@@ -67,7 +64,7 @@ class Areas {
         // round variable
         $this->currentTurn = Turn::createFirst();
         $this->wall->reset(true);
-        $this->target = Target::createNull();
+        $this->targetHolder->init();
         $this->openHistory->reset();
         $this->declareHistory->reset();
     }
@@ -84,7 +81,7 @@ class Areas {
         // round variable
         $this->currentTurn = Turn::createFirst();
         $this->wall->reset(true);
-        $this->target = Target::createNull();
+        $this->targetHolder->init();
         $this->openHistory->reset();
         $this->declareHistory->reset();
     }
@@ -105,14 +102,15 @@ class Areas {
 
         $area = $this->getArea($actor);
 
-        $currentTargetTile = $this->target->getTile();
+        $currentTargetTile = $this->targetHolder->getTarget($actor);
+
         $actualTargetTile = $targetTile ??
             ($private->valueExist($currentTargetTile) ? $currentTargetTile : $private->getLast());
         $actualPublic = $private->getCopy()->remove($actualTargetTile);
         $actualDeclare = $declare ?? $area->getHand()->getDeclare();
 
         $area->debugSet($actualPublic, $actualDeclare);
-        $this->setTarget($this->target->toSetValue($actualTargetTile));
+        $this->setTarget($this->targetHolder->getTarget($actor)->toSetValue($actualTargetTile));
     }
 
     // todo move into Hand logic?
@@ -248,18 +246,12 @@ class Areas {
     function getWall() {
         return $this->wall;
     }
-
-    protected function getTarget(SeatWind $seatWind) {
-        $seeTarget = $this->target->exist()
-            && $this->target->isOwner($seatWind);
-        return $seeTarget ? $this->target : Target::createNull();
-    }
-
+    
     /**
      * @param Target $target
      */
     protected function setTarget(Target $target) {
-        $this->target = $target;
+        $this->targetHolder->setTarget($target);
     }
 
     /**
@@ -307,7 +299,7 @@ class Areas {
         return $noDeclareSinceRiichi;
     }
 
-    function drawInitForAll() {
+    function deal() {
         // notice do NOT trigger turn changes
         $drawTileCounts = [4, 4, 4, 1];
         foreach ($drawTileCounts as $drawTileCount) {
@@ -403,7 +395,7 @@ class Areas {
 
     function concealedKong(SeatWind $actor, Tile $selfTile) {
         $handTiles = [$selfTile, $selfTile, $selfTile, $selfTile];
-        $this->getArea($actor)->declareMeld(QuadMeldType::create(), true, $handTiles, null, null);
+        $this->getArea($actor)->claim(QuadMeldType::create(), true, $handTiles, null, null);
 
         $this->drawReplacement($actor); // set target
 
@@ -418,11 +410,11 @@ class Areas {
 
     function extendKongAfter(SeatWind $actor, Tile $extendKongBeforeTile) { // todo remove $extendKongBeforeTile
         $this->setTarget(
-            $this->target->toSetValue(null, TargetType::create(TargetType::KEEP))
+            $this->targetHolder->temp_getTarget()->toSetValue(null, TargetType::create(TargetType::KEEP))
         ); // todo belong to where: here? extendKongCommand? PublicPhaseState?
 
         $declaredMeld = new Meld([$extendKongBeforeTile, $extendKongBeforeTile, $extendKongBeforeTile]);
-        $this->getArea($actor)->declareMeld(QuadMeldType::create(), null, null, $extendKongBeforeTile, $declaredMeld);
+        $this->getArea($actor)->claim(QuadMeldType::create(), null, null, $extendKongBeforeTile, $declaredMeld);
 
         $this->drawReplacement($actor); // set target
 
@@ -437,7 +429,7 @@ class Areas {
 
         $handTiles = [$selfTile1, $selfTile2];
         $targetTile = $targetArea->getDiscard()->getLast(); // validate
-        $playerArea->declareMeld(RunMeldType::create(), false, $handTiles, $targetTile, null); // validate
+        $playerArea->claim(RunMeldType::create(), false, $handTiles, $targetTile, null); // validate
         $targetArea->removeDiscardLast();
 
         $keepTarget = $playerArea->tempGenKeepTarget();
@@ -453,7 +445,7 @@ class Areas {
 
         $targetTile = $targetArea->getDiscard()->getLast(); // validate
         $handTiles = [$targetTile, $targetTile];
-        $playerArea->declareMeld(TripleMeldType::create(), false, $handTiles, $targetTile, null); // validate
+        $playerArea->claim(TripleMeldType::create(), false, $handTiles, $targetTile, null); // validate
         $targetArea->removeDiscardLast();
 
         $keepTarget = $playerArea->tempGenKeepTarget();
@@ -469,7 +461,7 @@ class Areas {
 
         $targetTile = $targetArea->getDiscard()->getLast(); // validate
         $handTiles = [$targetTile, $targetTile, $targetTile];
-        $playerArea->declareMeld(QuadMeldType::create(), false, $handTiles, $targetTile, null); // validate
+        $playerArea->claim(QuadMeldType::create(), false, $handTiles, $targetTile, null); // validate
         $targetArea->removeDiscardLast();
 
         $this->drawReplacement($actor); // set target

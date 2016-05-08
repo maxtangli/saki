@@ -713,7 +713,7 @@ rush 63 rewrite Win/Score 2.3h
 - [x] adapt ScoreStrategy 0.3h
 // todo confirm final score rule
 
-rush refactor Areas
+rush 64 refactor Areas 3.4h
 
 - [x] etc 0.5h
 - [x] remove Round.debugSkipTo 0.2h
@@ -721,7 +721,16 @@ rush refactor Areas
 - [x] refactor RobbingPublicPhaseState 1.5h
 
 - [x] introduce Claim 1.2h
-- [ ] move Areas logic into XXCommand
+
+rush refactor Areas
+
+- [ ] introduce TargetHolder 0.5h
+- [ ] remove Areas.debugPrivate
+
+- [ ] refactor: Command error message
+- [ ] refactor riichi
+
+- [ ] move Areas logic into XXCommand 0.2h
 
 rush red dora: meld issue
 
