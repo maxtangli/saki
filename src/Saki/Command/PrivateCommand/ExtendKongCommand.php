@@ -30,18 +30,16 @@ class ExtendKongCommand extends PrivateCommand {
     }
 
     protected function executeImpl(CommandContext $context) {
-        $r = $context->getRound();
-        $actor = $this->getActor();
-        $tile = $this->getTile();
-
+        $actorArea = $context->getActorArea();
+        
         // set target tile
-        $context->getAreas()->extendKongBefore($actor, $tile);
+        $actorArea->extendKongBefore($this->getTile());
 
         // to RobbingPublicPhase
-        $postLeave = function () use ($r) {
-            $r->getAreas()->extendKongAfter($this->getActor(), $this->getTile());
+        $postLeave = function () use ($actorArea) {
+            $actorArea->extendKongAfter();
         };
         $robbingPublicPhase = new RobbingPubicPhaseState($postLeave);
-        $r->toNextPhase($robbingPublicPhase);
+        $context->getRound()->toNextPhase($robbingPublicPhase);
     }
 }

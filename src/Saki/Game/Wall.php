@@ -84,13 +84,22 @@ class Wall {
     }
 
     /**
-     * @param $n
-     * @return Tile[]
+     * @param PlayerType $playerType
+     * @return Tile[][] e.x. [E => [1s,2s...] ...]
      */
-    function drawInit($n) {
-        $tiles = $this->getRemainTileList()->getLastMany($n);
-        $this->getRemainTileList()->removeLast($n);
-        return $tiles;
+    function deal(PlayerType $playerType) {
+        $result = [];
+        foreach ([4, 4, 4, 1] as $drawTileCount) {
+            foreach ($playerType->getSeatWindList() as $actor) {
+                $tiles = $this->getRemainTileList()->getLastMany($drawTileCount);
+                
+                $i = $actor->__toString();
+                $result[$i] = array_merge($result[$i] ?? [], $tiles);
+                
+                $this->getRemainTileList()->removeLast($drawTileCount);
+            }
+        }
+        return $result;
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace Saki\Game;
 
+use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 use Saki\Util\ArrayList;
 
@@ -59,7 +60,7 @@ class OpenHistory {
      * @param SeatWind $mySeatWind
      * @return TileList
      */
-    function getSelf(SeatWind $mySeatWind) {
+    function getSelfOpen(SeatWind $mySeatWind) {
         return $this->getImpl(true, $mySeatWind, Turn::createFirst(), false);
     }
 
@@ -70,25 +71,10 @@ class OpenHistory {
      * @param Turn $fromTurn
      * @return TileList
      */
-    function getOther(SeatWind $mySeatWind, Turn $fromTurn) {
+    function getOtherOpen(SeatWind $mySeatWind, Turn $fromTurn) {
         return $this->getImpl(false, $mySeatWind, $fromTurn, true);
     }
-
-    /**
-     * Return all player's discard TileList.
-     * Note that Area.discard is not used since it may lacks tiles by chow, pung, kong etc.
-     * Used in: FourWindDraw.
-     * @return TileList
-     */
-    function getAllDiscard() {
-        $discardRecords = $this->list->getCopy()->where(function (OpenRecord $record) {
-            return $record->isDiscard();
-        });
-        return (new TileList())->fromSelect($discardRecords, function (OpenRecord $record) {
-            return $record->getTile();
-        });
-    }
-
+    
     /**
      * @param bool $require Require self's open TileList if true, other's open TileList otherwise.
      * @param SeatWind $selfActor
@@ -97,8 +83,8 @@ class OpenHistory {
      * @return TileList
      */
     private function getImpl(bool $require, SeatWind $selfActor, Turn $fromTurn, bool $excludeLastTile) {
-        // note: the match logic do not belongs to OpenRecord,
-        // since this is a private implementation that varies, not a stable behaviour of OpenRecord.
+        // design note: the match logic do not belongs to OpenRecord,
+        // since this IS a specific implementation that varies, NOT a general stable behaviour of OpenRecord.
         $match = function (OpenRecord $record) use ($require, $selfActor, $fromTurn) {
             $isSelfActorRecord = $record->getActor() == $selfActor;
             $matchRequire = $isSelfActorRecord == $require;
@@ -114,5 +100,40 @@ class OpenHistory {
         return (new TileList())->fromSelect($result, function (OpenRecord $record) {
             return $record->getTile();
         });
+    }
+
+    /**
+     * @param SeatWind $seatWind
+     * @return TileList
+     */
+    function getSelfDiscard(SeatWind $seatWind) {
+        $isSelfDiscard = function (OpenRecord $record) use($seatWind) {
+            return $record->isSelfDiscard($seatWind);
+        };
+        $discardTiles = $this->list->getCopy()
+            ->where($isSelfDiscard)
+            ->toArray(OpenRecord::getToTileCallback());
+        return new TileList($discardTiles);
+    }
+
+    /**
+     * Used in: FourWindDraw
+     * @return bool
+     */
+    function isFourSameWindDiscard() {
+        $tileArrayList = $this->list->toArrayList(OpenRecord::getToTileCallback());
+        return $tileArrayList->count() == 4
+        && $tileArrayList->isSame()
+        && $tileArrayList[0]->isWind();
+    }
+
+    /**
+     * Used in: chow, pung, kong.
+     */
+    function setLastDiscardDeclared() {
+        /** @var OpenRecord $last */
+        $last = $this->list->getLast(); // validate exist
+        $replace = $last->toDeclared(); // validate isDiscard
+        $this->list->replaceAt($this->list->count() - 1, $replace);
     }
 }

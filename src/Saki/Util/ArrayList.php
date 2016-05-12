@@ -69,10 +69,11 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
     }
 
     /**
+     * @param callable|null $selector
      * @return array
      */
-    function toArray() {
-        return $this->innerArray;
+    function toArray(callable $selector = null) {
+        return $selector === null ? $this->innerArray : array_map($selector, $this->innerArray);
     }
 
     /**
@@ -81,8 +82,7 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
      * @return ArrayList
      */
     function toArrayList(callable $selector = null) {
-        $a = $selector === null ? $this->innerArray : array_map($selector, $this->innerArray);
-        return new ArrayList($a);
+        return new ArrayList($this->toArray($selector));
     }
     //endregion
 

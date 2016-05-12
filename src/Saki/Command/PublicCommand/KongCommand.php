@@ -24,7 +24,7 @@ class KongCommand extends PublicCommand {
     protected function executeImpl(CommandContext $context) {
         $r = $context->getRound();
         
-        $r->getAreas()->kong($this->getActor());
+        $context->getActorArea()->kong();
         $r->getPhaseState()->setJustAfterKong();
 
         $actPlayerPrivateState = new PrivatePhaseState($this->getActor(), false);

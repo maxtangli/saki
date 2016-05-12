@@ -22,10 +22,9 @@ class PungCommand extends PublicCommand {
     }
 
     protected function executeImpl(CommandContext $context) {
-        $round = $context->getRound();
-
-        $round->getAreas()->pung($this->getActor());
-        $round->toNextPhase(
+        $context->getActorArea()->pung();
+        
+        $context->getRound()->toNextPhase(
             new PrivatePhaseState($this->getActor(), false)
         );
     }

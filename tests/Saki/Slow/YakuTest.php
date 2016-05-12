@@ -618,9 +618,13 @@ class YakuTestData {
         }
         
         $actorArea = $areas->getArea($actorSeatWind);
+        
         if ($isPrivate) { // target tile not set
             $private = $handMeldList->toTileList();
-            $areas->debugSetPrivate($actorArea->getSeatWind(), $private, $this->declareMeldList, $targetTile);
+            $targetTile = $this->targetTile ?? $private->getLast();
+            $public = $private->getCopy()->remove($targetTile);
+            $actorArea->debugSet($public, $this->declareMeldList, $targetTile);
+
         } else { // targetTile already set by debugSkipTo
             $public = $handMeldList->toTileList()->remove($targetTile);
             $actorArea->debugSet($public, $this->declareMeldList);

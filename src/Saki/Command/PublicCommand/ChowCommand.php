@@ -38,12 +38,9 @@ class ChowCommand extends PublicCommand {
     }
 
     protected function executeImpl(CommandContext $context) {
-        $round = $context->getRound();
-
-        $round->getAreas()->chow(
-            $this->getActor(), $this->getTile1(), $this->getTile2()
-        );
-        $round->toNextPhase(
+        $context->getActorArea()->chow($this->getTile1(), $this->getTile2());
+        
+        $context->getRound()->toNextPhase(
             new PrivatePhaseState($this->getActor(), false)
         );
     }

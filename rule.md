@@ -157,6 +157,7 @@
 
 系统指令
 - 抽牌，Draw：
+- 补牌，*DrawReplacement：
 
 个人指令，*PrivateCommand
 - 打牌，Discard：hand -> discard, toPublic

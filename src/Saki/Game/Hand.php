@@ -3,6 +3,7 @@
 namespace Saki\Game;
 
 use Saki\Meld\MeldList;
+use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 use Saki\Util\Immutable;
 
@@ -20,20 +21,6 @@ use Saki\Util\Immutable;
  * @package Saki\Hand
  */
 class Hand implements Immutable {
-    /**
-     * @param TileList $private
-     * @param MeldList $declare
-     * @return Hand
-     */
-    static function debugFromPrivate(TileList $private, MeldList $declare) {
-        $public = $private->getCopy()->removeLast();
-        $target = new Target(
-            $private->getLast(),
-            TargetType::create(TargetType::KEEP),
-            SeatWind::createEast()
-        );
-        return new self($public, $declare, $target);
-    }
     
     private $public;
     private $declare;
@@ -57,6 +44,48 @@ class Hand implements Immutable {
         $this->target = $target;
     }
 
+    /**
+     * @param TileList|null $public
+     * @param MeldList|null $declare
+     * @param Tile|null $targetTile
+     * @return Hand
+     */
+    function toHand(TileList $public = null, MeldList $declare = null, Tile $targetTile = null) {
+        // todo allow public-phase target tile set
+        $validTargetTile = $targetTile === null ||
+            $this->getTarget()->getType()->isOwnByCreator();
+        if (!$validTargetTile) {
+            throw new \InvalidArgumentException();
+        }
+
+        $newPublic = $public ?? $this->getPublic();
+        $newDeclare = $declare ?? $this->getDeclare();
+        $newTarget = $targetTile ? 
+            $this->getTarget()->toSetValue($targetTile) : // validate exist
+            $this->getTarget();
+        $newHand = new Hand($newPublic, $newDeclare, $newTarget);
+        return $newHand;
+    }
+
+    function toMockHand(TileList $replace) {
+        // public
+        if ($replace->count() <= $this->getPublic()->count()) { 
+            $replaceIndexes = range(0, $replace->count() - 1);
+            $public = $this->getPublic()->getCopy()
+                ->replaceAt($replaceIndexes, $replace->toArray());
+            return $this->toHand($public);
+        }
+        
+        // private
+        if ($replace->count() == $this->getPublic()->count() + 1) {
+            $public = $replace->getCopy()->removeLast();
+            $targetTile = $replace->getLast();
+            return $this->toHand($public, null, $targetTile);
+        }
+
+        throw new \InvalidArgumentException();
+    }
+    
     /**
      * @return TileList
      */

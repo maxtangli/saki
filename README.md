@@ -722,15 +722,25 @@ rush 64 refactor Areas 3.4h
 
 - [x] introduce Claim 1.2h
 
-rush refactor Areas
+rush 65 refactor Areas
 
-- [ ] introduce TargetHolder 0.5h
-- [ ] remove Areas.debugPrivate
+- [x] introduce TargetHolder 0.5h
+- [x] move Areas.debugSetXXX into Area 0.5h
+- [x] Area.resetImpl 0.1h
+- [x] merge Area.debugSet 1.2h
 
-- [ ] refactor: Command error message
-- [ ] refactor riichi
+- [x] refactor TargetHolder 0.4h
+- [x] merge openHistory, Discard 1.5h
+- [ ] allow public-phase target tile set: replace openHistory 0.5h
 
-- [ ] move Areas logic into XXCommand 0.2h
+- [x] move Areas logic into Area 1.2h
+- [ ] refactor Area.claim
+
+- [ ] introduce HandHolder 1h
+- [ ] refactor YakuTestData
+
+- [x] add Command error message 0.1h
+- [x] wall.deal 0.2h
 
 rush red dora: meld issue
 

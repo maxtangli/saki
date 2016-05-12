@@ -29,8 +29,7 @@ class ConcealedKongCommand extends PrivateCommand {
     }
 
     protected function executeImpl(CommandContext $context) {
-        $r = $context->getRound();
-        $r->getAreas()->concealedKong($this->getActor(), $this->getTile());
+        $context->getActorArea()->concealedKong($this->getTile());
         // stay in private phase
     }
 }

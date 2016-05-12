@@ -1,10 +1,12 @@
 <?php
 namespace Saki\Game;
+use Saki\Tile\Tile;
 
 /**
  * @package Saki\Game
  */
 class TargetHolder {
+    /** @var Target */
     private $target;
 
     function __construct() {
@@ -15,18 +17,18 @@ class TargetHolder {
         $this->target = Target::createNull();
     }
     
-    function temp_getTarget() {
-        return $this->target;
-    }
-    
     /**
+     * own target?
+     *         current other
+     * private       Y     N
+     * public        N     Y
      * @param SeatWind $seatWind
      * @return Target
      */
     function getTarget(SeatWind $seatWind) {
-        $seeTarget = $this->target->exist()
+        $ownTarget = $this->target->exist()
             && $this->target->isOwner($seatWind);
-        return $seeTarget ? $this->target : Target::createNull();
+        return $ownTarget ? $this->target : Target::createNull();
     }
 
     /**
@@ -34,5 +36,27 @@ class TargetHolder {
      */
     function setTarget(Target $target) {
         $this->target = $target;
+    }
+
+    /**
+     * Used in: extendKongAfter
+     */
+    function setKongToKeep() {
+        if (!$this->target->isRobbingAKong()) {
+            throw new \BadMethodCallException();
+        }
+        $this->target = $this->target->toSetValue(null, TargetType::create(TargetType::KEEP));
+    }
+
+    /**
+     * @param SeatWind $seatWind
+     * @param Tile $newTargetTile
+     */
+    function replaceTarget(SeatWind $seatWind, Tile $newTargetTile) {
+        $currentTarget = $this->getTarget($seatWind);
+        if (!$currentTarget->exist()) {
+            throw new \InvalidArgumentException();
+        }
+        $this->target = $this->target->toSetValue($newTargetTile);
     }
 }

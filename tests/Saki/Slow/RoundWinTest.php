@@ -11,10 +11,8 @@ class RoundWinTest extends PHPUnit_Framework_TestCase {
         // setup
         $r = new Round();
         $pro = $r->getProcessor();
-        // setup
-        $r->getAreas()->debugSetPrivate($r->getAreas()->getCurrentSeatWind(), TileList::fromString('123m456m789m123s55s'));
-        // execute
-        $pro->process('tsumo E');
+        // setup,execute
+        $pro->process('mockHand E 123m456m789m123s55s; tsumo E');
         // phase changed
         $this->assertEquals(Phase::create(Phase::OVER_PHASE), $r->getPhaseState()->getPhase());
         // point changed
@@ -72,7 +70,9 @@ class RoundWinTest extends PHPUnit_Framework_TestCase {
         // todo replace reset() by debugReset()
 
         // E Player tsumo, but point not over 30000
-        $r->getAreas()->debugSetPrivate($r->getAreas()->getCurrentSeatWind(), TileList::fromString('123m456m789m123s55s'), null, Tile::fromString('2m'));
+        $r->getAreas()->getCurrentArea()->debugSet(
+            TileList::fromString('13m456m789m123s55s'), null, Tile::fromString('2m')
+        );
         $r->getProcessor()->process('tsumo E');
         $r->getAreas()->getCurrentArea()->setPoint('25000');
         $this->assertFalse($r->getPhaseState()->isGameOver($r));

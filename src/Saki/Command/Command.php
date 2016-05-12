@@ -158,20 +158,25 @@ abstract class Command {
     }
 
     function executable() {
-        return $this->executableImpl($this->getContext());
+        $result = $this->executableImpl($this->getContext());
+        return $result === true;
     }
 
     abstract protected function executableImpl(CommandContext $context);
 
     function execute() {
-        if (!$this->executable()) {
-            throw new \BadMethodCallException(
+        $result = $this->executableImpl($this->getContext());
+        if ($result !== true) {
+            $e = $result instanceof \Exception ? $result : new InvalidCommandException(
                 sprintf('Bad method call of [%s()] on not executable command[%s].'
                     , __FUNCTION__, $this->__toString())
             );
+            throw $e;
         }
+
         $this->executeImpl($this->getContext());
     }
 
     abstract protected function executeImpl(CommandContext $context);
 }
+

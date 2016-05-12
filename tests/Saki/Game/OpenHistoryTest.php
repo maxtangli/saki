@@ -28,17 +28,12 @@ class OpenHistoryTest extends PHPUnit_Framework_TestCase {
     }
 
     protected function assertGetSelf(string $expectedTileList, string $seatWind) {
-        $actual = $this->h->getSelf(SeatWind::fromString($seatWind));
+        $actual = $this->h->getSelfOpen(SeatWind::fromString($seatWind));
         $this->assertEquals($expectedTileList, $actual->__toString());
     }
 
     protected function assertGetOther(string $expectedTileList, string $seatWind, string $fromTurn) {
-        $actual = $this->h->getOther(SeatWind::fromString($seatWind), Turn::fromString($fromTurn));
-        $this->assertEquals($expectedTileList, $actual->__toString());
-    }
-
-    protected function assertGetAllDiscard(string $expectedTileList) {
-        $actual = $this->h->getAllDiscard();
+        $actual = $this->h->getOtherOpen(SeatWind::fromString($seatWind), Turn::fromString($fromTurn));
         $this->assertEquals($expectedTileList, $actual->__toString());
     }
 
@@ -58,6 +53,5 @@ class OpenHistoryTest extends PHPUnit_Framework_TestCase {
 
         $this->assertGetSelf('15m', 'E');
         $this->assertGetOther('3467m', 'E', '1W');
-        $this->assertGetAllDiscard('1234678m');
     }
 }

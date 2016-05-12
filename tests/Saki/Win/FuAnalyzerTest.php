@@ -12,15 +12,15 @@ use Saki\Win\Yaku\YakuItemList;
 
 class FuAnalyzerTest extends PHPUnit_Framework_TestCase {
     function testFu() {
+        $public = TileList::fromString('12pCCFFF');
         $targetTile = Tile::fromString('3p');
-        $declareMeldList = MeldList::fromString('8888p,999m');
-        $hand = TileList::fromString('123pCCFFF');
         $handMeldList = MeldList::fromString('123p,CC,(FFF)');
+        $declareMeldList = MeldList::fromString('8888p,999m');
 
         $r = new Round();
         $current = $r->getAreas()->getCurrentSeatWind();
         $actor = $current;
-        $r->getAreas()->debugSetPrivate($current, $hand, $declareMeldList, $targetTile);
+        $r->getAreas()->getArea($actor)->debugSet($public, $declareMeldList, $targetTile);
 
         $subTarget = new WinSubTarget($handMeldList, $actor, $r);
         $yakuList = new YakuItemList();

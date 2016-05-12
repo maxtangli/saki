@@ -180,7 +180,7 @@ class WinAnalyzer {
         $mySeatWind = $target->getSeatWind();
 
         // open furiten: self open TileList contains target tile
-        $selfOpenList = $openHistory->getSelf($mySeatWind);
+        $selfOpenList = $openHistory->getSelfOpen($mySeatWind);
         if ($selfOpenList->any($isNgTile)) {
             return true;
         }
@@ -189,7 +189,7 @@ class WinAnalyzer {
         $riichiStatus = $target->getRiichiStatus();
         if ($riichiStatus->isRiichi()) { // ng case 2: since self reach
             $riichiTurn = $riichiStatus->getRiichiTurn();
-            $otherOpenListSinceRiichi = $openHistory->getOther($mySeatWind, $riichiTurn);
+            $otherOpenListSinceRiichi = $openHistory->getOtherOpen($mySeatWind, $riichiTurn);
             if ($otherOpenListSinceRiichi->any($isNgTile)) {
                 return true;
             }
@@ -199,7 +199,7 @@ class WinAnalyzer {
         $lastOpenTurn = $openHistory->getLastOpenOrFalse($mySeatWind);
         if ($lastOpenTurn !== false) {
             // design note: not introduce NullObject of Turn here since it's seldom until now
-            $otherOpenListSinceLastOpen = $openHistory->getOther($mySeatWind, $lastOpenTurn);
+            $otherOpenListSinceLastOpen = $openHistory->getOtherOpen($mySeatWind, $lastOpenTurn);
             if ($otherOpenListSinceLastOpen->any($isNgTile)) {
                 return true;
             }

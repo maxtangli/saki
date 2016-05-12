@@ -51,7 +51,6 @@ class MockHandCommand extends PlayerCommand {
     }
 
     protected function executeImpl(CommandContext $context) {
-        $areas = $this->getContext()->getAreas();
-        $areas->debugMockHand($this->getActor(), $this->getMockTileList());
+        $context->getActorArea()->debugMockHand($this->getMockTileList());
     }
 }

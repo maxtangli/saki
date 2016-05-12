@@ -46,7 +46,7 @@ class RiichiCommand extends PrivateCommand {
     }
 
     protected function executeImpl(CommandContext $context) {
-        $context->getAreas()->riichi($this->getActor(), $this->getTile());
+        $context->getActorArea()->riichi($this->getTile());
         $context->getRound()->toNextPhase();
     }
 }

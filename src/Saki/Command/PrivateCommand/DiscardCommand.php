@@ -31,7 +31,7 @@ class DiscardCommand extends PrivateCommand {
     }
 
     protected function executeImpl(CommandContext $context) {
-        $context->getAreas()->discard($this->getActor(), $this->getTile());
+        $context->getActorArea()->discard($this->getTile());
         $context->getRound()->toNextPhase();
     }
 }

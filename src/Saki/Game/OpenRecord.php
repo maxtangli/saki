@@ -4,11 +4,22 @@ namespace Saki\Game;
 use Saki\Tile\Tile;
 use Saki\Util\ArrayList;
 use Saki\Util\ComparableSequence;
+use Saki\Util\Enum;
 use Saki\Util\Immutable;
 
 /**
- * A record for a open operation, where open operation includes discard and extendKong.
- * Note that open happens in private phase only, thus Turn.SeatWind means open actor.
+ * Inner class for OpenRecord.
+ * @package Saki\Game
+ */
+class OpenType extends Enum {
+    const DISCARD = 0;
+    const EXTEND_KONG = 1;
+    const DECLARED = 2;
+}
+
+/**
+ * A record for a open operation includes discard and extendKong.
+ * Note that open happens only in private phase, thus Turn.SeatWind means open actor.
  * @package Saki\Game
  */
 class OpenRecord implements Immutable {
@@ -20,8 +31,18 @@ class OpenRecord implements Immutable {
         return $this->getTurn()->compareTo($other->getTurn());
     }
 
+    /**
+     * @return \Closure
+     */
+    static function getToTileCallback() {
+        return function (OpenRecord $record) {
+            return $record->getTile();
+        };
+    }
+    
     private $turn;
     private $tile;
+    private $openType;
     private $isDiscard;
 
     /**
@@ -32,7 +53,7 @@ class OpenRecord implements Immutable {
     function __construct(Turn $turn, Tile $tile, bool $isDiscard) {
         $this->turn = $turn;
         $this->tile = $tile;
-        $this->isDiscard = $isDiscard;
+        $this->openType = OpenType::create($isDiscard ? OpenType::DISCARD : OpenType::EXTEND_KONG);
     }
 
     /**
@@ -43,6 +64,18 @@ class OpenRecord implements Immutable {
             $this->getTurn(), $this->getActor(), $this->getTile(), $this->isDiscard());
     }
 
+    /**
+     * @return OpenRecord
+     */
+    function toDeclared() {
+        if (!$this->isDiscard()) {
+            throw new \BadMethodCallException();
+        }
+        $record = new self($this->getTurn(), $this->getTile(), true);
+        $record->openType = OpenType::create(OpenType::DECLARED);
+        return $record;
+    }
+    
     /**
      * @return Turn
      */
@@ -68,7 +101,15 @@ class OpenRecord implements Immutable {
      * @return boolean
      */
     function isDiscard() {
-        return $this->isDiscard;
+        return $this->openType->getValue() == OpenType::DISCARD;
+    }
+
+    /**
+     * @param SeatWind $seatWind
+     * @return bool
+     */
+    function isSelfDiscard(SeatWind $seatWind) {
+        return $this->isDiscard() && $seatWind == $this->getActor();
     }
 
     /**

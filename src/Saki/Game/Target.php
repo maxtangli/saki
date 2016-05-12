@@ -67,10 +67,7 @@ class Target {
     function exist() {
         return $this->tile !== null;
     }
-
-    /**
-     *
-     */
+    
     protected function assertExist() {
         if (!$this->exist()) {
             throw new \BadMethodCallException('Bad method call on null Target.');
@@ -104,7 +101,7 @@ class Target {
      * @return bool
      */
     function isAfterAKong() {
-        return $this->getType()->getValue() == TargetType::REPLACEMENT;
+        return $this->getType()->getValue() == TargetType::REPLACE;
     }
 
     /**
@@ -121,23 +118,15 @@ class Target {
         $this->assertExist();
         return $this->creator;
     }
-
-    /**
-     * @param SeatWind $seatWind
-     * @return bool
-     */
-    function isCreator(SeatWind $seatWind) {
-        $this->assertExist();
-        return $this->getCreator() == $seatWind;
-    }
-
+    
     /**
      * @param SeatWind $seatWind
      * @return bool
      */
     function isOwner(SeatWind $seatWind) {
-        $isCreator = $this->isCreator($seatWind);
-        $isOwnByCreator = $this->getType()->isOwnByCreator();
-        return $isCreator == $isOwnByCreator;
+        $this->assertExist();
+        $isCreator = $this->getCreator() == $seatWind;
+        $isOwner = $isCreator == $this->getType()->isOwnByCreator();
+        return $isOwner;
     }
 }
