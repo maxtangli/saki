@@ -75,10 +75,6 @@ class WinTarget {
         return $this->round->getAreas()->getOpenHistory();
     }
 
-    function getOutsideRemainTileAmount(Tile $tile) {
-        return $this->round->getAreas()->getOutsideRemainTileAmount($tile);
-    }
-
     function getWallRemainTileAmount() {
         return $this->round->getAreas()->getWall()->getRemainTileCount();
     }
@@ -128,7 +124,7 @@ class WinTarget {
     }
 
     function isFirstTurnWin() {
-        return $this->round->getAreas()->isFirstTurnWin($this->getActor());
+        return $this->getActArea()->isFirstTurnWin();
     }
 
     function isBlessingOfHeaven() {

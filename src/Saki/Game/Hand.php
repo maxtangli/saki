@@ -40,6 +40,14 @@ class Hand implements Immutable {
     }
 
     /**
+     * @param Target $target
+     * @return Hand
+     */
+    function toSetTarget(Target $target) {
+        return new Hand($this->getPublic(), $this->getMelded(), $target);
+    }
+    
+    /**
      * @param TileList|null $public
      * @param MeldList|null $melded
      * @param Tile|null $targetTile
@@ -50,7 +58,9 @@ class Hand implements Immutable {
         $validTargetTile = $targetTile === null ||
             $this->getTarget()->getType()->isOwnByCreator();
         if (!$validTargetTile) {
-            throw new \InvalidArgumentException();
+            throw new \InvalidArgumentException(
+                sprintf('Invalid current $target[%s].', $this->getTarget())
+            );
         }
 
         $newPublic = $public ?? $this->getPublic();

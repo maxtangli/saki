@@ -5,6 +5,7 @@ use Saki\Command\CommandContext;
 use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\ParamDeclaration\TileParamDeclaration;
 use Saki\Command\PrivateCommand;
+use Saki\Game\Riichi;
 use Saki\Game\SeatWind;
 use Saki\Tile\Tile;
 
@@ -25,8 +26,6 @@ class RiichiCommand extends PrivateCommand {
     }
 
     protected function matchOther(CommandContext $context) {
-        // todo not accurate now
-
         // assert waiting after discard
         $winAnalyzer = $context->getRound()->getGameData()->getWinAnalyzer();
         $analyzer = $winAnalyzer->getWaitingAnalyzer();
@@ -42,11 +41,14 @@ class RiichiCommand extends PrivateCommand {
             return false;
         }
 
-        return true;
+        $riichi = new Riichi($this->getActor(), $this->getTile());
+        return $riichi->valid($context->getActorArea());
     }
 
     protected function executeImpl(CommandContext $context) {
-        $context->getActorArea()->riichi($this->getTile());
+        $riichi = new Riichi($this->getActor(), $this->getTile());
+        $riichi->apply($context->getActorArea());
+        
         $context->getRound()->toNextPhase();
     }
 }

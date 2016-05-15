@@ -1,21 +1,8 @@
 <?php
 namespace Saki\Game;
+
 use Saki\Tile\Tile;
 use Saki\Util\Immutable;
-
-//class Riichi extends Open {
-//    function __construct(SeatWind $actor, Tile $tile) {
-//        parent::__construct($actor, $tile, true);
-//    }
-//
-//    function valid(Area $area) {
-//        return parent::valid($area);
-//    }
-//
-//    function apply(Area $area) {
-//        parent::apply($area);
-//    }
-//}
 
 /**
  * @package Saki\Game
@@ -25,7 +12,7 @@ class Open implements Immutable {
     private $tile;
     private $isDiscard;
 
-    function __construct(SeatWind $actor, 
+    function __construct(SeatWind $actor,
                          Tile $tile, bool $isDiscard) {
         $this->actor = $actor;
         $this->tile = $tile;
@@ -73,18 +60,20 @@ class Open implements Immutable {
         $hand = $area->getHand();
         $tile = $this->getTile();
         $isDiscard = $this->isDiscard();
-        $targetType = TargetType::create($isDiscard
-            ? TargetType::DISCARD
-            : TargetType::KONG);
 
         $newPublic = $hand->getPrivate()->getCopy()
             ->remove($tile);
         $newMelded = $hand->getMelded();
+        $targetType = TargetType::create($isDiscard
+            ? TargetType::DISCARD
+            : TargetType::KONG);
         $newTarget = new Target($tile, $targetType, $this->getActor());
-
         $newHand = new Hand($newPublic, $newMelded, $newTarget);
+
         $area->setHand($newHand);
 
-        $area->getAreas()->recordOpen($tile, $isDiscard);
+        $areas = $area->getAreas();
+        $areas->getOpenHistory()
+            ->record(new OpenRecord($areas->getTurn(), $tile, $isDiscard));
     }
 }

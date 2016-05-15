@@ -5,6 +5,7 @@ use Saki\Tile\Tile;
 use Saki\Util\ArrayList;
 use Saki\Util\ComparableIndex;
 use Saki\Util\Immutable;
+use Saki\Util\Utils;
 
 /**
  * Base class for PrevailingWind, SeatWind.
@@ -14,69 +15,61 @@ abstract class IndicatorWind implements Immutable {
     //region ComparableIndex Impl
     use ComparableIndex;
 
+    private static $m = ['E' => 1, 'S' => 2, 'W' => 3, 'N' => 4];
+
     static function fromIndex(int $index) {
-        // todo safe check, remove duplicate
-        $m = [
-            'E' => 1,
-            'S' => 2,
-            'W' => 3,
-            'N' => 4
-        ];
-        $s = array_flip($m)[$index];
+        $s = array_flip(self::$m)[$index];
         return static::fromString($s);
     }
 
     function getIndex() {
-        $m = [
-            'E' => 1,
-            'S' => 2,
-            'W' => 3,
-            'N' => 4
-        ];
-        return $m[$this->__toString()];
+        return self::$m[$this->__toString()];
     }
 
     function toNext(int $offset = 1) {
-        return new static($this->getWindTile()->getNextTile($offset));
+        $nextWind = $this->getWindTile()->getNextTile($offset);
+        return static::fromString($nextWind->__toString());
     }
     //endregion
+
+    private static $instances = [];
 
     /**
      * @param string $s
      * @return static
      */
     static function fromString(string $s) {
-        return new static(
-            Tile::fromString($s)
-        );
+        $class = get_called_class();
+        self::$instances[$class][$s] = self::$instances[$class][$s] ?? new static(Tile::fromString($s));
+        return self::$instances[$class][$s];
     }
 
     /**
      * @return static
      */
     static function createEast() {
-        return new static(Tile::fromString('E'));
+        return static::fromString('E');
     }
 
     /**
      * @return static
      */
     static function createSouth() {
-        return new static(Tile::fromString('S'));
+        return static::fromString('S');
     }
 
     /**
      * @return static
      */
     static function createWest() {
-        return new static(Tile::fromString('W'));
+        return static::fromString('W');
     }
 
     /**
      * @return static
      */
     static function createNorth() {
-        return new static(Tile::fromString('N'));
+        return static::fromString('N');
     }
 
     /**
@@ -94,7 +87,7 @@ abstract class IndicatorWind implements Immutable {
     /**
      * @param Tile $wind
      */
-    function __construct(Tile $wind) { // todo multiton pattern
+    protected function __construct(Tile $wind) {
         if (!$wind->isWind()) {
             throw new \InvalidArgumentException();
         }

@@ -91,11 +91,6 @@ class OverPhaseState extends PhaseState {
 
         // modify points
         $areas->applyPointChangeMap($result->getPointChangeMap());
-
-        // clear accumulatedRiichiCount if isWin
-        if ($result->getResultType()->isWin()) {
-            $areas->setRiichiPoints(0);
-        }
     }
 
     function leave(Round $round) {

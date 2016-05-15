@@ -29,4 +29,11 @@ class PlayerList extends ArrayList {
 
         parent::__construct($players);
     }
+
+    /**
+     * @return PlayerType
+     */
+    function getPlayerType() {
+        return PlayerType::create($this->count());
+    }
 }

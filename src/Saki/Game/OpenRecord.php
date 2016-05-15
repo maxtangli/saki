@@ -11,7 +11,7 @@ use Saki\Util\Immutable;
  * Inner class for OpenRecord.
  * @package Saki\Game
  */
-class OpenType extends Enum {
+class OpenRecordType extends Enum {
     const DISCARD = 0;
     const EXTEND_KONG = 1;
     const DECLARED = 2;
@@ -52,7 +52,7 @@ class OpenRecord implements Immutable {
     function __construct(Turn $turn, Tile $tile, bool $isDiscard) {
         $this->turn = $turn;
         $this->tile = $tile;
-        $this->openType = OpenType::create($isDiscard ? OpenType::DISCARD : OpenType::EXTEND_KONG);
+        $this->openType = OpenRecordType::create($isDiscard ? OpenRecordType::DISCARD : OpenRecordType::EXTEND_KONG);
     }
 
     /**
@@ -71,7 +71,7 @@ class OpenRecord implements Immutable {
             throw new \BadMethodCallException();
         }
         $record = new self($this->getTurn(), $this->getTile(), true);
-        $record->openType = OpenType::create(OpenType::DECLARED);
+        $record->openType = OpenRecordType::create(OpenRecordType::DECLARED);
         return $record;
     }
 
@@ -108,7 +108,7 @@ class OpenRecord implements Immutable {
      * @return boolean
      */
     function isDiscard() {
-        return $this->openType->getValue() == OpenType::DISCARD;
+        return $this->openType->getValue() == OpenRecordType::DISCARD;
     }
 
     /**

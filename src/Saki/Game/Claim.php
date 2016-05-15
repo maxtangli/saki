@@ -133,35 +133,34 @@ class Claim implements Immutable {
             throw new \InvalidArgumentException();
         }
 
+        $areas = $area->getAreas();
         $hand = $area->getHand();
 
         $newPrivateOrPublic = $hand->getPrivate()->getCopy()
             ->remove($this->getFromTiles());
-
         if ($newPrivateOrPublic->getHandSize()->isPrivate()) {
             $newTargetTile = $newPrivateOrPublic->getLast();
             $newPublic = $newPrivateOrPublic->getCopy()->removeLast();
             $newTarget = new Target($newTargetTile, TargetType::create(TargetType::KEEP), $this->getActor());
         } elseif ($newPrivateOrPublic->getHandSize()->isPublic()) {
             $newPublic = $newPrivateOrPublic;
-            $newTargetTile = $area->getAreas()->getWall()
+            $newTargetTile = $areas->getWall()
                 ->drawReplacement();
             $newTarget = new Target($newTargetTile, TargetType::create(TargetType::REPLACE), $this->getActor());
         } else {
             throw new \LogicException();
         }
-
         $newMelded = $hand->getMelded()->getCopy()
             ->remove($this->getFromMeldedOrNull() ?? [])
             ->insertLast($this->getToMeld());
-
         $newHand = new Hand($newPublic, $newMelded, $newTarget);
+
         $area->setHand($newHand);
 
         if (!$hand->getTarget()->isOwner($this->getActor())) {
-            $area->getAreas()->getOpenHistory()->setLastDiscardDeclared(); // todo remove
+            $areas->getOpenHistory()->setLastDiscardDeclared();
         }
 
-        $area->getAreas()->recordClaim($this->getTurn());
+        $areas->getClaimHistory()->recordClaim($this->getTurn());
     }
 }

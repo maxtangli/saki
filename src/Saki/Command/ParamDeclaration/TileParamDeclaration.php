@@ -28,7 +28,8 @@ class TileParamDeclaration extends ParamDeclaration {
                 list(, $mockTileListString, $tileString) = $matches;
                 $tileList = TileList::fromString($mockTileListString);
 
-                $round->getAreas()->getArea($seatWind)->debugMockHand($tileList);
+                $area = $round->getAreas()->getArea($seatWind);
+                $area->setHand($area->getHand()->toMockHand($tileList));
 
                 $tile = Tile::fromString($tileString); // validate
                 return $tile;

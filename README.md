@@ -739,22 +739,29 @@ rush 65 refactor Areas 6.2h
 - [x] move Areas logic into Area 1.2h
 - [x] clean Area operations 0.5h
 
-rush 66 refactor Areas
+rush 66 refactor Areas 9.1h
 
 - [x] analyze SetTarget 1h
 - [x] move Public.postLeave into Private 0.1h
 - [x] simplify Public, RobPublic, FourKongDraw 0.3h
 
+- [x] refactor openHistory 0.5h
 - [x] refactor Area.claim 1h
 - [x] bug: recordClaim in private phase used wrong Turn // 0.5h
 - [x] introduce Open 0.4h
-- [ ] merge claim operations 1.9h
+- [x] merge claim operations 1.9h
 
-- [ ] introduce HandHolder 1.1h
+- [x] introduce HandHolder 1.4h
+- [x] introduce RiichiHolder 0.7h
+- [x] refactor etc. 1.1h
+- [x] refactor IndicatorWind 0.2h
 
-- [ ] allow public-phase target tile set: replace openHistory 0.5h
+rush 67 refactor etc
 
-- [ ] merge ClaimHistory into OpenHistory
+- [ ] clean Target flow
+- [ ] refactor extendKongAfter
+
+- [ ] introduce PointHolder
 
 - [ ] refactor YakuTestData
 

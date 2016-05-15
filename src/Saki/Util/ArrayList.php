@@ -717,7 +717,7 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
      * @return $this
      */
     function walk(callable $callable) {
-//        $this->assertWritable(); todo not so good
+        $this->assertWritable();
         array_walk($this->innerArray, $callable);
         return $this;
     }

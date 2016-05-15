@@ -3,10 +3,9 @@
 namespace Saki\Game;
 
 use Saki\Meld\MeldList;
-use Saki\Tile\Tile;
 use Saki\Tile\TileList;
+use Saki\Tile\TileSet;
 use Saki\Util\ArrayList;
-use Saki\Util\Utils;
 use Saki\Win\Point\PointList;
 
 /**
@@ -20,28 +19,28 @@ class Areas {
      * @var ArrayList
      */
     private $areaList; // todo lock
-    private $riichiPoints;
+    private $riichiHolder;
     // round variable
-    private $currentTurn;
     private $wall;
+    private $currentTurn;
     private $targetHolder;
     private $openHistory;
     private $claimHistory;
 
-    function __construct(Wall $wall, PlayerList $playerList) {
+    function __construct(TileSet $tileSet, PlayerList $playerList) {
         // variable
-        $this->riichiPoints = 0;
+        $this->riichiHolder = new RiichiHolder($playerList->getPlayerType());
 
         // round variable
+        $this->wall = new Wall($tileSet);
         $this->currentTurn = Turn::createFirst();
-        $this->wall = $wall;
         $this->targetHolder = new TargetHolder();
         $this->openHistory = new OpenHistory();
         $this->claimHistory = new ClaimHistory();
 
         // immutable
         $this->areaList = new ArrayList();
-        $playerList->walk(function (Player $player) {
+        $playerList->toArrayList()->walk(function (Player $player) {
             $area = new Area($player, $this);
             $this->areaList->insertLast($area);
         });
@@ -49,17 +48,18 @@ class Areas {
 
     /**
      * @param bool $keepDealer
+     * @param bool $isWin
      */
-    function roll(bool $keepDealer) {
+    function roll(bool $keepDealer, bool $isWin) {
         // variable
         $this->areaList->walk(function (Area $area) use ($keepDealer) {
             $area->roll($area->getSeatWind()->toRolled($keepDealer));
         });
-        // $this->riichiPoints not changed
+        $this->riichiHolder->roll($isWin);
 
         // round variable
-        $this->currentTurn = Turn::createFirst();
         $this->wall->reset(true);
+        $this->currentTurn = Turn::createFirst();
         $this->targetHolder->init();
         $this->openHistory->reset();
         $this->claimHistory->reset();
@@ -67,19 +67,60 @@ class Areas {
 
     function debugInit(SeatWind $nextDealerInitialSeatWind) {
         // variable
-        $nextDealerArea = $this->getAreaByInitial($nextDealerInitialSeatWind);
+        $nextDealerArea = $this->getInitialSeatWindArea($nextDealerInitialSeatWind);
         $nextDealerSeatWind = $nextDealerArea->getSeatWind();
         $this->areaList->walk(function (Area $area) use ($nextDealerSeatWind) {
             $area->debugInit($area->getSeatWind()->toNextSelf($nextDealerSeatWind));
         });
-        $this->riichiPoints = 0;
+        $this->riichiHolder->init();
 
         // round variable
-        $this->currentTurn = Turn::createFirst();
         $this->wall->reset(true);
+        $this->currentTurn = Turn::createFirst();
         $this->targetHolder->init();
         $this->openHistory->reset();
         $this->claimHistory->reset();
+    }
+    
+    /**
+     * @return ArrayList
+     */
+    function getAreaList() {
+        return $this->areaList;
+    }
+
+    /**
+     * @param SeatWind $seatWind
+     * @return Area
+     */
+    function getArea(SeatWind $seatWind) {
+        return $this->areaList->getSingle(function (Area $area) use ($seatWind) {
+            return $area->getSeatWind() == $seatWind;
+        });
+    }
+
+    /**
+     * @param SeatWind $initialSeatWind
+     * @return Area
+     */
+    function getInitialSeatWindArea(SeatWind $initialSeatWind) {
+        return $this->areaList->getSingle(function (Area $area) use ($initialSeatWind) {
+            return $area->getPlayer()->getInitialSeatWind() == $initialSeatWind;
+        });
+    }
+
+    /**
+     * @return Area
+     */
+    function getDealerArea() {
+        return $this->getArea(SeatWind::createEast());
+    }
+
+    /**
+     * @return Area
+     */
+    function getCurrentArea() {
+        return $this->getArea($this->getCurrentSeatWind());
     }
 
     /**
@@ -103,62 +144,21 @@ class Areas {
             $area->setPoint($area->getPoint() + $pointChange);
         });
     }
-
+    
     /**
-     * @return ArrayList
+     * @return RiichiHolder
      */
-    function getAreaList() {
-        return $this->areaList;
+    function getRiichiHolder() {
+        return $this->riichiHolder;
     }
 
     /**
-     * @param SeatWind $seatWind
-     * @return Area
+     * @return Wall
      */
-    function getArea(SeatWind $seatWind) {
-        return $this->areaList->getSingle(function (Area $area) use ($seatWind) {
-            return $area->getSeatWind() == $seatWind;
-        });
+    function getWall() {
+        return $this->wall;
     }
-
-    /**
-     * @param SeatWind $initialSeatWind
-     * @return Area
-     */
-    function getAreaByInitial(SeatWind $initialSeatWind) {
-        return $this->areaList->getSingle(function (Area $area) use ($initialSeatWind) {
-            return $area->getPlayer()->getInitialSeatWind() == $initialSeatWind;
-        });
-    }
-
-    /**
-     * @return Area
-     */
-    function getDealerArea() {
-        return $this->getArea(SeatWind::createEast());
-    }
-
-    /**
-     * @return Area
-     */
-    function getCurrentArea() {
-        return $this->getArea($this->getCurrentSeatWind());
-    }
-
-    /**
-     * @return int
-     */
-    function getRiichiPoints() {
-        return $this->riichiPoints;
-    }
-
-    /**
-     * @param int $riichiPoints
-     */
-    function setRiichiPoints(int $riichiPoints) {
-        $this->riichiPoints = $riichiPoints;
-    }
-
+    
     /**
      * @return Turn
      */
@@ -183,26 +183,13 @@ class Areas {
     }
 
     /**
-     * Roll to $seatWind and handle CircleCount update if $seatWind is not current.
+     * Roll to $seatWind. 
+     * If $seatWind is not current, handle CircleCount update.
      * Do nothing otherwise.
      * @param SeatWind $seatWind
      */
-    function toOrKeepSeatWind(SeatWind $seatWind) {
+    function toSeatWind(SeatWind $seatWind) {
         $this->currentTurn = $this->currentTurn->toSeatWind($seatWind);
-    }
-
-    /**
-     * @return Wall
-     */
-    function getWall() {
-        return $this->wall;
-    }
-
-    /**
-     * @param Target $target
-     */
-    protected function setTarget(Target $target) {
-        $this->targetHolder->setTarget($target);
     }
 
     /**
@@ -220,44 +207,10 @@ class Areas {
     }
 
     /**
-     * @param Tile $tile
-     * @param bool $isDiscard
-     */
-    function recordOpen(Tile $tile, bool $isDiscard) {
-        $this->openHistory->record(new OpenRecord($this->getTurn(), $tile, $isDiscard));
-    }
-
-    /**
      * @return ClaimHistory
      */
     function getClaimHistory() {
         return $this->claimHistory;
-    }
-
-    function recordClaim(Turn $turn = null) {
-        $this->claimHistory->recordClaim($turn ?? $this->getTurn());
-    }
-
-    function getOutsideRemainTileAmount(Tile $tile) { // todo move
-        $allDiscarded = (new TileList())->fromSelectMany($this->areaList, function (Area $area) {
-            return $area->getDiscard()->toArray();
-        });
-
-        $totalCount = $this->getWall()->getTileSet()->getCount(Utils::toPredicate($tile));
-        $discardCount = $allDiscarded->getCount(Utils::toPredicate($tile));
-        $remainCount = $totalCount - $discardCount;
-        return max(0, $remainCount); // note: in tests $remainCount may be negative because of mocking.
-    }
-
-    function isFirstTurnWin(SeatWind $actor) { // todo move
-        $riichiStatus = $this->getArea($actor)->getRiichiStatus();
-        if (!$riichiStatus->isFirstTurn($this->getTurn())) {
-            return false;
-        }
-
-        $noDeclareSinceRiichi = !$this->getClaimHistory()
-            ->hasClaim($riichiStatus->getRiichiTurn());
-        return $noDeclareSinceRiichi;
     }
 
     function deal() {

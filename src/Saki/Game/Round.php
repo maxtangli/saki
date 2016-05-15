@@ -13,6 +13,9 @@ use Saki\Phase\PublicPhaseState;
 use Saki\Tile\Tile;
 use Saki\Win\WinTarget;
 
+/**
+ * @package Saki\Game
+ */
 class Round {
     // immutable
     private $gameData;
@@ -38,9 +41,7 @@ class Round {
 
         // round variable
         $this->playerList = new PlayerList($gameData->getPlayerType(), $gameData->getScoreStrategy()->getPointSetting()->getInitialPoint());
-        $wall = new Wall($gameData->getTileSet());
-
-        $this->areas = new Areas($wall, $this->playerList);
+        $this->areas = new Areas($gameData->getTileSet(), $this->playerList);
 
         $this->phaseState = new NullPhaseState();
 
@@ -49,12 +50,12 @@ class Round {
         $this->toNextPhase(); // todo better way?
     }
 
-    function roll(bool $keepDealer) {
+    function roll(bool $keepDealer, bool $isWin = false) {
         // game variable
         $this->prevailingCurrent = $this->prevailingCurrent->toRolled($keepDealer);
 
         // round variable
-        $this->areas->roll($keepDealer);
+        $this->areas->roll($keepDealer, $isWin);
 
         $this->phaseState = new NullPhaseState();
 
@@ -68,7 +69,7 @@ class Round {
         $this->prevailingCurrent = $this->prevailingCurrent->toDebugInited($PrevailingStatus);
 
         // round variable
-        $nextDealerSeatWind = $this->getAreas()->getAreaByInitial(
+        $nextDealerSeatWind = $this->getAreas()->getInitialSeatWindArea(
             $PrevailingStatus->getInitialSeatWindOfDealer()
         )->getPlayer()->getInitialSeatWind();
         $this->areas->debugInit($nextDealerSeatWind); // todo wrong, score/seatWindTurn not inited. should use Areas.debugInit
@@ -126,15 +127,17 @@ class Round {
     }
 
     function toNextRound() {
-        if (!$this->getPhaseState()->getPhase()->isOver()) {
+        $overPhaseState = $this->getPhaseState();
+        if (!$overPhaseState->getPhase()->isOver()) {
             throw new \InvalidArgumentException('Not over phase.');
         }
 
-        if ($this->getPhaseState()->isGameOver($this)) {
+        if ($overPhaseState->isGameOver($this)) {
             throw new \InvalidArgumentException('Game is over.');
         }
 
-        $keepDealer = $this->getPhaseState()->getResult()->isKeepDealer();
-        $this->roll($keepDealer);
+        $keepDealer = $overPhaseState->getResult()->isKeepDealer();
+        $isWin = $overPhaseState->getResult()->getResultType()->isWin();
+        $this->roll($keepDealer, $isWin);
     }
 }

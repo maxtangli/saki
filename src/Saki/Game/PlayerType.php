@@ -17,4 +17,16 @@ class PlayerType extends Enum {
     function getSeatWindList() {
         return SeatWind::createList($this->getValue());
     }
+
+    /**
+     * @return array e.x. ['E' => $defaultValue, ...]
+     */
+    function getSeatWindMap($defaultValue) {
+        $seatWindList = $this->getSeatWindList();
+        $keys = $seatWindList->toArray(function (SeatWind $seatWind) {
+            return $seatWind->__toString();
+        });
+        $values = array_fill(0, $seatWindList->count(), $defaultValue);
+        return array_combine($keys, $values);
+    }
 }

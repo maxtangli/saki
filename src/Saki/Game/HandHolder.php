@@ -8,20 +8,33 @@ use Saki\Tile\TileList;
  * @package Saki\Game
  */
 class HandHolder {
+    // shared variable
     private $targetHolder;
+    // game variable
     private $seatWind;
+    // round variable
     private $public;
     private $melded;
 
+    /**
+     * @param TargetHolder $targetHolder
+     * @param SeatWind $seatWind
+     */
     function __construct(TargetHolder $targetHolder, SeatWind $seatWind) {
         $this->targetHolder = $targetHolder;
+        
         $this->seatWind = $seatWind;
-
+        
         $this->public = new TileList();
         $this->melded = new MeldList();
     }
 
-    function init() {
+    /**
+     * @param SeatWind $seatWind
+     */
+    function init(SeatWind $seatWind) {
+        $this->seatWind = $seatWind;
+        
         $this->public->removeAll();
         $this->melded->removeAll();
     }
@@ -43,9 +56,8 @@ class HandHolder {
     function setHand(Hand $hand) {
         $this->public->fromSelect($hand->getPublic());
         $this->melded->fromSelect($hand->getMelded());
-        $newTarget = $hand->getTarget();
-        if ($newTarget->exist()) { // todo how to be more clear?
-            $this->setTarget($newTarget);
+        if ($hand->getTarget()->exist()) {
+            $this->targetHolder->setTarget($hand->getTarget());
         }
     }
 }

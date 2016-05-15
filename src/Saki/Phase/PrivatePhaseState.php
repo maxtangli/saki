@@ -56,7 +56,7 @@ class PrivatePhaseState extends PhaseState {
         $actor = $this->getActor();
         $area = $round->getAreas()->getArea($actor);
 
-        $round->getAreas()->toOrKeepSeatWind($actor);
+        $round->getAreas()->toSeatWind($actor);
 
         if ($this->shouldDrawTile()) {
             $area->draw();
