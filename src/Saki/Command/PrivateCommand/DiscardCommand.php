@@ -5,6 +5,7 @@ use Saki\Command\CommandContext;
 use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\ParamDeclaration\TileParamDeclaration;
 use Saki\Command\PrivateCommand;
+use Saki\Game\Open;
 use Saki\Game\SeatWind;
 use Saki\Tile\Tile;
 
@@ -31,7 +32,11 @@ class DiscardCommand extends PrivateCommand {
     }
 
     protected function executeImpl(CommandContext $context) {
-        $context->getActorArea()->discard($this->getTile());
+        $area = $context->getActorArea();
+        
+        $open = new Open($this->getActor(), $this->getTile(), true);
+        $open->apply($area);
+        
         $context->getRound()->toNextPhase();
     }
 }

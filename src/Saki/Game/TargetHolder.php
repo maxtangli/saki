@@ -39,16 +39,6 @@ class TargetHolder {
     }
 
     /**
-     * Used in: extendKongAfter
-     */
-    function setKongToKeep() {
-        if (!$this->target->isRobbingAKong()) {
-            throw new \BadMethodCallException();
-        }
-        $this->target = $this->target->toSetValue(null, TargetType::create(TargetType::KEEP));
-    }
-
-    /**
      * @param SeatWind $seatWind
      * @param Tile $newTargetTile
      */

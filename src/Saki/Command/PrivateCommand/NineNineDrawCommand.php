@@ -20,7 +20,7 @@ class NineNineDrawCommand extends PrivateCommand {
 
     protected function matchOther(CommandContext $context) {
         return $context->getTurn()->isFirstCircle()
-        && !$context->getAreas()->getDeclareHistory()->hasDeclare()
+        && !$context->getAreas()->getClaimHistory()->hasClaim()
         && $context->getActorHand()->getPrivate()->isNineKindsOfTermOrHonour();
     }
 

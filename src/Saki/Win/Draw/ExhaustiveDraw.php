@@ -23,7 +23,7 @@ class ExhaustiveDraw extends Draw {
         $areaList = $round->getAreas()->getAreaList();
         $isWaiting = function (Area $area) use ($waitingAnalyzer) {
             $public = $area->getHand()->getPublic();
-            $declare = $area->getHand()->getDeclare();
+            $declare = $area->getHand()->getMelded();
             $waitingTileList = $waitingAnalyzer->analyzePublic($public, $declare);
             $isWaiting = $waitingTileList->count() > 0;
             return $isWaiting;

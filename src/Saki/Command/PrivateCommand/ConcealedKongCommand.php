@@ -5,7 +5,9 @@ use Saki\Command\CommandContext;
 use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\ParamDeclaration\TileParamDeclaration;
 use Saki\Command\PrivateCommand;
+use Saki\Game\Claim;
 use Saki\Game\SeatWind;
+use Saki\Meld\QuadMeldType;
 use Saki\Tile\Tile;
 
 class ConcealedKongCommand extends PrivateCommand {
@@ -29,7 +31,18 @@ class ConcealedKongCommand extends PrivateCommand {
     }
 
     protected function executeImpl(CommandContext $context) {
-        $context->getActorArea()->concealedKong($this->getTile());
+        $area = $context->getActorArea();
+        $actor = $this->getActor();
+        $turn = $context->getTurn();
+
+        $tile = $this->getTile();
+        $tiles = [$tile, $tile, $tile, $tile];
+        $claim = Claim::create($actor, $turn,
+            $tiles, QuadMeldType::create(), true
+        );
+        $claim->apply($area);
+
+//        $context->getActorArea()->concealedKong($this->getTile());
         // stay in private phase
     }
 }

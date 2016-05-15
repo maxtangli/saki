@@ -3,33 +3,37 @@ namespace Saki\Phase;
 
 use Saki\Game\Phase;
 use Saki\Game\Round;
+use Saki\Game\SeatWind;
 
 /**
  * @package Saki\Phase
  */
 class PublicPhaseState extends PhaseState {
-    private $justAfterKong;
-
-    function __construct() {
-        $this->justAfterKong = false;
-    }
-
     /**
-     * @return bool
+     * @param SeatWind $actor
+     * @param callable $postEnter
+     * @return PublicPhaseState
      */
-    function isJustAfterKong() {
-        return $this->justAfterKong;
+    static function createRobbing(SeatWind $actor, callable $postEnter) {
+        $phase = new self();
+        $phase->isRonOnly = true;
+        $phase->setCustomNextState(
+            new PrivatePhaseState($actor, false, true, $postEnter)
+        );
+        return $phase;
     }
-
-    function setJustAfterKong() {
-        $this->justAfterKong = true;
+    
+    private $isRonOnly;
+    
+    function __construct() {
+        $this->isRonOnly = false;
     }
-
+    
     /**
      * @return bool
      */
     function isRonOnly() {
-        return false;
+        return $this->isRonOnly;
     }
 
     /**
@@ -55,7 +59,7 @@ class PublicPhaseState extends PhaseState {
     }
 
     function getDefaultNextState(Round $round) {
-        $nextActor = $round->getAreas()->getTurn()->getSeatWind()->toNext(); // todo simplify
+        $nextActor = $round->getAreas()->getTurn()->getSeatWind()->toNext();
         $shouldDrawTile = true;
         return new PrivatePhaseState($nextActor, $shouldDrawTile);
     }

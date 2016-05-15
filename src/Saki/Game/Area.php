@@ -9,6 +9,7 @@ use Saki\Meld\RunMeldType;
 use Saki\Meld\TripleMeldType;
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
+use Saki\Util\Utils;
 
 /**
  * A roundly reset area own by a player.
@@ -26,7 +27,7 @@ class Area {
     // round variable
     private $handHolder;
     private $public;
-    private $declare;
+    private $melded;
     private $riichiStatus;
 
     function __construct(Player $player, Areas $areas) {
@@ -37,7 +38,7 @@ class Area {
         // new round variable
         $this->handHolder = new HandHolder($areas->getTargetHolder(), $player->getInitialSeatWind());
         $this->public = new TileList();
-        $this->declare = new MeldList();
+        $this->melded = new MeldList();
         $this->riichiStatus = RiichiStatus::createNotRiichi();
         // game variable, round variable
         $this->resetImpl($player->getInitialSeatWind(), 0, $player->getInitialPoint());
@@ -72,32 +73,18 @@ class Area {
         // round variable
         $this->handHolder->init();
         $this->public->removeAll();
-        $this->declare->removeAll();
+        $this->melded->removeAll();
         $this->riichiStatus = RiichiStatus::createNotRiichi();
     }
 
     function debugSet(TileList $public, MeldList $declare = null, Tile $targetTile = null) {
-        $new = $this->getHand()->toHand($public, $declare, $targetTile);
-
-        $this->public->fromSelect($new->getPublic());
-        $this->declare->fromSelect($new->getDeclare());
-        $newTarget = $new->getTarget();
-        if ($newTarget->exist()) {
-            $this->getAreas()->getTargetHolder()
-                ->replaceTarget($this->getSeatWind(), $newTarget->getTile());
-        }
+        $newHand = $this->getHand()->toHand($public, $declare, $targetTile);
+        $this->setHand($newHand);
     }
 
     function debugMockHand(TileList $replace) {
-        $new = $this->getHand()->toMockHand($replace);
-
-        $this->public->fromSelect($new->getPublic());
-        $this->declare->fromSelect($new->getDeclare());
-        $newTarget = $new->getTarget();
-        if ($newTarget->exist()) {
-            $this->getAreas()->getTargetHolder()
-                ->replaceTarget($this->getSeatWind(), $newTarget->getTile());
-        }
+        $newHand = $this->getHand()->toMockHand($replace);
+        $this->setHand($newHand);
     }
 
     /**
@@ -110,7 +97,7 @@ class Area {
     /**
      * @return Areas
      */
-    protected function getAreas() {
+    function getAreas() {
         return $this->areas;
     }
 
@@ -146,29 +133,28 @@ class Area {
     }
 
     /**
-     * @return Target A Target own by this Area's SeatWind.
-     */
-    protected function getTarget() {
-        return $this->getAreas()->getTargetHolder()
-            ->getTarget($this->getSeatWind());
-    }
-
-    /**
-     * @return TileList
-     */
-    protected function temp_getPublicPlusTarget() {
-        return $this->getHand()->getPublicPlusTarget()->getCopy();
-    }
-
-    /**
      * @return Hand
      */
     function getHand() {
+        $target = $this->getAreas()->getTargetHolder()
+            ->getTarget($this->getSeatWind());
         return new Hand(
             $this->public,
-            $this->declare,
-            $this->getTarget()
+            $this->melded,
+            $target
         );
+    }
+
+    /**
+     * @param Hand $hand
+     */
+    function setHand(Hand $hand) {
+        $this->public->fromSelect($hand->getPublic());
+        $this->melded->fromSelect($hand->getMelded());
+        if ($hand->getTarget()->exist()) {
+            $this->getAreas()->getTargetHolder()
+                ->setTarget($hand->getTarget());
+        }
     }
 
     /**
@@ -176,7 +162,7 @@ class Area {
      */
     function getDiscard() {
         return $this->getAreas()->getOpenHistory()
-            ->getSelfDiscard($this->seatWind);
+            ->getSelfDiscard($this->getSeatWind());
     }
 
     /**
@@ -194,38 +180,18 @@ class Area {
     }
 
     //region operations
-    function deal(array $tiles) {
-        $this->public->fromArray($tiles);
-    }
-
     function draw() {
+        $hand = $this->getHand();
+
+        $newPublic = $hand->getPublic();
+        $newMelded = $hand->getMelded();
+        
         $newTile = $this->getAreas()->getWall()
             ->draw();
-
         $newTarget = new Target($newTile, TargetType::create(TargetType::DRAW), $this->getSeatWind());
-        $this->getAreas()->getTargetHolder()
-            ->setTarget($newTarget);
-    }
-
-    function drawReplacement() {
-        $newTile = $this->getAreas()->getWall()
-            ->drawReplacement();
-
-        $newTarget = new Target($newTile, TargetType::create(TargetType::REPLACE), $this->getSeatWind());
-        $this->getAreas()->getTargetHolder()
-            ->setTarget($newTarget);
-    }
-
-    function discard(Tile $selfTile) {
-        $newPublic = $this->getHand()->getPublicPlusTarget()->getCopy()
-            ->remove($selfTile); // validate
-        $this->public->fromSelect($newPublic);
-
-        $newTarget = new Target($selfTile, TargetType::create(TargetType::DISCARD), $this->getSeatWind());
-        $this->getAreas()->getTargetHolder()
-            ->setTarget($newTarget);
-
-        $this->getAreas()->recordOpen($selfTile, true);
+        
+        $newHand = new Hand($newPublic, $newMelded, $newTarget);
+        $this->setHand($newHand);
     }
 
     protected function assertValidRiichi(Tile $selfTile) {
@@ -251,7 +217,7 @@ class Area {
             throw new \InvalidArgumentException('Riichi condition violated: not reach yet.');
         }
 
-        $isConcealed = $this->getHand()->getDeclare()->count() == 0;
+        $isConcealed = $this->getHand()->getMelded()->count() == 0;
         if (!$isConcealed) { // Area
             throw new \InvalidArgumentException('Riichi condition violated: is isConcealed.');
         }
@@ -275,114 +241,35 @@ class Area {
     function riichi(Tile $selfTile) {
         $this->assertValidRiichi($selfTile);
 
-        $this->discard($selfTile);
-
         $this->setRiichiStatus(
             new RiichiStatus($this->getAreas()->getTurn())
         );
         $this->setPoint($this->getPoint() - 1000);
         $this->getAreas()->setRiichiPoints($this->getAreas()->getRiichiPoints() + 1000);
 
-        $this->getAreas()->recordOpen($selfTile, true);
-    }
-
-    function concealedKong(Tile $selfTile) {
-        $handTiles = [$selfTile, $selfTile, $selfTile, $selfTile];
-        $this->claim(QuadMeldType::create(), true, $handTiles, null, null);
-
-        $this->drawReplacement();
-
-        $this->getAreas()->recordDeclare();
-    }
-
-    function extendKongBefore(Tile $selfTile) {
-        $newPublic = $this->getHand()->getPublicPlusTarget()->getCopy()
-            ->remove($selfTile); // validate
-        $this->public->fromSelect($newPublic);
-
-        $newTarget = new Target($selfTile, TargetType::create(TargetType::KONG), $this->getSeatWind());
-        $this->getAreas()->getTargetHolder()
-            ->setTarget($newTarget);
+        $open = new Open($this->getSeatWind(), $selfTile, true);
+        $open->apply($this);
     }
 
     function extendKongAfter() {
-        $this->getAreas()->getTargetHolder()
-            ->setKongToKeep();
-
-        $targetTile = $this->getHand()->getTarget()->getTile();
-        $declaredMeld = new Meld([$targetTile, $targetTile, $targetTile]);
-        $this->claim(QuadMeldType::create(), null, null, $targetTile, $declaredMeld);
-
-        $this->drawReplacement();
-
-        $this->getAreas()->recordOpen($targetTile, false);
-        $this->getAreas()->recordDeclare();
-    }
-
-    function chow(Tile $selfTile1, Tile $selfTile2) {
-        $targetTile = $this->getHand()->getTarget()->getTile(); // validate
-        $handTiles = [$selfTile1, $selfTile2];
-        $this->claim(RunMeldType::create(), false, $handTiles, $targetTile, null); // validate
-
-        $newTarget = $this->genKeepTarget();
+        // todo better way?
+        $targetTile = $this->getAreas()->getOpenHistory()
+            ->getSelfOpen($this->getSeatWind())
+            ->getLast();
+        $newTarget = new Target($targetTile, TargetType::create(TargetType::KEEP), $this->getSeatWind());
         $this->getAreas()->getTargetHolder()
             ->setTarget($newTarget);
 
-        $this->getAreas()->getOpenHistory()->setLastDiscardDeclared();
-        $this->getAreas()->recordDeclare();
-    }
+        $fromMeldedTiles = [$targetTile, $targetTile, $targetTile];
+        $isFromMelded = function (Meld $meld) use ($fromMeldedTiles) {
+            return $meld->toArray() == $fromMeldedTiles;
+        };
+        $fromMelded = $this->getHand()->getMelded()
+            ->getSingle($isFromMelded); // keep concealedFlag
+        $claim = Claim::createFromMelded($this->getSeatWind(), $this->getAreas()->getTurn(),
+            $targetTile, $fromMelded);
 
-    function pung() {
-        $targetTile = $this->getHand()->getTarget()->getTile(); // validate
-        $handTiles = [$targetTile, $targetTile];
-        $this->claim(TripleMeldType::create(), false, $handTiles, $targetTile, null); // validate
-
-        $newTarget = $this->genKeepTarget();
-        $this->getAreas()->getTargetHolder()
-            ->setTarget($newTarget);
-
-        $this->getAreas()->getOpenHistory()->setLastDiscardDeclared();
-        $this->getAreas()->recordDeclare();
-    }
-
-    function kong() {
-        $targetTile = $this->getHand()->getTarget()->getTile();
-        $handTiles = [$targetTile, $targetTile, $targetTile];
-        $this->claim(QuadMeldType::create(), false, $handTiles, $targetTile, null); // validate
-
-        $this->drawReplacement();
-
-        $this->getAreas()->getOpenHistory()->setLastDiscardDeclared();
-        $this->getAreas()->recordDeclare();
-    }
-
-    protected function genKeepTarget() {
-        $lastTile = $this->public->getLast(); // validate
-        $this->public->removeLast();
-        return new Target(
-            $lastTile, TargetType::create(TargetType::KEEP), $this->getSeatWind()
-        );
-    }
-
-    // todo $otherTile is always TargetTile
-    protected function claim(MeldType $toMeldType, $toConcealed = null,
-                             array $handTiles = null, Tile $otherTile = null, Meld $declaredMeld = null) {
-        $claim = new Claim($toMeldType, $toConcealed, $handTiles, $otherTile, $declaredMeld);
-
-        $fromPublicPlusTarget = $this->getHand()->getPublicPlusTarget();
-        $fromDeclare = $this->getHand()->getDeclare();
-
-        if (!$claim->valid($fromPublicPlusTarget, $fromDeclare)) {
-            throw new \InvalidArgumentException();
-        }
-
-        $toPublic = $claim->getToPublic($fromPublicPlusTarget);
-        $toDeclare = $claim->getToDeclare($fromDeclare);
-
-        $this->public->fromSelect($toPublic);
-        $this->declare->fromSelect($toDeclare);
-
-        return $claim->getToMeld();
+        $claim->apply($this);
     }
     //endregion
 }

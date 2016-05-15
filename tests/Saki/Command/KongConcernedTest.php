@@ -42,7 +42,7 @@ class KongConcernedTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($areaBefore, $areaAfter);
 
         // tiles moved to created meld
-        $this->assertTrue($areaBefore->getHand()->getDeclare()->valueExist(Meld::fromString('1111m')));
+        $this->assertTrue($areaBefore->getHand()->getMelded()->valueExist(Meld::fromString('1111m')));
     }
 
     // todo testExtendKongTargetTile

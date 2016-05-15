@@ -33,8 +33,17 @@ class RoundTest extends SakiTestCase {
     function testChow() {
         $r = new Round();
         $pro = $r->getProcessor();
+
+        $oldTurn = $r->getAreas()->getTurn();
         $pro->process('discard I I:s-1m:1m');
         $pro->process('mockHand S 23m; chow S 2m 3m');
+
+        $newTurn = $r->getAreas()->getTurn();
+        $this->assertNotEquals($oldTurn, $newTurn);
+        
+        $this->assertFalse($r->getAreas()->getClaimHistory()->hasClaim($newTurn));
+        $this->assertTrue($r->getAreas()->getClaimHistory()->hasClaim($oldTurn));
+
         // todo
     }
 

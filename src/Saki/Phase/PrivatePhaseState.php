@@ -1,6 +1,7 @@
 <?php
 namespace Saki\Phase;
 
+use Saki\Game\Claim;
 use Saki\Game\Phase;
 use Saki\Game\Round;
 use Saki\Game\SeatWind;
@@ -12,17 +13,13 @@ class PrivatePhaseState extends PhaseState {
     private $actor;
     private $shouldDrawTile;
     private $isCurrent;
+    private $postEnter; // todo into Claim
     
-    /**
-     * PrivatePhaseState constructor.
-     * @param SeatWind $actor
-     * @param bool $shouldDrawTile
-     * @param bool $isCurrent // todo simpler way, may remove?
-     */
-    function __construct(SeatWind $actor, bool $shouldDrawTile, bool $isCurrent = false) {
+    function __construct(SeatWind $actor, bool $shouldDrawTile, bool $isCurrent = false, $postEnter = null) {
         $this->actor = $actor;
         $this->shouldDrawTile = $shouldDrawTile;
         $this->isCurrent = $isCurrent;
+        $this->postEnter = $postEnter;
     }
 
     /**
@@ -57,11 +54,21 @@ class PrivatePhaseState extends PhaseState {
 
     function enter(Round $round) {
         $actor = $this->getActor();
+        $area = $round->getAreas()->getArea($actor);
 
-        $round->getAreas()->toSeatWind($actor);
+        $round->getAreas()->toOrKeepSeatWind($actor);
 
         if ($this->shouldDrawTile()) {
-            $round->getAreas()->getArea($actor)->draw();
+            $area->draw();
+        }
+        
+        if ($this->postEnter !== null) {
+            if ($this->postEnter instanceof Claim) {
+                $claim = $this->postEnter;
+                $claim->apply($area);
+            } else {
+                call_user_func($this->postEnter);
+            }
         }
     }
 

@@ -15,7 +15,7 @@ class FourKongDraw extends Draw {
     protected function isDrawImpl(Round $round) {
         $areaList = $round->getAreas()->getAreaList();
         $kongCountList = $areaList->toArrayList(function (Area $area) {
-            $declare = $area->getHand()->getDeclare();
+            $declare = $area->getHand()->getMelded();
             $kongCount = $declare->toFiltered([QuadMeldType::create()])->count();
             return $kongCount;
         });
@@ -24,10 +24,8 @@ class FourKongDraw extends Draw {
         $kongPlayerCount = $kongCountList->getCount(function (int $n) {
             return $n > 0;
         });
-        $isJustAfterKong = $round->getPhaseState()->isJustAfterKong();
-        
-        $isFourKongDraw = $kongCount >= 4 && $kongPlayerCount >= 2
-            && !$isJustAfterKong;
+
+        $isFourKongDraw = $kongCount >= 4 && $kongPlayerCount >= 2;
         return $isFourKongDraw;
     }
     

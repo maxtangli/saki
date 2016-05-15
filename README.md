@@ -18,8 +18,9 @@ rush 41-45 | 15.3h
 rush 46-50 | 24.0h
 rush 51-55 | 21.5h
 rush 56-60 | 33.0h
-rush 61-65 | ing
-     total |285.8h + ing
+rush 61-65 | 17.1h
+rush 66-70 | ing
+     total |302.9h + ing
 
 ## rush history
 
@@ -300,7 +301,7 @@ rush 28 refactor for beauty 5.9h
 rush 29 all yaku: reach concerned 2.8h
 
 - [x] refactor: AbstractValueTilesYaku 0.2h
-- [x] DeclareHistory 0.3h
+- [x] ClaimHistory 0.3h
 - [x] Turn 0.4h
 - [x] YakuSet 0.6h // batch is not necessary and too much labour here
 - [x] test reach, doubleRiichi 0.4h
@@ -596,15 +597,15 @@ rush 53 refactor SeatWind 2.6h
 - [x] adapt SeatWind 0.3h
 
 - [x] adapt Target 0.2h
-- [x] adapt DeclareHistory 0.3h
+- [x] adapt ClaimHistory 0.3h
 - [x] adapt Turn 0.1h
 - [x] adapt OpenHistory 0.2h
 
 rush 54 refactor reach concerned 3.8h
 
 - [x] adapt RiichiStatus 0.3h
-- [x] adapt DeclareHistory 0.1h
-- [x] refactor DeclareHistory 0.4h // my most satisfied class!
+- [x] adapt ClaimHistory 0.1h
+- [x] refactor ClaimHistory 0.4h // my most satisfied class!
 
 - [x] refactor OpenHistory 0.8h
 - [x] rewrite OpenHistory 1.7h
@@ -722,25 +723,40 @@ rush 64 refactor Areas 3.4h
 
 - [x] introduce Claim 1.2h
 
-rush 65 refactor Areas
+rush 65 refactor Areas 6.2h
 
 - [x] introduce TargetHolder 0.5h
 - [x] move Areas.debugSetXXX into Area 0.5h
 - [x] Area.resetImpl 0.1h
 - [x] merge Area.debugSet 1.2h
 
-- [x] refactor TargetHolder 0.4h
-- [x] merge openHistory, Discard 1.5h
-- [ ] allow public-phase target tile set: replace openHistory 0.5h
-
-- [x] move Areas logic into Area 1.2h
-- [ ] refactor Area.claim
-
-- [ ] introduce HandHolder 1h
-- [ ] refactor YakuTestData
-
 - [x] add Command error message 0.1h
 - [x] wall.deal 0.2h
+
+- [x] refactor TargetHolder 0.4h
+- [x] merge openHistory, Discard 1.5h
+
+- [x] move Areas logic into Area 1.2h
+- [x] clean Area operations 0.5h
+
+rush 66 refactor Areas
+
+- [x] analyze SetTarget 1h
+- [x] move Public.postLeave into Private 0.1h
+- [x] simplify Public, RobPublic, FourKongDraw 0.3h
+
+- [x] refactor Area.claim 1h
+- [x] bug: recordClaim in private phase used wrong Turn // 0.5h
+- [x] introduce Open 0.4h
+- [ ] merge claim operations 1.9h
+
+- [ ] introduce HandHolder 1.1h
+
+- [ ] allow public-phase target tile set: replace openHistory 0.5h
+
+- [ ] merge ClaimHistory into OpenHistory
+
+- [ ] refactor YakuTestData
 
 rush red dora: meld issue
 

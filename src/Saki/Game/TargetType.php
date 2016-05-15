@@ -4,13 +4,25 @@ namespace Saki\Game;
 use Saki\Util\Enum;
 
 /**
- * TargetType-ownBy?
- * draw          DRAW-self
- * concealedKong REPLACE-self
- * extendKong    KONG-other KEEP-self REPLACE-self
- * discard       DISCARD-other
- * chow, pung    KEEP-self
- * kong          REPLACE-self
+ * [x] In public-wait, target tile is last-open-tile(DISCARD or KONG).
+ *     => still fetch-able in next private, like extendKong does
+ *     => generate KEEP-self in private, claim, like extendKong does
+ *     => benefit? no Hand change
+ * 
+ * In private-enter, handle draw or claim
+ * In private-wait, target tile already set, Hand is always private-style
+ * 
+ * TargetType transfer
+ * draw          NULL => private-enter => DRAW-self => private-wait
+ * concealedKong ANY-self => private-wait => claim => NULL => REPLACE-self => private-wait
+ * extendKong    ANY-self => private-wait => claim => NULL => [KONG-other] => public-wait
+ *               => passAll => NULL 
+ *               => private-enter => KEEP-self => claim => NULL => REPLACE-self => private-wait
+ * discard       ANY-self => private-wait => claim => NULL => [DISCARD-other] => public-wait
+ *
+ * chow, pung    [ANY-other] => public-wait => claim => NULL => KEEP-self => private-wait
+ * kong          [ANY-other] => public-wait => claim => NULL => REPLACE-self => private-wait
+ * passPublic    [ANY-other] => public-wait => NULL => private-wait
  * @package Saki\Game
  */
 class TargetType extends Enum {

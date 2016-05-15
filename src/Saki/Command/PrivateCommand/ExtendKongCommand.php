@@ -5,8 +5,12 @@ use Saki\Command\CommandContext;
 use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\ParamDeclaration\TileParamDeclaration;
 use Saki\Command\PrivateCommand;
+use Saki\Game\Claim;
+use Saki\Game\Open;
 use Saki\Game\SeatWind;
-use Saki\Phase\RobbingPubicPhaseState;
+use Saki\Meld\Meld;
+use Saki\Meld\QuadMeldType;
+use Saki\Phase\PublicPhaseState;
 use Saki\Tile\Tile;
 
 class ExtendKongCommand extends PrivateCommand {
@@ -30,16 +34,21 @@ class ExtendKongCommand extends PrivateCommand {
     }
 
     protected function executeImpl(CommandContext $context) {
-        $actorArea = $context->getActorArea();
-        
+        $area = $context->getActorArea();
+        $actor = $this->getActor();
+        $hand = $context->getActorHand();
+        $tile = $this->getTile();
+        $turn = $context->getTurn();
+
         // set target tile
-        $actorArea->extendKongBefore($this->getTile());
+        $open = new Open($actor, $tile, false);
+        $open->apply($area);
 
         // to RobbingPublicPhase
-        $postLeave = function () use ($actorArea) {
-            $actorArea->extendKongAfter();
+        $postEnter = function () use ($area) {
+            $area->extendKongAfter();
         };
-        $robbingPublicPhase = new RobbingPubicPhaseState($postLeave);
+        $robbingPublicPhase = PublicPhaseState::createRobbing($this->getActor(), $postEnter);
         $context->getRound()->toNextPhase($robbingPublicPhase);
     }
 }

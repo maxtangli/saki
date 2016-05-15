@@ -41,7 +41,7 @@ class MockHandCommand extends PlayerCommand {
             return true;
         }
 
-        if ($hand->isPrivatePlusDeclareComplete()
+        if ($hand->isComplete()
             && $mockTileList->count() <= $hand->getPrivate()->count()
         ) {
             return true;

@@ -2,6 +2,7 @@
 
 namespace Saki\Game;
 
+use Saki\Meld\MeldList;
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 use Saki\Util\ArrayList;
@@ -25,7 +26,7 @@ class Areas {
     private $wall;
     private $targetHolder;
     private $openHistory;
-    private $declareHistory;
+    private $claimHistory;
 
     function __construct(Wall $wall, PlayerList $playerList) {
         // variable
@@ -36,7 +37,7 @@ class Areas {
         $this->wall = $wall;
         $this->targetHolder = new TargetHolder();
         $this->openHistory = new OpenHistory();
-        $this->declareHistory = new DeclareHistory();
+        $this->claimHistory = new ClaimHistory();
 
         // immutable
         $this->areaList = new ArrayList();
@@ -61,7 +62,7 @@ class Areas {
         $this->wall->reset(true);
         $this->targetHolder->init();
         $this->openHistory->reset();
-        $this->declareHistory->reset();
+        $this->claimHistory->reset();
     }
 
     function debugInit(SeatWind $nextDealerInitialSeatWind) {
@@ -78,7 +79,7 @@ class Areas {
         $this->wall->reset(true);
         $this->targetHolder->init();
         $this->openHistory->reset();
-        $this->declareHistory->reset();
+        $this->claimHistory->reset();
     }
 
     /**
@@ -186,7 +187,7 @@ class Areas {
      * Do nothing otherwise.
      * @param SeatWind $seatWind
      */
-    function toSeatWind(SeatWind $seatWind) {
+    function toOrKeepSeatWind(SeatWind $seatWind) {
         $this->currentTurn = $this->currentTurn->toSeatWind($seatWind);
     }
 
@@ -227,14 +228,14 @@ class Areas {
     }
 
     /**
-     * @return DeclareHistory
+     * @return ClaimHistory
      */
-    function getDeclareHistory() {
-        return $this->declareHistory;
+    function getClaimHistory() {
+        return $this->claimHistory;
     }
 
-    function recordDeclare() {
-        $this->declareHistory->recordDeclare($this->getTurn());
+    function recordClaim(Turn $turn = null) {
+        $this->claimHistory->recordClaim($turn ?? $this->getTurn());
     }
 
     function getOutsideRemainTileAmount(Tile $tile) { // todo move
@@ -254,8 +255,8 @@ class Areas {
             return false;
         }
 
-        $noDeclareSinceRiichi = !$this->getDeclareHistory()
-            ->hasDeclare($riichiStatus->getRiichiTurn());
+        $noDeclareSinceRiichi = !$this->getClaimHistory()
+            ->hasClaim($riichiStatus->getRiichiTurn());
         return $noDeclareSinceRiichi;
     }
 
@@ -265,7 +266,8 @@ class Areas {
         $deal = $this->getWall()->deal($playerType);
         $this->areaList->walk(function (Area $area) use ($deal) {
             $initialTiles = $deal[$area->getSeatWind()->__toString()];
-            $area->deal($initialTiles);
+            $newHand = new Hand(new TileList($initialTiles), new MeldList(), Target::createNull());
+            $area->setHand($newHand);
         });
         // no target
     }

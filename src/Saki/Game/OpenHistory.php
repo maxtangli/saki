@@ -40,7 +40,7 @@ class OpenHistory {
      * @param SeatWind $mySeatWind
      * @return Turn
      */
-    function getLastOpenOrFalse(SeatWind $mySeatWind) {
+    function getLastOpenTurnOrFalse(SeatWind $mySeatWind) {
         $myList = $this->list->getCopy()->where(function (OpenRecord $record) use ($mySeatWind) {
             return $record->getActor() == $mySeatWind;
         });

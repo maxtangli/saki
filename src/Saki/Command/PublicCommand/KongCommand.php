@@ -5,7 +5,10 @@ use Saki\Command\CommandContext;
 use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\PrivateCommand;
 use Saki\Command\PublicCommand;
+use Saki\Game\Claim;
 use Saki\Game\SeatWind;
+use Saki\Meld\Meld;
+use Saki\Meld\QuadMeldType;
 use Saki\Phase\PrivatePhaseState;
 
 class KongCommand extends PublicCommand {
@@ -22,12 +25,18 @@ class KongCommand extends PublicCommand {
     }
 
     protected function executeImpl(CommandContext $context) {
-        $r = $context->getRound();
-        
-        $context->getActorArea()->kong();
-        $r->getPhaseState()->setJustAfterKong();
+        $area = $context->getActorArea();
+        $actor = $this->getActor();
+        $turn = $context->getTurn();
 
-        $actPlayerPrivateState = new PrivatePhaseState($this->getActor(), false);
-        $r->toNextPhase($actPlayerPrivateState);
+        $targetTile = $area->getHand()->getTarget()->getTile();
+        $tiles = [$targetTile, $targetTile, $targetTile, $targetTile];
+        $claim = Claim::create($actor, $turn,
+            $tiles, QuadMeldType::create(), false
+        );
+
+        $context->getRound()->toNextPhase(
+            new PrivatePhaseState($actor, false, false, $claim)
+        );
     }
 }

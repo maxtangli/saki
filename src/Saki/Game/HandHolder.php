@@ -11,19 +11,19 @@ class HandHolder {
     private $targetHolder;
     private $seatWind;
     private $public;
-    private $declare;
+    private $melded;
 
     function __construct(TargetHolder $targetHolder, SeatWind $seatWind) {
         $this->targetHolder = $targetHolder;
         $this->seatWind = $seatWind;
 
         $this->public = new TileList();
-        $this->declare = new MeldList();
+        $this->melded = new MeldList();
     }
 
     function init() {
         $this->public->removeAll();
-        $this->declare->removeAll();
+        $this->melded->removeAll();
     }
 
     /**
@@ -32,18 +32,18 @@ class HandHolder {
     function getHand() {
         return new Hand(
             $this->public,
-            $this->declare,
+            $this->melded,
             $this->targetHolder->getTarget($this->seatWind)
         );
     }
 
     /**
-     * @param Hand $newHand
+     * @param Hand $hand
      */
-    function setHand(Hand $newHand) {
-        $this->public->fromSelect($newHand->getPublic());
-        $this->declare->fromSelect($newHand->getDeclare());
-        $newTarget = $newHand->getTarget();
+    function setHand(Hand $hand) {
+        $this->public->fromSelect($hand->getPublic());
+        $this->melded->fromSelect($hand->getMelded());
+        $newTarget = $hand->getTarget();
         if ($newTarget->exist()) { // todo how to be more clear?
             $this->setTarget($newTarget);
         }

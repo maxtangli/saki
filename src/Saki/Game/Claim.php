@@ -2,131 +2,166 @@
 namespace Saki\Game;
 
 use Saki\Meld\Meld;
-use Saki\Meld\MeldList;
 use Saki\Meld\MeldType;
 use Saki\Tile\Tile;
-use Saki\Tile\TileList;
+use Saki\Util\Immutable;
 
 /**
  * @package Saki\Game
  */
-class Claim {
-    private $toMeldType;
-    private $toConcealed;
-    private $fromTiles;
-    private $otherTile;
-    private $fromMeld;
-
+class Claim implements Immutable {
     /**
-     * @param MeldType $toMeldType
-     * @param bool|null $toConcealed
-     * @param array|null $fromTiles
-     * @param Tile|null $otherTile
-     * @param Meld|null $fromMeld
+     * @param SeatWind $actor
+     * @param Turn $turn
+     * @param Tile $tile
+     * @param Meld $fromMelded
+     * @return Claim
      */
-    function __construct(MeldType $toMeldType, bool $toConcealed = null
-        , array $fromTiles = null, Tile $otherTile = null, Meld $fromMeld = null) {
-        $this->toMeldType = $toMeldType;
-        $this->toConcealed = $toConcealed;
-        $this->fromTiles = $fromTiles;
-        $this->otherTile = $otherTile;
-        $this->fromMeld = $fromMeld;
+    static function createFromMelded(SeatWind $actor, Turn $turn, Tile $tile, Meld $fromMelded) {
+        $toMeld = $fromMelded->canToTargetMeld($tile)
+            ? $fromMelded->toTargetMeld($tile)
+            : null;
+        return new self($actor, $turn, $toMeld, $fromMelded);
     }
 
     /**
-     * @return MeldType
+     * @param SeatWind $actor
+     * @param Turn $turn
+     * @param array $tiles
+     * @param MeldType $meldType
+     * @param bool $concealed
+     * @return Claim
      */
-    function getToMeldType() {
-        return $this->toMeldType;
+    static function create(SeatWind $actor, Turn $turn,
+                           array $tiles, MeldType $meldType, bool $concealed) {
+        $toMeld = Meld::valid($tiles, $meldType, $concealed)
+            ? new Meld($tiles, $meldType, $concealed)
+            : null;
+        return new self($actor, $turn, $toMeld, null);
+    }
+
+    private $actor;
+    private $turn;
+    private $toMeld;
+    private $fromMelded;
+
+    /**
+     * @param SeatWind $actor
+     * @param Turn $turn
+     * @param Meld $toMeld
+     * @param Meld|null $fromMelded
+     */
+    protected function __construct(SeatWind $actor, Turn $turn, Meld $toMeld, Meld $fromMelded = null) {
+        $this->actor = $actor;
+        $this->turn = $turn;
+        $this->toMeld = $toMeld;
+        $this->fromMelded = $fromMelded;
     }
 
     /**
-     * @return boolean
+     * @return SeatWind
      */
-    function getToConcealed() {
-        return $this->toConcealed
-        ?? $this->getFromMeldNullable()->isConcealed();
+    function getActor() {
+        return $this->actor;
     }
 
     /**
-     * @return array|null
+     * @return Turn
      */
-    function getFromTilesNullable() {
-        return $this->fromTiles;
+    function getTurn() {
+        return $this->turn;
     }
 
     /**
-     * @return null|Tile
+     * @return bool
      */
-    function getOtherTileNullable() {
-        return $this->otherTile;
-    }
-
-    /**
-     * @return null|Meld
-     */
-    function getFromMeldNullable() {
-        return $this->fromMeld;
-    }
-
-    /**
-     * @return Tile[]
-     */
-    function getFromTiles() {
-        return (new TileList($this->getFromTilesNullable() ?? []))
-            ->insertLast($this->getOtherTileNullable() ?? [])
-            ->toArray();
-    }
-
-    /**
-     * chow          hand [],other  -> handMeld + other
-     * pung          hand [],other  -> handMeld + other
-     * kong          hand [],other  -> handMeld + other
-     * concealedKong hand []        -> handMeld
-     * extendKong    hand 1,declare -> declareMeld + hand1
-     * @return Tile[]
-     */
-    function getToMeldTiles() {
-        $fromMeld = $this->getFromMeldNullable();
-        $fromMeldTiles = $fromMeld ? $fromMeld->toArray() : [];
-        return (new TileList($this->getFromTiles()))
-            ->insertLast($fromMeldTiles)
-            ->toArray();
+    function validToMeld() {
+        return $this->toMeld !== null;
     }
 
     /**
      * @return Meld
      */
     function getToMeld() {
-        return new Meld($this->getToMeldTiles(), $this->getToMeldType(), $this->getToConcealed());
+        if (!$this->validToMeld()) {
+            throw new \BadMethodCallException();
+        }
+        return $this->toMeld;
     }
 
     /**
-     * @param TileList $fromPublicPlusTarget
-     * @param MeldList $fromDeclare
+     * @return Meld|null
+     */
+    function getFromMeldedOrNull() {
+        return $this->fromMelded;
+    }
+
+    /**
+     * @return Tile[]
+     */
+    function getFromMeldedTiles() {
+        return $this->fromMelded !== null ?
+            $this->fromMelded->toArray() :
+            [];
+    }
+
+    /**
+     * @return Tile[]
+     */
+    function getFromTiles() {
+        return $this->getToMeld()->toTileList()
+            ->remove($this->getFromMeldedTiles())
+            ->toArray();
+    }
+
+    /**
+     * @param Area $area
      * @return bool
      */
-    function valid(TileList $fromPublicPlusTarget, MeldList $fromDeclare) {
-        return $fromPublicPlusTarget->valueExist($this->getFromTiles())
-        && $fromDeclare->valueExist($this->getFromMeldNullable() ?? [], Meld::getEqual(false));
+    function valid(Area $area) {
+        $hand = $area->getHand();
+        return $this->validToMeld()
+        && $hand->getPrivate()->valueExist($this->getFromTiles())
+        && $hand->getMelded()->valueExist($this->getFromMeldedOrNull() ?? []);
     }
 
     /**
-     * @param TileList $fromPublicPlusTarget
-     * @return TileList
+     * @param Area $area
      */
-    function getToPublic(TileList $fromPublicPlusTarget) {
-        return $fromPublicPlusTarget->getCopy()
+    function apply(Area $area) {
+        if (!$this->valid($area)) {
+            throw new \InvalidArgumentException();
+        }
+
+        $hand = $area->getHand();
+
+        $newPrivateOrPublic = $hand->getPrivate()->getCopy()
             ->remove($this->getFromTiles());
-    }
 
-    /**
-     * @param MeldList $fromDeclare
-     * @return MeldList
-     */
-    function getToDeclare(MeldList $fromDeclare) {
-        return $fromDeclare->getCopy()
-            ->remove($this->getFromMeldNullable() ?? [], Meld::getEqual(false))
+        if ($newPrivateOrPublic->getHandSize()->isPrivate()) {
+            $newTargetTile = $newPrivateOrPublic->getLast();
+            $newPublic = $newPrivateOrPublic->getCopy()->removeLast();
+            $newTarget = new Target($newTargetTile, TargetType::create(TargetType::KEEP), $this->getActor());
+        } elseif ($newPrivateOrPublic->getHandSize()->isPublic()) {
+            $newPublic = $newPrivateOrPublic;
+            $newTargetTile = $area->getAreas()->getWall()
+                ->drawReplacement();
+            $newTarget = new Target($newTargetTile, TargetType::create(TargetType::REPLACE), $this->getActor());
+        } else {
+            throw new \LogicException();
+        }
+
+        $newMelded = $hand->getMelded()->getCopy()
+            ->remove($this->getFromMeldedOrNull() ?? [])
             ->insertLast($this->getToMeld());
+
+        $newHand = new Hand($newPublic, $newMelded, $newTarget);
+        $area->setHand($newHand);
+
+        if (!$hand->getTarget()->isOwner($this->getActor())) {
+            $area->getAreas()->getOpenHistory()->setLastDiscardDeclared(); // todo remove
+        }
+
+        $area->getAreas()->recordClaim($this->getTurn());
     }
 }

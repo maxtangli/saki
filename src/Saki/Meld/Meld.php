@@ -90,7 +90,7 @@ class Meld extends TileList implements Immutable {
         }
         return true;
     }
-    
+
     private $meldType;
     private $concealed;
 

@@ -43,7 +43,6 @@ class OpenRecord implements Immutable {
     private $turn;
     private $tile;
     private $openType;
-    private $isDiscard;
 
     /**
      * @param Turn $turn
@@ -75,7 +74,15 @@ class OpenRecord implements Immutable {
         $record->openType = OpenType::create(OpenType::DECLARED);
         return $record;
     }
-    
+
+    /**
+     * @return Target
+     */
+    function toTarget() {
+        $targetType = TargetType::create($this->isDiscard() ? TargetType::DISCARD : TargetType::KONG);
+        return new Target($this->getTile(), $targetType, $this->getActor());
+    }
+
     /**
      * @return Turn
      */

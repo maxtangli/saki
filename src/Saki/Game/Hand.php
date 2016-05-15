@@ -14,43 +14,38 @@ use Saki\Util\Immutable;
  * - public : 13-style tileList. Used in: waiting analyze.
  * - target : targetData, fromSelf or fromOther.
  * - private: public + targetData which mustExist. Error if targetData not exist. Used in: win analyze.
- * - publicPlusTarget: public + targetData if exist. Used in: create meld. todo: any way to remove?
- * - declare: declared meldList.
- * - privatePlusDeclare: private + declare.toTileList. Used in: some yaku analyze? todo better way
+ * - melded: meldList.
+ * - complete: private + melded.toTileList. Used in: some yaku analyze? todo better way
  *
  * @package Saki\Hand
  */
 class Hand implements Immutable {
-    
     private $public;
-    private $declare;
+    private $melded;
     private $target;
 
     /**
      * @param TileList $public
-     * @param MeldList $declare
+     * @param MeldList $melded
      * @param Target $target
      */
-    function __construct(TileList $public, MeldList $declare, Target $target) {
-        if (!$public->getHandSize()->isPublic()) {
-            throw new \InvalidArgumentException(
-                sprintf('Invalid $public[%s]. Other params: $declare[%s], $target[%s]'
-                    , $public, $declare, $target)
-            );
-        }
-
+    function __construct(TileList $public, MeldList $melded, Target $target) {
         $this->public = $public->getCopy()->lock();
-        $this->declare = $declare->getCopy()->lock();
+        $this->melded = $melded->getCopy()->lock();
         $this->target = $target;
+
+        if (!$this->isPublicComplete()) {
+            throw new \InvalidArgumentException();
+        }
     }
 
     /**
      * @param TileList|null $public
-     * @param MeldList|null $declare
+     * @param MeldList|null $melded
      * @param Tile|null $targetTile
      * @return Hand
      */
-    function toHand(TileList $public = null, MeldList $declare = null, Tile $targetTile = null) {
+    function toHand(TileList $public = null, MeldList $melded = null, Tile $targetTile = null) {
         // todo allow public-phase target tile set
         $validTargetTile = $targetTile === null ||
             $this->getTarget()->getType()->isOwnByCreator();
@@ -59,23 +54,23 @@ class Hand implements Immutable {
         }
 
         $newPublic = $public ?? $this->getPublic();
-        $newDeclare = $declare ?? $this->getDeclare();
-        $newTarget = $targetTile ? 
+        $newMelded = $melded ?? $this->getMelded();
+        $newTarget = $targetTile ?
             $this->getTarget()->toSetValue($targetTile) : // validate exist
             $this->getTarget();
-        $newHand = new Hand($newPublic, $newDeclare, $newTarget);
+        $newHand = new Hand($newPublic, $newMelded, $newTarget);
         return $newHand;
     }
 
     function toMockHand(TileList $replace) {
         // public
-        if ($replace->count() <= $this->getPublic()->count()) { 
+        if ($replace->count() <= $this->getPublic()->count()) {
             $replaceIndexes = range(0, $replace->count() - 1);
             $public = $this->getPublic()->getCopy()
                 ->replaceAt($replaceIndexes, $replace->toArray());
             return $this->toHand($public);
         }
-        
+
         // private
         if ($replace->count() == $this->getPublic()->count() + 1) {
             $public = $replace->getCopy()->removeLast();
@@ -85,7 +80,7 @@ class Hand implements Immutable {
 
         throw new \InvalidArgumentException();
     }
-    
+
     /**
      * @return TileList
      */
@@ -110,52 +105,52 @@ class Hand implements Immutable {
             ->lock();
     }
 
-    /** todo remove
-     * @return TileList
-     */
-    function getPublicPlusTarget() {
-        return $this->getPublic()->getCopy()
-            ->insertLast($this->getTarget()->getTilesMayEmpty())
-            ->lock();
-    }
-
     /**
      * @return MeldList
      */
-    function getDeclare() {
-        return $this->declare;
+    function getMelded() {
+        return $this->melded;
     }
 
     /**
      * @return bool
      */
     function isConcealed() {
-        return $this->getDeclare()->isConcealed();
+        return $this->getMelded()->isConcealed();
     }
 
     /**
      * @return bool
      */
-    function isPublicPlusDeclareComplete() {
+    protected function isPublicComplete() {
         return $this->getPublic()->count()
-        + $this->getDeclare()->getNormalizedTileCount()
+        + $this->getMelded()->getNormalizedTileCount()
         == 13;
     }
 
     /**
      * @return bool
      */
-    function isPrivatePlusDeclareComplete() {
-        return $this->isPublicPlusDeclareComplete()
+    function isComplete() {
+        return $this->isPublicComplete()
         && $this->getTarget()->exist();
     }
 
     /**
      * @return TileList
      */
-    function getPrivatePlusDeclare() {
+    function getComplete() {
         return $this->getPrivate()->getCopy()// validate complete
-        ->concat($this->getDeclare()->toTileList())
+        ->concat($this->getMelded()->toTileList())
             ->lock();
+    }
+
+    /**
+     * @param Hand $other
+     * @return bool
+     */
+    function samePhase(Hand $other) {
+        return $this->getTarget()->exist()
+            == $other->getTarget()->exist();
     }
 }

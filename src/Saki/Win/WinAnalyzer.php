@@ -196,7 +196,7 @@ class WinAnalyzer {
         }
 
         // temporary furiten: other open TileList since self last open
-        $lastOpenTurn = $openHistory->getLastOpenOrFalse($mySeatWind);
+        $lastOpenTurn = $openHistory->getLastOpenTurnOrFalse($mySeatWind);
         if ($lastOpenTurn !== false) {
             // design note: not introduce NullObject of Turn here since it's seldom until now
             $otherOpenListSinceLastOpen = $openHistory->getOtherOpen($mySeatWind, $lastOpenTurn);

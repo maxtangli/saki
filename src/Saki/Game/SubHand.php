@@ -13,19 +13,19 @@ class SubHand extends Hand {
      * @return SubHand
      */
     static function fromHand(Hand $hand, MeldList $privateMeldList) {
-        return new self($privateMeldList, $hand->getDeclare(), $hand->getTarget());
+        return new self($privateMeldList, $hand->getMelded(), $hand->getTarget());
     }
     
     private $privateMeldList;
 
     /**
      * @param MeldList $privateMeldList
-     * @param MeldList $declare
+     * @param MeldList $melded
      * @param Target $target
      */
-    function __construct(MeldList $privateMeldList, MeldList $declare, Target $target) {
+    function __construct(MeldList $privateMeldList, MeldList $melded, Target $target) {
         $public = $privateMeldList->toTileList()->remove($target->getTile());
-        parent::__construct($public, $declare, $target);
+        parent::__construct($public, $melded, $target);
 
         $this->privateMeldList = $privateMeldList;
     }
@@ -42,6 +42,6 @@ class SubHand extends Hand {
      */
     function getAllMeldList() {
         return $this->getPrivateMeldList()->getCopy()
-            ->concat($this->getDeclare());
+            ->concat($this->getMelded());
     }
 }

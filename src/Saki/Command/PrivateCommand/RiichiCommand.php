@@ -31,7 +31,7 @@ class RiichiCommand extends PrivateCommand {
         $winAnalyzer = $context->getRound()->getGameData()->getWinAnalyzer();
         $analyzer = $winAnalyzer->getWaitingAnalyzer();
         $actorHand = $context->getActorHand();
-        $futureWaitingList = $analyzer->analyzePrivate($actorHand->getPrivate(), $actorHand->getDeclare());
+        $futureWaitingList = $analyzer->analyzePrivate($actorHand->getPrivate(), $actorHand->getMelded());
         $isWaiting = $futureWaitingList->count() > 0;
         if (!$isWaiting) {
             return false;

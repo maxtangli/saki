@@ -22,7 +22,7 @@ class OpenHistoryTest extends PHPUnit_Framework_TestCase {
     }
 
     protected function assertGetLastOpenOrFalse($expectedStringOrBool, string $seatWind) {
-        $actual = $this->h->getLastOpenOrFalse(SeatWind::fromString($seatWind));
+        $actual = $this->h->getLastOpenTurnOrFalse(SeatWind::fromString($seatWind));
         $expected = is_bool($expectedStringOrBool) ? $expectedStringOrBool : Turn::fromString($expectedStringOrBool);
         $this->assertEquals($expected, $actual);
     }

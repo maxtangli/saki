@@ -96,11 +96,11 @@ class WinTarget {
     }
 
     function getPrivateComplete() { // todo remove
-        return $this->getAreas()->getArea($this->getActor())->getHand()->getPrivatePlusDeclare();
+        return $this->getAreas()->getArea($this->getActor())->getHand()->getComplete();
     }
 
     function getDeclaredMeldList() { // todo remove
-        return $this->getAreas()->getArea($this->getActor())->getHand()->getDeclare();
+        return $this->getAreas()->getArea($this->getActor())->getHand()->getMelded();
     }
 
     function isConcealed() { // todo remove
@@ -152,7 +152,7 @@ class WinTarget {
     protected function isFirstTurnNoDeclare(SeatWind $seatWind) {
         $r = $this->round;
         return $r->getAreas()->getTurn()->isFirstCircle()
-        && !$r->getAreas()->getDeclareHistory()->hasDeclare(
+        && !$r->getAreas()->getClaimHistory()->hasClaim(
             new Turn(1, $seatWind)
         );
     }

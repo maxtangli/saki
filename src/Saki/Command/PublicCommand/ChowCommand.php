@@ -6,7 +6,10 @@ use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\ParamDeclaration\TileParamDeclaration;
 use Saki\Command\PrivateCommand;
 use Saki\Command\PublicCommand;
+use Saki\Game\Claim;
 use Saki\Game\SeatWind;
+use Saki\Meld\Meld;
+use Saki\Meld\RunMeldType;
 use Saki\Phase\PrivatePhaseState;
 use Saki\Tile\Tile;
 
@@ -38,10 +41,18 @@ class ChowCommand extends PublicCommand {
     }
 
     protected function executeImpl(CommandContext $context) {
-        $context->getActorArea()->chow($this->getTile1(), $this->getTile2());
-        
+        $area = $context->getActorArea();
+        $actor = $this->getActor();
+        $turn = $context->getTurn();
+
+        $targetTile = $area->getHand()->getTarget()->getTile();
+        $tiles = [$targetTile, $this->getTile1(), $this->getTile2()];
+        $claim = Claim::create($actor, $turn,
+            $tiles, RunMeldType::create(), false
+        );
+
         $context->getRound()->toNextPhase(
-            new PrivatePhaseState($this->getActor(), false)
+            new PrivatePhaseState($actor, false, false, $claim)
         );
     }
 }
