@@ -1,6 +1,7 @@
 <?php
 
 use Saki\Command\PrivateCommand\DiscardCommand;
+use Saki\Game\Hand;
 use Saki\Game\Phase;
 use Saki\Game\PrevailingStatus;
 use Saki\Game\PrevailingWind;
@@ -540,7 +541,7 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
         $this->assertContains(RedDoraYaku::create(), $yakuList, $yakuList);
         $expectFan = 3; // selfDraw + 6 uraDora
         $this->assertEquals($expectFan, $yakuItemList->getTotalFan(), $yakuItemList);
-        // todo for first time execution, failed and return 2 rather than 3? RedTile impl trick's dangerous smell...
+        // todo for first time execution, failed and return 2 rather than 3? RedTile impl trick's bad smell...
     }
 
     function testHeavenlyWin() {
@@ -572,7 +573,7 @@ class YakuTestData {
     }
 
     private $handMeldList;
-    private $declareMeldList;
+    private $melded;
     private $targetTile;
     private $currentSeatWind;
     private $actorSeatWind;
@@ -580,7 +581,7 @@ class YakuTestData {
     function __construct(string $handMeldListString, string $declareString = null, string $targetTileString = null,
                          string $currentString = null, string $actorString = null, string $prevailingWindString = null) {
         $this->handMeldList = MeldList::fromString($handMeldListString)->toConcealed(true);
-        $this->declareMeldList = MeldList::fromString($declareString !== null ? $declareString : "");
+        $this->melded = MeldList::fromString($declareString !== null ? $declareString : "");
         $this->targetTile = $targetTileString !== null ? Tile::fromString($targetTileString) : $this->handMeldList[0][0];
 
         $this->currentSeatWind = SeatWind::fromString($currentString ?? 'E');
@@ -592,7 +593,7 @@ class YakuTestData {
 
     function __toString() {
         return sprintf('handMeldList[%s], declaredMeldList[%s], currentSeatWind[%s], targetSeatWind[%s]'
-            , $this->handMeldList, $this->declareMeldList, $this->currentSeatWind, $this->actorSeatWind);
+            , $this->handMeldList, $this->melded, $this->currentSeatWind, $this->actorSeatWind);
     }
 
     function toWinSubTarget() {
@@ -608,6 +609,8 @@ class YakuTestData {
         $handMeldList = $this->handMeldList;
         $targetTile = $this->targetTile;
         $areas = $r->getAreas();
+        $area = $areas->getArea($actorSeatWind);
+        $melded = $this->melded;
 
         while($r->getAreas()->getCurrentSeatWind() != $currentSeatWind) {
             $pro->process('discard I C; passAll');
@@ -616,20 +619,18 @@ class YakuTestData {
             $pro->process(sprintf('mockHand %s %s; discard %s %s',
                 $currentSeatWind, $targetTile, $currentSeatWind, $targetTile));
         }
-        
-        $actorArea = $areas->getArea($actorSeatWind);
-        
+
         if ($isPrivate) { // target tile not set
             $private = $handMeldList->toTileList();
-            $targetTile = $this->targetTile ?? $private->getLast();
+            $targetTile = $targetTile ?? $private->getLast();
             $public = $private->getCopy()->remove($targetTile);
-            $actorArea->debugSet($public, $this->declareMeldList, $targetTile);
-
+            $hand = $area->getHand()->toHand($public, $melded, $targetTile);
         } else { // targetTile already set by debugSkipTo
             $public = $handMeldList->toTileList()->remove($targetTile);
-            $actorArea->debugSet($public, $this->declareMeldList);
+            $hand = $area->getHand()->toHand($public, $melded, null);
         }
+        $area->setHand($hand);
 
-        return new WinSubTarget($this->handMeldList, $actorSeatWind, $r);
+        return new WinSubTarget($handMeldList, $actorSeatWind, $r);
     }
 }

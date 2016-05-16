@@ -1,9 +1,11 @@
 <?php
 namespace Saki\Phase;
 
+use Saki\Game\Claim;
 use Saki\Game\Phase;
 use Saki\Game\Round;
 use Saki\Game\SeatWind;
+use Saki\Game\Target;
 
 /**
  * @package Saki\Phase
@@ -11,14 +13,15 @@ use Saki\Game\SeatWind;
 class PublicPhaseState extends PhaseState {
     /**
      * @param SeatWind $actor
-     * @param callable $postEnter
+     * @param Claim $claim
+     * @param Target $target
      * @return PublicPhaseState
      */
-    static function createRobbing(SeatWind $actor, callable $postEnter) {
+    static function createRobbing(SeatWind $actor, Claim $claim, Target $target) {
         $phase = new self();
         $phase->isRonOnly = true;
         $phase->setCustomNextState(
-            new PrivatePhaseState($actor, false, true, $postEnter)
+            new PrivatePhaseState($actor, false, $claim, $target)
         );
         return $phase;
     }
@@ -66,10 +69,17 @@ class PublicPhaseState extends PhaseState {
 
     function enter(Round $round) {
         // do nothing
+        $areas = $round->getAreas();
+        
+        $target = $areas->getOpenHistory()->getLastOpen()->toTarget();
+        $areas->getTargetHolder()->setTarget($target);
     }
 
     function leave(Round $round) {
         $this->handleDraw($round);
+
+        $round->getAreas()->getTargetHolder()
+            ->setTarget(Target::createNull());
     }
     //endregion
 }

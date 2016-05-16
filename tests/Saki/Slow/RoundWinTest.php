@@ -67,21 +67,24 @@ class RoundWinTest extends PHPUnit_Framework_TestCase {
         $r->roll(false);
         $r->roll(false);
         $r->roll(false);
+        $areas = $r->getAreas();
+        $area = $areas->getCurrentArea();
+        $pointHolder = $areas->getPointHolder();
         // todo replace reset() by debugReset()
 
         // E Player tsumo, but point not over 30000
-        $r->getAreas()->getCurrentArea()->debugSet(
-            TileList::fromString('13m456m789m123s55s'), null, Tile::fromString('2m')
+        $area->setHand(
+            $area->getHand()->toHand(TileList::fromString('13m456m789m123s55s'), null, Tile::fromString('2m'))
         );
         $r->getProcessor()->process('tsumo E');
-        $r->getAreas()->getCurrentArea()->setPoint('25000');
+        $pointHolder->setPoint(SeatWind::fromString('E'), 25000);
         $this->assertFalse($r->getPhaseState()->isGameOver($r));
 
         // point over 30000
-        $r->getAreas()->getDealerArea()->setPoint('29999');
-
+        $pointHolder->setPoint(SeatWind::fromString('E'), 29999);
         $this->assertFalse($r->getPhaseState()->isGameOver($r));
-        $r->getAreas()->getDealerArea()->setPoint('30000');
+        
+        $pointHolder->setPoint(SeatWind::fromString('E'), 30000);
         $this->assertTrue($r->getPhaseState()->isGameOver($r));
     }
 }

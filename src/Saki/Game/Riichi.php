@@ -23,6 +23,7 @@ class Riichi extends Open {
         $riichiStatus = new RiichiStatus($areas->getTurn());
         $areas->getRiichiHolder()
             ->setRiichiStatus($area->getSeatWind(), $riichiStatus);
-        $area->setPoint($area->getPoint() - 1000);
+        $areas->getPointHolder()
+            ->setPointChange($this->getActor(), -1000);
     }
 }

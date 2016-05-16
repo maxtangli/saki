@@ -13,6 +13,33 @@ class PointList extends ArrayList implements Immutable {
 //    use ReadonlyArrayList; // todo support readonly and toOrdered() both
 
     /**
+     * @param int[] $pointMap ['E' => $point, ...]
+     * @return PointList
+     */
+    static function fromPointMap(array $pointMap) {
+        $pointPairs = [];
+        foreach ($pointMap as $seatWindString => $point) {
+            $pointPairs[] = [SeatWind::fromString($seatWindString), $point];
+        }
+        
+        // sort by point desc, seatWind asc
+        $sort = function (array $a, array $b) {
+            if ($pointDiff = ($a[1] <=> $b[1])) {
+                return -$pointDiff;
+            }
+            return call_user_func(SeatWind::getComparator(), $a[0], $b[0]);
+        };
+        usort($pointPairs, $sort);
+
+        $items = [];
+        foreach ($pointPairs as $index => list($seatWind, $point)) {
+            $rank = $index + 1;
+            $items[] = new PointItem($seatWind, $point, $rank);
+        }
+        return (new self($items))->toOrderBySeatWind();
+    }
+
+    /**
      * @param array $rawPointPairs [[$seatWind, $point] ...]
      * @return PointList
      */

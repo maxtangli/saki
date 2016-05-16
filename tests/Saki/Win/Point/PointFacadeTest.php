@@ -5,11 +5,11 @@ use Saki\Win\Point\PointList;
 
 class PointListTest extends SakiTestCase {
     function testFromPairs() {
-        $f = PointList::fromPointPairs([
-            [SeatWind::createNorth(), 22200],
-            [SeatWind::createSouth(), 22200],
-            [SeatWind::createWest(), 22300],
-            [SeatWind::createEast(), 31100],
+        $f = PointList::fromPointMap([
+            'N' => 22200,
+            'S' => 22200,
+            'W' => 22300,
+            'E' => 31100,
         ])->toOrderByRank();
         $this->assertPointList([
             ['E', 31100, 1],

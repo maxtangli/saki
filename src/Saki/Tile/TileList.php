@@ -134,12 +134,12 @@ class TileList extends ArrayList {
     /**
      * @return TileListSize
      */
-    function getHandSize() {
+    function getSize() {
         return new TileListSize($this->count());
     }
 
     protected function assertCompletePrivateHand() {
-        if (!$this->getHandSize()->isComplete()) {
+        if (!$this->getSize()->isComplete()) {
             throw new \LogicException(
                 sprintf('Assertion Failed. Require complete-private-hand but [%s] given.', $this->__toString())
             );

@@ -2,7 +2,7 @@
 
 namespace Saki\Util;
 
-trait ComparablePriority { // todo remove?
+trait ComparablePriority {
     use Comparable;
 
     function compareTo($other) {

@@ -16,20 +16,21 @@ class ScoreStrategyTest extends PHPUnit_Framework_TestCase {
             new RankUmaScoreStrategy($pointSetting),
             new OkaScoreStrategy($pointSetting)
         ]);
-
-        $raw = PointList::fromPointPairs([
-            [SeatWind::createEast(), 31100],
-            [SeatWind::createSouth(), 24400],
-            [SeatWind::createWest(), 22300],
-            [SeatWind::createNorth(), 22200],
+        
+        $raw = PointList::fromPointMap([
+            'E' => 31100,
+            'S' => 24400,
+            'W' => 22300,
+            'N' => 22200,
         ]);
+
         $actual = $s->rawToFinal($raw);
-        $expected = PointList::fromPointPairs([
-            [SeatWind::createEast(), 31100 + 20000 + 20000],
-            [SeatWind::createSouth(), 24400 + 10000],
-            [SeatWind::createWest(), 22300 - 10000],
-            [SeatWind::createNorth(), 22200 - 20000],
-        ])->toOrderByRank();
+        $expected = PointList::fromPointMap([
+            'E' => 31100 + 20000 + 20000,
+            'S' => 24400 + 10000,
+            'W' => 22300 - 10000,
+            'N' => 22200 - 20000,
+        ]);
         $this->assertEquals($expected, $actual, sprintf('%s != %s', $expected, $actual));
     }
 }

@@ -8,6 +8,8 @@ use Saki\Command\PrivateCommand;
 use Saki\Game\Claim;
 use Saki\Game\Open;
 use Saki\Game\SeatWind;
+use Saki\Game\Target;
+use Saki\Game\TargetType;
 use Saki\Meld\Meld;
 use Saki\Meld\QuadMeldType;
 use Saki\Phase\PublicPhaseState;
@@ -36,19 +38,18 @@ class ExtendKongCommand extends PrivateCommand {
     protected function executeImpl(CommandContext $context) {
         $area = $context->getActorArea();
         $actor = $this->getActor();
-        $hand = $context->getActorHand();
         $tile = $this->getTile();
-        $turn = $context->getTurn();
 
         // set target tile
         $open = new Open($actor, $tile, false);
         $open->apply($area);
 
         // to RobbingPublicPhase
-        $postEnter = function () use ($area) {
-            $area->extendKongAfter();
-        };
-        $robbingPublicPhase = PublicPhaseState::createRobbing($this->getActor(), $postEnter);
+        $fromMelded = new Meld([$tile, $tile, $tile], null, false);
+        $claim = Claim::createFromMelded($area->getSeatWind(), $context->getTurn(),
+            $tile, $fromMelded);
+        $target = new Target($tile, TargetType::create(TargetType::KEEP), $area->getSeatWind());
+        $robbingPublicPhase = PublicPhaseState::createRobbing($this->getActor(), $claim, $target);
         $context->getRound()->toNextPhase($robbingPublicPhase);
     }
 }

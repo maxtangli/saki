@@ -17,8 +17,6 @@ class Area {
     private $areas;
     // game variable
     private $seatWind;
-    private $seatWindTurn;
-    private $point;
     // round variable
     private $handHolder;
 
@@ -27,43 +25,25 @@ class Area {
      * @param Areas $areas
      */
     function __construct(Player $player, Areas $areas) {
-        // immutable
         $this->player = $player;
-        // shared variable
         $this->areas = $areas;
-        // round variable: new
+        $this->seatWind = $player->getInitialSeatWind();
         $this->handHolder = new HandHolder($areas->getTargetHolder(), $player->getInitialSeatWind());
-        // game variable, round variable
-        $this->resetImpl($player->getInitialSeatWind(), 0, $player->getInitialPoint());
     }
 
     /**
      * @param SeatWind $seatWind
      */
     function roll(SeatWind $seatWind) {
-        $keepDealer = $this->seatWind->isDealer() && $seatWind->isDealer();
-        $seatWindTurn = $keepDealer ? $this->seatWindTurn + 1 : 0;
-        $this->resetImpl($seatWind, $seatWindTurn, $this->point);
+        $this->seatWind = $seatWind;
+        $this->handHolder->init($seatWind);
     }
 
     /**
      * @param SeatWind $seatWind
      */
     function debugInit(SeatWind $seatWind) {
-        $this->resetImpl($seatWind, 0, $this->getPlayer()->getInitialPoint());
-    }
-
-    /**
-     * @param SeatWind $seatWind
-     * @param int $seatWindTurn
-     * @param int $point
-     */
-    protected function resetImpl(SeatWind $seatWind, int $seatWindTurn, int $point) {
-        // game variable
         $this->seatWind = $seatWind;
-        $this->seatWindTurn = $seatWindTurn;
-        $this->point = $point;
-        // round variable
         $this->handHolder->init($seatWind);
     }
 
@@ -91,27 +71,11 @@ class Area {
     /**
      * @return int
      */
-    function getSeatWindTurn() {
-        if (!$this->getSeatWind()->isDealer()) {
-            throw new \BadMethodCallException();
-        }
-        return $this->seatWindTurn;
-    }
-
-    /**
-     * @return int
-     */
     function getPoint() {
-        return $this->point;
+        return $this->getAreas()->getPointHolder()
+            ->getPoint($this->getSeatWind());
     }
-
-    /**
-     * @param int $point
-     */
-    function setPoint(int $point) {
-        $this->point = $point;
-    }
-
+    
     /**
      * @return Hand
      */
@@ -124,12 +88,6 @@ class Area {
      */
     function setHand(Hand $hand) {
         $this->handHolder->setHand($hand);
-    }
-
-    // todo remove?
-    function debugSet(TileList $public, MeldList $declare = null, Tile $targetTile = null) {
-        $newHand = $this->getHand()->toHand($public, $declare, $targetTile);
-        $this->setHand($newHand);
     }
 
     /**
@@ -163,31 +121,4 @@ class Area {
         return $this->getAreas()->getOpenHistory()
             ->getSelfDiscard($this->getSeatWind());
     }
-
-    //region operations
-    function draw() {
-        $newTile = $this->getAreas()->getWall()
-            ->draw();
-        $newTarget = new Target($newTile, TargetType::create(TargetType::DRAW), $this->getSeatWind());
-        $newHand = $this->getHand()->toSetTarget($newTarget);
-        $this->setHand($newHand);
-    }
-
-    // todo remove
-    function extendKongAfter() {
-        // todo better way?
-        $targetTile = $this->getAreas()->getOpenHistory()
-            ->getSelfOpen($this->getSeatWind())
-            ->getLast();
-        $newTarget = new Target($targetTile, TargetType::create(TargetType::KEEP), $this->getSeatWind());
-        $this->getAreas()->getTargetHolder()
-            ->setTarget($newTarget);
-
-        $fromMelded = new Meld([$targetTile, $targetTile, $targetTile], null, false);
-        $claim = Claim::createFromMelded($this->getSeatWind(), $this->getAreas()->getTurn(),
-            $targetTile, $fromMelded);
-
-        $claim->apply($this);
-    }
-    //endregion
 }

@@ -31,7 +31,7 @@ class OverPhaseState extends PhaseState {
      * @return bool
      */
     function isGameOver(Round $round) { // todo refactor into simpler ver
-        $pointList = $round->getAreas()->getPointList();
+        $pointList = $round->getAreas()->getPointHolder()->getPointList();
         $prevailingCurrent = $round->getPrevailingCurrent();
 
         if ($pointList->hasMinus()) {
@@ -72,7 +72,7 @@ class OverPhaseState extends PhaseState {
         }
 
         $scoreStrategy = $round->getGameData()->getScoreStrategy();
-        $raw = $round->getAreas()->getPointList();
+        $raw = $round->getAreas()->getPointHolder()->getPointList();
         return $scoreStrategy->rawToFinal($raw);
     }
 
@@ -90,7 +90,7 @@ class OverPhaseState extends PhaseState {
         $areas = $round->getAreas();
 
         // modify points
-        $areas->applyPointChangeMap($result->getPointChangeMap());
+        $areas->getPointHolder()->applyPointChangeMap($result->getPointChangeMap());
     }
 
     function leave(Round $round) {

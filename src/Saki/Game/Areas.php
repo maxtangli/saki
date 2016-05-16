@@ -6,7 +6,6 @@ use Saki\Meld\MeldList;
 use Saki\Tile\TileList;
 use Saki\Tile\TileSet;
 use Saki\Util\ArrayList;
-use Saki\Win\Point\PointList;
 
 /**
  * Provide collaborate operations on 1 Wall and 2-4 Area.
@@ -18,31 +17,31 @@ class Areas {
      * An ArrayList of Area, same size with PlayerList, order by ascend initial SeatWind.
      * @var ArrayList
      */
-    private $areaList; // todo lock
+    private $areaList;
+    private $pointHolder;
     private $riichiHolder;
     // round variable
     private $wall;
     private $currentTurn;
-    private $targetHolder;
     private $openHistory;
     private $claimHistory;
+    private $targetHolder;
 
-    function __construct(TileSet $tileSet, PlayerList $playerList) {
+    function __construct(TileSet $tileSet, PointSetting $pointSetting, PlayerList $playerList) {
         // variable
         $this->riichiHolder = new RiichiHolder($playerList->getPlayerType());
+        $this->pointHolder = new PointHolder($pointSetting);
 
         // round variable
         $this->wall = new Wall($tileSet);
         $this->currentTurn = Turn::createFirst();
-        $this->targetHolder = new TargetHolder();
         $this->openHistory = new OpenHistory();
         $this->claimHistory = new ClaimHistory();
+        $this->targetHolder = new TargetHolder();
 
         // immutable
-        $this->areaList = new ArrayList();
-        $playerList->toArrayList()->walk(function (Player $player) {
-            $area = new Area($player, $this);
-            $this->areaList->insertLast($area);
+        $this->areaList = $playerList->toArrayList(function (Player $player) {
+            return new Area($player, $this);
         });
     }
 
@@ -55,14 +54,15 @@ class Areas {
         $this->areaList->walk(function (Area $area) use ($keepDealer) {
             $area->roll($area->getSeatWind()->toRolled($keepDealer));
         });
+        // $this->pointHolder no change
         $this->riichiHolder->roll($isWin);
 
         // round variable
         $this->wall->reset(true);
         $this->currentTurn = Turn::createFirst();
-        $this->targetHolder->init();
         $this->openHistory->reset();
         $this->claimHistory->reset();
+        $this->targetHolder->init();
     }
 
     function debugInit(SeatWind $nextDealerInitialSeatWind) {
@@ -72,16 +72,17 @@ class Areas {
         $this->areaList->walk(function (Area $area) use ($nextDealerSeatWind) {
             $area->debugInit($area->getSeatWind()->toNextSelf($nextDealerSeatWind));
         });
+        $this->pointHolder->init();
         $this->riichiHolder->init();
 
         // round variable
         $this->wall->reset(true);
         $this->currentTurn = Turn::createFirst();
-        $this->targetHolder->init();
         $this->openHistory->reset();
         $this->claimHistory->reset();
+        $this->targetHolder->init();
     }
-    
+
     /**
      * @return ArrayList
      */
@@ -124,27 +125,12 @@ class Areas {
     }
 
     /**
-     * @return PointList
+     * @return PointHolder
      */
-    function getPointList() {
-        $seatWindList = SeatWind::createList($this->areaList->count());
-        $pointPairs = $seatWindList->select(function (SeatWind $seatWind) {
-            $point = $this->getArea($seatWind)->getPoint();
-            return [$seatWind, $point];
-        })->toArray();
-        return PointList::fromPointPairs($pointPairs);
+    function getPointHolder() {
+        return $this->pointHolder;
     }
 
-    /**
-     * @param array $pointChangeMap
-     */
-    function applyPointChangeMap(array $pointChangeMap) {
-        $this->areaList->walk(function (Area $area) use ($pointChangeMap) {
-            $pointChange = $pointChangeMap[$area->getSeatWind()->__toString()];
-            $area->setPoint($area->getPoint() + $pointChange);
-        });
-    }
-    
     /**
      * @return RiichiHolder
      */
@@ -158,7 +144,7 @@ class Areas {
     function getWall() {
         return $this->wall;
     }
-    
+
     /**
      * @return Turn
      */
@@ -183,7 +169,7 @@ class Areas {
     }
 
     /**
-     * Roll to $seatWind. 
+     * Roll to $seatWind.
      * If $seatWind is not current, handle CircleCount update.
      * Do nothing otherwise.
      * @param SeatWind $seatWind
@@ -214,7 +200,7 @@ class Areas {
     }
 
     function deal() {
-        // do NOT trigger turn changes
+        // no Turn-change
         $playerType = PlayerType::create($this->areaList->count());
         $deal = $this->getWall()->deal($playerType);
         $this->areaList->walk(function (Area $area) use ($deal) {
@@ -222,6 +208,6 @@ class Areas {
             $newHand = new Hand(new TileList($initialTiles), new MeldList(), Target::createNull());
             $area->setHand($newHand);
         });
-        // no target
+        // no Target
     }
 }

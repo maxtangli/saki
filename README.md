@@ -758,12 +758,13 @@ rush 66 refactor Areas 9.1h
 
 rush 67 refactor etc
 
-- [ ] clean Target flow
-- [ ] refactor extendKongAfter
+- [x] introduce PointHolder 0.7h
+- [x] refactor etc. 0.5h
 
-- [ ] introduce PointHolder
+- [ ] clean Target flow 1.1h
+- [ ] test Claim, Open
 
-- [ ] refactor YakuTestData
+- [ ] merge Turn and Phase?
 
 rush red dora: meld issue
 
@@ -804,7 +805,7 @@ Command     | ing
 Game        | ing
 Meld        | ok
 Phase       | ing
-Tile        | remove HandSize
+Tile        | remove TileListSize.isComplete()
 Util        | ok
 Win         | ing
 Win/Draw    | ok

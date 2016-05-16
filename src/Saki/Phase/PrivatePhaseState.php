@@ -5,21 +5,23 @@ use Saki\Game\Claim;
 use Saki\Game\Phase;
 use Saki\Game\Round;
 use Saki\Game\SeatWind;
+use Saki\Game\Target;
+use Saki\Game\TargetType;
 
 /**
  * @package Saki\Phase
  */
 class PrivatePhaseState extends PhaseState {
     private $actor;
-    private $shouldDrawTile;
-    private $isCurrent;
-    private $postEnter; // todo into Claim
+    private $shouldDraw;
+    private $claim;
+    private $target;
     
-    function __construct(SeatWind $actor, bool $shouldDrawTile, bool $isCurrent = false, $postEnter = null) {
+    function __construct(SeatWind $actor, bool $shouldDraw, Claim $claim = null, Target $target = null) {
         $this->actor = $actor;
-        $this->shouldDrawTile = $shouldDrawTile;
-        $this->isCurrent = $isCurrent;
-        $this->postEnter = $postEnter;
+        $this->shouldDraw = $shouldDraw;
+        $this->claim = $claim;
+        $this->target = $target;
     }
 
     /**
@@ -32,15 +34,8 @@ class PrivatePhaseState extends PhaseState {
     /**
      * @return bool
      */
-    function shouldDrawTile() {
-        return $this->shouldDrawTile;
-    }
-
-    /**
-     * @return bool
-     */
-    function isCurrent() {
-        return $this->isCurrent;
+    function shouldDraw() {
+        return $this->shouldDraw;
     }
     
     //region PhaseState impl
@@ -54,26 +49,30 @@ class PrivatePhaseState extends PhaseState {
 
     function enter(Round $round) {
         $actor = $this->getActor();
-        $area = $round->getAreas()->getArea($actor);
+        $areas = $round->getAreas();
+        $area = $areas->getArea($actor);
 
-        $round->getAreas()->toSeatWind($actor);
+        $areas->toSeatWind($actor);
 
-        if ($this->shouldDrawTile()) {
-            $area->draw();
+        if ($this->shouldDraw()) {
+            $newTile = $areas->getWall()
+                ->draw();
+            $newTarget = new Target($newTile, TargetType::create(TargetType::DRAW), $actor);
+            $areas->getTargetHolder()
+                ->setTarget($newTarget);
         }
         
-        if ($this->postEnter !== null) {
-            if ($this->postEnter instanceof Claim) {
-                $claim = $this->postEnter;
-                $claim->apply($area);
-            } else {
-                call_user_func($this->postEnter);
-            }
+        if ($this->claim !== null) {
+            $target = $this->target ?? $areas->getOpenHistory()->getLastOpen()->toTarget();
+            $areas->getTargetHolder()
+                ->setTarget($target);
+            $this->claim->apply($area);
         }
     }
 
     function leave(Round $round) {
-        // do nothing
+        $round->getAreas()->getTargetHolder()
+            ->setTarget(Target::createNull());
     }
     //endregion
 }

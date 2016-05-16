@@ -331,7 +331,7 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
         return $result;
     }
 
-    /** todo allow null predicate
+    /**
      * @param callable $predicate
      * @param $default
      * @return mixed

@@ -20,7 +20,10 @@ class FuAnalyzerTest extends PHPUnit_Framework_TestCase {
         $r = new Round();
         $current = $r->getAreas()->getCurrentSeatWind();
         $actor = $current;
-        $r->getAreas()->getArea($actor)->debugSet($public, $declareMeldList, $targetTile);
+        $area = $r->getAreas()->getArea($actor);
+        $area->setHand(
+            $area->getHand()->toHand($public, $declareMeldList, $targetTile)
+        );
 
         $subTarget = new WinSubTarget($handMeldList, $actor, $r);
         $yakuList = new YakuItemList();

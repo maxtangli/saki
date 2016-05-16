@@ -27,7 +27,7 @@ class Claim implements Immutable {
     /**
      * @param SeatWind $actor
      * @param Turn $turn
-     * @param array $tiles
+     * @param Tile[] $tiles
      * @param MeldType $meldType
      * @param bool $concealed
      * @return Claim
@@ -138,11 +138,11 @@ class Claim implements Immutable {
 
         $newPrivateOrPublic = $hand->getPrivate()->getCopy()
             ->remove($this->getFromTiles());
-        if ($newPrivateOrPublic->getHandSize()->isPrivate()) {
+        if ($newPrivateOrPublic->getSize()->isPrivate()) {
             $newTargetTile = $newPrivateOrPublic->getLast();
             $newPublic = $newPrivateOrPublic->getCopy()->removeLast();
             $newTarget = new Target($newTargetTile, TargetType::create(TargetType::KEEP), $this->getActor());
-        } elseif ($newPrivateOrPublic->getHandSize()->isPublic()) {
+        } elseif ($newPrivateOrPublic->getSize()->isPublic()) {
             $newPublic = $newPrivateOrPublic;
             $newTargetTile = $areas->getWall()
                 ->drawReplacement();

@@ -1,8 +1,17 @@
 <?php
 namespace Saki\Game;
+
 use Saki\Tile\Tile;
 
 /**
+ * private-get-current get ?
+ * private-set-current set ? draw/drawReplacement/fromPublic=>keep
+ * private-get-other   NULL
+ * private-set-other   ignore
+ * public -get-current NULL
+ * public -set-current ignore
+ * public -get-other   get last-open
+ * public -set-other   set last-open
  * @package Saki\Game
  */
 class TargetHolder {
@@ -16,7 +25,7 @@ class TargetHolder {
     function init() {
         $this->target = Target::createNull();
     }
-    
+
     /**
      * own target?
      *         current other

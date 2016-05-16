@@ -41,7 +41,7 @@ class AreasTest extends PHPUnit_Framework_TestCase {
     function testPointList() {
         $r = new Round();
         $areas = $r->getAreas();
-        $facade = $areas->getPointList();
+        $facade = $areas->getPointHolder()->getPointList();
 
         $this->assertFalse($facade->hasMinus());
         $this->assertTrue($facade->hasTiledTop());

@@ -37,6 +37,13 @@ class OpenHistory {
     }
 
     /**
+     * @return OpenRecord
+     */
+    function getLastOpen() {
+        return $this->list->getLast();
+    }
+    
+    /**
      * @param SeatWind $mySeatWind
      * @return Turn
      */

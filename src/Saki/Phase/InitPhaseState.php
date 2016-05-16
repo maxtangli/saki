@@ -17,7 +17,7 @@ class InitPhaseState extends PhaseState {
     function getDefaultNextState(Round $round) {
         $nextActor = SeatWind::createEast();
         $shouldDrawTile = true;
-        return new PrivatePhaseState($nextActor, $shouldDrawTile, true);
+        return new PrivatePhaseState($nextActor, $shouldDrawTile);
     }
 
     function enter(Round $round) {

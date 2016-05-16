@@ -5,7 +5,7 @@ namespace Saki\Game;
  * @package Saki\Game
  */
 class RiichiHolder {
-    // Immutable
+    // immutable
     private $playerType;
     // variable
     private $riichiPoints;

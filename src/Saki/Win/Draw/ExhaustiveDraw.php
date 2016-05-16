@@ -13,7 +13,7 @@ class ExhaustiveDraw extends Draw {
     protected function isDrawImpl(Round $round) {
         $nextState = $round->getPhaseState()->getNextState($round);
         $isExhaustiveDraw = $nextState->getPhase()->isPrivate()
-            && $nextState->shouldDrawTile()
+            && $nextState->shouldDraw()
             && $round->getAreas()->getWall()->getRemainTileCount() == 0;
         return $isExhaustiveDraw;
     }

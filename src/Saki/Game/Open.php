@@ -12,6 +12,11 @@ class Open implements Immutable {
     private $tile;
     private $isDiscard;
 
+    /**
+     * @param SeatWind $actor
+     * @param Tile $tile
+     * @param bool $isDiscard
+     */
     function __construct(SeatWind $actor,
                          Tile $tile, bool $isDiscard) {
         $this->actor = $actor;
@@ -57,6 +62,7 @@ class Open implements Immutable {
             throw new \InvalidArgumentException();
         }
 
+        $areas = $area->getAreas();
         $hand = $area->getHand();
         $tile = $this->getTile();
         $isDiscard = $this->isDiscard();
@@ -64,15 +70,15 @@ class Open implements Immutable {
         $newPublic = $hand->getPrivate()->getCopy()
             ->remove($tile);
         $newMelded = $hand->getMelded();
-        $targetType = TargetType::create($isDiscard
-            ? TargetType::DISCARD
-            : TargetType::KONG);
-        $newTarget = new Target($tile, $targetType, $this->getActor());
+//        $targetType = TargetType::create($isDiscard
+//            ? TargetType::DISCARD
+//            : TargetType::KONG);
+//        $newTarget = new Target($tile, $targetType, $this->getActor());
+        $newTarget = Target::createNull();
         $newHand = new Hand($newPublic, $newMelded, $newTarget);
 
         $area->setHand($newHand);
 
-        $areas = $area->getAreas();
         $areas->getOpenHistory()
             ->record(new OpenRecord($areas->getTurn(), $tile, $isDiscard));
     }

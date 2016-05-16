@@ -36,7 +36,7 @@ class KongCommand extends PublicCommand {
         );
 
         $context->getRound()->toNextPhase(
-            new PrivatePhaseState($actor, false, false, $claim)
+            new PrivatePhaseState($actor, false, $claim)
         );
     }
 }

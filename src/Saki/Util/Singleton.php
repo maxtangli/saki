@@ -2,7 +2,6 @@
 namespace Saki\Util;
 
 /**
- * todo maybe better to be a trait?
  * @see originated from http://www.phptherightway.com/pages/Design-Patterns.html
  * @package Saki\Util
  */

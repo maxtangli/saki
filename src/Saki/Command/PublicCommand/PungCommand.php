@@ -35,15 +35,7 @@ class PungCommand extends PublicCommand {
         );
 
         $context->getRound()->toNextPhase(
-            new PrivatePhaseState($actor, false, false, $claim)
+            new PrivatePhaseState($actor, false, $claim)
         );
-
-//        $area = $context->getActorArea();
-//        $postEnter = function () use($area) {
-//            return $area->pung();
-//        };
-//        $context->getRound()->toNextPhase(
-//            new PrivatePhaseState($this->getActor(), false, false, $postEnter)
-//        );
     }
 }

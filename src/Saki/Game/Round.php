@@ -20,10 +20,10 @@ class Round {
     // immutable
     private $gameData;
     private $processor;
+    private $playerList;
     // game variable
     private $prevailingCurrent;
     // round variable
-    private $playerList;
     private $areas;
     /** @var PhaseState */
     private $phaseState;
@@ -35,14 +35,13 @@ class Round {
         $this->processor = new CommandProcessor(
             new CommandParser(new CommandContext($this), CommandSet::createStandard())
         );
+        $this->playerList = new PlayerList($gameData->getPlayerType(), $gameData->getScoreStrategy()->getPointSetting()->getInitialPoint());
 
         // game variable
-        $this->prevailingCurrent = new PrevailingCurrent($gameData->getPrevailingContext());
+        $this->prevailingCurrent = PrevailingCurrent::createFirst($gameData->getPrevailingContext());
 
         // round variable
-        $this->playerList = new PlayerList($gameData->getPlayerType(), $gameData->getScoreStrategy()->getPointSetting()->getInitialPoint());
-        $this->areas = new Areas($gameData->getTileSet(), $this->playerList);
-
+        $this->areas = new Areas($gameData->getTileSet(), $gameData->getScoreStrategy()->getPointSetting(), $this->playerList);
         $this->phaseState = new NullPhaseState();
 
         // to private phase
@@ -56,7 +55,6 @@ class Round {
 
         // round variable
         $this->areas->roll($keepDealer, $isWin);
-
         $this->phaseState = new NullPhaseState();
 
         // to private phase
@@ -72,8 +70,7 @@ class Round {
         $nextDealerSeatWind = $this->getAreas()->getInitialSeatWindArea(
             $PrevailingStatus->getInitialSeatWindOfDealer()
         )->getPlayer()->getInitialSeatWind();
-        $this->areas->debugInit($nextDealerSeatWind); // todo wrong, score/seatWindTurn not inited. should use Areas.debugInit
-
+        $this->areas->debugInit($nextDealerSeatWind);
         $this->phaseState = new NullPhaseState();
 
         // to private phase

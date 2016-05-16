@@ -23,6 +23,13 @@ class PointSetting implements Immutable {
     }
 
     /**
+     * @return int[] e.x. ['E' => $initialPoint, ...]
+     */
+    function getInitialPointMap() {
+        return $this->getPlayerType()->getSeatWindMap($this->getInitialPoint());
+    }
+    
+    /**
      * @return PlayerType
      */
     function getPlayerType() {

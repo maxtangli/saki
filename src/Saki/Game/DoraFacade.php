@@ -64,7 +64,7 @@ class DoraFacade {
     }
 
     protected function getHandDoraFanImpl(TileList $allTileList, callable $getDoraFanCallback) {
-        if (!$allTileList->getHandSize()->isComplete()) {
+        if (!$allTileList->getSize()->isComplete()) {
             throw new \InvalidArgumentException();
         }
 
