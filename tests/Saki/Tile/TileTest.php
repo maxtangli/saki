@@ -3,7 +3,7 @@
 use Saki\Tile\Tile;
 use Saki\Tile\TileType;
 
-class TileTest extends PHPUnit_Framework_TestCase {
+class TileTest extends SakiTestCase {
     function testCompare() {
         $t5m = Tile::fromString('5m');
         $t0m = Tile::fromString('0m');
@@ -72,6 +72,11 @@ class TileTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($red5p->isRedDora());
         $this->assertNotEquals($red5p, $red5m);
         $this->assertNotSame($red5p, $red5m);
+    }
+
+    function testRedDoraNumber() {
+        $r5m = Tile::fromString('0m');
+        $this->assertEquals(5, $r5m->getNumber());
     }
 
     function testRedDoraString() {

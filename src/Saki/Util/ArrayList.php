@@ -14,21 +14,6 @@ namespace Saki\Util;
  * - support object-style and clean array operations.
  * - support readonly
  *
- * main functions
- * - convert from array: new(array), fromArray(array).
- * - convert to array: toArray.
- * - convert from ArrayList, SomeList: fromSelected($list, $selector).
- * - convert to ArrayList: toArrayList($selector)
- * - convert to SomeList: getCopy, toZipped($list, $resultSelector)
- * - property: count, getCount($predicate).
- *             indexExist($indexes), getValuesAt(indexes), valueExist($values, $equal).
- *             getAggregated($list, $accumulator). getSum($selector), getMin($selector), getMax($selector).
- *             all($predicate), any($predicate).
- * - operation: insert($index, $values), concat($list).
- *              replace($indexes, $values).
- *              remove($indexes), take($indexFrom, $n), where($predicate), except($predicate).
- *              distinct, shuffle, orderBy($comparator).
- *
  * callbacks
  * - $accumulator: mixed, v => mixed
  * - $comparator : v1,v2 => -1,0,1
@@ -408,6 +393,39 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
     function isSame() {
         return count(array_unique($this->innerArray)) == 1;
     }
+
+    /**
+     * @param ArrayList $other
+     * @param callable $equal
+     * @return bool
+     */
+    function isSequenceEqual(ArrayList $other, callable $equal = null) {
+        if ($equal === null) {
+            return $this->toArray() == $other->toArray();
+        }
+
+        if (!$this->isSequenceSameCount($other)) {
+            return false;
+        }
+
+        foreach ($this->innerArray as $i => $v1) {
+            $v2 = $other[$i];
+            if (!$equal($v1, $v2)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * @param ArrayList $other
+     * @return bool
+     */
+    function isSequenceSameCount(ArrayList $other) {
+        return $this->count() == $other->count();
+    }
+
     //endregion
 
     //region getters

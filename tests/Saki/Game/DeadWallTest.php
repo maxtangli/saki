@@ -5,7 +5,23 @@ use Saki\Game\DoraFacade;
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 
-class DeadWallTest extends PHPUnit_Framework_TestCase {
+class DeadWallTest extends SakiTestCase {
+    protected function assertTileFan(DoraFacade $f, string $tileString, $doraFan, $uraDoraFan = 0, $redDoraFan = 0) {
+        $tile = Tile::fromString($tileString);
+        $this->assertEquals($doraFan, $f->getTileDoraFan($tile));
+        $this->assertEquals($uraDoraFan, $f->getTileUraDoraFan($tile));
+        $this->assertEquals($redDoraFan, $f->getTileRedDoraFan($tile));
+        $this->assertEquals($doraFan + $uraDoraFan + $redDoraFan, $f->getTileAllDoraFan($tile));
+    }
+
+    protected function assertHandFan(DoraFacade $f, string $handString, $doraFan, $uraDoraFan = 0, $redDoraFan = 0) {
+        $hand = TileList::fromString($handString);
+        $this->assertEquals($doraFan, $f->getHandDoraFan($hand));
+        $this->assertEquals($uraDoraFan, $f->getHandUraDoraFan($hand));
+        $this->assertEquals($redDoraFan, $f->getHandRedDoraFan($hand));
+        $this->assertEquals($doraFan + $uraDoraFan + $redDoraFan, $f->getHandAllDoraFan($hand));
+    }
+
     function testDoraFacade() {
         /**
          * replacement * 4
@@ -51,21 +67,5 @@ class DeadWallTest extends PHPUnit_Framework_TestCase {
         $this->assertHandFan($f, '222s12345678999p', 6);
         $this->assertHandFan($f, '222m12345678999p', 0, 6);
         $this->assertHandFan($f, '222s222m45678999p', 6, 6);
-    }
-
-    function assertTileFan(DoraFacade $f, string $tileString, $doraFan, $uraDoraFan = 0, $redDoraFan = 0) {
-        $tile = Tile::fromString($tileString);
-        $this->assertEquals($doraFan, $f->getTileDoraFan($tile));
-        $this->assertEquals($uraDoraFan, $f->getTileUraDoraFan($tile));
-        $this->assertEquals($redDoraFan, $f->getTileRedDoraFan($tile));
-        $this->assertEquals($doraFan + $uraDoraFan + $redDoraFan, $f->getTileAllDoraFan($tile));
-    }
-
-    function assertHandFan(DoraFacade $f, string $handString, $doraFan, $uraDoraFan = 0, $redDoraFan = 0) {
-        $hand = TileList::fromString($handString);
-        $this->assertEquals($doraFan, $f->getHandDoraFan($hand));
-        $this->assertEquals($uraDoraFan, $f->getHandUraDoraFan($hand));
-        $this->assertEquals($redDoraFan, $f->getHandRedDoraFan($hand));
-        $this->assertEquals($doraFan + $uraDoraFan + $redDoraFan, $f->getHandAllDoraFan($hand));
     }
 }

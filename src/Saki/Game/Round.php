@@ -10,19 +10,13 @@ use Saki\Phase\OverPhaseState;
 use Saki\Phase\PhaseState;
 use Saki\Phase\PrivatePhaseState;
 use Saki\Phase\PublicPhaseState;
-use Saki\Tile\Tile;
-use Saki\Win\WinTarget;
 
 /**
  * @package Saki\Game
  */
 class Round {
     // immutable
-    private $gameData;
     private $processor;
-    private $playerList;
-    // game variable
-    private $prevailingCurrent;
     // round variable
     private $areas;
     /** @var PhaseState */
@@ -31,17 +25,13 @@ class Round {
     function __construct() {
         // immutable
         $gameData = new GameData();
-        $this->gameData = $gameData;
         $this->processor = new CommandProcessor(
             new CommandParser(new CommandContext($this), CommandSet::createStandard())
         );
-        $this->playerList = new PlayerList($gameData->getPlayerType(), $gameData->getScoreStrategy()->getPointSetting()->getInitialPoint());
-
-        // game variable
-        $this->prevailingCurrent = PrevailingCurrent::createFirst($gameData->getPrevailingContext());
 
         // round variable
-        $this->areas = new Areas($gameData->getTileSet(), $gameData->getScoreStrategy()->getPointSetting(), $this->playerList);
+        $playerList = new PlayerList($gameData->getPlayerType(), $gameData->getScoreStrategy()->getPointSetting()->getInitialPoint());
+        $this->areas = new Areas($gameData, $playerList);
         $this->phaseState = new NullPhaseState();
 
         // to private phase
@@ -49,10 +39,11 @@ class Round {
         $this->toNextPhase(); // todo better way?
     }
 
+    /**
+     * @param bool $keepDealer
+     * @param bool $isWin
+     */
     function roll(bool $keepDealer, bool $isWin = false) {
-        // game variable
-        $this->prevailingCurrent = $this->prevailingCurrent->toRolled($keepDealer);
-
         // round variable
         $this->areas->roll($keepDealer, $isWin);
         $this->phaseState = new NullPhaseState();
@@ -62,15 +53,11 @@ class Round {
         $this->toNextPhase(); // todo better way?
     }
 
-    function debugInit(PrevailingStatus $PrevailingStatus) {
-        // game variable
-        $this->prevailingCurrent = $this->prevailingCurrent->toDebugInited($PrevailingStatus);
-
-        // round variable
-        $nextDealerSeatWind = $this->getAreas()->getInitialSeatWindArea(
-            $PrevailingStatus->getInitialSeatWindOfDealer()
-        )->getPlayer()->getInitialSeatWind();
-        $this->areas->debugInit($nextDealerSeatWind);
+    /**
+     * @param PrevailingStatus $prevailingStatus
+     */
+    function debugInit(PrevailingStatus $prevailingStatus) {
+        $this->areas->debugInit($prevailingStatus);
         $this->phaseState = new NullPhaseState();
 
         // to private phase
@@ -78,25 +65,18 @@ class Round {
         $this->toNextPhase(); // todo better way?
     }
 
-    function getGameData() {
-        return $this->gameData;
-    }
-
-    function getWinReport(SeatWind $actor) {
-        // WinTarget will assert valid player
-        return $this->getGameData()->getWinAnalyzer()->analyze(new WinTarget($actor, $this));
-    }
-
+    /**
+     * @return CommandProcessor
+     */
     function getProcessor() {
         return $this->processor;
     }
 
-    function getPrevailingCurrent() {
-        return $this->prevailingCurrent;
-    }
-
-    function getPlayerList() {
-        return $this->playerList;
+    /**
+     * @param array ...$scripts
+     */
+    function process(... $scripts) {
+        $this->getProcessor()->process(... $scripts);
     }
 
     /**
@@ -107,12 +87,8 @@ class Round {
     }
 
     /**
-     * @return PhaseState|PrivatePhaseState|PublicPhaseState|OverPhaseState
+     * @param PhaseState|null $customPhaseState
      */
-    function getPhaseState() {
-        return $this->phaseState;
-    }
-
     function toNextPhase(PhaseState $customPhaseState = null) {
         if ($customPhaseState !== null) {
             $this->phaseState->setCustomNextState($customPhaseState);
@@ -121,10 +97,12 @@ class Round {
         $this->phaseState->leave($this);
         $this->phaseState = $this->phaseState->getNextState($this);
         $this->phaseState->enter($this);
+        
+        $this->areas->setPhaseState($this->phaseState); // todo better wrapping
     }
 
     function toNextRound() {
-        $overPhaseState = $this->getPhaseState();
+        $overPhaseState = $this->phaseState;
         if (!$overPhaseState->getPhase()->isOver()) {
             throw new \InvalidArgumentException('Not over phase.');
         }

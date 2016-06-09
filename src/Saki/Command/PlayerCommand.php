@@ -1,41 +1,86 @@
 <?php
 namespace Saki\Command;
 
+use Saki\Game\Area;
+use Saki\Game\SeatWind;
+
+/**
+ * @package Saki\Command
+ */
 abstract class PlayerCommand extends Command {
-    // todo constructor validate?
+    //region subclass hooks
+    static function getExecutables(CommandContext $context, SeatWind $actor) {
+        return [];
+    }
+
+    //endregion
+
+    /**
+     * @param CommandContext $context
+     * @param array $params
+     */
+    function __construct(CommandContext $context, array $params) {
+        $valid = count($params) > 0 && $params[0] instanceof SeatWind;
+        if (!$valid) {
+            throw new \InvalidArgumentException();
+        }
+        parent::__construct($context, $params);
+    }
+
+    /**
+     * @return SeatWind
+     */
     function getActor() {
-//        return new SeatWind($this->getParam(0));
         return $this->getParam(0);
     }
 
-    function getActPlayer() { // todo remove
-        return $this->getContext()->getActorArea()->getPlayer();
+    /**
+     * @return Area
+     */
+    function getActorArea() {
+        return $this->getContext()->getAreas()->getArea($this->getActor());
     }
 
     //region override Command
-    function getContext() {
-        $context = parent::getContext();
-        $context->bindActor($this->getActor());
-        return $context;
-    }
-
     protected function executableImpl(CommandContext $context) {
-        return $this->matchPhase($context)
-        && $this->matchActor($context)
-        && $this->matchOther($context);
+        $actorArea = $this->getActorArea();
+        return $this->matchPhase($context, $actorArea)
+        && $this->matchActor($context, $actorArea)
+        && $this->matchOther($context, $actorArea);
     }
 
-    function execute() {
-        parent::execute();
-        $this->getContext()->unbindActor();
+    protected function executeImpl(CommandContext $context) {
+        $actorArea = $this->getActorArea();
+        return $this->executePlayerImpl($context, $actorArea);
     }
     //endregion
 
     //region subclass hooks
-    abstract protected function matchPhase(CommandContext $context);
+    /**
+     * @param CommandContext $context
+     * @param Area $actorArea
+     * @return bool
+     */
+    abstract protected function matchPhase(CommandContext $context, Area $actorArea);
 
-    abstract protected function matchActor(CommandContext $context);
+    /**
+     * @param CommandContext $context
+     * @param Area $actorArea
+     * @return bool
+     */
+    abstract protected function matchActor(CommandContext $context, Area $actorArea);
 
-    abstract protected function matchOther(CommandContext $context);
+    /**
+     * @param CommandContext $context
+     * @param Area $actorArea
+     * @return bool
+     */
+    abstract protected function matchOther(CommandContext $context, Area $actorArea);
+
+    /**
+     * @param CommandContext $context
+     * @param Area $actorArea
+     */
+    abstract protected function executePlayerImpl(CommandContext $context, Area $actorArea);
     //endregion
 }

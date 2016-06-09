@@ -14,7 +14,7 @@ abstract class Draw extends Singleton {
      * @return bool
      */
     function isDraw(Round $round) {
-        $valid = $round->getPhaseState()->getPhase()->isPublic();
+        $valid = $round->getAreas()->getPhaseState()->getPhase()->isPublic();
         if (!$valid) {
             throw new \InvalidArgumentException();
         }
@@ -32,7 +32,7 @@ abstract class Draw extends Singleton {
         return $this->getResultImpl($round);
     }
 
-    //region subclass hook
+    //region subclass hooks
     /**
      * @param Round $round
      */

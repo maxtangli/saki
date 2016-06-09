@@ -11,8 +11,8 @@ class WaitingAnalyzerTest extends SakiTestCase {
      * @dataProvider publicDataProvider
      */
     function testPublicData($onHandTileListString, $declareString, $expected) {
-        $r = $this->getInitRound();
-        $waitingAnalyzer = $r->getGameData()->getWinAnalyzer()->getWaitingAnalyzer();
+        $round = $this->getInitRound();
+        $waitingAnalyzer = $round->getAreas()->getGameData()->getWinAnalyzer()->getWaitingAnalyzer();
 
         $public = TileList::fromString($onHandTileListString);
         $declare = MeldList::fromString($declareString);
@@ -43,8 +43,8 @@ class WaitingAnalyzerTest extends SakiTestCase {
      * @dataProvider privateDataProvider
      */
     function testPrivateData($onHandTileListString, $declareString, $expected) {
-        $r = $this->getInitRound();
-        $waitingAnalyzer = $r->getGameData()->getWinAnalyzer()->getWaitingAnalyzer();
+        $round = $this->getInitRound();
+        $waitingAnalyzer = $round->getAreas()->getGameData()->getWinAnalyzer()->getWaitingAnalyzer();
         $private = TileList::fromString($onHandTileListString);
         $declare = MeldList::fromString($declareString);
 

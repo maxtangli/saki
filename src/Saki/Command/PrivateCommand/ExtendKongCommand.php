@@ -2,26 +2,38 @@
 namespace Saki\Command\PrivateCommand;
 
 use Saki\Command\CommandContext;
+use Saki\Command\ParamDeclaration\MeldParamDeclaration;
 use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\ParamDeclaration\TileParamDeclaration;
 use Saki\Command\PrivateCommand;
+use Saki\Game\Area;
 use Saki\Game\Claim;
 use Saki\Game\Open;
 use Saki\Game\SeatWind;
 use Saki\Game\Target;
 use Saki\Game\TargetType;
 use Saki\Meld\Meld;
-use Saki\Meld\QuadMeldType;
 use Saki\Phase\PublicPhaseState;
 use Saki\Tile\Tile;
 
+/**
+ * @package Saki\Command\PrivateCommand
+ */
 class ExtendKongCommand extends PrivateCommand {
+    //region Command impl
     static function getParamDeclarations() {
-        return [SeatWindParamDeclaration::class, TileParamDeclaration::class];
+        return [SeatWindParamDeclaration::class, TileParamDeclaration::class, MeldParamDeclaration::class];
     }
+    //endregion
 
-    function __construct(CommandContext $context, SeatWind $playerSeatWind, Tile $tile) {
-        parent::__construct($context, [$playerSeatWind, $tile]);
+    /**
+     * @param CommandContext $context
+     * @param SeatWind $actor
+     * @param Tile $tile
+     * @param Meld $meld
+     */
+    function __construct(CommandContext $context, SeatWind $actor, Tile $tile, Meld $meld) {
+        parent::__construct($context, [$actor, $tile, $meld]);
     }
 
     /**
@@ -31,25 +43,44 @@ class ExtendKongCommand extends PrivateCommand {
         return $this->getParam(1);
     }
 
-    protected function matchOther(CommandContext $context) {
-        return true; // todo
+    /**
+     * @return Meld
+     */
+    function getMeld() {
+        return $this->getParam(2);
     }
 
-    protected function executeImpl(CommandContext $context) {
-        $area = $context->getActorArea();
+    /**
+     * @return Claim
+     */
+    protected function getClaim() {
+        return Claim::createFromMelded(
+            $this->getActor(),
+            $this->getContext()->getAreas()->getTurn(),
+            $this->getTile(),
+            $this->getMeld()
+        );
+    }
+
+    //region PrivateCommand impl
+    protected function matchOther(CommandContext $context, Area $actorArea) {
+        return $this->getClaim()->valid($actorArea);
+    }
+
+    protected function executePlayerImpl(CommandContext $context, Area $actorArea) {
         $actor = $this->getActor();
         $tile = $this->getTile();
 
         // set target tile
         $open = new Open($actor, $tile, false);
-        $open->apply($area);
+        $open->apply($actorArea);
 
         // to RobbingPublicPhase
-        $fromMelded = new Meld([$tile, $tile, $tile], null, false);
-        $claim = Claim::createFromMelded($area->getSeatWind(), $context->getTurn(),
-            $tile, $fromMelded);
-        $target = new Target($tile, TargetType::create(TargetType::KEEP), $area->getSeatWind());
-        $robbingPublicPhase = PublicPhaseState::createRobbing($this->getActor(), $claim, $target);
-        $context->getRound()->toNextPhase($robbingPublicPhase);
+        $claim = $this->getClaim();
+        $target = new Target($tile, TargetType::create(TargetType::KEEP), $actorArea->getSeatWind());
+        $context->getRound()->toNextPhase(
+            PublicPhaseState::createRobbing($actor, $claim, $target)
+        );
     }
+    //endregion
 }

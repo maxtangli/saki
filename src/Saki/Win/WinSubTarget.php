@@ -1,7 +1,7 @@
 <?php
 namespace Saki\Win;
 
-use Saki\Game\Round;
+use Saki\Game\Areas;
 use Saki\Game\SeatWind;
 use Saki\Game\SubHand;
 use Saki\Meld\MeldList;
@@ -9,8 +9,8 @@ use Saki\Meld\MeldList;
 class WinSubTarget extends WinTarget {
     private $handMeldList;
 
-    function __construct(MeldList $handMeldList, SeatWind $actor, Round $round) {
-        parent::__construct($actor, $round);
+    function __construct(MeldList $handMeldList, SeatWind $actor, Areas $areas) {
+        parent::__construct($actor, $areas);
         $this->handMeldList = $handMeldList;
     }
 
@@ -24,7 +24,7 @@ class WinSubTarget extends WinTarget {
     function getAllMeldList() {
         return $this->getHandMeldList()->getCopy()->concat($this->getDeclaredMeldList());
     }
-    
+
     function getSubHand() {
         return SubHand::fromHand($this->getHand(), $this->getHandMeldList());
     }

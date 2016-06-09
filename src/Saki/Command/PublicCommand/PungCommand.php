@@ -3,39 +3,72 @@ namespace Saki\Command\PublicCommand;
 
 use Saki\Command\CommandContext;
 use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
+use Saki\Command\ParamDeclaration\TileParamDeclaration;
 use Saki\Command\PrivateCommand;
 use Saki\Command\PublicCommand;
+use Saki\Game\Area;
 use Saki\Game\Claim;
 use Saki\Game\SeatWind;
 use Saki\Meld\TripleMeldType;
 use Saki\Phase\PrivatePhaseState;
+use Saki\Tile\Tile;
 
+/**
+ * @package Saki\Command\PublicCommand
+ */
 class PungCommand extends PublicCommand {
+    //region Command impl
     static function getParamDeclarations() {
-        return [SeatWindParamDeclaration::class];
+        return [SeatWindParamDeclaration::class, TileParamDeclaration::class, TileParamDeclaration::class];
+    }
+    //endregion
+
+    /**
+     * @param CommandContext $context
+     * @param SeatWind $actor
+     * @param Tile $tile1
+     * @param Tile $tile2
+     */
+    function __construct(CommandContext $context, SeatWind $actor, Tile $tile1, Tile $tile2) {
+        parent::__construct($context, [$actor, $tile1, $tile2]);
     }
 
-    function __construct(CommandContext $context, SeatWind $playerSeatWind) {
-        parent::__construct($context, [$playerSeatWind]);
+    /**
+     * @return Tile
+     */
+    function getTile1() {
+        return $this->getParam(1);
     }
 
-    protected function matchOther(CommandContext $context) {
-        return true; // todo
+    /**
+     * @return Tile
+     */
+    function getTile2() {
+        return $this->getParam(2);
     }
 
-    protected function executeImpl(CommandContext $context) {
-        $area = $context->getActorArea();
-        $actor = $this->getActor();
-        $turn = $context->getTurn();
-
-        $targetTile = $area->getHand()->getTarget()->getTile();
-        $tiles = [$targetTile, $targetTile, $targetTile];
-        $claim = Claim::create($actor, $turn,
+    /**
+     * @return Claim
+     */
+    protected function getClaim() {
+        $targetTile = $this->getActorArea()->getHand()->getTarget()->getTile();
+        $tiles = [$targetTile, $this->getTile1(), $this->getTile2()];
+        return Claim::create(
+            $this->getActor(),
+            $this->getContext()->getAreas()->getTurn(),
             $tiles, TripleMeldType::create(), false
         );
+    }
 
+    //region PublicCommand impl
+    protected function matchOther(CommandContext $context, Area $actorArea) {
+        return $this->getClaim()->valid($actorArea);
+    }
+
+    protected function executePlayerImpl(CommandContext $context, Area $actorArea) {
         $context->getRound()->toNextPhase(
-            new PrivatePhaseState($actor, false, $claim)
+            new PrivatePhaseState($this->getActor(), false, $this->getClaim())
         );
     }
+    //endregion
 }

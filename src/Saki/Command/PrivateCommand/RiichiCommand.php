@@ -5,17 +5,28 @@ use Saki\Command\CommandContext;
 use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\ParamDeclaration\TileParamDeclaration;
 use Saki\Command\PrivateCommand;
+use Saki\Game\Area;
 use Saki\Game\Riichi;
 use Saki\Game\SeatWind;
 use Saki\Tile\Tile;
 
+/**
+ * @package Saki\Command\PrivateCommand
+ */
 class RiichiCommand extends PrivateCommand {
+    //region Command impl
     static function getParamDeclarations() {
         return [SeatWindParamDeclaration::class, TileParamDeclaration::class];
     }
+    //endregion
 
-    function __construct(CommandContext $context, SeatWind $playerSeatWind, Tile $tile) {
-        parent::__construct($context, [$playerSeatWind, $tile]);
+    /**
+     * @param CommandContext $context
+     * @param SeatWind $actor
+     * @param Tile $tile
+     */
+    function __construct(CommandContext $context, SeatWind $actor, Tile $tile) {
+        parent::__construct($context, [$actor, $tile]);
     }
 
     /**
@@ -25,30 +36,21 @@ class RiichiCommand extends PrivateCommand {
         return $this->getParam(1);
     }
 
-    protected function matchOther(CommandContext $context) {
-        // assert waiting after discard
-        $winAnalyzer = $context->getRound()->getGameData()->getWinAnalyzer();
-        $analyzer = $winAnalyzer->getWaitingAnalyzer();
-        $actorHand = $context->getActorHand();
-        $futureWaitingList = $analyzer->analyzePrivate($actorHand->getPrivate(), $actorHand->getMelded());
-        $isWaiting = $futureWaitingList->count() > 0;
-        if (!$isWaiting) {
-            return false;
-        }
-
-        $isValidTile = $futureWaitingList->discardExist($this->getTile());
-        if (!$isValidTile) {
-            return false;
-        }
-
-        $riichi = new Riichi($this->getActor(), $this->getTile());
-        return $riichi->valid($context->getActorArea());
+    /**
+     * @return Riichi
+     */
+    protected function getRiichi() {
+        return new Riichi($this->getActor(), $this->getTile());
     }
 
-    protected function executeImpl(CommandContext $context) {
-        $riichi = new Riichi($this->getActor(), $this->getTile());
-        $riichi->apply($context->getActorArea());
-        
+    //region PrivateCommand impl
+    protected function matchOther(CommandContext $context, Area $actorArea) {
+        return $this->getRiichi()->valid($actorArea);
+    }
+
+    protected function executePlayerImpl(CommandContext $context, Area $actorArea) {
+        $this->getRiichi()->apply($actorArea);
         $context->getRound()->toNextPhase();
     }
+    //endregion
 }

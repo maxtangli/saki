@@ -24,12 +24,15 @@ class TileFactory extends Singleton {
     /**
      * A trick to support redDora while keep == operator ignores redDora(since == compares object fields only).
      *
-     * The trick exists because when red dora is considered to be added,
+     * The trick exists because when adding red dora,
      * Tile comparisons by == operator have been used so much
-     * that it's too expensive to add a $redDora member and replace tons of Tile == by Tile.equals(), which is the common way.
+     * that it's too expensive to add a $redDora member
+     * and replace tons of Tile == by Tile.equals(),
+     * which should be the common way.
      *
      * Note that WeakMap is not required since Tile is a Multiton Class.
      * @var Tile[]
+     * @return bool
      */
     function isRedDoraTile(Tile $tile) {
         return in_array($tile, $this->redDoraInstances, true);

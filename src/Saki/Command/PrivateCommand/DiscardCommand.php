@@ -1,21 +1,50 @@
 <?php
 namespace Saki\Command\PrivateCommand;
 
+use Saki\Command\Command;
 use Saki\Command\CommandContext;
 use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\ParamDeclaration\TileParamDeclaration;
 use Saki\Command\PrivateCommand;
+use Saki\Game\Area;
 use Saki\Game\Open;
 use Saki\Game\SeatWind;
 use Saki\Tile\Tile;
 
+/**
+ * @package Saki\Command\PrivateCommand
+ */
 class DiscardCommand extends PrivateCommand {
+    //region Command impl
     static function getParamDeclarations() {
         return [SeatWindParamDeclaration::class, TileParamDeclaration::class];
     }
 
-    function __construct(CommandContext $context, SeatWind $playerSeatWind, Tile $tile) {
-        parent::__construct($context, [$playerSeatWind, $tile]);
+    static function getExecutables(CommandContext $context, SeatWind $actor) {
+        $private = $context->getAreas()->getArea($actor)
+            ->getHand()->getPrivate();
+        $uniquePrivate = $private->getCopy()->distinct(Tile::getEqual(true));
+        $toCommand = function (Tile $tile) use ($context, $actor) {
+            return new self($context, $actor, $tile);
+        };
+        $executable = function (Command $command) {
+            return $command->executable();
+        };
+        return [];
+        return $uniquePrivate->toArrayList($toCommand)
+            ->where($executable)
+            ->toArray();
+    }
+
+    //endregion
+
+    /**
+     * @param CommandContext $context
+     * @param SeatWind $actor
+     * @param Tile $tile
+     */
+    function __construct(CommandContext $context, SeatWind $actor, Tile $tile) {
+        parent::__construct($context, [$actor, $tile]);
     }
 
     /**
@@ -25,18 +54,21 @@ class DiscardCommand extends PrivateCommand {
         return $this->getParam(1);
     }
 
-    protected function matchOther(CommandContext $context) {
-        $hand = $this->getContext()->getActorHand();
-        $validTile = $hand->getPrivate()->valueExist($this->getTile());
-        return $validTile;
+    /**
+     * @return Open
+     */
+    protected function getOpen() {
+        return new Open($this->getActor(), $this->getTile(), true);
     }
 
-    protected function executeImpl(CommandContext $context) {
-        $area = $context->getActorArea();
-        
-        $open = new Open($this->getActor(), $this->getTile(), true);
-        $open->apply($area);
-        
+    //region PrivateCommand impl
+    protected function matchOther(CommandContext $context, Area $actorArea) {
+        return $this->getOpen()->valid($actorArea);
+    }
+
+    protected function executePlayerImpl(CommandContext $context, Area $actorArea) {
+        $this->getOpen()->apply($actorArea);
         $context->getRound()->toNextPhase();
     }
+    //endregion
 }

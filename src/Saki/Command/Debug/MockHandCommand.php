@@ -5,14 +5,25 @@ use Saki\Command\CommandContext;
 use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\ParamDeclaration\TileListParamDeclaration;
 use Saki\Command\PlayerCommand;
+use Saki\Game\Area;
 use Saki\Game\SeatWind;
 use Saki\Tile\TileList;
 
+/**
+ * @package Saki\Command\Debug
+ */
 class MockHandCommand extends PlayerCommand {
+    //region Command impl
     static function getParamDeclarations() {
         return [SeatWindParamDeclaration::class, TileListParamDeclaration::class];
     }
+    //endregion
 
+    /**
+     * @param CommandContext $context
+     * @param SeatWind $seatWind
+     * @param TileList $mockTileList
+     */
     function __construct(CommandContext $context, SeatWind $seatWind, TileList $mockTileList) {
         parent::__construct($context, [$seatWind, $mockTileList]);
     }
@@ -24,34 +35,25 @@ class MockHandCommand extends PlayerCommand {
         return $this->getParam(1);
     }
 
-    protected function matchPhase(CommandContext $context) {
-        return $context->getPhase()->isPrivateOrPublic();
+    //region PlayerCommand impl
+    protected function matchPhase(CommandContext $context, Area $actorArea) {
+        $phaseState = $context->getRound()->getAreas()->getPhaseState();
+        return $phaseState->getPhase()->isPrivateOrPublic();
     }
 
-    protected function matchActor(CommandContext $context) {
+    protected function matchActor(CommandContext $context, Area $actorArea) {
         return true;
     }
 
-    protected function matchOther(CommandContext $context) {
-        $context = $this->getContext();
+    protected function matchOther(CommandContext $context, Area $actorArea) {
         $mockTileList = $this->getMockTileList();
-
-        $hand = $context->getActorHand();
-        if ($mockTileList->count() <= $hand->getPublic()->count()) {
-            return true;
-        }
-
-        if ($hand->isComplete()
-            && $mockTileList->count() <= $hand->getPrivate()->count()
-        ) {
-            return true;
-        }
-
-        return false;
+        $hand = $actorArea->getHand();
+        return ($mockTileList->count() <= $hand->getPublic()->count())
+        || ($hand->isComplete() && $mockTileList->count() <= $hand->getPrivate()->count());
     }
 
-    protected function executeImpl(CommandContext $context) {
-        $area = $context->getActorArea();
-        $area->setHand($area->getHand()->toMockHand($this->getMockTileList()));
+    protected function executePlayerImpl(CommandContext $context, Area $actorArea) {
+        $actorArea->setHand($actorArea->getHand()->toMockHand($this->getMockTileList()));
     }
+    //endregion
 }

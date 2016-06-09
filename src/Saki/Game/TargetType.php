@@ -8,15 +8,15 @@ use Saki\Util\Enum;
  *     => still fetch-able in next private, like extendKong does
  *     => generate KEEP-self in private, claim, like extendKong does
  *     => benefit? no Hand change
- * 
+ *
  * In private-enter, handle draw or claim
  * In private-wait, target tile already set, Hand is always private-style
- * 
+ *
  * TargetType transfer
  * draw          NULL => private-enter => DRAW-self => private-wait
  * concealedKong ANY-self => private-wait => claim => NULL => REPLACE-self => private-wait
  * extendKong    ANY-self => private-wait => claim => NULL => [KONG-other] => public-wait
- *               => passAll => NULL 
+ *               => passAll => NULL
  *               => private-enter => KEEP-self => claim => NULL => REPLACE-self => private-wait
  * discard       ANY-self => private-wait => claim => NULL => [DISCARD-other] => public-wait
  *
@@ -44,6 +44,8 @@ class TargetType extends Enum {
             case self::DISCARD:
             case self::KONG:
                 return false;
+            default:
+                throw new \LogicException();
         }
     }
 }

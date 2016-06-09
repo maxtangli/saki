@@ -33,7 +33,7 @@ class Utils {
      * @param string $string
      * @return string[]
      */
-    static function explodeSafe(string $delimiter, string $string) {
+    static function explodeNotEmpty(string $delimiter, string $string) {
         $tokens = explode($delimiter, $string);
         if ($tokens === false) {
             throw new \InvalidArgumentException();

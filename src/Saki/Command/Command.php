@@ -18,17 +18,14 @@ Command.executable() execute()
 namespace Saki\Command;
 
 use Saki\Command\ParamDeclaration\ParamDeclaration;
-use Saki\Util\Utils;
 
 /**
  * goal
  * - separate command logic into classes.
- * - provide string-style-command to support tests, term, replay.
- *
+ * - provide string-style-command to support tests, remote transfer, replay, etc.
  * @package Saki\Command
  */
 abstract class Command {
-    //region parser
     /**
      * @return string
      */
@@ -42,78 +39,10 @@ abstract class Command {
     }
 
     /**
-     * @param string $line
-     * @return string
-     */
-    static function parseName(string $line) {
-        $tokens = Utils::explodeSafe(' ', $line);
-        if (empty($tokens)) {
-            throw new \InvalidArgumentException();
-        }
-        $token = $tokens[0];
-        $name = lcfirst($token);
-        return $name;
-    }
-
-    /**
-     * @param CommandContext $context
-     * @param string $line
-     * @return static
-     */
-    static function fromString(CommandContext $context, string $line) {
-        $name = static::parseName($line);
-        if ($name !== static::getName()) {
-            throw new \InvalidArgumentException(
-                sprintf('Invalid $name[%s] of $line[%s] for static::getName()[%s]', $name, $line, static::getName())
-            );
-        }
-
-        // 'Discard E 1m' => ['E','1m']
-        $paramStrings = Utils::explodeSafe(' ', $line);
-        array_shift($paramStrings);
-
-        $paramDeclarations = static::getParamDeclarations();
-        $validCount = count($paramStrings) == count($paramDeclarations);
-        if (!$validCount) {
-            throw new \InvalidArgumentException(
-                sprintf('Invalid param count, expect[%s] in command[%s] but given[%s] in line[%s].',
-                    count($paramDeclarations), static::getName(), count($paramStrings), $line)
-            );
-        }
-
-        // ['E','1m'] => [Tile, Tile] which is indeed constructor-required-params
-        $objects = [$context];
-        foreach ($paramDeclarations as $i => $paramDeclaration) {
-            $paramString = $paramStrings[$i];
-            /** @var ParamDeclaration $param */
-            $param = new $paramDeclaration($context, $paramString);
-            $obj = $param->toObject();
-            $objects [] = $obj;
-        }
-
-        return new static(...$objects);
-    }
-
-    /**
-     * @return string
-     */
-    function __toString() {
-        $tokens = array_map(function ($param) {
-            return is_object($param) ? $param->__toString() : $param;
-        }, $this->getParams());
-        array_unshift($tokens, static::getName());
-        return implode(' ', $tokens);
-    }
-
-    //endregion
-
-    /**
      * @return bool
      */
     static function isDebug() {
-        $cls = get_called_class();
-        $hasDebugToken = strpos($cls, 'Debug') !== false;
-        return $hasDebugToken;
+        return strpos(get_called_class(), 'Debug') !== false;
     }
 
     /**
@@ -121,35 +50,56 @@ abstract class Command {
      * @return bool
      */
     static function isRon() {
-        $cls = get_called_class();
-        $hasRonToken = strpos($cls, 'Ron') !== false;
-        return $hasRonToken;
+        return strpos(get_called_class(), 'Ron') !== false;
     }
 
+    //region subclass hooks
+    /**
+     * @return ParamDeclaration[]
+     */
     static function getParamDeclarations() {
         // since abstract static function not allowed
         throw new \BadMethodCallException('Unimplemented static::getParamDeclarations().');
     }
 
-    private $context; // todo to be or not to be?
+    //endregion
+
+    private $context;
     private $params = [];
 
+    /**
+     * @param CommandContext $context
+     * @param array $params
+     */
     function __construct(CommandContext $context, array $params = []) {
         $this->context = $context;
         $this->params = $params;
     }
 
+    /**
+     * @return string
+     */
+    function __toString() {
+        $paramStrings = array_map(function ($param) {
+            return (string)$param;
+        }, $this->params);
+        $tokens = array_merge([static::getName()], $paramStrings);
+        return implode(' ', $tokens);
+    }
+
+    /**
+     * @return CommandContext
+     */
     function getContext() {
         return $this->context;
     }
 
-    protected function getParams() {
-        return $this->params;
-    }
-
+    /**
+     * @param int $i
+     * @return mixed
+     */
     protected function getParam(int $i) {
-        $valid = array_key_exists($i, $this->params);
-        if (!$valid) {
+        if (!(array_key_exists($i, $this->params))) {
             throw new \InvalidArgumentException(
                 sprintf('Invalid $i[%s] for $this->params[%s]', $i, var_export($this->params, true))
             );
@@ -157,17 +107,20 @@ abstract class Command {
         return $this->params[$i];
     }
 
+    /**
+     * @return bool
+     */
     function executable() {
-        $result = $this->executableImpl($this->getContext());
-        return $result === true;
+        return $this->executableImpl($this->getContext()) === true;
     }
 
-    abstract protected function executableImpl(CommandContext $context);
-
+    /**
+     * @throws InvalidCommandException
+     */
     function execute() {
-        $result = $this->executableImpl($this->getContext());
-        if ($result !== true) {
-            $e = $result instanceof \Exception ? $result : new InvalidCommandException(
+        $executable = $this->executableImpl($this->getContext());
+        if ($executable !== true) {
+            $e = $executable instanceof \Exception ? $executable : new InvalidCommandException(
                 sprintf('Bad method call of [%s()] on not executable command[%s].'
                     , __FUNCTION__, $this->__toString())
             );
@@ -177,6 +130,17 @@ abstract class Command {
         $this->executeImpl($this->getContext());
     }
 
+    //region subclass hooks
+    /**
+     * @param CommandContext $context
+     * @return bool
+     */
+    abstract protected function executableImpl(CommandContext $context);
+
+    /**
+     * @param CommandContext $context
+     */
     abstract protected function executeImpl(CommandContext $context);
+    //endregion
 }
 

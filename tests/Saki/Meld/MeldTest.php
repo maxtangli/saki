@@ -8,7 +8,7 @@ use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 use Saki\Util\ArrayList;
 
-class MeldTest extends PHPUnit_Framework_TestCase {
+class MeldTest extends SakiTestCase {
     function testCreate() {
         // new by MeldType
         $meldType = PairMeldType::create();
@@ -71,6 +71,13 @@ class MeldTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($meldArray->valueExist($mConcealed));
         $this->assertFalse($meldArray->valueExist($mConcealed, Meld::getEqual(true)));
         $this->assertTrue($meldArray->valueExist($mConcealed, Meld::getEqual(false)));
+
+        // compareIsRedDora
+        $m1 = Meld::fromString('555m');
+        $m2 = Meld::fromString('550m');
+        $this->assertEquals($m1, $m2);
+        $this->assertTrue($m1->equalTo($m2, true, false));
+        $this->assertFalse($m1->equalTo($m2, true, true));
     }
 
     function testAddKong() {

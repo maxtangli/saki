@@ -22,9 +22,9 @@ class HandHolder {
      */
     function __construct(TargetHolder $targetHolder, SeatWind $seatWind) {
         $this->targetHolder = $targetHolder;
-        
+
         $this->seatWind = $seatWind;
-        
+
         $this->public = new TileList();
         $this->melded = new MeldList();
     }
@@ -34,7 +34,7 @@ class HandHolder {
      */
     function init(SeatWind $seatWind) {
         $this->seatWind = $seatWind;
-        
+
         $this->public->removeAll();
         $this->melded->removeAll();
     }

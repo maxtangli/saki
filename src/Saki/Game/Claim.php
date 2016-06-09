@@ -121,8 +121,8 @@ class Claim implements Immutable {
     function valid(Area $area) {
         $hand = $area->getHand();
         return $this->validToMeld()
-        && $hand->getPrivate()->valueExist($this->getFromTiles())
-        && $hand->getMelded()->valueExist($this->getFromMeldedOrNull() ?? []);
+        && $hand->getPrivate()->valueExist($this->getFromTiles(), Tile::getEqual(true)) // handle red
+        && $hand->getMelded()->valueExist($this->getFromMeldedOrNull() ?? [], Meld::getEqual(true, true)); // handle red
     }
 
     /**
@@ -137,14 +137,14 @@ class Claim implements Immutable {
         $hand = $area->getHand();
 
         $newPrivateOrPublic = $hand->getPrivate()->getCopy()
-            ->remove($this->getFromTiles());
+            ->remove($this->getFromTiles(), Tile::getEqual(true));
         if ($newPrivateOrPublic->getSize()->isPrivate()) {
             $newTargetTile = $newPrivateOrPublic->getLast();
             $newPublic = $newPrivateOrPublic->getCopy()->removeLast();
             $newTarget = new Target($newTargetTile, TargetType::create(TargetType::KEEP), $this->getActor());
         } elseif ($newPrivateOrPublic->getSize()->isPublic()) {
             $newPublic = $newPrivateOrPublic;
-            $newTargetTile = $areas->getWall()
+            $newTargetTile = $areas->getWall()->getDeadWall()
                 ->drawReplacement();
             $newTarget = new Target($newTargetTile, TargetType::create(TargetType::REPLACE), $this->getActor());
         } else {

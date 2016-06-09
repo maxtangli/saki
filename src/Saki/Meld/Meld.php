@@ -68,11 +68,12 @@ class Meld extends TileList implements Immutable {
     /**
      * syntactic sugar.
      * @param bool $compareConcealed
+     * @param bool $compareIsRedDora
      * @return \Closure
      */
-    static function getEqual(bool $compareConcealed) {
-        return function (Meld $a, Meld $b) use ($compareConcealed) {
-            return $a->equalTo($b, $compareConcealed);
+    static function getEqual(bool $compareConcealed, bool $compareIsRedDora = false) {
+        return function (Meld $a, Meld $b) use ($compareConcealed, $compareIsRedDora) {
+            return $a->equalTo($b, $compareConcealed, $compareIsRedDora);
         };
     }
 
@@ -84,7 +85,7 @@ class Meld extends TileList implements Immutable {
      */
     static function valid(array $tiles, MeldType $meldType = null, bool $concealed = false) {
         try {
-            $notUsed = new self($tiles, $meldType, $concealed);
+            new self($tiles, $meldType, $concealed);
         } catch (\InvalidArgumentException $e) {
             return false;
         }
@@ -120,10 +121,11 @@ class Meld extends TileList implements Immutable {
     /** todo better way
      * @param Meld $other
      * @param bool $compareConcealed
+     * @param bool $compareIsRedDora
      * @return bool
      */
-    function equalTo(Meld $other, bool $compareConcealed) {
-        return $this->toArray() == $other->toArray()
+    function equalTo(Meld $other, bool $compareConcealed, bool $compareIsRedDora = false) {
+        return $this->toTileList()->isSequenceEqual($other->toTileList(), Tile::getEqual($compareIsRedDora))
         && $this->meldType == $other->meldType
         && (!$compareConcealed || $this->concealed == $other->concealed);
     }

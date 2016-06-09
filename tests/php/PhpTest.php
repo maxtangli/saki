@@ -86,4 +86,16 @@ class PhpTest extends \PHPUnit_Framework_TestCase {
     function testRange() {
         $this->assertSame([3, 2, 1], range(3, 1, -1));
     }
+
+    function testVariableLengthArguments() {
+        $f1 = function (...$p) {
+            return count(func_get_args());
+        };
+
+        $f2 = function (...$p) use ($f1) {
+            return $f1(...$p);
+        };
+
+        $this->assertEquals(3, $f2(1, 2, 3));
+    }
 }

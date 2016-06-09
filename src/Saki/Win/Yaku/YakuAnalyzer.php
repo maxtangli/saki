@@ -39,7 +39,7 @@ class YakuAnalyzer {
             return new YakuItem($yaku, $yaku->getFan($subTarget));
         };
         $yakuItemList = (new YakuItemList())->fromSelect($existYakuList, $toYakuItem);
-        
+
         return $yakuItemList->normalize();
     }
 }

@@ -9,6 +9,7 @@ use Saki\Meld\RunMeldType;
 use Saki\Meld\TripleMeldType;
 use Saki\Meld\WeakPairMeldType;
 use Saki\Meld\WeakRunMeldType;
+use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 use Saki\Win\Series\SeriesAnalyzer;
 
@@ -55,6 +56,27 @@ class WaitingAnalyzer {
      */
     function getSeriesAnalyzer() {
         return $this->seriesAnalyzer;
+    }
+
+    /**
+     * @param TileList $private
+     * @param MeldList $declare
+     * @param Tile $tile
+     * @return bool
+     */
+    function isWaitingAfterDiscard(TileList $private, MeldList $declare, Tile $tile) {
+        $futureWaitingList = $this->analyzePrivate($private, $declare);
+        $isWaiting = $futureWaitingList->count() > 0;
+        if (!$isWaiting) {
+            return false;
+        }
+
+        $isValidTile = $futureWaitingList->discardExist($tile);
+        if (!$isValidTile) {
+            return false;
+        }
+
+        return true;
     }
 
     /**

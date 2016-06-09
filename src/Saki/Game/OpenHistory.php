@@ -2,7 +2,6 @@
 
 namespace Saki\Game;
 
-use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 use Saki\Util\ArrayList;
 
@@ -42,7 +41,7 @@ class OpenHistory {
     function getLastOpen() {
         return $this->list->getLast();
     }
-    
+
     /**
      * @param SeatWind $mySeatWind
      * @return Turn
@@ -81,7 +80,7 @@ class OpenHistory {
     function getOtherOpen(SeatWind $mySeatWind, Turn $fromTurn) {
         return $this->getImpl(false, $mySeatWind, $fromTurn, true);
     }
-    
+
     /**
      * @param bool $require Require self's open TileList if true, other's open TileList otherwise.
      * @param SeatWind $selfActor
@@ -114,7 +113,7 @@ class OpenHistory {
      * @return TileList
      */
     function getSelfDiscard(SeatWind $seatWind) {
-        $isSelfDiscard = function (OpenRecord $record) use($seatWind) {
+        $isSelfDiscard = function (OpenRecord $record) use ($seatWind) {
             return $record->isSelfDiscard($seatWind);
         };
         $discardTiles = $this->list->getCopy()

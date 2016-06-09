@@ -20,7 +20,7 @@ class FourRiichiDraw extends Draw {
 
     protected function getResultImpl(Round $round) {
         return new AbortiveDrawResult(
-            $round->getGameData()->getPlayerType(),
+            $round->getAreas()->getGameData()->getPlayerType(),
             ResultType::create(ResultType::FOUR_REACH_DRAW)
         );
     }

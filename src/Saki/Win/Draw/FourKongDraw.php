@@ -28,11 +28,10 @@ class FourKongDraw extends Draw {
         $isFourKongDraw = $kongCount >= 4 && $kongPlayerCount >= 2;
         return $isFourKongDraw;
     }
-    
 
     protected function getResultImpl(Round $round) {
         return new AbortiveDrawResult(
-            $round->getGameData()->getPlayerType(),
+            $round->getAreas()->getGameData()->getPlayerType(),
             ResultType::create(ResultType::FOUR_KONG_DRAW)
         );
     }

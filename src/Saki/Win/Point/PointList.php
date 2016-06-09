@@ -21,7 +21,7 @@ class PointList extends ArrayList implements Immutable {
         foreach ($pointMap as $seatWindString => $point) {
             $pointPairs[] = [SeatWind::fromString($seatWindString), $point];
         }
-        
+
         // sort by point desc, seatWind asc
         $sort = function (array $a, array $b) {
             if ($pointDiff = ($a[1] <=> $b[1])) {

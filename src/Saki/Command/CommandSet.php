@@ -21,34 +21,38 @@ use Saki\Command\PublicCommand\RonCommand;
 use Saki\Util\ArrayList;
 use Saki\Util\ReadonlyArrayList;
 
+/**
+ * @package Saki\Command
+ */
 class CommandSet extends ArrayList {
     use ReadonlyArrayList;
     private static $standardInstance;
 
+    /**
+     * @return CommandSet
+     */
     static function createStandard() {
-        self::$standardInstance = self::$standardInstance ?? new self(
-                [
-                    // private
-                    DiscardCommand::class,
-                    ConcealedKongCommand::class,
-                    ExtendKongCommand::class,
-                    RiichiCommand::class,
-                    TsumoCommand::class,
-                    NineNineDrawCommand::class,
-                    // public
-                    ChowCommand::class,
-                    PungCommand::class,
-                    KongCommand::class,
-                    RonCommand::class,
-                    // debug
-                    MockNextReplaceCommand::class,
-                    MockDeadWallCommand::class,
-                    MockHandCommand::class,
-                    MockNextDrawCommand::class,
-                    PassAllCommand::class,
-                    SkipCommand::class,
-                ]
-            );
+        self::$standardInstance = self::$standardInstance ?? new self([
+                // private
+                DiscardCommand::class,
+                ConcealedKongCommand::class,
+                ExtendKongCommand::class,
+                RiichiCommand::class,
+                TsumoCommand::class,
+                NineNineDrawCommand::class,
+                // public
+                ChowCommand::class,
+                PungCommand::class,
+                KongCommand::class,
+                RonCommand::class,
+                // debug
+                MockNextReplaceCommand::class,
+                MockDeadWallCommand::class,
+                MockHandCommand::class,
+                MockNextDrawCommand::class,
+                PassAllCommand::class,
+                SkipCommand::class,
+            ]);
         return self::$standardInstance;
     }
 }

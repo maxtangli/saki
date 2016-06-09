@@ -16,7 +16,13 @@ class PrivatePhaseState extends PhaseState {
     private $shouldDraw;
     private $claim;
     private $target;
-    
+
+    /**
+     * @param SeatWind $actor
+     * @param bool $shouldDraw
+     * @param Claim|null $claim
+     * @param Target|null $target
+     */
     function __construct(SeatWind $actor, bool $shouldDraw, Claim $claim = null, Target $target = null) {
         $this->actor = $actor;
         $this->shouldDraw = $shouldDraw;
@@ -37,7 +43,7 @@ class PrivatePhaseState extends PhaseState {
     function shouldDraw() {
         return $this->shouldDraw;
     }
-    
+
     //region PhaseState impl
     function getPhase() {
         return Phase::createPrivate();
@@ -61,7 +67,7 @@ class PrivatePhaseState extends PhaseState {
             $areas->getTargetHolder()
                 ->setTarget($newTarget);
         }
-        
+
         if ($this->claim !== null) {
             $target = $this->target ?? $areas->getOpenHistory()->getLastOpen()->toTarget();
             $areas->getTargetHolder()
@@ -71,7 +77,8 @@ class PrivatePhaseState extends PhaseState {
     }
 
     function leave(Round $round) {
-        $round->getAreas()->getTargetHolder()
+        $areas = $round->getAreas();
+        $areas->getTargetHolder()
             ->setTarget(Target::createNull());
     }
     //endregion

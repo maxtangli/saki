@@ -1,5 +1,6 @@
 <?php
 namespace Saki\Game;
+
 use Saki\Win\Point\PointList;
 
 /**
@@ -48,14 +49,14 @@ class PointHolder {
         $point = $this->getPoint($seatWind) + $pointChange;
         $this->setPoint($seatWind, $point);
     }
-    
+
     /**
      * @return PointList
      */
     function getPointList() {
         return PointList::fromPointMap($this->pointMap);
     }
-    
+
     /**
      * @param int[] $pointChangeMap
      */

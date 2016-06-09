@@ -17,12 +17,7 @@ class Target {
         $obj->creator = null;
         return $obj;
     }
-    
-    // todo remove
-    static function temp_debugCreate(Tile $tile) {
-        return new self($tile, TargetType::create(TargetType::KEEP), SeatWind::createEast());
-    }
-    
+
     private $tile;
     private $type;
     private $creator;
@@ -67,7 +62,7 @@ class Target {
     function exist() {
         return $this->tile !== null;
     }
-    
+
     protected function assertExist() {
         if (!$this->exist()) {
             throw new \BadMethodCallException('Bad method call on null Target.');
@@ -118,7 +113,7 @@ class Target {
         $this->assertExist();
         return $this->creator;
     }
-    
+
     /**
      * @param SeatWind $seatWind
      * @return bool

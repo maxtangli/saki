@@ -1,7 +1,6 @@
 <?php
 namespace Saki\Phase;
 
-use Saki\FinalPoint\FinalPointStrategyTarget;
 use Saki\Game\Phase;
 use Saki\Game\Round;
 use Saki\Win\Result\Result;
@@ -31,8 +30,10 @@ class OverPhaseState extends PhaseState {
      * @return bool
      */
     function isGameOver(Round $round) { // todo refactor into simpler ver
-        $pointList = $round->getAreas()->getPointHolder()->getPointList();
-        $prevailingCurrent = $round->getPrevailingCurrent();
+        $areas = $round->getAreas();
+
+        $pointList = $areas->getPointHolder()->getPointList();
+        $prevailingCurrent = $areas->getPrevailingCurrent();
 
         if ($pointList->hasMinus()) {
             return true;
@@ -58,7 +59,7 @@ class OverPhaseState extends PhaseState {
 
         // todo
         $isDealerTop = $topItem->getSeatWind()->isDealer();
-        $result = $round->getPhaseState()->getResult();
+        $result = $round->getAreas()->getPhaseState()->getResult();
         return !($result->isKeepDealer()) || $isDealerTop;
     }
 
@@ -71,7 +72,7 @@ class OverPhaseState extends PhaseState {
             throw new \InvalidArgumentException('Game is not over.');
         }
 
-        $scoreStrategy = $round->getGameData()->getScoreStrategy();
+        $scoreStrategy = $round->getAreas()->getGameData()->getScoreStrategy();
         $raw = $round->getAreas()->getPointHolder()->getPointList();
         return $scoreStrategy->rawToFinal($raw);
     }

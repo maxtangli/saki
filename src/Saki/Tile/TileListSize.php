@@ -70,6 +70,6 @@ class TileListSize {
      */
     function samePhase(TileListSize $other) {
         return ($this->isPrivate() && $other->isPrivate())
-            || ($this->isPublic() && $other->isPublic());
+        || ($this->isPublic() && $other->isPublic());
     }
 }

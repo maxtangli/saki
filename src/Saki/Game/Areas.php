@@ -3,16 +3,20 @@
 namespace Saki\Game;
 
 use Saki\Meld\MeldList;
+use Saki\Phase\PhaseState;
 use Saki\Tile\TileList;
-use Saki\Tile\TileSet;
 use Saki\Util\ArrayList;
+use Saki\Win\WinTarget;
 
 /**
  * Provide collaborate operations on 1 Wall and 2-4 Area.
  * @package Saki\Game
  */
 class Areas {
+    // immutable
+    private $gameData;
     // variable
+    private $prevailingCurrent;
     /**
      * An ArrayList of Area, same size with PlayerList, order by ascend initial SeatWind.
      * @var ArrayList
@@ -22,24 +26,33 @@ class Areas {
     private $riichiHolder;
     // round variable
     private $wall;
-    private $currentTurn;
+    private $turn;
+    private $phaseState;
     private $openHistory;
     private $claimHistory;
     private $targetHolder;
 
-    function __construct(TileSet $tileSet, PointSetting $pointSetting, PlayerList $playerList) {
+    /**
+     * @param GameData $gameData
+     * @param PlayerList $playerList
+     */
+    function __construct(GameData $gameData, PlayerList $playerList) {
+        // immutable
+        $this->gameData = $gameData;
+
         // variable
+        $this->prevailingCurrent = PrevailingCurrent::createFirst($gameData->getPrevailingContext());
         $this->riichiHolder = new RiichiHolder($playerList->getPlayerType());
-        $this->pointHolder = new PointHolder($pointSetting);
+        $this->pointHolder = new PointHolder($gameData->getScoreStrategy()->getPointSetting());
 
         // round variable
-        $this->wall = new Wall($tileSet);
-        $this->currentTurn = Turn::createFirst();
+        $this->wall = new Wall($gameData->getTileSet());
+        $this->turn = Turn::createFirst();
         $this->openHistory = new OpenHistory();
         $this->claimHistory = new ClaimHistory();
         $this->targetHolder = new TargetHolder();
 
-        // immutable
+        // variable
         $this->areaList = $playerList->toArrayList(function (Player $player) {
             return new Area($player, $this);
         });
@@ -51,6 +64,7 @@ class Areas {
      */
     function roll(bool $keepDealer, bool $isWin) {
         // variable
+        $this->prevailingCurrent = $this->prevailingCurrent->toRolled($keepDealer);
         $this->areaList->walk(function (Area $area) use ($keepDealer) {
             $area->roll($area->getSeatWind()->toRolled($keepDealer));
         });
@@ -59,16 +73,20 @@ class Areas {
 
         // round variable
         $this->wall->reset(true);
-        $this->currentTurn = Turn::createFirst();
+        $this->turn = Turn::createFirst();
         $this->openHistory->reset();
         $this->claimHistory->reset();
         $this->targetHolder->init();
     }
 
-    function debugInit(SeatWind $nextDealerInitialSeatWind) {
+    function debugInit(PrevailingStatus $PrevailingStatus) {
         // variable
+        $this->prevailingCurrent = $this->prevailingCurrent->toDebugInited($PrevailingStatus);
+        $nextDealerInitialSeatWind = $this->getInitialSeatWindArea(
+            $PrevailingStatus->getInitialSeatWindOfDealer()
+        )->getPlayer()->getInitialSeatWind();
         $nextDealerArea = $this->getInitialSeatWindArea($nextDealerInitialSeatWind);
-        $nextDealerSeatWind = $nextDealerArea->getSeatWind();
+        $nextDealerSeatWind = $nextDealerArea->getSeatWind(); // todo simpler logic?
         $this->areaList->walk(function (Area $area) use ($nextDealerSeatWind) {
             $area->debugInit($area->getSeatWind()->toNextSelf($nextDealerSeatWind));
         });
@@ -77,10 +95,24 @@ class Areas {
 
         // round variable
         $this->wall->reset(true);
-        $this->currentTurn = Turn::createFirst();
+        $this->turn = Turn::createFirst();
         $this->openHistory->reset();
         $this->claimHistory->reset();
         $this->targetHolder->init();
+    }
+
+    /**
+     * @return GameData
+     */
+    function getGameData() {
+        return $this->gameData;
+    }
+
+    /**
+     * @return PrevailingCurrent
+     */
+    function getPrevailingCurrent() {
+        return $this->prevailingCurrent;
     }
 
     /**
@@ -149,7 +181,28 @@ class Areas {
      * @return Turn
      */
     function getTurn() {
-        return $this->currentTurn;
+        return $this->turn;
+    }
+
+    /**
+     * @return PhaseState|PrivatePhaseState|PublicPhaseState|OverPhaseState
+     */
+    function getPhaseState() {
+        return $this->phaseState;
+    }
+
+    /**
+     * @param PhaseState $phaseState
+     */
+    function setPhaseState(PhaseState $phaseState) {
+        $this->phaseState = $phaseState;
+    }
+
+    /**
+     * @return Phase
+     */
+    function getPhase() {
+        return $this->getPhaseState()->getPhase();
     }
 
     /**
@@ -175,7 +228,7 @@ class Areas {
      * @param SeatWind $seatWind
      */
     function toSeatWind(SeatWind $seatWind) {
-        $this->currentTurn = $this->currentTurn->toSeatWind($seatWind);
+        $this->turn = $this->turn->toNextSeatWind($seatWind);
     }
 
     /**
@@ -199,8 +252,17 @@ class Areas {
         return $this->claimHistory;
     }
 
+    /**
+     * @param SeatWind $actor
+     * @return \Saki\Win\WinReport
+     */
+    function getWinReport(SeatWind $actor) {
+        // WinTarget will assert valid player
+        return $this->getGameData()->getWinAnalyzer()
+            ->analyze(new WinTarget($actor, $this));
+    }
+
     function deal() {
-        // no Turn-change
         $playerType = PlayerType::create($this->areaList->count());
         $deal = $this->getWall()->deal($playerType);
         $this->areaList->walk(function (Area $area) use ($deal) {
@@ -208,6 +270,5 @@ class Areas {
             $newHand = new Hand(new TileList($initialTiles), new MeldList(), Target::createNull());
             $area->setHand($newHand);
         });
-        // no Target
     }
 }

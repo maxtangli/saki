@@ -5,12 +5,18 @@ use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 use Saki\Tile\TileSet;
 
+/**
+ * @package Saki\Game
+ */
 class Wall {
     private $tileSet;
     private $deadWall;
     private $doraFacade;
     private $remainTileList;
 
+    /**
+     * @param TileSet $tileSet
+     */
     function __construct(TileSet $tileSet) {
         $valid = $tileSet->count() === 136;
         if (!$valid) {
@@ -36,16 +42,18 @@ class Wall {
         $this->remainTileList = $currentTileList;
     }
 
+    /**
+     * @return string
+     */
     function __toString() {
         return $this->getDeadWall()->__toString() . ',' . $this->getRemainTileList()->__toString();
     }
 
+    /**
+     * @param Tile $tile
+     */
     function debugSetNextDrawTile(Tile $tile) {
         $this->getRemainTileList()->replaceAt($this->getRemainTileList()->count() - 1, $tile);
-    }
-
-    function debugSetNextReplaceTile(Tile $tile) {
-        $this->getDeadWall()->debugSetNextReplaceTile($tile);
     }
 
     /**
@@ -72,7 +80,7 @@ class Wall {
     /**
      * @return TileList
      */
-    function getRemainTileList() {
+    protected function getRemainTileList() {
         return $this->remainTileList;
     }
 
@@ -92,10 +100,10 @@ class Wall {
         foreach ([4, 4, 4, 1] as $drawTileCount) {
             foreach ($playerType->getSeatWindList() as $actor) {
                 $tiles = $this->getRemainTileList()->getLastMany($drawTileCount);
-                
+
                 $i = $actor->__toString();
                 $result[$i] = array_merge($result[$i] ?? [], $tiles);
-                
+
                 $this->getRemainTileList()->removeLast($drawTileCount);
             }
         }
@@ -109,12 +117,5 @@ class Wall {
         $tile = $this->getRemainTileList()->getLast();
         $this->getRemainTileList()->removeLast();
         return $tile;
-    }
-
-    /**
-     * @return Tile
-     */
-    function drawReplacement() {
-        return $this->getDeadWall()->shift();
     }
 }

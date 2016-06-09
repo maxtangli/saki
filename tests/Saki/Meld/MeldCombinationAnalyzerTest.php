@@ -5,7 +5,7 @@ use Saki\Meld\MeldListAnalyzer;
 use Saki\Meld\RunMeldType;
 use Saki\Tile\TileList;
 
-class MeldListAnalyzerTest extends PHPUnit_Framework_TestCase {
+class MeldListAnalyzerTest extends SakiTestCase {
     /**
      * @dataProvider getMeldCompositionsProvider
      */

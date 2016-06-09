@@ -25,13 +25,13 @@ class PublicPhaseState extends PhaseState {
         );
         return $phase;
     }
-    
+
     private $isRonOnly;
-    
+
     function __construct() {
         $this->isRonOnly = false;
     }
-    
+
     /**
      * @return bool
      */
@@ -44,7 +44,7 @@ class PublicPhaseState extends PhaseState {
      * @return bool
      */
     protected function handleDraw(Round $round) {
-        $drawAnalyzer = $round->getGameData()->getDrawAnalyzer();
+        $drawAnalyzer = $round->getAreas()->getGameData()->getDrawAnalyzer();
         $drawOrFalse = $drawAnalyzer->analyzeDrawOrFalse($round);
         if ($drawOrFalse !== false) {
             $drawResult = $drawOrFalse->getResult($round);
@@ -70,7 +70,7 @@ class PublicPhaseState extends PhaseState {
     function enter(Round $round) {
         // do nothing
         $areas = $round->getAreas();
-        
+
         $target = $areas->getOpenHistory()->getLastOpen()->toTarget();
         $areas->getTargetHolder()->setTarget($target);
     }

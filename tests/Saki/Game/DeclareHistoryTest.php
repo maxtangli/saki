@@ -4,7 +4,7 @@ use Saki\Game\ClaimHistory;
 use Saki\Game\SeatWind;
 use Saki\Game\Turn;
 
-class ClaimHistoryTest extends PHPUnit_Framework_TestCase {
+class ClaimHistoryTest extends SakiTestCase {
     function testAll() {
         $h = new ClaimHistory();
         $h->recordClaim(new Turn(2, SeatWind::createSouth()));

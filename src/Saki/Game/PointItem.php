@@ -57,7 +57,7 @@ class PointItem implements Immutable {
     function toPointKeepRank(int $newPoint) {
         return new PointItem($this->getSeatWind(), $newPoint, $this->getRank());
     }
-    
+
     /**
      * @return SeatWind
      */

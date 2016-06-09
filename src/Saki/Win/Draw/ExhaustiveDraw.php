@@ -11,7 +11,7 @@ use Saki\Win\Result\ExhaustiveDrawResult;
 class ExhaustiveDraw extends Draw {
     //region Draw impl
     protected function isDrawImpl(Round $round) {
-        $nextState = $round->getPhaseState()->getNextState($round);
+        $nextState = $round->getAreas()->getPhaseState()->getNextState($round);
         $isExhaustiveDraw = $nextState->getPhase()->isPrivate()
             && $nextState->shouldDraw()
             && $round->getAreas()->getWall()->getRemainTileCount() == 0;
@@ -19,7 +19,7 @@ class ExhaustiveDraw extends Draw {
     }
 
     protected function getResultImpl(Round $round) {
-        $waitingAnalyzer = $round->getGameData()->getWinAnalyzer()->getWaitingAnalyzer();
+        $waitingAnalyzer = $round->getAreas()->getGameData()->getWinAnalyzer()->getWaitingAnalyzer();
         $areaList = $round->getAreas()->getAreaList();
         $isWaiting = function (Area $area) use ($waitingAnalyzer) {
             $public = $area->getHand()->getPublic();

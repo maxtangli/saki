@@ -13,7 +13,7 @@ class PrevailingCurrent {
     static function createFirst(PrevailingContext $context) {
         return new self($context, PrevailingStatus::createFirst(), 0);
     }
-    
+
     // immutable
     private $context;
     // game variable

@@ -3,7 +3,7 @@
 use Saki\Game\Wall;
 use Saki\Tile\TileSet;
 
-class WallTest extends PHPUnit_Framework_TestCase {
+class WallTest extends SakiTestCase {
     function testOverall() {
         $standardCnt = 136;
 
@@ -26,7 +26,7 @@ class WallTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(\Saki\Tile\Tile::fromString('F'), $t);
 
         // shift
-        $t = $w->drawReplacement();
+        $t = $w->getDeadWall()->drawReplacement();
         $this->assertEquals(\Saki\Tile\Tile::fromString('1m'), $t);
     }
 }

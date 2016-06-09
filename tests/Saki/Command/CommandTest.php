@@ -21,8 +21,8 @@ class HelloCommand extends Command {
         return [SeatWindParamDeclaration::class, TileParamDeclaration::class];
     }
 
-    function __construct(CommandContext $context, SeatWind $playerSeatWind, Tile $tile) {
-        parent::__construct($context, [$playerSeatWind, $tile]);
+    function __construct(CommandContext $context, SeatWind $actor, Tile $tile) {
+        parent::__construct($context, [$actor, $tile]);
     }
 
     /**
@@ -56,19 +56,11 @@ class CommandTest extends \PHPUnit_Framework_TestCase {
 
         // parseLine
         $line = 'hello E 1p';
-        $obj = HelloCommand::fromString($context, $line);
+        $obj = new HelloCommand($context, SeatWind::fromString('E'), Tile::fromString('1p'));
         $this->assertEquals($obj->__toString(), $line);
 
         $obj2 = $parser->parseLine($line);
         $this->assertEquals($obj2->__toString(), $line);
-
-        // scriptToLine
-
-        $script = 'hello E 1p; hello E 1p';
-        $lines = $parser->scriptToLines($script);
-        $this->assertCount(2, $lines);
-        $this->assertEquals($lines[0], 'hello E 1p');
-        $this->assertEquals($lines[1], 'hello E 1p');
     }
 
     function testIsDebug() {

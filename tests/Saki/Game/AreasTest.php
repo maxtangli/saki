@@ -3,11 +3,11 @@
 use Saki\Game\Round;
 use Saki\Game\SeatWind;
 
-class AreasTest extends PHPUnit_Framework_TestCase {
+class AreasTest extends SakiTestCase {
     function testGetHand() {
         $r = new Round();
-        $pro = $r->getProcessor();
-        $pro->process('mockHand E 123456789m12344p');
+
+        $r->process('mockHand E 123456789m12344p');
         $areaE = $r->getAreas()->getArea(SeatWind::createEast());
         $areaS = $r->getAreas()->getArea(SeatWind::createSouth());
 
@@ -18,14 +18,14 @@ class AreasTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('123456789m1234p', $handE->getPublic()->toFormatString(true));
 
         // E private phase, hand S
-        $pro->process('mockHand S 123456789p1234s');
+        $r->process('mockHand S 123456789p1234s');
         $handS = $areaS->getHand();
         // no private
         $this->assertFalse($handS->getTarget()->exist());
         $this->assertEquals('123456789p1234s', $handS->getPublic()->toFormatString(true));
 
         // E public phase, hand E
-        $pro->process('discard E 2m');
+        $r->process('discard E 2m');
         $handE = $areaE->getHand();
         // no private
         $this->assertFalse($handE->getTarget()->exist());

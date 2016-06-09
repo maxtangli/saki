@@ -5,44 +5,87 @@ use Saki\Command\CommandContext;
 use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\ParamDeclaration\TileParamDeclaration;
 use Saki\Command\PrivateCommand;
+use Saki\Game\Area;
 use Saki\Game\Claim;
 use Saki\Game\SeatWind;
 use Saki\Meld\QuadMeldType;
 use Saki\Tile\Tile;
 
+/**
+ * @package Saki\Command\PrivateCommand
+ */
 class ConcealedKongCommand extends PrivateCommand {
+    //region Command impl
     static function getParamDeclarations() {
-        return [SeatWindParamDeclaration::class, TileParamDeclaration::class];
+        return [SeatWindParamDeclaration::class,
+            TileParamDeclaration::class, TileParamDeclaration::class,
+            TileParamDeclaration::class, TileParamDeclaration::class];
     }
+    //endregion
 
-    function __construct(CommandContext $context, SeatWind $playerSeatWind, Tile $tile) {
-        parent::__construct($context, [$playerSeatWind, $tile]);
+    /**
+     * @param CommandContext $context
+     * @param SeatWind $actor
+     * @param Tile $tile1
+     * @param Tile $tile2
+     * @param Tile $tile3
+     * @param Tile $tile4
+     */
+    function __construct(CommandContext $context, SeatWind $actor,
+                         Tile $tile1, Tile $tile2, Tile $tile3, Tile $tile4) {
+        parent::__construct($context, [$actor, $tile1, $tile2, $tile3, $tile4]);
     }
 
     /**
      * @return Tile
      */
-    function getTile() {
+    function getTile1() {
         return $this->getParam(1);
     }
 
-    protected function matchOther(CommandContext $context) {
-        return true; // todo
+    /**
+     * @return Tile
+     */
+    function getTile2() {
+        return $this->getParam(2);
     }
 
-    protected function executeImpl(CommandContext $context) {
-        $area = $context->getActorArea();
-        $actor = $this->getActor();
-        $turn = $context->getTurn();
+    /**
+     * @return Tile
+     */
+    function getTile3() {
+        return $this->getParam(3);
+    }
 
-        $tile = $this->getTile();
-        $tiles = [$tile, $tile, $tile, $tile];
-        $claim = Claim::create($actor, $turn,
-            $tiles, QuadMeldType::create(), true
+    /**
+     * @return Tile
+     */
+    function getTile4() {
+        return $this->getParam(4);
+    }
+
+    /**
+     * @return Claim
+     */
+    protected function getClaim() {
+        $tiles = [$this->getTile1(), $this->getTile2(), $this->getTile3(), $this->getTile4()];
+        return Claim::create(
+            $this->getActor(),
+            $this->getContext()->getAreas()->getTurn(),
+            $tiles,
+            QuadMeldType::create(),
+            true
         );
-        $claim->apply($area);
+    }
 
-//        $context->getActorArea()->concealedKong($this->getTile());
+    //region PrivateCommand impl
+    protected function matchOther(CommandContext $context, Area $actorArea) {
+        return $this->getClaim()->valid($actorArea);
+    }
+
+    protected function executePlayerImpl(CommandContext $context, Area $actorArea) {
+        $this->getClaim()->apply($actorArea);
         // stay in private phase
     }
+    //endregion
 }

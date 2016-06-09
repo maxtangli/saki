@@ -7,23 +7,37 @@ use Saki\Util\ComparablePriority;
 use Saki\Util\Immutable;
 use Saki\Util\Utils;
 
+/**
+ * @package Saki\Tile
+ */
 class Tile implements Immutable {
     use ComparablePriority;
 
+    //region ComparablePriority impl
     function getPriority() {
         return TileFactory::create()->toValueID($this->tileType, $this->number, $this->isRedDora());
     }
+
+    //endregion
 
     const REGEX_SUIT_NUMBER = '[0-9]'; // 0 means red dora 5
     const REGEX_SUIT_TILE = '(' . self::REGEX_SUIT_NUMBER . TileType::REGEX_SUIT_TYPE . ')';
     const REGEX_HONOUR_TILE = TileType::REGEX_HONOUR_TYPE;
     const REGEX_TILE = '(' . self::REGEX_SUIT_TILE . '|' . self::REGEX_HONOUR_TILE . ')';
 
+    /**
+     * @param string $s
+     * @return bool
+     */
     static function validString(string $s) {
         $regex = '/^' . self::REGEX_TILE . '$/';
         return preg_match($regex, $s) === 1;
     }
 
+    /**
+     * @param string $s
+     * @return Tile
+     */
     static function fromString(string $s) {
         if (!self::validString($s)) {
             throw new \InvalidArgumentException(
@@ -45,6 +59,12 @@ class Tile implements Immutable {
         throw new \LogicException();
     }
 
+    /**
+     * @param TileType $tileType
+     * @param null $number
+     * @param bool $isRedDora
+     * @return bool
+     */
     protected static function valid(TileType $tileType, $number = null, bool $isRedDora = false) {
         if ($tileType->isSuit()) {
             return is_int($number) && Utils::inRange($number, 1, 9) && ($isRedDora === false || $number === 5);
@@ -117,7 +137,12 @@ class Tile implements Immutable {
     private $tileType;
     private $number;
 
-    // be private to support singleton
+    /**
+     * Note: be private to support singleton.
+     * @param TileType $tileType
+     * @param $number
+     * @param $isRedDora
+     */
     private function __construct(TileType $tileType, $number, $isRedDora) {
         // already validated by create()
         $this->tileType = $tileType;
@@ -153,10 +178,16 @@ class Tile implements Immutable {
         return sprintf('%s%s', $numberString, $typeString);
     }
 
+    /**
+     * @return TileType
+     */
     function getTileType() {
         return $this->tileType;
     }
 
+    /**
+     * @return int
+     */
     function getNumber() {
         if (!$this->tileType->isSuit()) {
             throw new \LogicException('getNumber() is not supported on non-suit tile.');
@@ -164,34 +195,58 @@ class Tile implements Immutable {
         return $this->number;
     }
 
+    /**
+     * @return bool
+     */
     function isRedDora() {
         return TileFactory::create()->isRedDoraTile($this);
     }
 
+    /**
+     * @return bool
+     */
     function isSuit() {
         return $this->getTileType()->isSuit();
     }
 
+    /**
+     * @return bool
+     */
     function isHonour() {
         return $this->getTileType()->isHonour();
     }
 
+    /**
+     * @return bool
+     */
     function isWind() {
         return $this->getTileType()->isWind();
     }
 
+    /**
+     * @return bool
+     */
     function isDragon() {
         return $this->getTileType()->isDragon();
     }
 
+    /**
+     * @return bool
+     */
     function isSimple() {
         return $this->isSuit() && !in_array($this->getNumber(), [1, 9]);
     }
 
+    /**
+     * @return bool
+     */
     function isTerm() {
         return $this->isSuit() && in_array($this->getNumber(), [1, 9]);
     }
 
+    /**
+     * @return bool
+     */
     function isTermOrHonour() {
         return $this->isTerm() || $this->isHonour();
     }

@@ -1,9 +1,15 @@
 <?php
 namespace Saki\Command;
 
+use Saki\Game\Area;
+
+/**
+ * @package Saki\Command
+ */
 abstract class PublicCommand extends PlayerCommand {
-    protected function matchPhase(CommandContext $context) {
-        $phaseState = $this->getContext()->getRound()->getPhaseState();
+    //region PlayerCommand impl
+    protected function matchPhase(CommandContext $context, Area $actorArea) {
+        $phaseState = $context->getRound()->getAreas()->getPhaseState();
         if (!$phaseState->getPhase()->isPublic()) {
             return false;
         }
@@ -15,8 +21,9 @@ abstract class PublicCommand extends PlayerCommand {
         return true;
     }
 
-    protected function matchActor(CommandContext $context) {
+    protected function matchActor(CommandContext $context, Area $actorArea) {
         // todo introduce PublicCommandRoller
-        return !$context->isActorCurrent();
+        return !$actorArea->isCurrentSeatWind();
     }
+    //endregion
 }

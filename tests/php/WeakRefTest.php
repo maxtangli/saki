@@ -1,6 +1,6 @@
 <?php
 
-class WeakRefTest extends PHPUnit_Framework_TestCase {
+class WeakRefTest extends SakiTestCase {
     function test() {
     }
 }

@@ -756,19 +756,63 @@ rush 66 refactor Areas 9.1h
 - [x] refactor etc. 1.1h
 - [x] refactor IndicatorWind 0.2h
 
-rush 67 refactor etc
+rush 67 refactor etc 4h
 
 - [x] introduce PointHolder 0.7h
 - [x] refactor etc. 0.5h
 
-- [ ] clean Target flow 1.1h
-- [ ] test Claim, Open
+- [x] clean Target flow 1.1h
+- [x] test Claim,Open 0.8h
 
-- [ ] merge Turn and Phase?
+- [x] add DoraIndicators handling and test 0.2h
 
-rush red dora: meld issue
+- [x] refactor etc. 0.7h
 
-- [ ] adapt discard/createMeld logic
+rush 68 red dora: meld issue 2.9h
+
+- [x] check deal, draw
+- [x] adapt Discard, Riichi 0.6h
+- [x] adapt Chow 0.3h
+- [x] adapt Pung 0.4h
+
+- [x] refactor kong command params 0.6h
+- [x] adapt Kong
+- [x] adapt ConcealedKong
+- [x] adapt ExtendKong 0.5h
+- [x] refactor RoundTest 0.5h
+
+rush 69 refactor Command/ 4.4h
+
+- [x] refactor: CommandParser 1.2h
+- [x] refactor: remove CommandContext.bindActor 0.6h
+- [x] refactor: clean command classes 2.1h
+- [x] refactor: remove SeatWind:I usage
+- [x] refactor: remove Tile:s- usage 0.3h
+- [x] refactor: CommandParser.parseLines 0.2h
+
+rush refactor Round members
+
+- [x] refactor: move prevailingCurrent into Areas 0.2h
+- [x] refactor: remove WinTarget's Round usage 0.2h
+- [x] refactor: remove Round.getXXX 0.6h
+
+- [ ] refactor: merge Areas into Round 0.3h
+- [ ] refactor: remove CommandContext
+- [ ] refactor: merge Turn, PhaseState, Phase
+
+rush command candidates
+
+- [ ] CommandProvider 0.9h
+
+rush public command roller
+
+- [ ] public command roller
+
+rush all yaku: tests
+
+- [ ] test and fix BottomOfTheSea Fish/Moon 0.1h // ? what's wrong
+- [ ] test HeavenlyWin, EarthlyWin, HumanlyWin
+- [ ] refactor yaku tests
 
 rush refactor Win/
 
@@ -777,47 +821,33 @@ rush refactor Win/
 - [ ] refactor YakuAnalyzer 0.3h
 - [ ] WinTarget, WinResult
 
-rush all yaku: tests
-
-- [ ] test and fix BottomOfTheSea Fish/Moon 0.1h // ? what's wrong
-- [ ] test HeavenlyWin, EarthlyWin, HumanlyWin
-- [ ] refactor yaku tests
-
 rush refactor: etc
 
 - [ ] refactor tests
 - [ ] fix: mockHand target tile vs robQuadPhase target tile
 - [ ] refactor: simplify reset(),debugReset(),toNextPhase() 0.2h
 
-rush public command roller
-
-- [ ] public command roller
-
-rush command candidates
-
-- [ ] XXXCommand::getExecutables($player) // maybe better to exist in AI class?
-
 refactor process
 
 module      | process
 ----------- | -----
-Command     | ing
-Game        | ing
+Command     | ok
+Game        | refactor Round, replaceTarget, targetType
 Meld        | ok
-Phase       | ing
+Phase       | todo
 Tile        | remove TileListSize.isComplete()
 Util        | ok
-Win         | ing
+Win         | todo
 Win/Draw    | ok
-Win/Fu      |
+Win/Fu      | todo
 Win/Point   | ok
 Win/Result  | ok
 Win/Score   | ok
 Win/Series  | ok
 Win/Waiting | ok
-Win/Yaku    |
+Win/Yaku    | todo
 
-future function process
+feature process
 
 module      | process
 ----------- | -----

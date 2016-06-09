@@ -5,7 +5,6 @@ use Saki\Tile\Tile;
 use Saki\Util\ArrayList;
 use Saki\Util\ComparableIndex;
 use Saki\Util\Immutable;
-use Saki\Util\Utils;
 
 /**
  * Base class for PrevailingWind, SeatWind.
@@ -14,7 +13,6 @@ use Saki\Util\Utils;
 abstract class IndicatorWind implements Immutable {
     //region ComparableIndex Impl
     use ComparableIndex;
-
     private static $m = ['E' => 1, 'S' => 2, 'W' => 3, 'N' => 4];
 
     static function fromIndex(int $index) {
@@ -30,6 +28,7 @@ abstract class IndicatorWind implements Immutable {
         $nextWind = $this->getWindTile()->getNextTile($offset);
         return static::fromString($nextWind->__toString());
     }
+
     //endregion
 
     private static $instances = [];

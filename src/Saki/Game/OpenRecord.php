@@ -39,7 +39,7 @@ class OpenRecord implements Immutable {
             return $record->getTile();
         };
     }
-    
+
     private $turn;
     private $tile;
     private $openType;

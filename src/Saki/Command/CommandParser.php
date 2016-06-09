@@ -1,36 +1,69 @@
 <?php
 namespace Saki\Command;
 
+use Saki\Command\ParamDeclaration\ParamDeclaration;
+use Saki\Util\Utils;
+
+/**
+ * @package Saki\Command
+ */
 class CommandParser {
     private $context;
-    private $classes;
+    private $nameToClassMap;
 
+    /**
+     * @param CommandContext $context
+     * @param CommandSet $commandSet
+     */
     function __construct(CommandContext $context, CommandSet $commandSet) {
         $this->context = $context;
-        $classes = $commandSet->toArray();
-        $this->classes = array_combine(array_map(function ($class) {
+
+        // note: validation ignored
+        $names = $commandSet->toArray(function ($class) {
             return $class::getName();
-        }, $classes), $classes);  // note: validation ignored
+        });
+        $classes = $commandSet->toArray();
+        $this->nameToClassMap = array_combine($names, $classes);
     }
 
+    /**
+     * @return CommandContext
+     */
     function getContext() {
         return $this->context;
     }
 
-    function getClasses() {
-        return $this->classes;
+    /**
+     * @return array
+     */
+    function getNameToClassMap() {
+        return $this->nameToClassMap;
     }
 
-    function getClass(string $name) {
-        $commands = $this->getClasses();
-        $valid = array_key_exists($name, $commands);
-        if (!$valid) {
+    /**
+     * @param string $name
+     * @return class
+     */
+    function nameToClass(string $name) {
+        $commands = $this->getNameToClassMap();
+        if (!(array_key_exists($name, $commands))) {
             throw new \InvalidArgumentException(
                 sprintf('command name[%s] not exist, forgot to pass it into parser?', $name)
             );
         }
-        $class = $commands[$name];
-        return $class;
+        return $commands[$name];
+    }
+
+    /**
+     * @param string $script
+     * @return Command[]
+     */
+    function parseScript(string $script) {
+        $lines = preg_split('/; /', $script);
+        $commands = array_map(function ($line) {
+            return $this->parseLine($line);
+        }, $lines);
+        return $commands;
     }
 
     /**
@@ -38,19 +71,16 @@ class CommandParser {
      * @return Command
      */
     function parseLine(string $line) {
-        $name = Command::parseName($line);
-        $class = $this->getClass($name);
-        $command = $class::fromString($this->getContext(), $line);
-        return $command;
-    }
+        $tokens = Utils::explodeNotEmpty(' ', $line); // 'discard E 1m' => ['discard', 'E','1m']
 
-    /**
-     * @param string $script
-     * @return string[]
-     */
-    function scriptToLines(string $script) {
-        $lines = preg_split('/; /', $script);
-        return $lines;
+        $name = lcfirst($tokens[0]); // 'Discard'
+        $class = $this->nameToClass($name); // 'Saki\Command\PrivateCommand\DiscardCommand'
+
+        $context = $this->getContext();
+        $paramDeclarations = $class::getParamDeclarations(); // [SeatWindParam, TileParam]
+        $paramStrings = array_slice($tokens, 1); // ['E','1m']
+        $paramObjects = ParamDeclaration::toObjects($paramDeclarations, $paramStrings); // [SeatWind, TileParam]
+
+        return new $class($context, ...$paramObjects);
     }
 }
-

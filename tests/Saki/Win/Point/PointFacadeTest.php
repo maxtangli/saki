@@ -1,6 +1,5 @@
 <?php
 
-use Saki\Game\SeatWind;
 use Saki\Win\Point\PointList;
 
 class PointListTest extends SakiTestCase {

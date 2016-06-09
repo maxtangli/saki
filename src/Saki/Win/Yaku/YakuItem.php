@@ -1,5 +1,6 @@
 <?php
 namespace Saki\Win\Yaku;
+
 use Saki\Util\Immutable;
 
 /**

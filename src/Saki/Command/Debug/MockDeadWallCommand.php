@@ -8,17 +8,25 @@ use Saki\Command\ParamDeclaration\IntParamDeclaration;
 use Saki\Command\ParamDeclaration\TileListParamDeclaration;
 use Saki\Tile\TileList;
 
+/**
+ * @package Saki\Command\Debug
+ */
 class MockDeadWallCommand extends Command {
+    //region Command impl
     static function getParamDeclarations() {
         return [TileListParamDeclaration::class, IntParamDeclaration::class, BoolParamDeclaration::class];
     }
+    //endregion
 
+    /**
+     * @param CommandContext $context
+     * @param TileList $tileList
+     * @param int $openedDoraIndicatorCount
+     * @param bool $uraDoraOpened
+     */
     function __construct(CommandContext $context,
-                         TileList $tileList,
-                         int $openedDoraCount,
-                         bool $uraDoraOpened
-    ) {
-        parent::__construct($context, [$tileList, $openedDoraCount, $uraDoraOpened]);
+                         TileList $tileList, int $openedDoraIndicatorCount, bool $uraDoraOpened) {
+        parent::__construct($context, [$tileList, $openedDoraIndicatorCount, $uraDoraOpened]);
     }
 
     /**
@@ -42,12 +50,23 @@ class MockDeadWallCommand extends Command {
         return $this->getParam(2);
     }
 
+    /**
+     * @return \Saki\Game\DeadWall
+     */
+    protected function getDeadWall() {
+        return $this->getContext()->getRound()->getAreas()
+            ->getWall()->getDeadWall();
+    }
+
+    //region Command impl
     protected function executableImpl(CommandContext $context) {
-        return true;
+        return $this->getTileList()->count() == $this->getDeadWall()->getRemainTileCount();
     }
 
     protected function executeImpl(CommandContext $context) {
-        $deadWall = $this->getContext()->getRound()->getAreas()->getWall()->getDeadWall();
-        $deadWall->reset($this->getTileList(), $this->getOpenedDoraIndicatorCount(), $this->getUraDoraOpened());
+        $this->getDeadWall()->reset(
+            $this->getTileList(), $this->getOpenedDoraIndicatorCount(), $this->getUraDoraOpened()
+        );
     }
+    //endregion
 }

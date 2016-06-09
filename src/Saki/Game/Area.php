@@ -1,9 +1,6 @@
 <?php
 namespace Saki\Game;
 
-use Saki\Meld\Meld;
-use Saki\Meld\MeldList;
-use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 
 /**
@@ -69,13 +66,20 @@ class Area {
     }
 
     /**
+     * @return bool
+     */
+    function isCurrentSeatWind() {
+        return $this->getSeatWind() == $this->getAreas()->getCurrentSeatWind();
+    }
+
+    /**
      * @return int
      */
     function getPoint() {
         return $this->getAreas()->getPointHolder()
             ->getPoint($this->getSeatWind());
     }
-    
+
     /**
      * @return Hand
      */

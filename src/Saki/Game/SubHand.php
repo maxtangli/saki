@@ -1,5 +1,6 @@
 <?php
 namespace Saki\Game;
+
 use Saki\Meld\MeldList;
 
 /**
@@ -15,7 +16,7 @@ class SubHand extends Hand {
     static function fromHand(Hand $hand, MeldList $privateMeldList) {
         return new self($privateMeldList, $hand->getMelded(), $hand->getTarget());
     }
-    
+
     private $privateMeldList;
 
     /**

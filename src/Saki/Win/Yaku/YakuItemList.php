@@ -23,7 +23,7 @@ class YakuItemList extends ArrayList {
     }
 
     /**
-     * 
+     *
      */
     function normalize() {
         // if exist yaku-man yaku, remove all not-yaku-man yaku
@@ -51,7 +51,7 @@ class YakuItemList extends ArrayList {
         ) {
             $this->removeAll();
         }
-        
+
         return $this;
     }
 }

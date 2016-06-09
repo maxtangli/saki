@@ -51,7 +51,7 @@ class Open implements Immutable {
      */
     function valid(Area $area) {
         $hand = $area->getHand();
-        return $hand->getPrivate()->valueExist($this->getTile());
+        return $hand->getPrivate()->valueExist($this->getTile(), Tile::getEqual(true)); // handle red
     }
 
     /**
@@ -68,12 +68,8 @@ class Open implements Immutable {
         $isDiscard = $this->isDiscard();
 
         $newPublic = $hand->getPrivate()->getCopy()
-            ->remove($tile);
+            ->remove($tile, Tile::getEqual(true)); // handle red
         $newMelded = $hand->getMelded();
-//        $targetType = TargetType::create($isDiscard
-//            ? TargetType::DISCARD
-//            : TargetType::KONG);
-//        $newTarget = new Target($tile, $targetType, $this->getActor());
         $newTarget = Target::createNull();
         $newHand = new Hand($newPublic, $newMelded, $newTarget);
 

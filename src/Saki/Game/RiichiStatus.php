@@ -52,7 +52,7 @@ class RiichiStatus implements Immutable {
     function isFirstTurn(Turn $turn) {
         // validate isRiichi
         return $this->isRiichi() &&
-        $turn->isBeforeOrSame($this->getRiichiTurn()->toNextCicleOfThis());
+        $turn->isBeforeOrSame($this->getRiichiTurn()->toNextCircleOfThis());
     }
 
     /**

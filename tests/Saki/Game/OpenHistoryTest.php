@@ -6,7 +6,7 @@ use Saki\Game\SeatWind;
 use Saki\Game\Turn;
 use Saki\Tile\Tile;
 
-class OpenHistoryTest extends PHPUnit_Framework_TestCase {
+class OpenHistoryTest extends SakiTestCase {
     /** @var  OpenHistory */
     protected $h;
 

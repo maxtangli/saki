@@ -1,32 +1,59 @@
 <?php
 namespace Saki\Command\ParamDeclaration;
 
-use Saki\Command\CommandContext;
-
 /**
- * to support Command's fromString(),toString().
  * @package Saki\Command\ParamDeclaration
  */
 abstract class ParamDeclaration {
-    private $context;
+    /**
+     * @param ParamDeclaration[] $paramDeclarations
+     * @param string[] $paramStrings
+     * @return array
+     */
+    static function toObjects(array $paramDeclarations, array $paramStrings) {
+        $valid = count($paramDeclarations) == count($paramStrings);
+        if (!$valid) {
+            throw new \InvalidArgumentException();
+        }
+
+        // ['E','1m'] => [SeatWind, Tile]
+        $objects = [];
+        foreach ($paramDeclarations as $i => $paramDeclaration) {
+            $paramString = $paramStrings[$i];
+            /** @var ParamDeclaration $param */
+            $param = new $paramDeclaration($paramString);
+            $objects[] = $param->toObject();
+        }
+        return $objects;
+    }
+
     private $paramString;
 
-    function __construct(CommandContext $context, string $paramString) {
-        $this->context = $context;
+    /**
+     * @param string $paramString
+     */
+    function __construct(string $paramString) {
         $this->paramString = $paramString;
     }
 
+    /**
+     * @return string
+     */
     function __toString() {
         return $this->getParamString();
     }
 
-    function getContext() {
-        return $this->context;
-    }
-
+    /**
+     * @return string
+     */
     function getParamString() {
         return $this->paramString;
     }
 
+    //region subclass hooks
+    /**
+     * @return mixed
+     */
     abstract function toObject();
+    //endregion
 }

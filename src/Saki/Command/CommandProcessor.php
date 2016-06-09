@@ -1,29 +1,34 @@
 <?php
 namespace Saki\Command;
 
+/**
+ * @package Saki\Command
+ */
 class CommandProcessor {
     private $parser;
 
+    /**
+     * @param CommandParser $parser
+     */
     function __construct(CommandParser $parser) {
         $this->parser = $parser;
     }
 
+    /**
+     * @return CommandParser
+     */
     function getParser() {
         return $this->parser;
     }
 
     /**
-     * @param ...$scripts
+     * @param string[] ...$scripts
      */
     function process(... $scripts) {
-        $parser = $this->getParser();
-
-        // todo validate command errors e.x. 'discard E E;' or ' discard E E'
         $script = implode('; ', $scripts);
-        $lines = $parser->scriptToLines($script);
-        foreach ($lines as $line) {
-            $command = $parser->parseLine($line);
+        $commands = $this->getParser()->parseScript($script);
+        array_walk($commands, function (Command $command) {
             $command->execute();
-        }
+        });
     }
 }

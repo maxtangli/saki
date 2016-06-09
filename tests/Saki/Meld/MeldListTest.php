@@ -4,7 +4,7 @@ use Saki\Meld\Meld;
 use Saki\Meld\MeldList;
 use Saki\Util\ArrayList;
 
-class MeldListTest extends PHPUnit_Framework_TestCase {
+class MeldListTest extends SakiTestCase {
     /**
      * @dataProvider validStringProvider
      */

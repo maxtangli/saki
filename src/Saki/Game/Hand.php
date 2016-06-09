@@ -46,7 +46,7 @@ class Hand implements Immutable {
     function toSetTarget(Target $target) {
         return new Hand($this->getPublic(), $this->getMelded(), $target);
     }
-    
+
     /**
      * @param TileList|null $public
      * @param MeldList|null $melded
@@ -161,6 +161,6 @@ class Hand implements Immutable {
      */
     function samePhase(Hand $other) {
         return $this->getTarget()->exist()
-            == $other->getTarget()->exist();
+        == $other->getTarget()->exist();
     }
 }

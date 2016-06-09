@@ -3,7 +3,7 @@
 use Saki\Win\Point\FanAndFu;
 use Saki\Win\Point\PointTable;
 
-class PointTableTest extends PHPUnit_Framework_TestCase {
+class PointTableTest extends SakiTestCase {
     function testDealerSample() {
         $result = PointTable::create()->getDealerSample();
         $var_export = var_export($result, true);

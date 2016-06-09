@@ -46,7 +46,7 @@ abstract class Result implements Immutable {
         return array_combine($keyList->toArray(), $valueList->toArray());
     }
 
-    //region subclass hook
+    //region subclass hooks
     /**
      * @return bool
      */

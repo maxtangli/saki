@@ -1,13 +1,15 @@
 <?php
 
+use Saki\Game\SeatWind;
 use Saki\Game\SubHand;
 use Saki\Game\Target;
+use Saki\Game\TargetType;
 use Saki\Meld\MeldList;
 use Saki\Tile\Tile;
 use Saki\Win\Series\Series;
 use Saki\Win\Waiting\WaitingType;
 
-class SeriesTypeTest extends PHPUnit_Framework_TestCase {
+class SeriesTypeTest extends SakiTestCase {
     /**
      * @dataProvider FourWinSetAndOnePairProvider
      */
@@ -19,7 +21,8 @@ class SeriesTypeTest extends PHPUnit_Framework_TestCase {
         $privateMeldList = MeldList::fromString($meldListString);
         $declare = new MeldList();
         $winTile = Tile::fromString($tileString);
-        $subHand = new SubHand($privateMeldList, $declare, Target::temp_debugCreate($winTile));
+        $target = new Target($winTile, TargetType::create(TargetType::KEEP), SeatWind::createEast());
+        $subHand = new SubHand($privateMeldList, $declare, $target);
 
         $expectedWaitingType = WaitingType::create($expectedWaitingTypeValue);
         $actualWaitingType = $s->getWaitingType($subHand);

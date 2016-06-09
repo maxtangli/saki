@@ -1,15 +1,15 @@
 <?php
 namespace Saki\Command\ParamDeclaration;
 
-use Saki\Tile\TileList;
+use Saki\Meld\Meld;
 
 /**
  * @package Saki\Command\ParamDeclaration
  */
-class TileListParamDeclaration extends ParamDeclaration {
+class MeldParamDeclaration extends ParamDeclaration {
     //region ParamDeclaration impl
     function toObject() {
-        return TileList::fromString($this->getParamString());
+        return Meld::fromString($this->getParamString());
     }
     //endregion
 }

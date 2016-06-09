@@ -28,7 +28,7 @@ class RiichiHolder {
         $this->riichiPoints = $isWin ? 0 : $this->riichiPoints;
         $this->riichiStatus = $this->playerType->getSeatWindMap(RiichiStatus::createNotRiichi());
     }
-    
+
     function init() {
         $this->riichiPoints = 0;
         $this->riichiStatus = $this->playerType->getSeatWindMap(RiichiStatus::createNotRiichi());

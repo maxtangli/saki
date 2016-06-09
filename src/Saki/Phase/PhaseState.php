@@ -32,6 +32,7 @@ abstract class PhaseState {
         return $this->getCustomNextState() ?? $this->getDefaultNextState($round);
     }
 
+    //region subclass hooks
     /**
      * @return Phase
      */
@@ -52,4 +53,5 @@ abstract class PhaseState {
      * @param Round $round
      */
     abstract function leave(Round $round);
+    //endregion
 }

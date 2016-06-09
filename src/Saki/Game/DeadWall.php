@@ -4,6 +4,9 @@ namespace Saki\Game;
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 
+/**
+ * @package Saki\Game
+ */
 class DeadWall {
     /**
      * replacement * 4
@@ -17,10 +20,18 @@ class DeadWall {
     private $uraDoraIndicators;
     private $uraDoraOpened;
 
+    /**
+     * @param TileList $tileList
+     */
     function __construct(TileList $tileList) {
         $this->reset($tileList);
     }
 
+    /**
+     * @param TileList $tileList
+     * @param int $openedDoraIndicatorCount
+     * @param bool $uraDoraOpened
+     */
     function reset(TileList $tileList, int $openedDoraIndicatorCount = 1, bool $uraDoraOpened = false) {
         if (count($tileList) != 14) {
             throw new \InvalidArgumentException();
@@ -32,30 +43,39 @@ class DeadWall {
         $this->uraDoraOpened = $uraDoraOpened;
     }
 
+    /**
+     * @return string
+     */
     function __toString() {
         return $this->tileList->__toString();
     }
 
-    function debugSetNextReplaceTile(Tile $tile) {
-        $this->assertShiftAble();
+    /**
+     * @param Tile $tile
+     */
+    function debugSetNextDrawReplacement(Tile $tile) {
+        $this->assertCanDrawReplacement();
         $this->tileList->replaceAt(0, $tile);
     }
 
     /**
-     * @return \Saki\Tile\Tile[]
+     * @return Tile[]
      */
     function getOpenedDoraIndicators() {
         return array_slice($this->doraIndicators, 0, $this->openedDoraIndicatorCount);
     }
 
     /**
-     * @return \Saki\Tile\Tile[]
+     * @return Tile[]
      */
     function getOpenedUraDoraIndicators() {
         return $this->uraDoraOpened ? array_slice($this->uraDoraIndicators, 0, $this->openedDoraIndicatorCount) : [];
     }
 
-    function openDoraIndicator($n = 1) {
+    /**
+     * @param int $n
+     */
+    function openDoraIndicator(int $n = 1) {
         $valid = $this->openedDoraIndicatorCount + $n <= 5;
         if (!$valid) {
             throw new \InvalidArgumentException();
@@ -67,19 +87,36 @@ class DeadWall {
         $this->uraDoraOpened = true;
     }
 
-    function shift() {
-        $this->assertShiftAble();
+    /**
+     * @return Tile
+     */
+    function drawReplacement() {
+        $this->assertCanDrawReplacement();
+
         $tile = $this->tileList->getFirst();
         $this->tileList->removeFirst();
+
+        $this->openDoraIndicator();
+
         return $tile;
     }
 
-    function shiftAble() {
-        return $this->tileList->count() >= 10;
+    /**
+     * @return int
+     */
+    function getRemainTileCount() {
+        return $this->tileList->count();
     }
 
-    protected function assertShiftAble() {
-        if (!$this->shiftAble()) {
+    /**
+     * @return bool
+     */
+    function canDrawReplacement() {
+        return $this->getRemainTileCount() >= 10;
+    }
+
+    protected function assertCanDrawReplacement() {
+        if (!$this->canDrawReplacement()) {
             throw new \InvalidArgumentException(
                 sprintf('failed to assert [%s] <= 10.', $this->tileList->count())
             );

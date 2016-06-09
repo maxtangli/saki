@@ -6,20 +6,33 @@ use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\ParamDeclaration\TileParamDeclaration;
 use Saki\Command\PrivateCommand;
 use Saki\Command\PublicCommand;
+use Saki\Game\Area;
 use Saki\Game\Claim;
 use Saki\Game\SeatWind;
-use Saki\Meld\Meld;
 use Saki\Meld\RunMeldType;
 use Saki\Phase\PrivatePhaseState;
 use Saki\Tile\Tile;
 
+/**
+ * @package Saki\Command\PublicCommand
+ */
 class ChowCommand extends PublicCommand {
+    //region Command impl
     static function getParamDeclarations() {
         return [SeatWindParamDeclaration::class, TileParamDeclaration::class, TileParamDeclaration::class];
     }
 
-    function __construct(CommandContext $context, SeatWind $playerSeatWind, Tile $tile1, Tile $tile2) {
-        parent::__construct($context, [$playerSeatWind, $tile1, $tile2]);
+    //endregion
+
+    /**
+     * @param CommandContext $context
+     * @param SeatWind $actor
+     * @param Tile $tile1
+     * @param Tile $tile2
+     */
+    function __construct(CommandContext $context,
+                         SeatWind $actor, Tile $tile1, Tile $tile2) {
+        parent::__construct($context, [$actor, $tile1, $tile2]);
     }
 
     /**
@@ -36,23 +49,31 @@ class ChowCommand extends PublicCommand {
         return $this->getParam(2);
     }
 
-    protected function matchOther(CommandContext $context) {
-        return true; // todo
-    }
-
-    protected function executeImpl(CommandContext $context) {
-        $area = $context->getActorArea();
-        $actor = $this->getActor();
-        $turn = $context->getTurn();
-
-        $targetTile = $area->getHand()->getTarget()->getTile();
+    /**
+     * @return Claim
+     */
+    protected function getClaim() {
+        $targetTile = $this->getActorArea()->getHand()
+            ->getTarget()->getTile();
         $tiles = [$targetTile, $this->getTile1(), $this->getTile2()];
-        $claim = Claim::create($actor, $turn,
-            $tiles, RunMeldType::create(), false
-        );
-
-        $context->getRound()->toNextPhase(
-            new PrivatePhaseState($actor, false, $claim)
+        return Claim::create(
+            $this->getActor(),
+            $this->getContext()->getAreas()->getTurn(),
+            $tiles,
+            RunMeldType::create(),
+            false
         );
     }
+
+    //region PublicCommand impl
+    protected function matchOther(CommandContext $context, Area $actorArea) {
+        return $this->getClaim()->valid($actorArea);
+    }
+
+    protected function executePlayerImpl(CommandContext $context, Area $actorArea) {
+        $context->getRound()->toNextPhase(
+            new PrivatePhaseState($this->getActor(), false, $this->getClaim())
+        );
+    }
+    //endregion
 }
