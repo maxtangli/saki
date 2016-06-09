@@ -1,10 +1,10 @@
 <?php
 namespace Saki\Command\PrivateCommand;
 
-use Saki\Command\CommandContext;
 use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\PrivateCommand;
 use Saki\Game\Area;
+use Saki\Game\Round;
 use Saki\Game\SeatWind;
 use Saki\Phase\OverPhaseState;
 use Saki\Win\Result\AbortiveDrawResult;
@@ -21,26 +21,26 @@ class NineNineDrawCommand extends PrivateCommand {
     //endregion
 
     /**
-     * @param CommandContext $context
+     * @param Round $round
      * @param SeatWind $actor
      */
-    function __construct(CommandContext $context, SeatWind $actor) {
-        parent::__construct($context, [$actor]);
+    function __construct(Round $round, SeatWind $actor) {
+        parent::__construct($round, [$actor]);
     }
 
     //region PrivateCommand impl
-    protected function matchOther(CommandContext $context, Area $actorArea) {
-        return $context->getAreas()->getTurn()->isFirstCircle()
-        && !$context->getAreas()->getClaimHistory()->hasClaim()
+    protected function matchOther(Round $round, Area $actorArea) {
+        return $round->getTurn()->isFirstCircle()
+        && !$round->getClaimHistory()->hasClaim()
         && $actorArea->getHand()->getPrivate()->isNineKindsOfTermOrHonour();
     }
 
-    protected function executePlayerImpl(CommandContext $context, Area $actorArea) {
+    protected function executePlayerImpl(Round $round, Area $actorArea) {
         $result = new AbortiveDrawResult(
-            $context->getAreas()->getGameData()->getPlayerType(),
+            $round->getGameData()->getPlayerType(),
             ResultType::create(ResultType::NINE_NINE_DRAW)
         );
-        $context->getRound()->toNextPhase(
+        $round->toNextPhase(
             new OverPhaseState($result)
         );
     }

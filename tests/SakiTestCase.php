@@ -25,32 +25,32 @@ class SakiTestCase extends \PHPUnit_Framework_TestCase {
     //endregion
 
     //region get Round
-    private static $r;
+    private static $round;
 
     /**
      * @param PrevailingStatus|null $rebugResetData
      * @return Round
      */
     static function getInitRound(PrevailingStatus $rebugResetData = null) {
-        self::$r = self::$r ?? new Round();
-        self::$r->debugInit($rebugResetData ?? PrevailingStatus::createFirst());
-        return self::$r;
+        self::$round = self::$round ?? new Round();
+        self::$round->debugInit($rebugResetData ?? PrevailingStatus::createFirst());
+        return self::$round;
     }
 
     /**
      * @return Round
      */
     static function getCurrentRound() {
-        return self::$r ?? self::getInitRound();
+        return self::$round ?? self::getInitRound();
     }
     //endregion
 
     //region Areas
     function assertHand(string $private = null, string $melded = null, string $targetTile = null,
                         string $seatWind = null) {
-        $r = $this->getCurrentRound();
-        $actualSeatWind = $seatWind !== null ? SeatWind::fromString($seatWind) : $r->getAreas()->getCurrentSeatWind();
-        $hand = $r->getAreas()->getArea($actualSeatWind)->getHand();
+        $round = $this->getCurrentRound();
+        $actualSeatWind = $seatWind !== null ? SeatWind::fromString($seatWind) : $round->getCurrentSeatWind();
+        $hand = $round->getArea($actualSeatWind)->getHand();
 
         if ($private !== null) { // == vs isLocked
             $this->assertEquals($private, $hand->getPrivate()->__toString());
@@ -66,26 +66,26 @@ class SakiTestCase extends \PHPUnit_Framework_TestCase {
     }
 
     function assertLastOpen(string $tile) {
-        $r = $this->getCurrentRound();
-        $openHistory = $r->getAreas()->getOpenHistory();
+        $round = $this->getCurrentRound();
+        $openHistory = $round->getOpenHistory();
         $this->assertEquals($tile, $openHistory->getLastOpen()->getTile());
     }
 
     function assertHasClaim(Turn $turn) {
-        $r = $this->getCurrentRound();
-        $claimHistory = $r->getAreas()->getClaimHistory();
+        $round = $this->getCurrentRound();
+        $claimHistory = $round->getClaimHistory();
         $this->assertTrue($claimHistory->hasClaim($turn));
     }
 
     function assertHasNotClaim(Turn $turn) {
-        $r = $this->getCurrentRound();
-        $claimHistory = $r->getAreas()->getClaimHistory();
+        $round = $this->getCurrentRound();
+        $claimHistory = $round->getClaimHistory();
         $this->assertFalse($claimHistory->hasClaim($turn));
     }
 
     function assertCurrentTurnChanged(string $seatWind = null, Turn $laterThanOldTurn = null) {
-        $r = $this->getCurrentRound();
-        $currentTurn = $r->getAreas()->getTurn();
+        $round = $this->getCurrentRound();
+        $currentTurn = $round->getTurn();
 
         if ($seatWind !== null) {
             $this->assertEquals(SeatWind::fromString($seatWind), $currentTurn->getSeatWind());
@@ -97,8 +97,8 @@ class SakiTestCase extends \PHPUnit_Framework_TestCase {
     }
 
     function assertCurrentTurnNotChanged(Turn $turn) {
-        $r = $this->getCurrentRound();
-        $currentTurn = $r->getAreas()->getTurn();
+        $round = $this->getCurrentRound();
+        $currentTurn = $round->getTurn();
         $this->assertEquals($turn, $currentTurn);
     }
     //endregion
@@ -113,13 +113,13 @@ class SakiTestCase extends \PHPUnit_Framework_TestCase {
     }
 
     protected function assertPhase(int $phaseValue, string $currentSeatWind = null) {
-        $r = $this->getCurrentRound();
+        $round = $this->getCurrentRound();
 
-        $currentPhase = $r->getAreas()->getPhaseState()->getPhase();
+        $currentPhase = $round->getPhaseState()->getPhase();
         $this->assertEquals(Phase::create($phaseValue), $currentPhase);
 
         if ($currentSeatWind !== null) {
-            $currentSeatWind = $r->getAreas()->getCurrentSeatWind();
+            $currentSeatWind = $round->getCurrentSeatWind();
             $this->assertEquals(SeatWind::fromString($currentSeatWind), $currentSeatWind);
         }
     }
@@ -128,7 +128,7 @@ class SakiTestCase extends \PHPUnit_Framework_TestCase {
     //region Result
     function assertResultType(int $resultTypeValue) {
         $expected = ResultType::create($resultTypeValue);
-        $actual = $this->getCurrentRound()->getAreas()->getPhaseState()->getResult()->getResultType();
+        $actual = $this->getCurrentRound()->getPhaseState()->getResult()->getResultType();
         $this->assertEquals($expected, $actual);
     }
 

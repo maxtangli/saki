@@ -13,7 +13,7 @@ use Saki\Win\Result\ResultType;
 class FourKongDraw extends Draw {
     //region Draw impl
     protected function isDrawImpl(Round $round) {
-        $areaList = $round->getAreas()->getAreaList();
+        $areaList = $round->getAreaList();
         $kongCountList = $areaList->toArrayList(function (Area $area) {
             $declare = $area->getHand()->getMelded();
             $kongCount = $declare->toFiltered([QuadMeldType::create()])->count();
@@ -31,7 +31,7 @@ class FourKongDraw extends Draw {
 
     protected function getResultImpl(Round $round) {
         return new AbortiveDrawResult(
-            $round->getAreas()->getGameData()->getPlayerType(),
+            $round->getGameData()->getPlayerType(),
             ResultType::create(ResultType::FOUR_KONG_DRAW)
         );
     }

@@ -12,7 +12,7 @@ use Saki\Win\Result\ResultType;
 class FourRiichiDraw extends Draw {
     //region Draw impl
     protected function isDrawImpl(Round $round) {
-        $areaList = $round->getAreas()->getAreaList();
+        $areaList = $round->getAreaList();
         return $areaList->all(function (Area $area) {
             return $area->getRiichiStatus()->isRiichi();
         });
@@ -20,7 +20,7 @@ class FourRiichiDraw extends Draw {
 
     protected function getResultImpl(Round $round) {
         return new AbortiveDrawResult(
-            $round->getAreas()->getGameData()->getPlayerType(),
+            $round->getGameData()->getPlayerType(),
             ResultType::create(ResultType::FOUR_REACH_DRAW)
         );
     }

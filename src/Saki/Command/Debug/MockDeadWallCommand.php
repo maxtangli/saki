@@ -2,10 +2,10 @@
 namespace Saki\Command\Debug;
 
 use Saki\Command\Command;
-use Saki\Command\CommandContext;
 use Saki\Command\ParamDeclaration\BoolParamDeclaration;
 use Saki\Command\ParamDeclaration\IntParamDeclaration;
 use Saki\Command\ParamDeclaration\TileListParamDeclaration;
+use Saki\Game\Round;
 use Saki\Tile\TileList;
 
 /**
@@ -19,14 +19,14 @@ class MockDeadWallCommand extends Command {
     //endregion
 
     /**
-     * @param CommandContext $context
+     * @param Round $round
      * @param TileList $tileList
      * @param int $openedDoraIndicatorCount
      * @param bool $uraDoraOpened
      */
-    function __construct(CommandContext $context,
+    function __construct(Round $round,
                          TileList $tileList, int $openedDoraIndicatorCount, bool $uraDoraOpened) {
-        parent::__construct($context, [$tileList, $openedDoraIndicatorCount, $uraDoraOpened]);
+        parent::__construct($round, [$tileList, $openedDoraIndicatorCount, $uraDoraOpened]);
     }
 
     /**
@@ -54,16 +54,16 @@ class MockDeadWallCommand extends Command {
      * @return \Saki\Game\DeadWall
      */
     protected function getDeadWall() {
-        return $this->getContext()->getRound()->getAreas()
+        return $this->getRound()
             ->getWall()->getDeadWall();
     }
 
     //region Command impl
-    protected function executableImpl(CommandContext $context) {
+    protected function executableImpl(Round $round) {
         return $this->getTileList()->count() == $this->getDeadWall()->getRemainTileCount();
     }
 
-    protected function executeImpl(CommandContext $context) {
+    protected function executeImpl(Round $round) {
         $this->getDeadWall()->reset(
             $this->getTileList(), $this->getOpenedDoraIndicatorCount(), $this->getUraDoraOpened()
         );

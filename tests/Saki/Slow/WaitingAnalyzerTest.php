@@ -6,13 +6,13 @@ use Saki\Tile\TileList;
 use Saki\Util\ArrayList;
 use Saki\Win\Waiting\FutureWaiting;
 
-class WaitingAnalyzerTest extends SakiTestCase {
+class WaitingAnalyzerTest extends \SakiTestCase {
     /**
      * @dataProvider publicDataProvider
      */
     function testPublicData($onHandTileListString, $declareString, $expected) {
         $round = $this->getInitRound();
-        $waitingAnalyzer = $round->getAreas()->getGameData()->getWinAnalyzer()->getWaitingAnalyzer();
+        $waitingAnalyzer = $round->getGameData()->getWinAnalyzer()->getWaitingAnalyzer();
 
         $public = TileList::fromString($onHandTileListString);
         $declare = MeldList::fromString($declareString);
@@ -44,7 +44,7 @@ class WaitingAnalyzerTest extends SakiTestCase {
      */
     function testPrivateData($onHandTileListString, $declareString, $expected) {
         $round = $this->getInitRound();
-        $waitingAnalyzer = $round->getAreas()->getGameData()->getWinAnalyzer()->getWaitingAnalyzer();
+        $waitingAnalyzer = $round->getGameData()->getWinAnalyzer()->getWaitingAnalyzer();
         $private = TileList::fromString($onHandTileListString);
         $declare = MeldList::fromString($declareString);
 

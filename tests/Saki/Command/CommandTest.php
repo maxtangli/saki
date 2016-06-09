@@ -1,68 +1,14 @@
 <?php
 
-namespace tests\Command;
-
-use Saki\Command\Command;
-use Saki\Command\CommandContext;
-use Saki\Command\CommandParser;
-use Saki\Command\CommandSet;
 use Saki\Command\Debug\MockHandCommand;
-use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
-use Saki\Command\ParamDeclaration\TileParamDeclaration;
 use Saki\Command\PrivateCommand\DiscardCommand;
 use Saki\Command\PrivateCommand\TsumoCommand;
 use Saki\Command\PublicCommand\RonCommand;
-use Saki\Game\Round;
+use Saki\Game\Phase;
 use Saki\Game\SeatWind;
 use Saki\Tile\Tile;
 
-class HelloCommand extends Command {
-    static function getParamDeclarations() {
-        return [SeatWindParamDeclaration::class, TileParamDeclaration::class];
-    }
-
-    function __construct(CommandContext $context, SeatWind $actor, Tile $tile) {
-        parent::__construct($context, [$actor, $tile]);
-    }
-
-    /**
-     * @return Tile
-     */
-    function getPlayerSeatWind() {
-        return $this->playerSeatWind;
-    }
-
-    /**
-     * @return Tile
-     */
-    function getTile() {
-        return $this->tile;
-    }
-
-    protected function executableImpl(CommandContext $context) {
-        return true;
-    }
-
-    protected function executeImpl(CommandContext $context) {
-        return 'hello';
-    }
-}
-
-class CommandTest extends \PHPUnit_Framework_TestCase {
-    function testParse() {
-        $context = new CommandContext(new Round());
-        $set = new CommandSet([HelloCommand::class]);
-        $parser = new CommandParser($context, $set);
-
-        // parseLine
-        $line = 'hello E 1p';
-        $obj = new HelloCommand($context, SeatWind::fromString('E'), Tile::fromString('1p'));
-        $this->assertEquals($obj->__toString(), $line);
-
-        $obj2 = $parser->parseLine($line);
-        $this->assertEquals($obj2->__toString(), $line);
-    }
-
+class CommandTest extends \SakiTestCase {
     function testIsDebug() {
         $this->assertFalse(DiscardCommand::isDebug());
         $this->assertTrue(MockHandCommand::isDebug());
@@ -71,5 +17,33 @@ class CommandTest extends \PHPUnit_Framework_TestCase {
     function testIsRon() {
         $this->assertFalse(TsumoCommand::isRon());
         $this->assertTrue(RonCommand::isRon());
+    }
+
+    function testDiscard() {
+        $round = $this->getInitRound();
+
+        $round->process('mockHand E 123456789m12344s');
+
+        $invalidCommand = new DiscardCommand($round, SeatWind::fromString('E'), Tile::fromString('9p'));
+        $this->assertFalse($invalidCommand->executable());
+
+        $validCommand = new DiscardCommand($round, SeatWind::fromString('E'), Tile::fromString('4s'));
+        $this->assertTrue($validCommand->executable());
+
+        $validCommand->execute();
+        $this->assertEquals(Phase::createPublic(), $round->getPhaseState()->getPhase());
+    }
+
+    function testSkip() {
+        $round = $this->getInitRound();
+
+        $this->assertEquals('E', $round->getTurn()->getSeatWind());
+        $round->process('skip 1');
+        $this->assertEquals('S', $round->getTurn()->getSeatWind());
+        $this->assertTrue($round->getPhaseState()->getPhase()->isPrivate());
+
+        $round->process('skip 2');
+        $this->assertEquals('N', $round->getTurn()->getSeatWind());
+        $this->assertTrue($round->getPhaseState()->getPhase()->isPrivate());
     }
 }

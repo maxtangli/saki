@@ -8,7 +8,7 @@ use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 use Saki\Util\ArrayList;
 
-class MeldTest extends SakiTestCase {
+class MeldTest extends \SakiTestCase {
     function testCreate() {
         // new by MeldType
         $meldType = PairMeldType::create();

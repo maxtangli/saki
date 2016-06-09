@@ -1,6 +1,6 @@
 <?php
 
-class WeakRefTest extends SakiTestCase {
+class WeakRefTest extends \SakiTestCase {
     function test() {
     }
 }

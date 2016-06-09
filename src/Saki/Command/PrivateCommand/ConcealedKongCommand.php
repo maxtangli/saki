@@ -1,12 +1,12 @@
 <?php
 namespace Saki\Command\PrivateCommand;
 
-use Saki\Command\CommandContext;
 use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\ParamDeclaration\TileParamDeclaration;
 use Saki\Command\PrivateCommand;
 use Saki\Game\Area;
 use Saki\Game\Claim;
+use Saki\Game\Round;
 use Saki\Game\SeatWind;
 use Saki\Meld\QuadMeldType;
 use Saki\Tile\Tile;
@@ -24,16 +24,16 @@ class ConcealedKongCommand extends PrivateCommand {
     //endregion
 
     /**
-     * @param CommandContext $context
+     * @param Round $round
      * @param SeatWind $actor
      * @param Tile $tile1
      * @param Tile $tile2
      * @param Tile $tile3
      * @param Tile $tile4
      */
-    function __construct(CommandContext $context, SeatWind $actor,
+    function __construct(Round $round, SeatWind $actor,
                          Tile $tile1, Tile $tile2, Tile $tile3, Tile $tile4) {
-        parent::__construct($context, [$actor, $tile1, $tile2, $tile3, $tile4]);
+        parent::__construct($round, [$actor, $tile1, $tile2, $tile3, $tile4]);
     }
 
     /**
@@ -71,7 +71,7 @@ class ConcealedKongCommand extends PrivateCommand {
         $tiles = [$this->getTile1(), $this->getTile2(), $this->getTile3(), $this->getTile4()];
         return Claim::create(
             $this->getActor(),
-            $this->getContext()->getAreas()->getTurn(),
+            $this->getRound()->getTurn(),
             $tiles,
             QuadMeldType::create(),
             true
@@ -79,11 +79,11 @@ class ConcealedKongCommand extends PrivateCommand {
     }
 
     //region PrivateCommand impl
-    protected function matchOther(CommandContext $context, Area $actorArea) {
+    protected function matchOther(Round $round, Area $actorArea) {
         return $this->getClaim()->valid($actorArea);
     }
 
-    protected function executePlayerImpl(CommandContext $context, Area $actorArea) {
+    protected function executePlayerImpl(Round $round, Area $actorArea) {
         $this->getClaim()->apply($actorArea);
         // stay in private phase
     }

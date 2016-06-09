@@ -9,7 +9,7 @@ use Saki\Tile\Tile;
 use Saki\Win\Series\Series;
 use Saki\Win\Waiting\WaitingType;
 
-class SeriesTypeTest extends SakiTestCase {
+class SeriesTypeTest extends \SakiTestCase {
     /**
      * @dataProvider FourWinSetAndOnePairProvider
      */

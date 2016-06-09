@@ -1,8 +1,8 @@
 <?php
 namespace Saki\Win;
 
-use Saki\Game\Areas;
 use Saki\Game\PrevailingWind;
+use Saki\Game\Round;
 use Saki\Game\SeatWind;
 use Saki\Game\Turn;
 use Saki\Meld\MeldList;
@@ -10,47 +10,47 @@ use Saki\Meld\MeldList;
 // todo move yaku specific logic into XXXYaku
 class WinTarget {
     private $actor;
-    private $areas;
+    private $round;
 
-    function __construct(SeatWind $actor, Areas $areas) {
+    function __construct(SeatWind $actor, Round $round) {
         $this->actor = $actor;
-        $this->areas = $areas;
+        $this->round = $round;
 
-        if (!$areas->getPhase()->isPrivateOrPublic()) {
+        if (!$round->getPhase()->isPrivateOrPublic()) {
             throw new \InvalidArgumentException(
-                sprintf('Invalid phase, expect[private or public phase] but given[%s].', $areas->getPhase())
+                sprintf('Invalid phase, expect[private or public phase] but given[%s].', $round->getPhase())
             );
         }
         // todo validate hand count, target tile
     }
 
     function toSubTarget(MeldList $handMeldList) {
-        return new WinSubTarget($handMeldList, $this->actor, $this->areas);
+        return new WinSubTarget($handMeldList, $this->actor, $this->round);
     }
 
     /**
      * @return PrevailingWind
      */
     function getPrevailingWind() {
-        return $this->getAreas()->getPrevailingCurrent()->getStatus()->getPrevailingWind();
+        return $this->getRound()->getPrevailingCurrent()->getStatus()->getPrevailingWind();
     }
 
     // todo remove
     function getPrevailingWindTile() {
-        return $this->getAreas()->getPrevailingCurrent()->getStatus()->getPrevailingWind()->getWindTile();
+        return $this->getRound()->getPrevailingCurrent()->getStatus()->getPrevailingWind()->getWindTile();
     }
 
     function getTileSet() {
-        return $this->getAreas()->getGameData()->getTileSet();
+        return $this->getRound()->getGameData()->getTileSet();
     }
 
-    // about areas/current
+    // about current
     function getTurn() {
-        return $this->getAreas()->getTurn();
+        return $this->getRound()->getTurn();
     }
 
     function getPhase() {
-        return $this->getAreas()->getPhase();
+        return $this->getRound()->getPhase();
     }
 
     function isPrivatePhase() {
@@ -61,8 +61,8 @@ class WinTarget {
         return $this->getPhase()->isPublic();
     }
 
-    function getAreas() {
-        return $this->areas;
+    function getRound() {
+        return $this->round;
     }
 
     function getActor() {
@@ -70,39 +70,39 @@ class WinTarget {
     }
 
     function getActArea() {
-        return $this->getAreas()->getArea($this->getActor());
+        return $this->getRound()->getArea($this->getActor());
     }
 
     function getOpenHistory() {
-        return $this->getAreas()->getOpenHistory();
+        return $this->getRound()->getOpenHistory();
     }
 
     function getWallRemainTileAmount() {
-        return $this->getAreas()->getWall()->getRemainTileCount();
+        return $this->getRound()->getWall()->getRemainTileCount();
     }
 
     function getHand() {
-        return $this->getAreas()->getArea($this->getActor())->getHand();
+        return $this->getRound()->getArea($this->getActor())->getHand();
     }
 
     function getPublicHand() { // todo remove
-        return $this->getAreas()->getArea($this->getActor())->getHand()->getPublic();
+        return $this->getRound()->getArea($this->getActor())->getHand()->getPublic();
     }
 
     function getPrivateHand() { // todo remove
-        return $this->getAreas()->getArea($this->getActor())->getHand()->getPrivate();
+        return $this->getRound()->getArea($this->getActor())->getHand()->getPrivate();
     }
 
     function getPrivateComplete() { // todo remove
-        return $this->getAreas()->getArea($this->getActor())->getHand()->getComplete();
+        return $this->getRound()->getArea($this->getActor())->getHand()->getComplete();
     }
 
     function getDeclaredMeldList() { // todo remove
-        return $this->getAreas()->getArea($this->getActor())->getHand()->getMelded();
+        return $this->getRound()->getArea($this->getActor())->getHand()->getMelded();
     }
 
     function isConcealed() { // todo remove
-        return $this->getAreas()->getArea($this->getActor())->getHand()->isConcealed();
+        return $this->getRound()->getArea($this->getActor())->getHand()->isConcealed();
     }
 
     function getTileOfTargetTile() { // todo remove
@@ -110,11 +110,11 @@ class WinTarget {
     }
 
     function getDiscardedTileList() {
-        return $this->getAreas()->getArea($this->getActor())->getDiscardedReference();
+        return $this->getRound()->getArea($this->getActor())->getDiscardedReference();
     }
 
     function getRiichiStatus() {
-        return $this->getAreas()->getArea($this->getActor())->getRiichiStatus();
+        return $this->getRound()->getArea($this->getActor())->getRiichiStatus();
     }
 
     function isAfterAKong() {
@@ -148,23 +148,23 @@ class WinTarget {
     }
 
     protected function isFirstTurnNoDeclare(SeatWind $seatWind) {
-        $areas = $this->getAreas();
-        return $areas->getTurn()->isFirstCircle()
-        && !$areas->getClaimHistory()->hasClaim(
+        $round = $this->getRound();
+        return $round->getTurn()->isFirstCircle()
+        && !$round->getClaimHistory()->hasClaim(
             new Turn(1, $seatWind)
         );
     }
 
     function getSeatWind() {
-        return $this->getAreas()->getArea($this->getActor())->getSeatWind();
+        return $this->getRound()->getArea($this->getActor())->getSeatWind();
     }
 
     // todo remove
     function getSeatWindTile() {
-        return $this->getAreas()->getArea($this->getActor())->getSeatWind()->getWindTile();
+        return $this->getRound()->getArea($this->getActor())->getSeatWind()->getWindTile();
     }
 
     function getDoraFacade() {
-        return $this->getAreas()->getWall()->getDoraFacade();
+        return $this->getRound()->getWall()->getDoraFacade();
     }
 }

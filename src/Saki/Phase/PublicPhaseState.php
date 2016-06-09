@@ -44,7 +44,7 @@ class PublicPhaseState extends PhaseState {
      * @return bool
      */
     protected function handleDraw(Round $round) {
-        $drawAnalyzer = $round->getAreas()->getGameData()->getDrawAnalyzer();
+        $drawAnalyzer = $round->getGameData()->getDrawAnalyzer();
         $drawOrFalse = $drawAnalyzer->analyzeDrawOrFalse($round);
         if ($drawOrFalse !== false) {
             $drawResult = $drawOrFalse->getResult($round);
@@ -62,23 +62,22 @@ class PublicPhaseState extends PhaseState {
     }
 
     function getDefaultNextState(Round $round) {
-        $nextActor = $round->getAreas()->getTurn()->getSeatWind()->toNext();
+        $nextActor = $round->getTurn()->getSeatWind()->toNext();
         $shouldDrawTile = true;
         return new PrivatePhaseState($nextActor, $shouldDrawTile);
     }
 
     function enter(Round $round) {
         // do nothing
-        $areas = $round->getAreas();
 
-        $target = $areas->getOpenHistory()->getLastOpen()->toTarget();
-        $areas->getTargetHolder()->setTarget($target);
+        $target = $round->getOpenHistory()->getLastOpen()->toTarget();
+        $round->getTargetHolder()->setTarget($target);
     }
 
     function leave(Round $round) {
         $this->handleDraw($round);
 
-        $round->getAreas()->getTargetHolder()
+        $round->getTargetHolder()
             ->setTarget(Target::createNull());
     }
     //endregion

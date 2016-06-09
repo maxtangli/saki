@@ -55,30 +55,30 @@ class PrivatePhaseState extends PhaseState {
 
     function enter(Round $round) {
         $actor = $this->getActor();
-        $areas = $round->getAreas();
-        $area = $areas->getArea($actor);
 
-        $areas->toSeatWind($actor);
+        $area = $round->getArea($actor);
+
+        $round->toSeatWind($actor);
 
         if ($this->shouldDraw()) {
-            $newTile = $areas->getWall()
+            $newTile = $round->getWall()
                 ->draw();
             $newTarget = new Target($newTile, TargetType::create(TargetType::DRAW), $actor);
-            $areas->getTargetHolder()
+            $round->getTargetHolder()
                 ->setTarget($newTarget);
         }
 
         if ($this->claim !== null) {
-            $target = $this->target ?? $areas->getOpenHistory()->getLastOpen()->toTarget();
-            $areas->getTargetHolder()
+            $target = $this->target ?? $round->getOpenHistory()->getLastOpen()->toTarget();
+            $round->getTargetHolder()
                 ->setTarget($target);
             $this->claim->apply($area);
         }
     }
 
     function leave(Round $round) {
-        $areas = $round->getAreas();
-        $areas->getTargetHolder()
+
+        $round->getTargetHolder()
             ->setTarget(Target::createNull());
     }
     //endregion

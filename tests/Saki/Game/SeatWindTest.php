@@ -2,7 +2,7 @@
 
 use Saki\Game\SeatWind;
 
-class SeatWindTest extends SakiTestCase {
+class SeatWindTest extends \SakiTestCase {
     /**
      * @param SeatWind $expected
      * @param SeatWind $current

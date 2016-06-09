@@ -14,7 +14,7 @@ abstract class Draw extends Singleton {
      * @return bool
      */
     function isDraw(Round $round) {
-        $valid = $round->getAreas()->getPhaseState()->getPhase()->isPublic();
+        $valid = $round->getPhaseState()->getPhase()->isPublic();
         if (!$valid) {
             throw new \InvalidArgumentException();
         }

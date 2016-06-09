@@ -2,7 +2,7 @@
 namespace Saki\Command\Debug;
 
 use Saki\Command\Command;
-use Saki\Command\CommandContext;
+use Saki\Game\Round;
 
 /**
  * @package Saki\Command\Debug
@@ -15,20 +15,20 @@ class PassAllCommand extends Command {
     //endregion
 
     /**
-     * @param CommandContext $context
+     * @param Round $round
      */
-    function __construct(CommandContext $context) {
-        parent::__construct($context, []);
+    function __construct(Round $round) {
+        parent::__construct($round, []);
     }
 
     //region Command impl
-    protected function executableImpl(CommandContext $context) {
-        $phaseState = $context->getRound()->getAreas()->getPhaseState();
+    protected function executableImpl(Round $round) {
+        $phaseState = $round->getPhaseState();
         return $phaseState->getPhase()->isPublic();
     }
 
-    protected function executeImpl(CommandContext $context) {
-        $context->getRound()->toNextPhase();
+    protected function executeImpl(Round $round) {
+        $round->toNextPhase();
     }
     //endregion
 }

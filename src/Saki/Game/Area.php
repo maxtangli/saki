@@ -11,7 +11,7 @@ class Area {
     // immutable
     private $player;
     // shared variable
-    private $areas;
+    private $round;
     // game variable
     private $seatWind;
     // round variable
@@ -19,13 +19,13 @@ class Area {
 
     /**
      * @param Player $player
-     * @param Areas $areas
+     * @param Round $round
      */
-    function __construct(Player $player, Areas $areas) {
+    function __construct(Player $player, Round $round) {
         $this->player = $player;
-        $this->areas = $areas;
+        $this->round = $round;
         $this->seatWind = $player->getInitialSeatWind();
-        $this->handHolder = new HandHolder($areas->getTargetHolder(), $player->getInitialSeatWind());
+        $this->handHolder = new HandHolder($round->getTargetHolder(), $player->getInitialSeatWind());
     }
 
     /**
@@ -54,8 +54,8 @@ class Area {
     /**
      * @return Areas
      */
-    function getAreas() {
-        return $this->areas;
+    function getRound() {
+        return $this->round;
     }
 
     /**
@@ -69,14 +69,14 @@ class Area {
      * @return bool
      */
     function isCurrentSeatWind() {
-        return $this->getSeatWind() == $this->getAreas()->getCurrentSeatWind();
+        return $this->getSeatWind() == $this->getRound()->getCurrentSeatWind();
     }
 
     /**
      * @return int
      */
     function getPoint() {
-        return $this->getAreas()->getPointHolder()
+        return $this->getRound()->getPointHolder()
             ->getPoint($this->getSeatWind());
     }
 
@@ -98,7 +98,7 @@ class Area {
      * @return RiichiStatus
      */
     function getRiichiStatus() {
-        return $this->getAreas()->getRiichiHolder()
+        return $this->getRound()->getRiichiHolder()
             ->getRiichiStatus($this->getSeatWind());
     }
 
@@ -107,13 +107,13 @@ class Area {
      */
     function isFirstTurnWin() {
         $riichiStatus = $this->getRiichiStatus();
-        $currentTurn = $this->getAreas()->getTurn();
+        $currentTurn = $this->getRound()->getTurn();
 
         if (!$riichiStatus->isFirstTurn($currentTurn)) {
             return false;
         }
 
-        $claimHistory = $this->getAreas()->getClaimHistory();
+        $claimHistory = $this->getRound()->getClaimHistory();
         $noDeclareSinceRiichi = !$claimHistory->hasClaim($riichiStatus->getRiichiTurn());
         return $noDeclareSinceRiichi;
     }
@@ -122,7 +122,7 @@ class Area {
      * @return TileList
      */
     function getDiscard() {
-        return $this->getAreas()->getOpenHistory()
+        return $this->getRound()->getOpenHistory()
             ->getSelfDiscard($this->getSeatWind());
     }
 }

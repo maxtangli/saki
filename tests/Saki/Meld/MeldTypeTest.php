@@ -14,7 +14,7 @@ use Saki\Tile\TileList;
 use Saki\Util\ArrayList;
 use Saki\Win\Waiting\WaitingType;
 
-class MeldTypeTest extends SakiTestCase {
+class MeldTypeTest extends \SakiTestCase {
     function testToString() {
         $this->assertSame('PairMeldType', PairMeldType::create()->__toString());
     }

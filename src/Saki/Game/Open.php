@@ -62,7 +62,7 @@ class Open implements Immutable {
             throw new \InvalidArgumentException();
         }
 
-        $areas = $area->getAreas();
+        $round = $area->getRound();
         $hand = $area->getHand();
         $tile = $this->getTile();
         $isDiscard = $this->isDiscard();
@@ -75,7 +75,7 @@ class Open implements Immutable {
 
         $area->setHand($newHand);
 
-        $areas->getOpenHistory()
-            ->record(new OpenRecord($areas->getTurn(), $tile, $isDiscard));
+        $round->getOpenHistory()
+            ->record(new OpenRecord($round->getTurn(), $tile, $isDiscard));
     }
 }

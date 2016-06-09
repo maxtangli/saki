@@ -2,8 +2,8 @@
 namespace Saki\Command\Debug;
 
 use Saki\Command\Command;
-use Saki\Command\CommandContext;
 use Saki\Command\ParamDeclaration\TileParamDeclaration;
+use Saki\Game\Round;
 use Saki\Tile\Tile;
 
 /**
@@ -17,11 +17,11 @@ class MockNextDrawCommand extends Command {
     //endregion
 
     /**
-     * @param CommandContext $context
+     * @param Round $round
      * @param Tile $mockTile
      */
-    function __construct(CommandContext $context, Tile $mockTile) {
-        parent::__construct($context, [$mockTile]);
+    function __construct(Round $round, Tile $mockTile) {
+        parent::__construct($round, [$mockTile]);
     }
 
     /**
@@ -35,15 +35,15 @@ class MockNextDrawCommand extends Command {
      * @return \Saki\Game\Wall
      */
     protected function getWall() {
-        return $this->getContext()->getRound()->getAreas()->getWall();
+        return $this->getRound()->getWall();
     }
 
     //region Command impl
-    protected function executableImpl(CommandContext $context) {
+    protected function executableImpl(Round $round) {
         return $this->getWall()->getRemainTileCount() > 0;
     }
 
-    protected function executeImpl(CommandContext $context) {
+    protected function executeImpl(Round $round) {
         $this->getWall()->debugSetNextDrawTile($this->getMockTile());
     }
     //endregion

@@ -2,12 +2,12 @@
 namespace Saki\Command\PrivateCommand;
 
 use Saki\Command\Command;
-use Saki\Command\CommandContext;
 use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\ParamDeclaration\TileParamDeclaration;
 use Saki\Command\PrivateCommand;
 use Saki\Game\Area;
 use Saki\Game\Open;
+use Saki\Game\Round;
 use Saki\Game\SeatWind;
 use Saki\Tile\Tile;
 
@@ -20,12 +20,12 @@ class DiscardCommand extends PrivateCommand {
         return [SeatWindParamDeclaration::class, TileParamDeclaration::class];
     }
 
-    static function getExecutables(CommandContext $context, SeatWind $actor) {
-        $private = $context->getAreas()->getArea($actor)
+    static function getExecutables(Round $round, SeatWind $actor) {
+        $private = $round->getArea($actor)
             ->getHand()->getPrivate();
         $uniquePrivate = $private->getCopy()->distinct(Tile::getEqual(true));
-        $toCommand = function (Tile $tile) use ($context, $actor) {
-            return new self($context, $actor, $tile);
+        $toCommand = function (Tile $tile) use ($round, $actor) {
+            return new self($round, $actor, $tile);
         };
         $executable = function (Command $command) {
             return $command->executable();
@@ -39,12 +39,12 @@ class DiscardCommand extends PrivateCommand {
     //endregion
 
     /**
-     * @param CommandContext $context
+     * @param Round $round
      * @param SeatWind $actor
      * @param Tile $tile
      */
-    function __construct(CommandContext $context, SeatWind $actor, Tile $tile) {
-        parent::__construct($context, [$actor, $tile]);
+    function __construct(Round $round, SeatWind $actor, Tile $tile) {
+        parent::__construct($round, [$actor, $tile]);
     }
 
     /**
@@ -62,13 +62,13 @@ class DiscardCommand extends PrivateCommand {
     }
 
     //region PrivateCommand impl
-    protected function matchOther(CommandContext $context, Area $actorArea) {
+    protected function matchOther(Round $round, Area $actorArea) {
         return $this->getOpen()->valid($actorArea);
     }
 
-    protected function executePlayerImpl(CommandContext $context, Area $actorArea) {
+    protected function executePlayerImpl(Round $round, Area $actorArea) {
         $this->getOpen()->apply($actorArea);
-        $context->getRound()->toNextPhase();
+        $round->toNextPhase();
     }
     //endregion
 }

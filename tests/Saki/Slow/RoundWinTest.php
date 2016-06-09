@@ -7,19 +7,19 @@ use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 use Saki\Win\Result\ResultType;
 
-class RoundWinTest extends SakiTestCase {
+class RoundWinTest extends \SakiTestCase {
     function testTsumo() {
-        $r = $this->getInitRound();
+        $round = $this->getInitRound();
 
         // test over phase
-        $r->process('mockHand E 123m456m789m123s55s; tsumo E');
-        $this->assertEquals(Phase::createOver(), $r->getAreas()->getPhaseState()->getPhase());
-        $this->assertCount(1, $r->getAreas()->getWall()->getDoraFacade()->getOpenedUraDoraIndicators());
+        $round->process('mockHand E 123m456m789m123s55s; tsumo E');
+        $this->assertEquals(Phase::createOver(), $round->getPhaseState()->getPhase());
+        $this->assertCount(1, $round->getWall()->getDoraFacade()->getOpenedUraDoraIndicators());
 
         // test toNextRound
-        $r->toNextRound();
-        $this->assertEquals(Phase::createPrivate(), $r->getAreas()->getPhaseState()->getPhase());
-        $this->assertEquals(SeatWind::createEast(), $r->getAreas()->getDealerArea()->getPlayer()->getInitialSeatWind());
+        $round->toNextRound();
+        $this->assertEquals(Phase::createPrivate(), $round->getPhaseState()->getPhase());
+        $this->assertEquals(SeatWind::createEast(), $round->getDealerArea()->getPlayer()->getInitialSeatWind());
     }
 
     function testRon() {
@@ -36,28 +36,28 @@ class RoundWinTest extends SakiTestCase {
 
     function testGameOver() {
         // to E Round N Dealer
-        $r = new Round();
-        $r->roll(false);
-        $r->roll(false);
-        $r->roll(false);
-        $areas = $r->getAreas();
-        $area = $areas->getCurrentArea();
-        $pointHolder = $areas->getPointHolder();
+        $round = $this->getInitRound();
+        $round->roll(false);
+        $round->roll(false);
+        $round->roll(false);
+
+        $area = $round->getCurrentArea();
+        $pointHolder = $round->getPointHolder();
         // todo replace reset() by debugReset()
 
         // E Player tsumo, but point not over 30000
         $area->setHand(
             $area->getHand()->toHand(TileList::fromString('13m456m789m123s55s'), null, Tile::fromString('2m'))
         );
-        $r->getProcessor()->process('tsumo E');
+        $round->process('tsumo E');
         $pointHolder->setPoint(SeatWind::fromString('E'), 25000);
-        $this->assertFalse($r->getAreas()->getPhaseState()->isGameOver($r));
+        $this->assertFalse($round->getPhaseState()->isGameOver($round));
 
         // point over 30000
         $pointHolder->setPoint(SeatWind::fromString('E'), 29999);
-        $this->assertFalse($r->getAreas()->getPhaseState()->isGameOver($r));
+        $this->assertFalse($round->getPhaseState()->isGameOver($round));
 
         $pointHolder->setPoint(SeatWind::fromString('E'), 30000);
-        $this->assertTrue($r->getAreas()->getPhaseState()->isGameOver($r));
+        $this->assertTrue($round->getPhaseState()->isGameOver($round));
     }
 }

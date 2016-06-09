@@ -25,7 +25,7 @@ class EnumMockClass3 extends \Saki\Util\Enum {
     const FIELD_2 = 2;
 }
 
-class EnumTest extends SakiTestCase {
+class EnumTest extends \SakiTestCase {
     function testInheritance() {
         $s1 = EnumMockClass1::create(1);
         $s2 = EnumMockClass2::create(1);

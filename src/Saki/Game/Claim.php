@@ -133,7 +133,7 @@ class Claim implements Immutable {
             throw new \InvalidArgumentException();
         }
 
-        $areas = $area->getAreas();
+        $round = $area->getRound();
         $hand = $area->getHand();
 
         $newPrivateOrPublic = $hand->getPrivate()->getCopy()
@@ -144,7 +144,7 @@ class Claim implements Immutable {
             $newTarget = new Target($newTargetTile, TargetType::create(TargetType::KEEP), $this->getActor());
         } elseif ($newPrivateOrPublic->getSize()->isPublic()) {
             $newPublic = $newPrivateOrPublic;
-            $newTargetTile = $areas->getWall()->getDeadWall()
+            $newTargetTile = $round->getWall()->getDeadWall()
                 ->drawReplacement();
             $newTarget = new Target($newTargetTile, TargetType::create(TargetType::REPLACE), $this->getActor());
         } else {
@@ -158,9 +158,9 @@ class Claim implements Immutable {
         $area->setHand($newHand);
 
         if (!$hand->getTarget()->isOwner($this->getActor())) {
-            $areas->getOpenHistory()->setLastDiscardDeclared();
+            $round->getOpenHistory()->setLastDiscardDeclared();
         }
 
-        $areas->getClaimHistory()->recordClaim($this->getTurn());
+        $round->getClaimHistory()->recordClaim($this->getTurn());
     }
 }

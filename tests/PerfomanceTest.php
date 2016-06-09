@@ -1,6 +1,6 @@
 <?php
 
-class PerformanceTest extends SakiTestCase {
+class PerformanceTest extends \SakiTestCase {
     function testBenchmark() {
         $a = [
 

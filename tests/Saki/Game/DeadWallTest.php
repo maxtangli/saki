@@ -5,7 +5,7 @@ use Saki\Game\DoraFacade;
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 
-class DeadWallTest extends SakiTestCase {
+class DeadWallTest extends \SakiTestCase {
     protected function assertTileFan(DoraFacade $f, string $tileString, $doraFan, $uraDoraFan = 0, $redDoraFan = 0) {
         $tile = Tile::fromString($tileString);
         $this->assertEquals($doraFan, $f->getTileDoraFan($tile));

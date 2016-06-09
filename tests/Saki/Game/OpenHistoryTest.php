@@ -6,7 +6,7 @@ use Saki\Game\SeatWind;
 use Saki\Game\Turn;
 use Saki\Tile\Tile;
 
-class OpenHistoryTest extends SakiTestCase {
+class OpenHistoryTest extends \SakiTestCase {
     /** @var  OpenHistory */
     protected $h;
 

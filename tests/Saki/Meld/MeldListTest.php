@@ -4,7 +4,7 @@ use Saki\Meld\Meld;
 use Saki\Meld\MeldList;
 use Saki\Util\ArrayList;
 
-class MeldListTest extends SakiTestCase {
+class MeldListTest extends \SakiTestCase {
     /**
      * @dataProvider validStringProvider
      */

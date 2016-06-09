@@ -8,7 +8,7 @@ use Saki\Win\Score\OkaScoreStrategy;
 use Saki\Win\Score\RankUmaScoreStrategy;
 use Saki\Win\Score\RemoveInitialScoreStrategy;
 
-class ScoreStrategyTest extends SakiTestCase {
+class ScoreStrategyTest extends \SakiTestCase {
     function testComposite() {
         $pointSetting = new PointSetting(PlayerType::create(4), 25000, 30000);
         $s = new CompositeScoreStrategy($pointSetting, [

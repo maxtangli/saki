@@ -2,7 +2,7 @@
 
 use Saki\Win\Point\PointList;
 
-class PointListTest extends SakiTestCase {
+class PointListTest extends \SakiTestCase {
     function testFromPairs() {
         $f = PointList::fromPointMap([
             'N' => 22200,

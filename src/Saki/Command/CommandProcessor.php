@@ -4,6 +4,7 @@ namespace Saki\Command;
 /**
  * @package Saki\Command
  */
+
 class CommandProcessor {
     private $parser;
 

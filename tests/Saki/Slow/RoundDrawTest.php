@@ -4,22 +4,22 @@ use Saki\Game\Phase;
 use Saki\Tile\TileList;
 use Saki\Win\Result\ResultType;
 
-class RoundDrawTest extends SakiTestCase {
+class RoundDrawTest extends \SakiTestCase {
     function testNineNineDraw() {
-        $r = $this->getInitRound();
+        $round = $this->getInitRound();
 
         $validTileList = TileList::fromString('19m19p15559sESWNC');
         $this->assertTrue($validTileList->isNineKindsOfTermOrHonour());
 
-        $r->process('mockHand E 19m19p15559sESWNC; nineNineDraw E');
+        $round->process('mockHand E 19m19p15559sESWNC; nineNineDraw E');
         $this->assertResultType(ResultType::NINE_NINE_DRAW);
     }
 
     function testExhaustiveDraw() {
-        $r = $this->getInitRound();
+        $round = $this->getInitRound();
 
-        for ($phase = $r->getAreas()->getPhaseState()->getPhase(); $phase != Phase::createOver(); $phase = $r->getAreas()->getPhaseState()->getPhase()) {
-            $r->process('skip 1');
+        for ($phase = $round->getPhaseState()->getPhase(); $phase != Phase::createOver(); $phase = $round->getPhaseState()->getPhase()) {
+            $round->process('skip 1');
         }
         $this->assertResultType(ResultType::EXHAUSTIVE_DRAW);
     }
@@ -27,9 +27,9 @@ class RoundDrawTest extends SakiTestCase {
     // FourKongDraw tested in KongConcernedTest
 
 //    function testFourRiichiDraw() { // comment out since slow
-//        $r = $this->getInitRound();
+//        $round = $this->getInitRound();
 //        
-//        $r->process(
+//        $round->process(
 //            'mockHand E 123456789m12357s; reach E 7s; passAll',
 //            'mockHand S 123456789m12357s; reach S 7s; passAll',
 //            'mockHand W 123456789m12357s; reach W 7s; passAll',
@@ -39,12 +39,12 @@ class RoundDrawTest extends SakiTestCase {
 //    }
 
     function testFourWindDraw() {
-        $r = $this->getInitRound();
+        $round = $this->getInitRound();
 
-        $r->process('mockHand E E; discard E E; passAll');
-        $r->process('mockHand S E; discard S E; passAll');
-        $r->process('mockHand W E; discard W E; passAll');
-        $r->process('mockHand N E; discard N E; passAll');
+        $round->process('mockHand E E; discard E E; passAll');
+        $round->process('mockHand S E; discard S E; passAll');
+        $round->process('mockHand W E; discard W E; passAll');
+        $round->process('mockHand N E; discard N E; passAll');
         $this->assertResultType(ResultType::FOUR_WIND_DRAW);
     }
 }

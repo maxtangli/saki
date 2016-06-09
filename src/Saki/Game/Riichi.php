@@ -13,7 +13,7 @@ class Riichi extends Open {
     }
 
     function valid(Area $area) {
-        $waitingAnalyzer = $area->getAreas()->getGameData()
+        $waitingAnalyzer = $area->getRound()->getGameData()
             ->getWinAnalyzer()->getWaitingAnalyzer();
         $hand = $area->getHand();
         list($private, $melded, $tile) = [$hand->getPrivate(), $hand->getMelded(), $this->getTile()];
@@ -22,18 +22,18 @@ class Riichi extends Open {
         && $area->getHand()->isConcealed()
         && !$area->getRiichiStatus()->isRiichi()
         && $area->getPoint() >= 1000
-        && $area->getAreas()->getWall()->getRemainTileCount() >= 4
+        && $area->getRound()->getWall()->getRemainTileCount() >= 4
         && $waitingAnalyzer->isWaitingAfterDiscard($private, $melded, $tile); // slowest logic last
     }
 
     function apply(Area $area) {
         parent::apply($area);
 
-        $areas = $area->getAreas();
-        $riichiStatus = new RiichiStatus($areas->getTurn());
-        $areas->getRiichiHolder()
+        $round = $area->getRound();
+        $riichiStatus = new RiichiStatus($round->getTurn());
+        $round->getRiichiHolder()
             ->setRiichiStatus($area->getSeatWind(), $riichiStatus);
-        $areas->getPointHolder()
+        $round->getPointHolder()
             ->setPointChange($this->getActor(), -1000);
     }
     //endregion

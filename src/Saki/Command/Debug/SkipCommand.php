@@ -2,8 +2,8 @@
 namespace Saki\Command\Debug;
 
 use Saki\Command\Command;
-use Saki\Command\CommandContext;
 use Saki\Command\ParamDeclaration\IntParamDeclaration;
+use Saki\Game\Round;
 
 /**
  * @package Saki\Command\Debug
@@ -16,11 +16,11 @@ class SkipCommand extends Command {
     //endregion
 
     /**
-     * @param CommandContext $context
+     * @param Round $round
      * @param int $skipCount
      */
-    function __construct(CommandContext $context, int $skipCount) {
-        parent::__construct($context, [$skipCount]);
+    function __construct(Round $round, int $skipCount) {
+        parent::__construct($round, [$skipCount]);
     }
 
     /**
@@ -34,22 +34,22 @@ class SkipCommand extends Command {
      * @return bool
      */
     protected function isPrivate() {
-        $phaseState = $this->getContext()->getRound()->getAreas()->getPhaseState();
+        $phaseState = $this->getRound()->getPhaseState();
         return $phaseState->getPhase()->isPrivate();
     }
 
     //region Command impl
-    protected function executableImpl(CommandContext $context) {
+    protected function executableImpl(Round $round) {
         return $this->isPrivate();
     }
 
-    protected function executeImpl(CommandContext $context) {
-        $processor = $this->getContext()->getRound()->getProcessor();
+    protected function executeImpl(Round $round) {
+        $round = $round;
         $nTodo = $this->getSkipCount();
         while ($nTodo-- > 0 && $this->isPrivate()) {
-            $currentSeatWind = $context->getAreas()->getCurrentSeatWind();
+            $currentSeatWind = $round->getCurrentSeatWind();
             $scripts = sprintf('mockHand %s C; discard %s C; passAll', $currentSeatWind, $currentSeatWind);
-            $processor->process($scripts);
+            $round->process($scripts);
         }
     }
     //endregion

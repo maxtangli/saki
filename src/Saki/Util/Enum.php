@@ -43,13 +43,13 @@ abstract class Enum implements Immutable {
      * @return array A map of values [enumValue => string].
      */
     static function getValue2StringMap() {
-        $r = [];
+        $result = [];
         $refClass = new \ReflectionClass(get_called_class());
         foreach ($refClass->getConstants() as $name => $value) {
             $text = strtolower(str_replace('_', ' ', $name));
-            $r[$value] = $text;
+            $result[$value] = $text;
         }
-        return $r;
+        return $result;
     }
 
     private $value;

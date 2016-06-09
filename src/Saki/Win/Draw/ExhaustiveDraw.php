@@ -11,16 +11,16 @@ use Saki\Win\Result\ExhaustiveDrawResult;
 class ExhaustiveDraw extends Draw {
     //region Draw impl
     protected function isDrawImpl(Round $round) {
-        $nextState = $round->getAreas()->getPhaseState()->getNextState($round);
+        $nextState = $round->getPhaseState()->getNextState($round);
         $isExhaustiveDraw = $nextState->getPhase()->isPrivate()
             && $nextState->shouldDraw()
-            && $round->getAreas()->getWall()->getRemainTileCount() == 0;
+            && $round->getWall()->getRemainTileCount() == 0;
         return $isExhaustiveDraw;
     }
 
     protected function getResultImpl(Round $round) {
-        $waitingAnalyzer = $round->getAreas()->getGameData()->getWinAnalyzer()->getWaitingAnalyzer();
-        $areaList = $round->getAreas()->getAreaList();
+        $waitingAnalyzer = $round->getGameData()->getWinAnalyzer()->getWaitingAnalyzer();
+        $areaList = $round->getAreaList();
         $isWaiting = function (Area $area) use ($waitingAnalyzer) {
             $public = $area->getHand()->getPublic();
             $declare = $area->getHand()->getMelded();

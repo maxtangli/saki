@@ -10,22 +10,22 @@ use Saki\Win\Waiting\WaitingType;
 use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\YakuItemList;
 
-class FuAnalyzerTest extends SakiTestCase {
+class FuAnalyzerTest extends \SakiTestCase {
     function testFu() {
         $public = TileList::fromString('12pCCFFF');
         $targetTile = Tile::fromString('3p');
         $handMeldList = MeldList::fromString('123p,CC,(FFF)');
         $declareMeldList = MeldList::fromString('8888p,999m');
 
-        $r = new Round();
-        $current = $r->getAreas()->getCurrentSeatWind();
+        $round = $this->getInitRound();
+        $current = $round->getCurrentSeatWind();
         $actor = $current;
-        $area = $r->getAreas()->getArea($actor);
+        $area = $round->getArea($actor);
         $area->setHand(
             $area->getHand()->toHand($public, $declareMeldList, $targetTile)
         );
 
-        $subTarget = new WinSubTarget($handMeldList, $actor, $r->getAreas());
+        $subTarget = new WinSubTarget($handMeldList, $actor, $round);
         $yakuList = new YakuItemList();
         $waitingType = WaitingType::create(WaitingType::ONE_SIDE_RUN_WAITING);
         $target = new FuTarget($subTarget, $yakuList, $waitingType);

@@ -30,10 +30,9 @@ class OverPhaseState extends PhaseState {
      * @return bool
      */
     function isGameOver(Round $round) { // todo refactor into simpler ver
-        $areas = $round->getAreas();
-
-        $pointList = $areas->getPointHolder()->getPointList();
-        $prevailingCurrent = $areas->getPrevailingCurrent();
+        
+        $pointList = $round->getPointHolder()->getPointList();
+        $prevailingCurrent = $round->getPrevailingCurrent();
 
         if ($pointList->hasMinus()) {
             return true;
@@ -59,7 +58,7 @@ class OverPhaseState extends PhaseState {
 
         // todo
         $isDealerTop = $topItem->getSeatWind()->isDealer();
-        $result = $round->getAreas()->getPhaseState()->getResult();
+        $result = $round->getPhaseState()->getResult();
         return !($result->isKeepDealer()) || $isDealerTop;
     }
 
@@ -72,8 +71,8 @@ class OverPhaseState extends PhaseState {
             throw new \InvalidArgumentException('Game is not over.');
         }
 
-        $scoreStrategy = $round->getAreas()->getGameData()->getScoreStrategy();
-        $raw = $round->getAreas()->getPointHolder()->getPointList();
+        $scoreStrategy = $round->getGameData()->getScoreStrategy();
+        $raw = $round->getPointHolder()->getPointList();
         return $scoreStrategy->rawToFinal($raw);
     }
 
@@ -88,10 +87,9 @@ class OverPhaseState extends PhaseState {
 
     function enter(Round $round) {
         $result = $this->getResult();
-        $areas = $round->getAreas();
 
         // modify points
-        $areas->getPointHolder()->applyPointChangeMap($result->getPointChangeMap());
+        $round->getPointHolder()->applyPointChangeMap($result->getPointChangeMap());
     }
 
     function leave(Round $round) {

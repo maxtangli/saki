@@ -2,21 +2,22 @@
 namespace Saki\Command;
 
 use Saki\Command\ParamDeclaration\ParamDeclaration;
+use Saki\Game\Round;
 use Saki\Util\Utils;
 
 /**
  * @package Saki\Command
  */
 class CommandParser {
-    private $context;
+    private $round;
     private $nameToClassMap;
 
     /**
-     * @param CommandContext $context
+     * @param Round $round
      * @param CommandSet $commandSet
      */
-    function __construct(CommandContext $context, CommandSet $commandSet) {
-        $this->context = $context;
+    function __construct(Round $round, CommandSet $commandSet) {
+        $this->round = $round;
 
         // note: validation ignored
         $names = $commandSet->toArray(function ($class) {
@@ -27,10 +28,10 @@ class CommandParser {
     }
 
     /**
-     * @return CommandContext
+     * @return Round
      */
-    function getContext() {
-        return $this->context;
+    function getRound() {
+        return $this->round;
     }
 
     /**
@@ -76,11 +77,11 @@ class CommandParser {
         $name = lcfirst($tokens[0]); // 'Discard'
         $class = $this->nameToClass($name); // 'Saki\Command\PrivateCommand\DiscardCommand'
 
-        $context = $this->getContext();
+        $round = $this->getRound();
         $paramDeclarations = $class::getParamDeclarations(); // [SeatWindParam, TileParam]
         $paramStrings = array_slice($tokens, 1); // ['E','1m']
         $paramObjects = ParamDeclaration::toObjects($paramDeclarations, $paramStrings); // [SeatWind, TileParam]
 
-        return new $class($context, ...$paramObjects);
+        return new $class($round, ...$paramObjects);
     }
 }

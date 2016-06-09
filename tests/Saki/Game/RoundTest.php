@@ -1,8 +1,9 @@
 <?php
 
+use Saki\Game\SeatWind;
 use Saki\Win\Result\ResultType;
 
-class RoundTest extends SakiTestCase {
+class RoundTest extends \SakiTestCase {
     function testNew() {
         // todo
     }
@@ -12,20 +13,20 @@ class RoundTest extends SakiTestCase {
     }
 
     function testOver() {
-        $r = $this->getInitRound();
-        $r->roll(false);
-        $r->roll(false);
-        $r->roll(false);
+        $round = $this->getInitRound();
+        $round->roll(false);
+        $round->roll(false);
+        $round->roll(false);
 
-        $r->process('mockHand E 123456789m12355s; tsumo E');
-        $this->assertTrue($r->getAreas()->getPhaseState()->isGameOver($r));
-        $f = $r->getAreas()->getPhaseState()->getFinalScore($r);
+        $round->process('mockHand E 123456789m12355s; tsumo E');
+        $this->assertTrue($round->getPhaseState()->isGameOver($round));
+        $f = $round->getPhaseState()->getFinalScore($round);
         // todo
     }
 
     function testDiscard() {
-        $r = $this->getInitRound();
-        $r->process('mockHand E 0p; discard E 0p');
+        $round = $this->getInitRound();
+        $round->process('mockHand E 0p; discard E 0p');
         $this->assertLastOpen('0p');
     }
 
@@ -34,10 +35,10 @@ class RoundTest extends SakiTestCase {
     }
 
     function testChow() {
-        $r = $this->getInitRound();
+        $round = $this->getInitRound();
 
-        $claimTurn = $r->getAreas()->getTurn();
-        $r->process(
+        $claimTurn = $round->getTurn();
+        $round->process(
             'mockHand E 3m; discard E 3m',
             'mockHand S 450m12346789p13s; chow S 4m 0m'
         );
@@ -48,10 +49,10 @@ class RoundTest extends SakiTestCase {
     }
 
     function testPung() {
-        $r = $this->getInitRound();
+        $round = $this->getInitRound();
 
-        $claimTurn = $r->getAreas()->getTurn();
-        $r->process(
+        $claimTurn = $round->getTurn();
+        $round->process(
             'mockHand E 5m; discard E 5m',
             'mockHand W 550m12346789p13s; pung W 5m 0m'
         );
@@ -62,10 +63,10 @@ class RoundTest extends SakiTestCase {
     }
 
     function testKong() {
-        $r = $this->getInitRound();
+        $round = $this->getInitRound();
 
-        $claimTurn = $r->getAreas()->getTurn();
-        $r->process(
+        $claimTurn = $round->getTurn();
+        $round->process(
             'mockHand E 5m; discard E 5m',
             'mockNextReplace 1p; mockHand W 550m23456789p13s; kong W 5m 5m 0m'
         );
@@ -76,10 +77,10 @@ class RoundTest extends SakiTestCase {
     }
 
     function testConcealedKong() {
-        $r = $this->getInitRound();
+        $round = $this->getInitRound();
 
-        $claimTurn = $r->getAreas()->getTurn();
-        $r->process('mockNextReplace 1p; mockHand E 5550m23456789p13s; concealedKong E 5m 5m 5m 0m');
+        $claimTurn = $round->getTurn();
+        $round->process('mockNextReplace 1p; mockHand E 5550m23456789p13s; concealedKong E 5m 5m 5m 0m');
 
         $this->assertHasClaim($claimTurn);
         $this->assertCurrentTurnNotChanged($claimTurn);
@@ -87,24 +88,24 @@ class RoundTest extends SakiTestCase {
     }
 
     function testExtendKong() {
-        $r = $this->getInitRound();
+        $round = $this->getInitRound();
 
-        $r->process(
+        $round->process(
             'mockHand E 5m; discard E 5m',
             'mockHand S 005m23456789p13s; mockNextReplace 1p; pung S 0m 5m'
         );
 
         // enter robQuad phase
-        $claimTurn = $r->getAreas()->getTurn();
-        $r->process('extendKong S 0m 055m');
+        $claimTurn = $round->getTurn();
+        $round->process('extendKong S 0m 055m');
         $this->assertPublic();
-        $this->assertTrue($r->getAreas()->getPhaseState()->isRonOnly());
+        $this->assertTrue($round->getPhaseState()->isRonOnly());
         $this->assertHasNotClaim($claimTurn);
         $this->assertCurrentTurnNotChanged($claimTurn);
         $this->assertHand(null, null, '0m', 'E');
 
         // leave robQuad phase and enter private phase
-        $r->process('passAll');
+        $round->process('passAll');
         $this->assertPrivate('E');
         $this->assertHasClaim($claimTurn);
         $this->assertCurrentTurnNotChanged($claimTurn);
@@ -112,9 +113,9 @@ class RoundTest extends SakiTestCase {
     }
 
     function testNotFourKongDrawBySamePlayer() {
-        $r = $this->getInitRound();
+        $round = $this->getInitRound();
 
-        $r->process(
+        $round->process(
             'mockHand E 1111s; concealedKong E 1s 1s 1s 1s',
             'mockHand E 1111s; concealedKong E 1s 1s 1s 1s',
             'mockHand E 1111s; concealedKong E 1s 1s 1s 1s',
@@ -125,9 +126,9 @@ class RoundTest extends SakiTestCase {
     }
 
     function testFourKongDrawByConcealedKong() {
-        $r = $this->getInitRound();
+        $round = $this->getInitRound();
 
-        $r->process(
+        $round->process(
             'mockHand E 1111s1m; concealedKong E 1s 1s 1s 1s; discard E 1m; passAll',
             'mockHand S 1111s1m; concealedKong S 1s 1s 1s 1s; discard S 1m; passAll',
             'mockHand W 1111s1m; concealedKong W 1s 1s 1s 1s; discard W 1m; passAll',
@@ -137,9 +138,9 @@ class RoundTest extends SakiTestCase {
     }
 
     function testFourKongDrawByExtendKong() {
-        $r = $this->getInitRound();
+        $round = $this->getInitRound();
 
-        $r->process(
+        $round->process(
             'mockHand E 1m; discard E 1m; passAll',
             'mockHand S 1111s1m; concealedKong S 1s 1s 1s 1s; discard S 1m; passAll',
             'mockHand W 1111s1m; concealedKong W 1s 1s 1s 1s; discard W 1m; passAll',
@@ -150,9 +151,9 @@ class RoundTest extends SakiTestCase {
     }
 
     function testFourKongDrawByKong() {
-        $r = $this->getInitRound();
+        $round = $this->getInitRound();
 
-        $r->process(
+        $round->process(
             'mockHand E 1111s1m; concealedKong E 1s 1s 1s 1s; discard E 1m; passAll',
             'mockHand S 1111s1m; concealedKong S 1s 1s 1s 1s; discard S 1m; passAll',
             'mockHand W 1111s1m; concealedKong W 1s 1s 1s 1s; discard W 1m',
@@ -160,7 +161,51 @@ class RoundTest extends SakiTestCase {
         );
         $this->assertPrivate();
 
-        $r->process('discard E 1m; passAll');
+        $round->process('discard E 1m; passAll');
         $this->assertResultType(ResultType::FOUR_KONG_DRAW);
+    }
+
+    function testGetHand() {
+        $round = $this->getInitRound();
+
+        $round->process('mockHand E 123456789m12344p');
+        $areaE = $round->getArea(SeatWind::createEast());
+        $areaS = $round->getArea(SeatWind::createSouth());
+
+        // E private phase, hand E
+        $handE = $areaE->getHand();
+        $this->assertEquals('123456789m12344p', $handE->getPrivate()->toFormatString(true));
+        $this->assertEquals('4p', $handE->getTarget()->getTile()->__toString());
+        $this->assertEquals('123456789m1234p', $handE->getPublic()->toFormatString(true));
+
+        // E private phase, hand S
+        $round->process('mockHand S 123456789p1234s');
+        $handS = $areaS->getHand();
+        // no private
+        $this->assertFalse($handS->getTarget()->exist());
+        $this->assertEquals('123456789p1234s', $handS->getPublic()->toFormatString(true));
+
+        // E public phase, hand E
+        $round->process('discard E 2m');
+        $handE = $areaE->getHand();
+        // no private
+        $this->assertFalse($handE->getTarget()->exist());
+        $this->assertEquals('13456789m12344p', $handE->getPublic()->toFormatString(true));
+
+        // E public phase, hand S
+        $handS = $areaS->getHand();
+        $this->assertEquals('2m123456789p1234s', $handS->getPrivate()->toFormatString(true));
+        $this->assertEquals('2m', $handS->getTarget()->getTile()->toFormatString(true));
+        $this->assertEquals('123456789p1234s', $handS->getPublic()->toFormatString(true));
+    }
+
+    function testPointList() {
+        $round = $this->getInitRound();
+
+        $facade = $round->getPointHolder()->getPointList();
+
+        $this->assertFalse($facade->hasMinus());
+        $this->assertTrue($facade->hasTiledTop());
+        $this->assertEquals(25000, $facade->getFirst()->getPoint());
     }
 }

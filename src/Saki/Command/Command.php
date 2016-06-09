@@ -18,6 +18,7 @@ Command.executable() execute()
 namespace Saki\Command;
 
 use Saki\Command\ParamDeclaration\ParamDeclaration;
+use Saki\Game\Round;
 
 /**
  * goal
@@ -53,7 +54,7 @@ abstract class Command {
         return strpos(get_called_class(), 'Ron') !== false;
     }
 
-    //region subclass hooks
+    //region subuse Saki\Game\Round; class hooks
     /**
      * @return ParamDeclaration[]
      */
@@ -64,15 +65,15 @@ abstract class Command {
 
     //endregion
 
-    private $context;
+    private $round;
     private $params = [];
 
     /**
-     * @param CommandContext $context
+     * @param Round $round
      * @param array $params
      */
-    function __construct(CommandContext $context, array $params = []) {
-        $this->context = $context;
+    function __construct(Round $round, array $params = []) {
+        $this->round = $round;
         $this->params = $params;
     }
 
@@ -88,10 +89,10 @@ abstract class Command {
     }
 
     /**
-     * @return CommandContext
+     * @return Round
      */
-    function getContext() {
-        return $this->context;
+    function getRound() {
+        return $this->round;
     }
 
     /**
@@ -111,14 +112,14 @@ abstract class Command {
      * @return bool
      */
     function executable() {
-        return $this->executableImpl($this->getContext()) === true;
+        return $this->executableImpl($this->getRound()) === true;
     }
 
     /**
      * @throws InvalidCommandException
      */
     function execute() {
-        $executable = $this->executableImpl($this->getContext());
+        $executable = $this->executableImpl($this->getRound());
         if ($executable !== true) {
             $e = $executable instanceof \Exception ? $executable : new InvalidCommandException(
                 sprintf('Bad method call of [%s()] on not executable command[%s].'
@@ -127,20 +128,23 @@ abstract class Command {
             throw $e;
         }
 
-        $this->executeImpl($this->getContext());
+        $this->executeImpl($this->getRound());
     }
 
-    //region subclass hooks
+    //region subuse Saki\Game\Round; class hooks
     /**
-     * @param CommandContext $context
+     * @param Round $round
      * @return bool
+     * 
      */
-    abstract protected function executableImpl(CommandContext $context);
+    abstract protected function executableImpl(Round $round);
 
     /**
-     * @param CommandContext $context
+     * @param Round $round
+     * @return
+     * 
      */
-    abstract protected function executeImpl(CommandContext $context);
+    abstract protected function executeImpl(Round $round);
     //endregion
 }
 

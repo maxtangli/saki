@@ -1,13 +1,13 @@
 <?php
 namespace Saki\Command\PublicCommand;
 
-use Saki\Command\CommandContext;
 use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\ParamDeclaration\TileParamDeclaration;
 use Saki\Command\PrivateCommand;
 use Saki\Command\PublicCommand;
 use Saki\Game\Area;
 use Saki\Game\Claim;
+use Saki\Game\Round;
 use Saki\Game\SeatWind;
 use Saki\Meld\TripleMeldType;
 use Saki\Phase\PrivatePhaseState;
@@ -24,13 +24,13 @@ class PungCommand extends PublicCommand {
     //endregion
 
     /**
-     * @param CommandContext $context
+     * @param Round $round
      * @param SeatWind $actor
      * @param Tile $tile1
      * @param Tile $tile2
      */
-    function __construct(CommandContext $context, SeatWind $actor, Tile $tile1, Tile $tile2) {
-        parent::__construct($context, [$actor, $tile1, $tile2]);
+    function __construct(Round $round, SeatWind $actor, Tile $tile1, Tile $tile2) {
+        parent::__construct($round, [$actor, $tile1, $tile2]);
     }
 
     /**
@@ -55,18 +55,18 @@ class PungCommand extends PublicCommand {
         $tiles = [$targetTile, $this->getTile1(), $this->getTile2()];
         return Claim::create(
             $this->getActor(),
-            $this->getContext()->getAreas()->getTurn(),
+            $this->getRound()->getTurn(),
             $tiles, TripleMeldType::create(), false
         );
     }
 
     //region PublicCommand impl
-    protected function matchOther(CommandContext $context, Area $actorArea) {
+    protected function matchOther(Round $round, Area $actorArea) {
         return $this->getClaim()->valid($actorArea);
     }
 
-    protected function executePlayerImpl(CommandContext $context, Area $actorArea) {
-        $context->getRound()->toNextPhase(
+    protected function executePlayerImpl(Round $round, Area $actorArea) {
+        $round->toNextPhase(
             new PrivatePhaseState($this->getActor(), false, $this->getClaim())
         );
     }

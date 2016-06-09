@@ -3,7 +3,7 @@
 use Saki\Game\Wall;
 use Saki\Tile\TileSet;
 
-class WallTest extends SakiTestCase {
+class WallTest extends \SakiTestCase {
     function testOverall() {
         $standardCnt = 136;
 

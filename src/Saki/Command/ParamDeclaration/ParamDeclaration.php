@@ -4,6 +4,7 @@ namespace Saki\Command\ParamDeclaration;
 /**
  * @package Saki\Command\ParamDeclaration
  */
+
 abstract class ParamDeclaration {
     /**
      * @param ParamDeclaration[] $paramDeclarations
@@ -50,7 +51,7 @@ abstract class ParamDeclaration {
         return $this->paramString;
     }
 
-    //region subclass hooks
+    //region subuse Saki\Game\Round; class hooks
     /**
      * @return mixed
      */

@@ -4,7 +4,7 @@ use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 use Saki\Tile\TileType;
 
-class TileListTest extends SakiTestCase {
+class TileListTest extends \SakiTestCase {
     /**
      * @dataProvider validStringProvider
      */

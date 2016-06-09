@@ -11,16 +11,15 @@ use Saki\Win\Result\ResultType;
 class FourWindDraw extends Draw {
     //region Draw impl
     protected function isDrawImpl(Round $round) {
-        $areas = $round->getAreas();
-
-        $isFirstRound = $areas->getTurn()->isFirstCircle();
-        $isFourSameWindDiscard = $areas->getOpenHistory()->isFourSameWindDiscard();
+        
+        $isFirstRound = $round->getTurn()->isFirstCircle();
+        $isFourSameWindDiscard = $round->getOpenHistory()->isFourSameWindDiscard();
         return $isFirstRound && $isFourSameWindDiscard;
     }
 
     protected function getResultImpl(Round $round) {
         return new AbortiveDrawResult(
-            $round->getAreas()->getGameData()->getPlayerType(),
+            $round->getGameData()->getPlayerType(),
             ResultType::create(ResultType::FOUR_WIND_DRAW)
         );
     }

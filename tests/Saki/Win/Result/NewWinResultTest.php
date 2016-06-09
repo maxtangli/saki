@@ -5,7 +5,7 @@ use Saki\Win\Point\FanAndFu;
 use Saki\Win\Result\WinResult;
 use Saki\Win\Result\WinResultInput;
 
-class NewWinResultTest extends SakiTestCase {
+class NewWinResultTest extends \SakiTestCase {
     /**
      * @param WinResult $result
      * @param string $actorString

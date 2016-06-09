@@ -796,8 +796,9 @@ rush refactor Round members
 - [x] refactor: remove WinTarget's Round usage 0.2h
 - [x] refactor: remove Round.getXXX 0.6h
 
-- [ ] refactor: merge Areas into Round 0.3h
-- [ ] refactor: remove CommandContext
+- [x] refactor: merge Areas into Round 0.8h
+- [x] refactor: remove CommandContext 0.7h
+
 - [ ] refactor: merge Turn, PhaseState, Phase
 
 rush command candidates

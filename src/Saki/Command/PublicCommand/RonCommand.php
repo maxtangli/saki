@@ -1,11 +1,11 @@
 <?php
 namespace Saki\Command\PublicCommand;
 
-use Saki\Command\CommandContext;
 use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\PrivateCommand;
 use Saki\Command\PublicCommand;
 use Saki\Game\Area;
+use Saki\Game\Round;
 use Saki\Game\SeatWind;
 use Saki\Phase\OverPhaseState;
 use Saki\Win\Result\WinResult;
@@ -23,30 +23,29 @@ class RonCommand extends PublicCommand {
     //endregion
 
     /**
-     * @param CommandContext $context
+     * @param Round $round
      * @param SeatWind $actor
      */
-    function __construct(CommandContext $context, SeatWind $actor) {
-        parent::__construct($context, [$actor]);
+    function __construct(Round $round, SeatWind $actor) {
+        parent::__construct($round, [$actor]);
     }
 
     //region PublicCommand impl
-    protected function matchOther(CommandContext $context, Area $actorArea) {
-        $winReport = $context->getAreas()->getWinReport($this->getActor());
+    protected function matchOther(Round $round, Area $actorArea) {
+        $winReport = $round->getWinReport($this->getActor());
         return $winReport->getWinState()->getValue() == WinState::WIN_BY_OTHER;
     }
 
-    protected function executePlayerImpl(CommandContext $context, Area $actorArea) {
-        $round = $context->getRound();
+    protected function executePlayerImpl(Round $round, Area $actorArea) {
         $actor = $this->getActor();
-        $areas = $context->getAreas();
+        $round = $round;
 
         $result = new WinResult(WinResultInput::createRon(
-            [[$actor, $round->getAreas()->getWinReport($actor)->getFanAndFu()]],
-            $context->getAreas()->getCurrentSeatWind(),
-            $areas->getOtherSeatWinds([$actor, $context->getAreas()->getCurrentSeatWind()]),
-            $areas->getRiichiHolder()->getRiichiPoints(),
-            $context->getAreas()->getPrevailingCurrent()->getSeatWindTurn()
+            [[$actor, $round->getWinReport($actor)->getFanAndFu()]],
+            $round->getCurrentSeatWind(),
+            $round->getOtherSeatWinds([$actor, $round->getCurrentSeatWind()]),
+            $round->getRiichiHolder()->getRiichiPoints(),
+            $round->getPrevailingCurrent()->getSeatWindTurn()
         ));
         $round->toNextPhase(
             new OverPhaseState($result)
