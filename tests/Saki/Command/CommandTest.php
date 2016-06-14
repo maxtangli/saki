@@ -24,10 +24,10 @@ class CommandTest extends \SakiTestCase {
 
         $round->process('mockHand E 123456789m12344s');
 
-        $invalidCommand = new DiscardCommand($round, SeatWind::fromString('E'), Tile::fromString('9p'));
+        $invalidCommand = new DiscardCommand($round, [SeatWind::fromString('E'), Tile::fromString('9p')]);
         $this->assertFalse($invalidCommand->executable());
 
-        $validCommand = new DiscardCommand($round, SeatWind::fromString('E'), Tile::fromString('4s'));
+        $validCommand = new DiscardCommand($round, [SeatWind::fromString('E'), Tile::fromString('4s')]);
         $this->assertTrue($validCommand->executable());
 
         $validCommand->execute();

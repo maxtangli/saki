@@ -4,16 +4,52 @@ namespace Saki\Command;
 use Saki\Game\Area;
 use Saki\Game\Round;
 use Saki\Game\SeatWind;
+use Saki\Util\ArrayList;
 
 /**
  * @package Saki\Command
  */
 abstract class PlayerCommand extends Command {
-    //region subuse Saki\Game\Round; class hooks
+    //region subclass hooks
+    /**
+     * @param Round $round
+     * @param SeatWind $actor
+     * @return PlayerCommand[]
+     */
     static function getExecutables(Round $round, SeatWind $actor) {
-        return [];
+        $actorArea = $round->getArea($actor);
+        if (!$actorArea->isActor()) {
+            return [];
+        }
+
+        $executableList = static::getExecutableListImpl($round, $actor, $actorArea);
+        return $executableList->toArray();
     }
 
+    /**
+     * @param Round $round
+     * @param SeatWind $actor
+     * @param Area $actorArea
+     * @return ArrayList
+     */
+    protected static function getExecutableListImpl(Round $round, SeatWind $actor, Area $actorArea) {
+        return new ArrayList();
+    }
+
+    /**
+     * @param Round $round
+     * @param SeatWind $actor
+     * @param ArrayList $otherParamsList
+     * @return ArrayList
+     */
+    protected static function createMany(Round $round, SeatWind $actor, ArrayList $otherParamsList) {
+        $toCommand = function ($otherParams) use ($round, $actor) {
+            $actualParams = is_array($otherParams) ? $otherParams : [$otherParams];
+            array_unshift($actualParams, $actor);
+            return new static($round, $actualParams);
+        };
+        return $otherParamsList->toArrayList($toCommand);
+    }
     //endregion
 
     /**
@@ -21,7 +57,7 @@ abstract class PlayerCommand extends Command {
      * @param array $params
      */
     function __construct(Round $round, array $params) {
-        $valid = count($params) > 0 && $params[0] instanceof SeatWind;
+        $valid = !empty($params) && $params[0] instanceof SeatWind;
         if (!$valid) {
             throw new \InvalidArgumentException();
         }
@@ -56,12 +92,12 @@ abstract class PlayerCommand extends Command {
     }
     //endregion
 
-    //region subuse Saki\Game\Round; class hooks
+    //region subclass hooks
     /**
      * @param Round $round
      * @param Area $actorArea
      * @return bool
-     * 
+     *
      */
     abstract protected function matchPhase(Round $round, Area $actorArea);
 
@@ -69,7 +105,7 @@ abstract class PlayerCommand extends Command {
      * @param Round $round
      * @param Area $actorArea
      * @return bool
-     * 
+     *
      */
     abstract protected function matchActor(Round $round, Area $actorArea);
 
@@ -77,7 +113,7 @@ abstract class PlayerCommand extends Command {
      * @param Round $round
      * @param Area $actorArea
      * @return bool
-     * 
+     *
      */
     abstract protected function matchOther(Round $round, Area $actorArea);
 
@@ -85,7 +121,7 @@ abstract class PlayerCommand extends Command {
      * @param Round $round
      * @param Area $actorArea
      * @return
-     * 
+     *
      */
     abstract protected function executePlayerImpl(Round $round, Area $actorArea);
     //endregion

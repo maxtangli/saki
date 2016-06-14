@@ -52,7 +52,7 @@ class Area {
     }
 
     /**
-     * @return Areas
+     * @return Round
      */
     function getRound() {
         return $this->round;
@@ -72,6 +72,16 @@ class Area {
         return $this->getSeatWind() == $this->getRound()->getCurrentSeatWind();
     }
 
+    /**
+     * @return bool
+     */
+    function isActor() {
+        $phase = $this->getRound()->getPhase();
+        $isCurrentSeatWind = $this->isCurrentSeatWind();
+        return ($phase->isPrivate() && $isCurrentSeatWind)
+            || ($phase->isPublic() && !$isCurrentSeatWind);
+    }
+    
     /**
      * @return int
      */

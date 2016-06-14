@@ -6,7 +6,6 @@ use Saki\Command\PrivateCommand;
 use Saki\Command\PublicCommand;
 use Saki\Game\Area;
 use Saki\Game\Round;
-use Saki\Game\SeatWind;
 use Saki\Phase\OverPhaseState;
 use Saki\Win\Result\WinResult;
 use Saki\Win\Result\WinResultInput;
@@ -22,14 +21,6 @@ class RonCommand extends PublicCommand {
     }
     //endregion
 
-    /**
-     * @param Round $round
-     * @param SeatWind $actor
-     */
-    function __construct(Round $round, SeatWind $actor) {
-        parent::__construct($round, [$actor]);
-    }
-
     //region PublicCommand impl
     protected function matchOther(Round $round, Area $actorArea) {
         $winReport = $round->getWinReport($this->getActor());
@@ -38,7 +29,6 @@ class RonCommand extends PublicCommand {
 
     protected function executePlayerImpl(Round $round, Area $actorArea) {
         $actor = $this->getActor();
-        $round = $round;
 
         $result = new WinResult(WinResultInput::createRon(
             [[$actor, $round->getWinReport($actor)->getFanAndFu()]],

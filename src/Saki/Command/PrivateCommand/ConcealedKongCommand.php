@@ -7,7 +7,6 @@ use Saki\Command\PrivateCommand;
 use Saki\Game\Area;
 use Saki\Game\Claim;
 use Saki\Game\Round;
-use Saki\Game\SeatWind;
 use Saki\Meld\QuadMeldType;
 use Saki\Tile\Tile;
 
@@ -22,19 +21,6 @@ class ConcealedKongCommand extends PrivateCommand {
             TileParamDeclaration::class, TileParamDeclaration::class];
     }
     //endregion
-
-    /**
-     * @param Round $round
-     * @param SeatWind $actor
-     * @param Tile $tile1
-     * @param Tile $tile2
-     * @param Tile $tile3
-     * @param Tile $tile4
-     */
-    function __construct(Round $round, SeatWind $actor,
-                         Tile $tile1, Tile $tile2, Tile $tile3, Tile $tile4) {
-        parent::__construct($round, [$actor, $tile1, $tile2, $tile3, $tile4]);
-    }
 
     /**
      * @return Tile

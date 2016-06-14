@@ -19,8 +19,9 @@ rush 46-50 | 24.0h
 rush 51-55 | 21.5h
 rush 56-60 | 33.0h
 rush 61-65 | 17.1h
-rush 66-70 | ing
-     total |302.9h + ing
+rush 66-70 | 22.9h
+rush 71-75 | ing
+     total |325.8h + ing
 
 ## rush history
 
@@ -790,7 +791,7 @@ rush 69 refactor Command/ 4.4h
 - [x] refactor: remove Tile:s- usage 0.3h
 - [x] refactor: CommandParser.parseLines 0.2h
 
-rush refactor Round members
+rush 70 refactor Round members 2.5h
 
 - [x] refactor: move prevailingCurrent into Areas 0.2h
 - [x] refactor: remove WinTarget's Round usage 0.2h
@@ -799,11 +800,31 @@ rush refactor Round members
 - [x] refactor: merge Areas into Round 0.8h
 - [x] refactor: remove CommandContext 0.7h
 
-- [ ] refactor: merge Turn, PhaseState, Phase
+rush 71 CommandProvider 2.3h
 
-rush command candidates
+- [x] CommandProvider 1.7h
+- [x] Discard
+- [x] refactor: PlayerCommand constructor 0.6h
 
-- [ ] CommandProvider 0.9h
+rush 72 waitingAnalyzer bug
+
+- [x] bug: waitingAnalyzer for special TileList 0.7h
+- [x] waitingAnalyzer: thirteen orphan case 0.4h
+- [x] WeakThirteenOrphanMeld 1.1h
+- [x] speed up WeakThirteenOrphanMeld 0.2h
+- [x] clean MeldType 0.2h
+
+rush 73 all command candidates
+
+- [ ] Riichi
+- [ ] NineNinedraw
+- [ ] Tsumo
+- [ ] ConcealedKong
+- [ ] ExtendKong
+- [ ] Ron
+- [ ] Chow
+- [ ] Pung
+- [ ] Kong
 
 rush public command roller
 
@@ -824,6 +845,7 @@ rush refactor Win/
 
 rush refactor: etc
 
+- [ ] refactor: merge Turn, PhaseState, Phase
 - [ ] refactor tests
 - [ ] fix: mockHand target tile vs robQuadPhase target tile
 - [ ] refactor: simplify reset(),debugReset(),toNextPhase() 0.2h

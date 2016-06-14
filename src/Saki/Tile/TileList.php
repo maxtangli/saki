@@ -91,6 +91,13 @@ class TileList extends ArrayList {
     }
 
     /**
+     * @return TileList
+     */
+    function toTileList() {
+        return new TileList($this->toArray());
+    }
+    
+    /**
      * @return ArrayList
      */
     function toTileTypeList() {

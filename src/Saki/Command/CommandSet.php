@@ -55,4 +55,16 @@ class CommandSet extends ArrayList {
             ]);
         return self::$standardInstance;
     }
+
+    /**
+     * @return CommandSet
+     */
+    function toPlayerCommandSet() {
+        $isPlayerCommand = function (string $class) {
+            return is_subclass_of($class, PlayerCommand::class);
+        };
+        return new self(
+            $this->toArrayList()->where($isPlayerCommand)->toArray()
+        );
+    }
 }

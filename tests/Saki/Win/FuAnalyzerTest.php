@@ -15,14 +15,14 @@ class FuAnalyzerTest extends \SakiTestCase {
         $public = TileList::fromString('12pCCFFF');
         $targetTile = Tile::fromString('3p');
         $handMeldList = MeldList::fromString('123p,CC,(FFF)');
-        $declareMeldList = MeldList::fromString('8888p,999m');
+        $melded = MeldList::fromString('8888p,999m');
 
         $round = $this->getInitRound();
         $current = $round->getCurrentSeatWind();
         $actor = $current;
         $area = $round->getArea($actor);
         $area->setHand(
-            $area->getHand()->toHand($public, $declareMeldList, $targetTile)
+            $area->getHand()->toHand($public, $melded, $targetTile)
         );
 
         $subTarget = new WinSubTarget($handMeldList, $actor, $round);

@@ -82,6 +82,6 @@ class CommandParser {
         $paramStrings = array_slice($tokens, 1); // ['E','1m']
         $paramObjects = ParamDeclaration::toObjects($paramDeclarations, $paramStrings); // [SeatWind, TileParam]
 
-        return new $class($round, ...$paramObjects);
+        return new $class($round, $paramObjects);
     }
 }

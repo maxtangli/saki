@@ -351,8 +351,8 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
             [new YakuTestData('EEE,SSS,WWW,11s', 'NNN'), LittleFourWindsYaku::create(), false],
 
             // test ThirteenOrphansYaku
-            [new YakuTestData('119m19p19sESWNCFP', null, '1m'), ThirteenOrphansYaku::create(), true],
-            [new YakuTestData('119m19p19sESWNCFP', null, '9m'), ThirteenOrphansYaku::create(), true],
+            [new YakuTestData('119m19p19sESWNCPF', null, '1m'), ThirteenOrphansYaku::create(), true],
+            [new YakuTestData('119m19p19sESWNCPF', null, '9m'), ThirteenOrphansYaku::create(), true],
             [new YakuTestData('EEE,SSS,WW', 'NNN,123s'), ThirteenOrphansYaku::create(), false],
         ];
 
@@ -389,8 +389,8 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
                 [new YakuTestData('111s,22s,345s,678s,999m'), NineGatesYaku::create(), false],
 
                 // test ThirteenOrphansPairWaitingYaku
-                [new YakuTestData('119m19p19sESWNCFP', null, '1m'), PureThirteenOrphansYaku::create(), true],
-                [new YakuTestData('119m19p19sESWNCFP', null, '9m'), PureThirteenOrphansYaku::create(), false],
+                [new YakuTestData('119m19p19sESWNCPF', null, '1m'), PureThirteenOrphansYaku::create(), true],
+                [new YakuTestData('119m19p19sESWNCPF', null, '9m'), PureThirteenOrphansYaku::create(), false],
             ];
         }
     }
@@ -571,10 +571,10 @@ class YakuTestData {
     private $currentSeatWind;
     private $actorSeatWind;
 
-    function __construct(string $handMeldListString, string $declareString = null, string $targetTileString = null,
+    function __construct(string $handMeldListString, string $meldedString = null, string $targetTileString = null,
                          string $currentString = null, string $actorString = null, string $prevailingWindString = null) {
         $this->handMeldList = MeldList::fromString($handMeldListString)->toConcealed(true);
-        $this->melded = MeldList::fromString($declareString !== null ? $declareString : "");
+        $this->melded = MeldList::fromString($meldedString !== null ? $meldedString : "");
         $this->targetTile = $targetTileString !== null ? Tile::fromString($targetTileString) : $this->handMeldList[0][0];
 
         $this->currentSeatWind = SeatWind::fromString($currentString ?? 'E');

@@ -6,7 +6,6 @@ use Saki\Command\ParamDeclaration\TileListParamDeclaration;
 use Saki\Command\PlayerCommand;
 use Saki\Game\Area;
 use Saki\Game\Round;
-use Saki\Game\SeatWind;
 use Saki\Tile\TileList;
 
 /**
@@ -18,15 +17,6 @@ class MockHandCommand extends PlayerCommand {
         return [SeatWindParamDeclaration::class, TileListParamDeclaration::class];
     }
     //endregion
-
-    /**
-     * @param Round $round
-     * @param SeatWind $seatWind
-     * @param TileList $mockTileList
-     */
-    function __construct(Round $round, SeatWind $seatWind, TileList $mockTileList) {
-        parent::__construct($round, [$seatWind, $mockTileList]);
-    }
 
     /**
      * @return TileList

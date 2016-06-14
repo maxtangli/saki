@@ -43,12 +43,12 @@ class Utils {
 
     /**
      * @param $targetValue
-     * @param bool $strict
+     * @param callable $equal
      * @return \Closure
      */
-    static function toPredicate($targetValue, bool $strict = false) {
-        return function ($v) use ($targetValue, $strict) {
-            return $strict ? $v === $targetValue : $v == $targetValue;
+    static function toPredicate($targetValue, callable $equal = null) {
+        return function ($v) use ($targetValue, $equal) {
+            return $equal !== null ? $equal($v, $targetValue) : $v == $targetValue;
         };
     }
 

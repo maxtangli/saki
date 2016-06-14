@@ -1,7 +1,6 @@
 <?php
 namespace Saki\Command\PrivateCommand;
 
-use Saki\Command\Command;
 use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\ParamDeclaration\TileParamDeclaration;
 use Saki\Command\PrivateCommand;
@@ -20,32 +19,12 @@ class DiscardCommand extends PrivateCommand {
         return [SeatWindParamDeclaration::class, TileParamDeclaration::class];
     }
 
-    static function getExecutables(Round $round, SeatWind $actor) {
-        $private = $round->getArea($actor)
-            ->getHand()->getPrivate();
+    protected static function getExecutableListImpl(Round $round, SeatWind $actor, Area $actorArea) {
+        $private = $actorArea->getHand()->getPrivate();
         $uniquePrivate = $private->getCopy()->distinct(Tile::getEqual(true));
-        $toCommand = function (Tile $tile) use ($round, $actor) {
-            return new self($round, $actor, $tile);
-        };
-        $executable = function (Command $command) {
-            return $command->executable();
-        };
-        return [];
-        return $uniquePrivate->toArrayList($toCommand)
-            ->where($executable)
-            ->toArray();
+        return static::createMany($round, $actor, $uniquePrivate);
     }
-
     //endregion
-
-    /**
-     * @param Round $round
-     * @param SeatWind $actor
-     * @param Tile $tile
-     */
-    function __construct(Round $round, SeatWind $actor, Tile $tile) {
-        parent::__construct($round, [$actor, $tile]);
-    }
 
     /**
      * @return Tile

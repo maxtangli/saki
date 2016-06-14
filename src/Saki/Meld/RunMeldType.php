@@ -5,7 +5,11 @@ use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 use Saki\Util\ArrayList;
 
+/**
+ * @package Saki\Meld
+ */
 class RunMeldType extends MeldType {
+    //region MeldType impl
     function getTileCount() {
         return 3;
     }
@@ -30,7 +34,7 @@ class RunMeldType extends MeldType {
         return $isConsecutiveNumber;
     }
 
-    function getPossibleTileLists(Tile $firstTile) {
+    protected function getPossibleTileLists(Tile $firstTile) {
         if ($firstTile->isSuit() && $firstTile->getNumber() <= 7) {
             $nextTile = $firstTile->getNextTile();
             $nextNextTile = $nextTile->getNextTile();
@@ -43,5 +47,6 @@ class RunMeldType extends MeldType {
     function getWinSetType() {
         return WinSetType::create(WinSetType::HAND_WIN_SET);
     }
+    //endregion
 }
 

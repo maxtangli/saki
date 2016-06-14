@@ -9,6 +9,7 @@ use Saki\Game\Riichi;
 use Saki\Game\Round;
 use Saki\Game\SeatWind;
 use Saki\Tile\Tile;
+use Saki\Util\ArrayList;
 
 /**
  * @package Saki\Command\PrivateCommand
@@ -18,16 +19,17 @@ class RiichiCommand extends PrivateCommand {
     static function getParamDeclarations() {
         return [SeatWindParamDeclaration::class, TileParamDeclaration::class];
     }
-    //endregion
 
-    /**
-     * @param Round $round
-     * @param SeatWind $actor
-     * @param Tile $tile
-     */
-    function __construct(Round $round, SeatWind $actor, Tile $tile) {
-        parent::__construct($round, [$actor, $tile]);
+    protected static function getExecutableListImpl(Round $round, SeatWind $actor, Area $actorArea) {
+        return new ArrayList();
+
+        $waitingAnalyzer = $round->getGameData()->getWinAnalyzer()->getWaitingAnalyzer();
+        $hand = $actorArea->getHand();
+        $futureWaitingList = $waitingAnalyzer->analyzePrivate($hand->getPrivate(), $hand->getMelded());
+        $otherParamsList = $futureWaitingList->toDiscardList();
+        return static::createMany($round, $actor, $otherParamsList);
     }
+    //endregion
 
     /**
      * @return Tile

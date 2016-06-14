@@ -1,7 +1,6 @@
 <?php
 
 use Saki\Meld\MeldList;
-use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 use Saki\Util\ArrayList;
 use Saki\Win\Waiting\FutureWaiting;
@@ -10,51 +9,54 @@ class WaitingAnalyzerTest extends \SakiTestCase {
     /**
      * @dataProvider publicDataProvider
      */
-    function testPublicData($onHandTileListString, $declareString, $expected) {
+    function testPublicData(string $expected, string $public, string $melded) {
         $round = $this->getInitRound();
         $waitingAnalyzer = $round->getGameData()->getWinAnalyzer()->getWaitingAnalyzer();
-
-        $public = TileList::fromString($onHandTileListString);
-        $declare = MeldList::fromString($declareString);
-
-        $waitingTileList = $waitingAnalyzer->analyzePublic($public, $declare);
-        $waitingTileStrings = (new ArrayList())->fromSelect($waitingTileList, function (Tile $waitingTile) {
-            return $waitingTile->__toString();
-        })->toArray();
-        $this->assertEquals($expected, $waitingTileStrings,
-            sprintf('[%s],[%s],[%s],[%s]',
-                $onHandTileListString, $declareString, implode(',', $expected), implode(',', $waitingTileStrings)));
+        $waitingTileList = $waitingAnalyzer->analyzePublic(
+            TileList::fromString($public),
+            MeldList::fromString($melded)
+        );
+        $this->assertArrayList($expected, $waitingTileList);
     }
 
     function publicDataProvider() {
         return [
             // not reachable
-            ['123456789m124sE', '', []],
+            ['', '123456789m124sE', ''],
             // 4+1
-            ['123456789m12sEE', '', ['3s']],
-            ['123456789m23sWW', '', ['1s', '4s']],
-            ['123456789m123sS', '', ['S']],
+            ['3s', '123456789m12sEE', ''],
+            ['14s', '123456789m23sWW', ''],
+            ['S', '123456789m123sS', ''],
+            ['S', '123456789mS', '123s'],
             // 4+1 triple
-            ['111222333444sE', '', ['E']],
+            ['E', '111222333444sE', ''],
+            ['E', '111222333sE', '444s'],
+            // seven pairs
+            ['1s', '133557799s1133m', ''],
+            ['', '133557799s1111m', ''],
+            // thirteen orphans todo
+            ['19m19p19sESWNCPF', '19m19p19sESWNCPF', ''],
+            // complex
+            ['24567m', '3333444455566m', ''],
         ];
     }
 
     /**
      * @dataProvider privateDataProvider
      */
-    function testPrivateData($onHandTileListString, $declareString, $expected) {
+    function testPrivateData($onHandTileListString, $meldedString, $expected) {
         $round = $this->getInitRound();
         $waitingAnalyzer = $round->getGameData()->getWinAnalyzer()->getWaitingAnalyzer();
         $private = TileList::fromString($onHandTileListString);
-        $declare = MeldList::fromString($declareString);
+        $melded = MeldList::fromString($meldedString);
 
-        $futureWaitingList = $waitingAnalyzer->analyzePrivate($private, $declare);
+        $futureWaitingList = $waitingAnalyzer->analyzePrivate($private, $melded);
         $discardedTileStrings = (new ArrayList())->fromSelect($futureWaitingList, function (FutureWaiting $futureWaiting) {
             return $futureWaiting->getDiscard()->__toString();
         })->toArray();
         $this->assertEquals($expected, $discardedTileStrings,
             sprintf('[%s],[%s],[%s],[%s]',
-                $onHandTileListString, $declareString, implode(',', $expected), implode(',', $discardedTileStrings)));
+                $onHandTileListString, $meldedString, implode(',', $expected), implode(',', $discardedTileStrings)));
     }
 
     function privateDataProvider() {

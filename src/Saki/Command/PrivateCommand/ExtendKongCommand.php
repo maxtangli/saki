@@ -9,7 +9,6 @@ use Saki\Game\Area;
 use Saki\Game\Claim;
 use Saki\Game\Open;
 use Saki\Game\Round;
-use Saki\Game\SeatWind;
 use Saki\Game\Target;
 use Saki\Game\TargetType;
 use Saki\Meld\Meld;
@@ -25,16 +24,6 @@ class ExtendKongCommand extends PrivateCommand {
         return [SeatWindParamDeclaration::class, TileParamDeclaration::class, MeldParamDeclaration::class];
     }
     //endregion
-
-    /**
-     * @param Round $round
-     * @param SeatWind $actor
-     * @param Tile $tile
-     * @param Meld $meld
-     */
-    function __construct(Round $round, SeatWind $actor, Tile $tile, Meld $meld) {
-        parent::__construct($round, [$actor, $tile, $meld]);
-    }
 
     /**
      * @return Tile

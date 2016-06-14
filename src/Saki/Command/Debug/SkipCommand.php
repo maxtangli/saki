@@ -16,14 +16,6 @@ class SkipCommand extends Command {
     //endregion
 
     /**
-     * @param Round $round
-     * @param int $skipCount
-     */
-    function __construct(Round $round, int $skipCount) {
-        parent::__construct($round, [$skipCount]);
-    }
-
-    /**
      * @return int
      */
     function getSkipCount() {
@@ -44,9 +36,9 @@ class SkipCommand extends Command {
     }
 
     protected function executeImpl(Round $round) {
-        $round = $round;
-        $nTodo = $this->getSkipCount();
-        while ($nTodo-- > 0 && $this->isPrivate()) {
+
+        $nRemainSkip = $this->getSkipCount();
+        while ($nRemainSkip-- > 0 && $this->isPrivate()) {
             $currentSeatWind = $round->getCurrentSeatWind();
             $scripts = sprintf('mockHand %s C; discard %s C; passAll', $currentSeatWind, $currentSeatWind);
             $round->process($scripts);

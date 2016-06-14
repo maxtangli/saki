@@ -14,13 +14,6 @@ class PassAllCommand extends Command {
     }
     //endregion
 
-    /**
-     * @param Round $round
-     */
-    function __construct(Round $round) {
-        parent::__construct($round, []);
-    }
-
     //region Command impl
     protected function executableImpl(Round $round) {
         $phaseState = $round->getPhaseState();

@@ -51,7 +51,7 @@ abstract class ParamDeclaration {
         return $this->paramString;
     }
 
-    //region subuse Saki\Game\Round; class hooks
+    //region subclass hooks
     /**
      * @return mixed
      */

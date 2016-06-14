@@ -4,6 +4,7 @@ use Saki\Meld\Meld;
 use Saki\Meld\PairMeldType;
 use Saki\Meld\QuadMeldType;
 use Saki\Meld\ThirteenOrphanMeldType;
+use Saki\Meld\WeakThirteenOrphanMeldType;
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 use Saki\Util\ArrayList;
@@ -110,5 +111,17 @@ class MeldTest extends \SakiTestCase {
             [true, true, true],
             [false, true, true],
         ];
+    }
+
+    function testWeakThirteenOrphan() {
+        $mt = WeakThirteenOrphanMeldType::create();
+
+        $this->assertArrayList('19m19p19sESWNCPF', $mt->getWaitingTileList(TileList::fromString('19m19p19sESWNCPF')));
+        $this->assertArrayList('9m', $mt->getWaitingTileList(TileList::fromString('11m19p19sESWNCPF')));
+
+        $this->assertFalse($mt->valid(TileList::fromString('111m9p19sESWNCPF')));
+
+//        $all = $mt->getPossibleTileLists(Tile::fromString('1m'));
+//        $this->assertCount(13*13, $all);
     }
 }

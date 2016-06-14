@@ -19,10 +19,10 @@ class SeriesTypeTest extends \SakiTestCase {
         $this->assertTrue($s->existIn($allMeldList), sprintf('[%s],[%s].', $allMeldList, $s));
 
         $privateMeldList = MeldList::fromString($meldListString);
-        $declare = new MeldList();
+        $melded = new MeldList();
         $winTile = Tile::fromString($tileString);
         $target = new Target($winTile, TargetType::create(TargetType::KEEP), SeatWind::createEast());
-        $subHand = new SubHand($privateMeldList, $declare, $target);
+        $subHand = new SubHand($privateMeldList, $melded, $target);
 
         $expectedWaitingType = WaitingType::create($expectedWaitingTypeValue);
         $actualWaitingType = $s->getWaitingType($subHand);

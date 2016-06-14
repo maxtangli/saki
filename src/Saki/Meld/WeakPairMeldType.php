@@ -5,7 +5,11 @@ use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 use Saki\Win\Waiting\WaitingType;
 
+/**
+ * @package Saki\Meld
+ */
 class WeakPairMeldType extends WeakMeldType {
+    //region MeldType impl
     function getTileCount() {
         return 1;
     }
@@ -14,10 +18,12 @@ class WeakPairMeldType extends WeakMeldType {
         return true;
     }
 
-    function getPossibleTileLists(Tile $firstTile) {
+    protected function getPossibleTileLists(Tile $firstTile) {
         return $this->getPossibleTileListsImplByRepeat($firstTile);
     }
+    //endregion
 
+    //region WeakMeldType impl
     function getTargetMeldType() {
         return PairMeldType::create();
     }
@@ -33,4 +39,5 @@ class WeakPairMeldType extends WeakMeldType {
     function getWinSetType() {
         return WinSetType::create(WinSetType::PURE_WEAK);
     }
+    //endregion
 }

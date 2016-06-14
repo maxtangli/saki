@@ -5,7 +5,21 @@ use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 use Saki\Win\Waiting\WaitingType;
 
+/**
+ * @package Saki\Meld
+ */
 class WeakRunMeldType extends WeakMeldType {
+    /**
+     * @param TileList $validCountTileList
+     * @return int[] list($diff, $min, $max)
+     */
+    protected function getNumbers(TileList $validCountTileList) {
+        $numberList = $validCountTileList->toTileNumberList(); // validate
+        $diff = abs($numberList[0] - $numberList[1]);
+        return [$diff, $numberList->getMin(), $numberList->getMax()];
+    }
+
+    //region MeldType impl
     function getTileCount() {
         return 2;
     }
@@ -15,7 +29,7 @@ class WeakRunMeldType extends WeakMeldType {
         return $validCountTileList->isAllSameSuit() && in_array($diff, [1, 2]);
     }
 
-    function getPossibleTileLists(Tile $firstTile) {
+    protected function getPossibleTileLists(Tile $firstTile) {
         $result = [];
         if ($firstTile->isSuit() && $firstTile->getNumber() <= 8) {
             $nextTile = $firstTile->getNextTile();
@@ -28,7 +42,9 @@ class WeakRunMeldType extends WeakMeldType {
         }
         return $result;
     }
+    //endregion
 
+    //region WeakMeldType impl
     function getTargetMeldType() {
         return RunMeldType::create();
     }
@@ -72,14 +88,5 @@ class WeakRunMeldType extends WeakMeldType {
     function getWinSetType() {
         return WinSetType::create(WinSetType::PURE_WEAK);
     }
-
-    /**
-     * @param TileList $validCountTileList
-     * @return int[] list($diff, $min, $max)
-     */
-    protected function getNumbers(TileList $validCountTileList) {
-        $numberList = $validCountTileList->toTileNumberList(); // validate
-        $diff = abs($numberList[0] - $numberList[1]);
-        return [$diff, $numberList->getMin(), $numberList->getMax()];
-    }
+    //endregion
 }

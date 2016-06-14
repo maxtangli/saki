@@ -10,7 +10,7 @@ use Saki\Util\ArrayList;
  */
 class CommandProvider {
     private $round;
-    private $provideCommandSet;
+    private $playerCommandSet;
 
     /**
      * @param Round $round
@@ -18,10 +18,7 @@ class CommandProvider {
      */
     function __construct(Round $round, CommandSet $commandSet) {
         $this->round = $round;
-        $this->provideCommandSet = $commandSet->toArrayList()->where(function (string $command) {
-            return is_subclass_of($command, PlayerCommand::class)
-            && !$command::isDebug();
-        });
+        $this->playerCommandSet = $commandSet->toPlayerCommandSet();
     }
 
     /**
@@ -34,8 +31,8 @@ class CommandProvider {
     /**
      * @return ArrayList
      */
-    function getProvideCommandSet() {
-        return $this->provideCommandSet;
+    function getPlayerCommandSet() {
+        return $this->playerCommandSet;
     }
 
     /**
@@ -48,7 +45,7 @@ class CommandProvider {
             return $class::getExecutables($round, $actor);
         };
         $executables = (new ArrayList())
-            ->fromSelectMany($this->getProvideCommandSet(), $getClassExecutables)
+            ->fromSelectMany($this->getPlayerCommandSet(), $getClassExecutables)
             ->toArray();
         return $executables;
     }

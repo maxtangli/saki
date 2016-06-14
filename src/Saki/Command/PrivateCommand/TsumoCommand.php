@@ -5,7 +5,6 @@ use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\PrivateCommand;
 use Saki\Game\Area;
 use Saki\Game\Round;
-use Saki\Game\SeatWind;
 use Saki\Phase\OverPhaseState;
 use Saki\Win\Result\WinResult;
 use Saki\Win\Result\WinResultInput;
@@ -21,14 +20,6 @@ class TsumoCommand extends PrivateCommand {
     }
     //endregion
 
-    /**
-     * @param Round $round
-     * @param SeatWind $actor
-     */
-    function __construct(Round $round, SeatWind $actor) {
-        parent::__construct($round, [$actor]);
-    }
-
     //region PrivateCommand impl
     protected function matchOther(Round $round, Area $actorArea) {
         $winReport = $round->getWinReport($this->getActor());
@@ -36,7 +27,7 @@ class TsumoCommand extends PrivateCommand {
     }
 
     protected function executePlayerImpl(Round $round, Area $actorArea) {
-        $round = $round;
+
         $actor = $this->getActor();
 
         $round->getWall()->getDeadWall()->openUraDoraIndicator();

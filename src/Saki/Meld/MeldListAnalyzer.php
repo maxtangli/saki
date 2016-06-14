@@ -116,7 +116,7 @@ class MeldListAnalyzer {
             return [];
         }
 
-        $possibleCuts = $this->getPossibleCuts($orderedTileList, $meldType);
+        $possibleCuts = $meldType->getPossibleCuts($orderedTileList);
         if (empty($possibleCuts)) {
             return [];
         }
@@ -174,24 +174,5 @@ class MeldListAnalyzer {
             $meldList->insertFirst($beginMeld);
         }
         return $fullMeldLists;
-    }
-
-    /**
-     * @param TileList $sourceTileList
-     * @param MeldType $beginMeldType
-     * @return TileList[] Returns [[$beginTileList, $remainTileList]...] if success, [] otherwise.
-     *                    Note that WeakRun may return multiple possible cuts.
-     */
-    protected function getPossibleCuts(TileList $sourceTileList, MeldType $beginMeldType) {
-        if ($sourceTileList->isEmpty()) {
-            return [];
-        }
-
-        $meldTileLists = $beginMeldType->getPossibleTileLists($sourceTileList[0]);
-        $accumulator = function (array $result, TileList $meldTileList) use ($sourceTileList) {
-            $twoCut = $sourceTileList->toTwoCut($meldTileList->toArray());
-            return $twoCut !== false ? array_merge($result, [$twoCut]) : $result;
-        };
-        return (new ArrayList($meldTileLists))->getAggregated([], $accumulator);
     }
 }

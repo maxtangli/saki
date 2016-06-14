@@ -8,7 +8,6 @@ use Saki\Command\PublicCommand;
 use Saki\Game\Area;
 use Saki\Game\Claim;
 use Saki\Game\Round;
-use Saki\Game\SeatWind;
 use Saki\Meld\RunMeldType;
 use Saki\Phase\PrivatePhaseState;
 use Saki\Tile\Tile;
@@ -23,17 +22,6 @@ class ChowCommand extends PublicCommand {
     }
 
     //endregion
-
-    /**
-     * @param Round $round
-     * @param SeatWind $actor
-     * @param Tile $tile1
-     * @param Tile $tile2
-     */
-    function __construct(Round $round,
-                         SeatWind $actor, Tile $tile1, Tile $tile2) {
-        parent::__construct($round, [$actor, $tile1, $tile2]);
-    }
 
     /**
      * @return Tile

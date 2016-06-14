@@ -6,9 +6,11 @@ use Saki\Meld\MeldList;
 use Saki\Meld\MeldListAnalyzer;
 use Saki\Meld\PairMeldType;
 use Saki\Meld\RunMeldType;
+use Saki\Meld\ThirteenOrphanMeldType;
 use Saki\Meld\TripleMeldType;
 use Saki\Meld\WeakPairMeldType;
 use Saki\Meld\WeakRunMeldType;
+use Saki\Meld\WeakThirteenOrphanMeldType;
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 use Saki\Win\Series\SeriesAnalyzer;
@@ -28,7 +30,7 @@ use Saki\Win\Series\SeriesAnalyzer;
  * @package Saki\Win
  */
 class WaitingAnalyzer {
-    private $meldListAnalyzer;
+    private $publicMeldListAnalyzer;
     private $seriesAnalyzer;
 
     /**
@@ -39,16 +41,17 @@ class WaitingAnalyzer {
             RunMeldType::create(), TripleMeldType::create(),
             PairMeldType::create(),
             WeakRunMeldType::create(), WeakPairMeldType::create(),
+            WeakThirteenOrphanMeldType::create(),
         ];
-        $this->meldListAnalyzer = new MeldListAnalyzer($meldTypes, 1);
+        $this->publicMeldListAnalyzer = new MeldListAnalyzer($meldTypes, 1);
         $this->seriesAnalyzer = $seriesAnalyzer;
     }
 
     /**
      * @return MeldListAnalyzer
      */
-    function getMeldListAnalyzer() {
-        return $this->meldListAnalyzer;
+    function getPublicMeldListAnalyzer() {
+        return $this->publicMeldListAnalyzer;
     }
 
     /**
@@ -60,12 +63,12 @@ class WaitingAnalyzer {
 
     /**
      * @param TileList $private
-     * @param MeldList $declare
+     * @param MeldList $melded
      * @param Tile $tile
      * @return bool
      */
-    function isWaitingAfterDiscard(TileList $private, MeldList $declare, Tile $tile) {
-        $futureWaitingList = $this->analyzePrivate($private, $declare);
+    function isWaitingAfterDiscard(TileList $private, MeldList $melded, Tile $tile) {
+        $futureWaitingList = $this->analyzePrivate($private, $melded);
         $isWaiting = $futureWaitingList->count() > 0;
         if (!$isWaiting) {
             return false;
@@ -84,19 +87,24 @@ class WaitingAnalyzer {
      *
      * Used in: ableRiichi.
      * @param TileList $private
-     * @param MeldList $declare
+     * @param MeldList $melded
      * @return FutureWaitingList
      */
-    function analyzePrivate(TileList $private, MeldList $declare) {
-        // todo validate private
+    function analyzePrivate(TileList $private, MeldList $melded) {
+        // todo validate complete
+        $valid = $private->getSize()->isPrivate();
+        if (!$valid) {
+            throw new \InvalidArgumentException();
+        }
+
         $futureWaitingList = new FutureWaitingList();
 
         // discard each tile and test if remained public has waiting
-        $uniqueTiles = array_unique($private->toArray());
+        $uniqueTileList = $private->getCopy()->distinct(Tile::getEqual(true));
         $public = new TileList();
-        foreach ($uniqueTiles as $discard) {
-            $public->fromSelect($private)->remove($discard);
-            $waiting = $this->analyzePublic($public, $declare);
+        foreach ($uniqueTileList as $discard) {
+            $public->fromSelect($private)->remove($discard, Tile::getEqual(true));
+            $waiting = $this->analyzePublic($public, $melded);
             if ($waiting->count() > 0) {
                 $futureWaiting = new FutureWaiting($discard, $waiting);
                 $futureWaitingList->insertLast($futureWaiting);
@@ -111,22 +119,22 @@ class WaitingAnalyzer {
      *
      * Used in: exhaustiveDraw, furiten.
      * @param TileList $public public hand
-     * @param MeldList $declare
+     * @param MeldList $melded
      * @return TileList unique sorted waiting tile list
      */
-    function analyzePublic(TileList $public, MeldList $declare) {
-        // todo validate public
+    function analyzePublic(TileList $public, MeldList $melded) {
+        // todo validate public, complete
         // break public into possible MeldLists
         // where each MeldList contains at most 1 WeakMeldType
         $orderedHand = $public->getCopy()->orderByTileID();
-        $setListList = $this->getMeldListAnalyzer()
+        $setListList = $this->getPublicMeldListAnalyzer()
             ->analyzeMeldListList($orderedHand);
 
         // collect each MeldList's waiting as final waiting
         $waiting = new TileList();
         foreach ($setListList as $setList) {
             $waiting->concat(
-                $this->getSetListWaiting($setList, $declare, $waiting)
+                $this->getSetListWaiting($setList, $melded, $waiting)
             );
         }
         return $waiting->orderByTileID();
@@ -146,15 +154,15 @@ class WaitingAnalyzer {
 
     /**
      * @param MeldList $setList
-     * @param MeldList $declare
+     * @param MeldList $melded
      * @param TileList $ignore
      * @return TileList
      */
-    protected function getSetListWaiting(MeldList $setList, MeldList $declare, TileList $ignore) {
+    protected function getSetListWaiting(MeldList $setList, MeldList $melded, TileList $ignore) {
         $waiting = new TileList();
         $currentIgnore = $ignore->getCopy();
         foreach ($this->getSourceList($setList) as $source) {
-            $sourceWaiting = $this->getSourceWaiting($setList, $declare, $currentIgnore, $source);
+            $sourceWaiting = $this->getSourceWaiting($setList, $melded, $currentIgnore, $source);
             $waiting->concat($sourceWaiting);
             $currentIgnore->concat($sourceWaiting);
         }
@@ -167,31 +175,36 @@ class WaitingAnalyzer {
      */
     protected function getSourceList(MeldList $setList) {
         // a setList's waiting tiles must come from:
-        // - case1. two pairs'
+        
+        // - case1. two pairs' for 4+1 series
         $pairList = $setList->toFiltered([PairMeldType::create()]);
         if (count($pairList) == 2) {
             return $pairList;
         }
 
-        // - case2. one weakPair's or one weakRun's
-        $weakList = $setList->toFiltered([WeakPairMeldType::create(), WeakRunMeldType::create()]);
+        // - case2. one weakPair's for seven-pairs series
+        //       or one weakRun's for 4+1 series
+        //       or one weakThirteenOrphan's for thirteen-orphan case
+        $weakList = $setList->toFiltered([WeakPairMeldType::create(), WeakRunMeldType::create(), WeakThirteenOrphanMeldType::create()]);
         if (count($weakList) == 1) {
             return $weakList;
         }
-
-        throw new \LogicException(
-            sprintf('Invalid logic. $setList[%s].', $setList)
-        );
+        
+        // otherwise: empty. todo strict prove
+        return new MeldList();
+//        throw new \LogicException(
+//            sprintf('Invalid logic. $setList[%s].', $setList)
+//        );
     }
 
     /**
      * @param MeldList $setList
-     * @param MeldList $declare
+     * @param MeldList $melded
      * @param TileList $ignore
      * @param Meld $source
      * @return TileList
      */
-    protected function getSourceWaiting(MeldList $setList, MeldList $declare, TileList $ignore, Meld $source) {
+    protected function getSourceWaiting(MeldList $setList, MeldList $melded, TileList $ignore, Meld $source) {
         $waiting = new TileList();
 
         $seriesAnalyzer = $this->getSeriesAnalyzer();
@@ -205,7 +218,7 @@ class WaitingAnalyzer {
             $sourceFuture = $source->toTargetMeld($futureTile);
             $all = $setList->getCopy()
                 ->replace($source, $sourceFuture)
-                ->concat($declare);
+                ->concat($melded);
 
             // if with the new Meld any Series exist, $futureTile is a valid WaitingTile
             if ($seriesAnalyzer->analyzeSeries($all)->isExist()) {

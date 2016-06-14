@@ -15,6 +15,7 @@ class WaitingType extends Enum {
      */
     function getPriority() {
         $m = [ // todo confirm rule about orders
+            self::ORPHAN_WAITING => 7,
             self::TWO_SIDE_RUN_WAITING => 6,
             self::ONE_SIDE_RUN_WAITING => 5,
             self::MIDDLE_RUN_WAITING => 4,
@@ -31,6 +32,7 @@ class WaitingType extends Enum {
     const MIDDLE_RUN_WAITING = 3; // 嵌張待ち 7 9 -> 789
     const PAIR_WAITING = 4; // 単騎待ち 1 -> 11
     const TRIPLE_WAITING = 5; // 双碰待ち 11 -> 111
+    const ORPHAN_WAITING = 6;
 
     /**
      * @return bool

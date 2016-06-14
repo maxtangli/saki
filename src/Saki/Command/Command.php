@@ -54,7 +54,7 @@ abstract class Command {
         return strpos(get_called_class(), 'Ron') !== false;
     }
 
-    //region subuse Saki\Game\Round; class hooks
+    //region subclass hooks
     /**
      * @return ParamDeclaration[]
      */
@@ -131,18 +131,18 @@ abstract class Command {
         $this->executeImpl($this->getRound());
     }
 
-    //region subuse Saki\Game\Round; class hooks
+    //region subclass hooks
     /**
      * @param Round $round
      * @return bool
-     * 
+     *
      */
     abstract protected function executableImpl(Round $round);
 
     /**
      * @param Round $round
      * @return
-     * 
+     *
      */
     abstract protected function executeImpl(Round $round);
     //endregion

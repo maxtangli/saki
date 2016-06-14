@@ -6,17 +6,15 @@ use Saki\Tile\TileList;
 
 /**
  * The MeldType which can be converted to target MeldType by adding 1 tile.
+ * Used in: WaitingAnalyzer.
  * @package Saki\Meld
  */
 abstract class WeakMeldType extends MeldType {
+    //region MeldType override
     function hasTargetMeldType() {
         return true;
     }
-
-    /**
-     * @return bool
-     */
-    abstract function getTargetMeldType();
+    //endregion
 
     /**
      * @param TileList $meldTileList
@@ -29,8 +27,6 @@ abstract class WeakMeldType extends MeldType {
         return $this->getWaitingTileListImpl($meldTileList);
     }
 
-    abstract protected function getWaitingTileListImpl(TileList $validMeldTileList);
-
     /**
      * @param TileList $meldTileList
      * @return WaitingType
@@ -42,5 +38,22 @@ abstract class WeakMeldType extends MeldType {
         return $this->getWaitingTypeImpl($meldTileList);
     }
 
+    //region subclass hooks
+    /**
+     * @return bool
+     */
+    abstract function getTargetMeldType();
+
+    /**
+     * @param TileList $validMeldTileList
+     * @return TileList
+     */
+    abstract protected function getWaitingTileListImpl(TileList $validMeldTileList);
+
+    /**
+     * @param TileList $validMeldTileList
+     * @return WaitingType
+     */
     abstract protected function getWaitingTypeImpl(TileList $validMeldTileList);
+    //endregion
 }

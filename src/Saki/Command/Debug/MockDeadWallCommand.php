@@ -19,17 +19,6 @@ class MockDeadWallCommand extends Command {
     //endregion
 
     /**
-     * @param Round $round
-     * @param TileList $tileList
-     * @param int $openedDoraIndicatorCount
-     * @param bool $uraDoraOpened
-     */
-    function __construct(Round $round,
-                         TileList $tileList, int $openedDoraIndicatorCount, bool $uraDoraOpened) {
-        parent::__construct($round, [$tileList, $openedDoraIndicatorCount, $uraDoraOpened]);
-    }
-
-    /**
      * @return TileList
      */
     function getTileList() {

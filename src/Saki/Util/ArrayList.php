@@ -519,7 +519,7 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
         if ($equal !== null) {
             $result = new ArrayList();
             foreach ($this as $v) {
-                $duplicate = $result->any(Utils::toPredicate($v));
+                $duplicate = $result->any(Utils::toPredicate($v, $equal));
                 if (!$duplicate) {
                     $result->insertLast($v);
                 }

@@ -7,6 +7,7 @@ use Saki\Game\Round;
 use Saki\Game\SeatWind;
 use Saki\Game\Turn;
 use Saki\Tile\Tile;
+use Saki\Util\ArrayList;
 use Saki\Win\Point\PointList;
 use Saki\Win\Result\ResultType;
 
@@ -21,7 +22,16 @@ class SakiTestCase extends \PHPUnit_Framework_TestCase {
         }
         parent::assertEquals($expected, $actual, $message, $delta, $maxDepth, $canonicalize, $ignoreCase);
     }
+    //endregion
 
+    //region Utils
+    /**
+     * @param string $expected
+     * @param ArrayList $arrayList
+     */
+    protected function assertArrayList(string $expected, ArrayList $arrayList) {
+        $this->assertEquals($expected, $arrayList->__toString());
+    }
     //endregion
 
     //region get Round

@@ -5,7 +5,6 @@ use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\PrivateCommand;
 use Saki\Game\Area;
 use Saki\Game\Round;
-use Saki\Game\SeatWind;
 use Saki\Phase\OverPhaseState;
 use Saki\Win\Result\AbortiveDrawResult;
 use Saki\Win\Result\ResultType;
@@ -19,14 +18,6 @@ class NineNineDrawCommand extends PrivateCommand {
         return [SeatWindParamDeclaration::class];
     }
     //endregion
-
-    /**
-     * @param Round $round
-     * @param SeatWind $actor
-     */
-    function __construct(Round $round, SeatWind $actor) {
-        parent::__construct($round, [$actor]);
-    }
 
     //region PrivateCommand impl
     protected function matchOther(Round $round, Area $actorArea) {

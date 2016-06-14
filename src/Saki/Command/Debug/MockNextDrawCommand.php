@@ -17,14 +17,6 @@ class MockNextDrawCommand extends Command {
     //endregion
 
     /**
-     * @param Round $round
-     * @param Tile $mockTile
-     */
-    function __construct(Round $round, Tile $mockTile) {
-        parent::__construct($round, [$mockTile]);
-    }
-
-    /**
      * @return Tile
      */
     function getMockTile() {

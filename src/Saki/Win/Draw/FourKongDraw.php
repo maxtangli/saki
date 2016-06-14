@@ -15,8 +15,8 @@ class FourKongDraw extends Draw {
     protected function isDrawImpl(Round $round) {
         $areaList = $round->getAreaList();
         $kongCountList = $areaList->toArrayList(function (Area $area) {
-            $declare = $area->getHand()->getMelded();
-            $kongCount = $declare->toFiltered([QuadMeldType::create()])->count();
+            $melded = $area->getHand()->getMelded();
+            $kongCount = $melded->toFiltered([QuadMeldType::create()])->count();
             return $kongCount;
         });
 
