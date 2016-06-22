@@ -79,9 +79,9 @@ class Area {
         $phase = $this->getRound()->getPhase();
         $isCurrentSeatWind = $this->isCurrentSeatWind();
         return ($phase->isPrivate() && $isCurrentSeatWind)
-            || ($phase->isPublic() && !$isCurrentSeatWind);
+        || ($phase->isPublic() && !$isCurrentSeatWind);
     }
-    
+
     /**
      * @return int
      */

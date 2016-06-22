@@ -67,7 +67,7 @@ class FuritenTest extends \SakiTestCase {
             $round, 'E',
             'mockHand E C; discard E C; passAll',
             'mockHand S 1m; discard S 1m',
-            'mockHand E 111m; pung E 1m 1m; extendKong E 1m 111m; passAll',
+            'mockHand E 111m; pung E 1m1m; extendKong E 1m 111m; passAll',
             'skip 5; mockHand E 23789m44sPPP; mockHand S 4m; discard S 4m'
         );
     }
@@ -146,10 +146,10 @@ class FuritenTest extends \SakiTestCase {
         $this->assertEquals(1, $round->getTurn()->getCircleCount());
         $this->assertFuriten(
             $round, 'S',
-            'mockHand E 11sC; pung E 1s 1s; discard E C',
-            'mockHand W CCC; pung W C C; discard W C',
-            'mockHand E CCC; pung E C C; discard E C',
-            'mockHand W CC1s; pung W C C; discard W 1s'
+            'mockHand E 11sC; pung E 1s1s; discard E C',
+            'mockHand W CCC; pung W CC; discard W C',
+            'mockHand E CCC; pung E CC; discard E C',
+            'mockHand W CC1s; pung W CC; discard W 1s'
         );
         $this->assertEquals(3, $round->getTurn()->getCircleCount());
     }

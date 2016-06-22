@@ -6,7 +6,9 @@ use Saki\Command\PrivateCommand;
 use Saki\Command\PublicCommand;
 use Saki\Game\Area;
 use Saki\Game\Round;
+use Saki\Game\SeatWind;
 use Saki\Phase\OverPhaseState;
+use Saki\Util\ArrayList;
 use Saki\Win\Result\WinResult;
 use Saki\Win\Result\WinResultInput;
 use Saki\Win\WinState;
@@ -19,6 +21,11 @@ class RonCommand extends PublicCommand {
     static function getParamDeclarations() {
         return [SeatWindParamDeclaration::class];
     }
+
+    protected static function getExecutableListImpl(Round $round, SeatWind $actor, Area $actorArea) {
+        return static::createMany($round, $actor, new ArrayList([[]]), true);
+    }
+
     //endregion
 
     //region PublicCommand impl

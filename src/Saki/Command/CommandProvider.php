@@ -37,16 +37,15 @@ class CommandProvider {
 
     /**
      * @param SeatWind $actor
-     * @return Command[]
+     * @return ArrayList ArrayList of PlayerCommand.
      */
-    function getExecutables(SeatWind $actor) {
+    function getExecutableList(SeatWind $actor) {
         $round = $this->getRound();
-        $getClassExecutables = function (string $class) use ($round, $actor) {
-            return $class::getExecutables($round, $actor);
+        $getClassExecutableList = function (string $class) use ($round, $actor) {
+            return $class::getExecutableList($round, $actor);
         };
-        $executables = (new ArrayList())
-            ->fromSelectMany($this->getPlayerCommandSet(), $getClassExecutables)
-            ->toArray();
-        return $executables;
+        $allExecutableList = (new ArrayList())
+            ->fromSelectMany($this->getPlayerCommandSet(), $getClassExecutableList);
+        return $allExecutableList;
     }
 }

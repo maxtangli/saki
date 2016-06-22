@@ -1,63 +1,57 @@
 <?php
 namespace Saki\Command\PublicCommand;
 
-use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
-use Saki\Command\ParamDeclaration\TileParamDeclaration;
 use Saki\Command\PrivateCommand;
+use Saki\Command\PublicClaimCommand;
 use Saki\Command\PublicCommand;
 use Saki\Game\Area;
-use Saki\Game\Claim;
 use Saki\Game\Round;
+use Saki\Game\SeatWind;
 use Saki\Meld\TripleMeldType;
-use Saki\Phase\PrivatePhaseState;
 use Saki\Tile\Tile;
+use Saki\Tile\TileList;
+use Saki\Util\ArrayList;
+use Saki\Util\Utils;
 
 /**
  * @package Saki\Command\PublicCommand
  */
-class PungCommand extends PublicCommand {
+class PungCommand extends PublicClaimCommand {
     //region Command impl
-    static function getParamDeclarations() {
-        return [SeatWindParamDeclaration::class, TileParamDeclaration::class, TileParamDeclaration::class];
+    protected static function getExecutableListImpl(Round $round, SeatWind $actor, Area $actorArea) {
+        $hand = $actorArea->getHand();
+        $targetTile = $hand->getTarget()->getTile();
+        $public = $hand->getPublic();
+
+        $sameTileList = $public->getCopy()
+            ->where(Utils::toPredicate($targetTile));
+        if ($sameTileList->count() >= 2) {
+            $toTileList = function (Tile $tile1, Tile $tile2) {
+                return (new TileList([$tile1, $tile2]))
+                    ->orderByTileID();
+            };
+            $equal = function (TileList $a, TileList $b) {
+                $tileEqual = Tile::getEqual(true);
+                return $tileEqual($a[0], $b[0]) && $tileEqual($a[1], $b[1]);
+            };
+            $toArray = function (TileList $list) {
+                return [$list];
+            };
+            $otherParamsList = (new ArrayList())
+                ->fromCombination($sameTileList, $toTileList)// handle red
+                ->distinct($equal)
+                ->select($toArray);
+        } else {
+            $otherParamsList = new ArrayList();
+        }
+
+        return static::createMany($round, $actor, $otherParamsList);
     }
     //endregion
 
-    /**
-     * @return Tile
-     */
-    function getTile1() {
-        return $this->getParam(1);
-    }
-
-    /**
-     * @return Tile
-     */
-    function getTile2() {
-        return $this->getParam(2);
-    }
-
-    /**
-     * @return Claim
-     */
-    protected function getClaim() {
-        $targetTile = $this->getActorArea()->getHand()->getTarget()->getTile();
-        $tiles = [$targetTile, $this->getTile1(), $this->getTile2()];
-        return Claim::create(
-            $this->getActor(),
-            $this->getRound()->getTurn(),
-            $tiles, TripleMeldType::create(), false
-        );
-    }
-
-    //region PublicCommand impl
-    protected function matchOther(Round $round, Area $actorArea) {
-        return $this->getClaim()->valid($actorArea);
-    }
-
-    protected function executePlayerImpl(Round $round, Area $actorArea) {
-        $round->toNextPhase(
-            new PrivatePhaseState($this->getActor(), false, $this->getClaim())
-        );
+    //region PublicClaimCommand impl
+    function getClaimMeldType() {
+        return TripleMeldType::create();
     }
     //endregion
 }

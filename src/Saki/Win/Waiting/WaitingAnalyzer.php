@@ -6,7 +6,6 @@ use Saki\Meld\MeldList;
 use Saki\Meld\MeldListAnalyzer;
 use Saki\Meld\PairMeldType;
 use Saki\Meld\RunMeldType;
-use Saki\Meld\ThirteenOrphanMeldType;
 use Saki\Meld\TripleMeldType;
 use Saki\Meld\WeakPairMeldType;
 use Saki\Meld\WeakRunMeldType;
@@ -175,7 +174,7 @@ class WaitingAnalyzer {
      */
     protected function getSourceList(MeldList $setList) {
         // a setList's waiting tiles must come from:
-        
+
         // - case1. two pairs' for 4+1 series
         $pairList = $setList->toFiltered([PairMeldType::create()]);
         if (count($pairList) == 2) {
@@ -189,7 +188,7 @@ class WaitingAnalyzer {
         if (count($weakList) == 1) {
             return $weakList;
         }
-        
+
         // otherwise: empty. todo strict prove
         return new MeldList();
 //        throw new \LogicException(

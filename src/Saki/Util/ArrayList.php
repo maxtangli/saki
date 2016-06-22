@@ -518,7 +518,7 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
         $this->assertWritable();
         if ($equal !== null) {
             $result = new ArrayList();
-            foreach ($this as $v) {
+            foreach ($this->innerArray as $v) {
                 $duplicate = $result->any(Utils::toPredicate($v, $equal));
                 if (!$duplicate) {
                     $result->insertLast($v);
@@ -561,15 +561,59 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
 
     /**
      * @param ArrayList $list
-     * @param callable $arraySelector
+     * @param callable $arrayOrArrayListSelector
      * @return $this
      */
-    function fromSelectMany(ArrayList $list, callable $arraySelector) {
+    function fromSelectMany(ArrayList $list, callable $arrayOrArrayListSelector) {
         $this->assertWritable();
-        $arrays = array_map($arraySelector, $list->innerArray);
-        $this->innerArray = array_reduce($arrays, function (array $carry, array $v) {
-            return array_merge($carry, $v);
+        $arrayOrArrayLists = array_map($arrayOrArrayListSelector, $list->innerArray);
+        $this->innerArray = array_reduce($arrayOrArrayLists, function (array $carry, $v) {
+            $vArray = is_array($v) ? $v : $v->toArray();
+            return array_merge($carry, $vArray);
         }, []);
+        return $this;
+    }
+
+    /**
+     * @param ArrayList $list
+     * @param callable $keySelector
+     * @param callable $groupFilter
+     * @return $this
+     */
+    function fromGroupBy(ArrayList $list, callable $keySelector, callable $groupFilter = null) {
+        $m = [];
+        $register = function (array &$m, $k, $v) {
+            $m[$k] = $m[$k] ?? new ArrayList();
+            $m[$k]->insertLast($v);
+        };
+        foreach ($list as $v) {
+            $k = $keySelector($v);
+            $register($m, $k, $v);
+        }
+
+        $this->innerArray = array_values($m);
+        if ($groupFilter !== null) {
+            $this->where($groupFilter);
+        }
+        return $this;
+    }
+
+    /**
+     * @param ArrayList $list
+     * @param callable $resultSelector
+     * @return $this
+     */
+    function fromCombination(ArrayList $list, callable $resultSelector) {
+        $this->assertWritable();
+        $a = [];
+        foreach ($list->innerArray as $k1 => $v1) {
+            foreach ($list->innerArray as $k2 => $v2) {
+                if ($k1 != $k2) {
+                    $a[] = $resultSelector($v1, $v2);
+                }
+            }
+        }
+        $this->innerArray = $a;
         return $this;
     }
 
@@ -590,7 +634,7 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
         $this->innerArray = $a;
         return $this;
     }
-
+    
     /**
      * @param ArrayList $otherList
      * @return $this

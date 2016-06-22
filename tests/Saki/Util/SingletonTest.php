@@ -11,7 +11,7 @@ class SingletonMockClass2 extends SingletonMockClass1 {
 class SingletonMockClass3 extends SingletonMockClass2 {
 }
 
-class SingletonTest extends \PHPUnit_Framework_TestCase {
+class SingletonTest extends \SakiTestCase {
     function testInheritance() {
         $s1 = SingletonMockClass1::create();
         $s2 = SingletonMockClass2::create();

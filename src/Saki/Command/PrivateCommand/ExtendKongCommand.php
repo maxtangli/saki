@@ -9,11 +9,15 @@ use Saki\Game\Area;
 use Saki\Game\Claim;
 use Saki\Game\Open;
 use Saki\Game\Round;
+use Saki\Game\SeatWind;
 use Saki\Game\Target;
 use Saki\Game\TargetType;
 use Saki\Meld\Meld;
+use Saki\Meld\TripleMeldType;
 use Saki\Phase\PublicPhaseState;
 use Saki\Tile\Tile;
+use Saki\Util\ArrayList;
+use Saki\Util\Utils;
 
 /**
  * @package Saki\Command\PrivateCommand
@@ -22,6 +26,28 @@ class ExtendKongCommand extends PrivateCommand {
     //region Command impl
     static function getParamDeclarations() {
         return [SeatWindParamDeclaration::class, TileParamDeclaration::class, MeldParamDeclaration::class];
+    }
+
+    protected static function getExecutableListImpl(Round $round, SeatWind $actor, Area $actorArea) {
+        $hand = $actorArea->getHand();
+        $private = $hand->getPrivate();
+        $triples = $hand->getMelded()->toFiltered([TripleMeldType::create()]);
+
+        $toOtherParamsList = function (Meld $triple) use ($private) {
+            /** @var Tile $tile */
+            $tile = $triple[0];
+            $toParams = function (Tile $tile) use ($triple) {
+                return [$tile, $triple];
+            };
+            return $private->toArrayList()
+                ->where(Utils::toPredicate($tile))
+                ->distinct(Tile::getEqual(true))// handle red
+                ->select($toParams);
+        };
+        $otherParamsList = (new ArrayList())
+            ->fromSelectMany($triples, $toOtherParamsList);
+
+        return static::createMany($round, $actor, $otherParamsList);
     }
     //endregion
 

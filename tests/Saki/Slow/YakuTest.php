@@ -52,7 +52,7 @@ use Saki\Win\Yaku\Yakuman\ThirteenOrphansYaku;
 use Saki\Win\Yaku\Yakuman2\PureFourConcealedPungsYaku;
 use Saki\Win\Yaku\Yakuman2\PureThirteenOrphansYaku;
 
-class YakuTest extends \PHPUnit_Framework_TestCase {
+class YakuTest extends \SakiTestCase {
     static function assertYakuExist($expected, YakuTestData $yakuTestData, Yaku $yaku) {
         $subTarget = $yakuTestData->toWinSubTarget();
         self::assertEquals($expected, $yaku->existIn($subTarget),
@@ -450,7 +450,7 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
     function testKingSTileWin() {
         $round = YakuTestData::getInitedRound();
 
-        $round->process('mockNextReplace 5m; mockHand E 123s456s789s7777m5m; concealedKong E 7m 7m 7m 7m');
+        $round->process('mockNextReplace 5m; mockHand E 123s456s789s7777m5m; concealedKong E 7m7m7m7m');
         $yakuList = $round->getWinReport($round->getCurrentSeatWind())->getYakuList()->toYakuList();
         $this->assertContains(AfterAKongWinYaku::create(), $yakuList, $yakuList);
     }
@@ -462,7 +462,7 @@ class YakuTest extends \PHPUnit_Framework_TestCase {
             'skip 4',
             'mockHand W 23m123456789s11p',
             'mockHand E 1m; discard E 1m',
-            'mockHand S 11m; pung S 1m 1m; mockHand S 1m; extendKong S 1m 111m'
+            'mockHand S 11m; pung S 1m1m; mockHand S 1m; extendKong S 1m 111m'
         );
         $areaW = $round->getArea(SeatWind::createWest());
 

@@ -5,7 +5,9 @@ use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\PrivateCommand;
 use Saki\Game\Area;
 use Saki\Game\Round;
+use Saki\Game\SeatWind;
 use Saki\Phase\OverPhaseState;
+use Saki\Util\ArrayList;
 use Saki\Win\Result\WinResult;
 use Saki\Win\Result\WinResultInput;
 use Saki\Win\WinState;
@@ -17,6 +19,10 @@ class TsumoCommand extends PrivateCommand {
     //region Command impl
     static function getParamDeclarations() {
         return [SeatWindParamDeclaration::class];
+    }
+
+    protected static function getExecutableListImpl(Round $round, SeatWind $actor, Area $actorArea) {
+        return static::createMany($round, $actor, new ArrayList([[]]), true);
     }
     //endregion
 

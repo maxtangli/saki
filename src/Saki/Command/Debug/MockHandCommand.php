@@ -6,7 +6,9 @@ use Saki\Command\ParamDeclaration\TileListParamDeclaration;
 use Saki\Command\PlayerCommand;
 use Saki\Game\Area;
 use Saki\Game\Round;
+use Saki\Game\SeatWind;
 use Saki\Tile\TileList;
+use Saki\Util\ArrayList;
 
 /**
  * @package Saki\Command\Debug
@@ -16,6 +18,11 @@ class MockHandCommand extends PlayerCommand {
     static function getParamDeclarations() {
         return [SeatWindParamDeclaration::class, TileListParamDeclaration::class];
     }
+
+    protected static function getExecutableListImpl(Round $round, SeatWind $actor, Area $actorArea) {
+        return new ArrayList();
+    }
+
     //endregion
 
     /**

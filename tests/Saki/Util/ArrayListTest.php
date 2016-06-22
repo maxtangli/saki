@@ -4,7 +4,7 @@ namespace ArrayLikeObjectTest;
 
 use Saki\Util\ArrayList;
 
-class ArrayListTest extends \PHPUnit_Framework_TestCase {
+class ArrayListTest extends \SakiTestCase {
     function testIterate() {
         $a = [0, 1, 2, 3, 4];
         $obj = new ArrayList($a);
@@ -97,6 +97,15 @@ class ArrayListTest extends \PHPUnit_Framework_TestCase {
         $obj = new ArrayList($a);
         $this->assertEquals(0, $obj->getMin());
         $this->assertEquals(4, $obj->getMax());
+    }
+
+    function testFromGroupBy() {
+        $source = new ArrayList([1, 2, 2, 3, 3, 3]);
+        $actual = (new ArrayList())->fromGroupBy($source, function ($v) {
+            return $v;
+        });
+        $expected = [new ArrayList([1]), new ArrayList([2, 2]), new ArrayList([3, 3, 3])];
+        $this->assertEquals($expected, $actual->toArray());
     }
 
     /**

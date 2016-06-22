@@ -2,13 +2,16 @@
 namespace Saki\Command\PrivateCommand;
 
 use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
-use Saki\Command\ParamDeclaration\TileParamDeclaration;
+use Saki\Command\ParamDeclaration\TileListParamDeclaration;
 use Saki\Command\PrivateCommand;
 use Saki\Game\Area;
 use Saki\Game\Claim;
 use Saki\Game\Round;
+use Saki\Game\SeatWind;
 use Saki\Meld\QuadMeldType;
 use Saki\Tile\Tile;
+use Saki\Tile\TileList;
+use Saki\Util\ArrayList;
 
 /**
  * @package Saki\Command\PrivateCommand
@@ -16,45 +19,39 @@ use Saki\Tile\Tile;
 class ConcealedKongCommand extends PrivateCommand {
     //region Command impl
     static function getParamDeclarations() {
-        return [SeatWindParamDeclaration::class,
-            TileParamDeclaration::class, TileParamDeclaration::class,
-            TileParamDeclaration::class, TileParamDeclaration::class];
+        return [SeatWindParamDeclaration::class, TileListParamDeclaration::class];
+    }
+
+    protected static function getExecutableListImpl(Round $round, SeatWind $actor, Area $actorArea) {
+        $private = $actorArea->getHand()->getPrivate();
+        $keySelect = function (Tile $tile) {
+            return $tile->toFormatString(false);
+        };
+        $groupFilter = function (ArrayList $group) {
+            return $group->count() == 4;
+        };
+        $tileGroupList = (new ArrayList())->fromGroupBy($private, $keySelect, $groupFilter);
+
+        $toArray = function (ArrayList $list) {
+            return [new TileList($list->toArray())];
+        };
+        $otherParamsList = $tileGroupList->select($toArray);
+        return static::createMany($round, $actor, $otherParamsList);
     }
     //endregion
 
     /**
-     * @return Tile
+     * @return TileList
      */
-    function getTile1() {
+    function getTileList() {
         return $this->getParam(1);
-    }
-
-    /**
-     * @return Tile
-     */
-    function getTile2() {
-        return $this->getParam(2);
-    }
-
-    /**
-     * @return Tile
-     */
-    function getTile3() {
-        return $this->getParam(3);
-    }
-
-    /**
-     * @return Tile
-     */
-    function getTile4() {
-        return $this->getParam(4);
     }
 
     /**
      * @return Claim
      */
     protected function getClaim() {
-        $tiles = [$this->getTile1(), $this->getTile2(), $this->getTile3(), $this->getTile4()];
+        $tiles = $this->getTileList()->toArray();
         return Claim::create(
             $this->getActor(),
             $this->getRound()->getTurn(),

@@ -14,16 +14,26 @@ abstract class PlayerCommand extends Command {
     /**
      * @param Round $round
      * @param SeatWind $actor
-     * @return PlayerCommand[]
+     * @return ArrayList ArrayList of PlayerCommand.
      */
-    static function getExecutables(Round $round, SeatWind $actor) {
+    static function getExecutableList(Round $round, SeatWind $actor) {
         $actorArea = $round->getArea($actor);
+
+        // match Actor
         if (!$actorArea->isActor()) {
-            return [];
+            return new ArrayList();
         }
 
-        $executableList = static::getExecutableListImpl($round, $actor, $actorArea);
-        return $executableList->toArray();
+        // match Phase
+        $class = get_called_class();
+        $phase = $round->getPhase();
+        $matchPhase = ($phase->isPrivate() && is_subclass_of($class, PrivateCommand::class))
+            || ($phase->isPublic() && is_subclass_of($class, PublicCommand::class));
+        if (!$matchPhase) {
+            return new ArrayList();
+        }
+
+        return static::getExecutableListImpl($round, $actor, $actorArea);
     }
 
     /**
@@ -32,23 +42,32 @@ abstract class PlayerCommand extends Command {
      * @param Area $actorArea
      * @return ArrayList
      */
-    protected static function getExecutableListImpl(Round $round, SeatWind $actor, Area $actorArea) {
-        return new ArrayList();
-    }
+    abstract protected static function getExecutableListImpl(Round $round, SeatWind $actor, Area $actorArea);
 
     /**
      * @param Round $round
      * @param SeatWind $actor
      * @param ArrayList $otherParamsList
+     * @param bool $validate
      * @return ArrayList
      */
-    protected static function createMany(Round $round, SeatWind $actor, ArrayList $otherParamsList) {
+    protected static function createMany(Round $round, SeatWind $actor,
+                                         ArrayList $otherParamsList, bool $validate = false) {
         $toCommand = function ($otherParams) use ($round, $actor) {
             $actualParams = is_array($otherParams) ? $otherParams : [$otherParams];
             array_unshift($actualParams, $actor);
             return new static($round, $actualParams);
         };
-        return $otherParamsList->toArrayList($toCommand);
+        $commandList = $otherParamsList->toArrayList($toCommand);
+
+        if ($validate) {
+            $executable = function (Command $command) {
+                return $command->executable();
+            };
+            $commandList = $commandList->where($executable);
+        }
+
+        return $commandList;
     }
     //endregion
 

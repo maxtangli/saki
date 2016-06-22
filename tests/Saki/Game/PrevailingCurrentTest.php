@@ -1,7 +1,5 @@
 <?php
 
-use Saki\Game\Round;
-
 class PrevailingCurrentTest extends \SakiTestCase {
     function testPrevailingCurrent() {
         $round = $this->getInitRound();

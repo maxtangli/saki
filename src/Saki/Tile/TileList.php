@@ -96,7 +96,7 @@ class TileList extends ArrayList {
     function toTileList() {
         return new TileList($this->toArray());
     }
-    
+
     /**
      * @return ArrayList
      */

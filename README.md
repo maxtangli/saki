@@ -814,17 +814,34 @@ rush 72 waitingAnalyzer bug
 - [x] speed up WeakThirteenOrphanMeld 0.2h
 - [x] clean MeldType 0.2h
 
-rush 73 all command candidates
+rush 73 command candidates: impl 4.5h
 
-- [ ] Riichi
-- [ ] NineNinedraw
-- [ ] Tsumo
-- [ ] ConcealedKong
-- [ ] ExtendKong
-- [ ] Ron
-- [ ] Chow
-- [ ] Pung
-- [ ] Kong
+- [x] refactor: getExecutableList 0.3h
+- [x] Riichi 0.1h
+- [x] NineNinedraw 0.9h
+- [x] Tsumo 0.2h
+- [x] ConcealedKong 1h
+- [x] ExtendKong 0.4h
+
+- [x] Ron 0.3h
+- [x] Chow 0.5h
+- [x] Pung 0.7h
+- [x] Kong 0.1h
+
+- [x] abstract declaration
+
+rush 74 refactor claim Commands
+
+- [x] plan refactor 0.3h
+- [x] refactor: chow,pung,kong,concealedKong to TileList by regex 0.3h
+- [x] refactor: introduce base class - PublicClaimCommand 0.2h
+
+- [ ] refactor: simplify getExecutableListImpl
+
+rush command candidates: speed up
+
+- [ ] speedup Riichi case
+- [ ] speedup Discard case?
 
 rush public command roller
 

@@ -12,7 +12,7 @@ use Saki\Win\Point\PointList;
 use Saki\Win\Result\ResultType;
 
 class SakiTestCase extends \PHPUnit_Framework_TestCase {
-    //region override
+    //region PHPUnit_Framework_TestCase override
     static function assertEquals($expected, $actual, $message = '', $delta = 0.0, $maxDepth = 10, $canonicalize = false, $ignoreCase = false) {
         if ($message === '' && is_object($expected) && is_object($actual)) {
             $message = sprintf(
@@ -22,6 +22,19 @@ class SakiTestCase extends \PHPUnit_Framework_TestCase {
         }
         parent::assertEquals($expected, $actual, $message, $delta, $maxDepth, $canonicalize, $ignoreCase);
     }
+
+    public static function assertContains($needle, $haystack, $message = '', $ignoreCase = false, $checkForObjectIdentity = true, $checkForNonObjectIdentity = false) {
+        if ($message === '') {
+            $message = sprintf(
+                "array[%s]\nneedle[%s]\n",
+                implode(' | ', $haystack),
+                $needle
+            );
+        }
+        parent::assertContains($needle, $haystack, $message, $ignoreCase, $checkForObjectIdentity, $checkForNonObjectIdentity);
+    }
+
+
     //endregion
 
     //region Utils
@@ -29,8 +42,15 @@ class SakiTestCase extends \PHPUnit_Framework_TestCase {
      * @param string $expected
      * @param ArrayList $arrayList
      */
-    protected function assertArrayList(string $expected, ArrayList $arrayList) {
-        $this->assertEquals($expected, $arrayList->__toString());
+    protected function assertArrayList($expected, ArrayList $arrayList) {
+        if (is_string($expected)) {
+            $expectedString = $expected;
+        } elseif (is_array($expected)) {
+            $expectedString = implode(',', $expected);
+        } else {
+            throw new \InvalidArgumentException();
+        }
+        $this->assertEquals($expectedString, $arrayList->__toString());
     }
     //endregion
 

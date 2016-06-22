@@ -179,6 +179,20 @@ class Tile implements Immutable {
     }
 
     /**
+     * @return Tile[]
+     */
+    function toIsRedOrNotTiles() {
+        if ($this->isSuit() && $this->getNumber() == 5) {
+            return [
+                new self($this->getTileType(), $this->getNumber(), false),
+                new self($this->getTileType(), $this->getNumber(), true),
+            ];
+        } else {
+            return [$this];
+        }
+    }
+
+    /**
      * @return TileType
      */
     function getTileType() {
