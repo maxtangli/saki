@@ -36,10 +36,10 @@ class YakuItemList extends ArrayList {
 
         // remove excluded yakus
         /** @var ArrayList $excludeYakuList */
-        $excludeYakuList = $this->getAggregated(new ArrayList(), function (ArrayList $carry, YakuItem $yakuItem) {
-            $carry->insertLast($yakuItem->getYaku()->getExcludedYakus());
-            return $carry;
-        });
+        $excludeYakuList = new ArrayList();
+        foreach ($this as $yakuItem) {
+            $excludeYakuList->insertLast($yakuItem->getYaku()->getExcludedYakus());
+        }
         $this->where(function (YakuItem $yakuItem) use ($excludeYakuList) {
             return !$excludeYakuList->valueExist($yakuItem->getYaku());
         });

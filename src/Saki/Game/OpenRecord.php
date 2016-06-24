@@ -25,9 +25,11 @@ class OpenRecordType extends Enum {
 class OpenRecord implements Immutable {
     use ComparableSequence;
 
+    /**
+     * @param OpenRecord $other
+     * @return bool
+     */
     function compareTo($other) {
-        /** @var OpenRecord $other */
-        $other = $other;
         return $this->getTurn()->compareTo($other->getTurn());
     }
 

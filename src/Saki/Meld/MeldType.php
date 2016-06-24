@@ -3,8 +3,6 @@ namespace Saki\Meld;
 
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
-use Saki\Util\ArrayList;
-use Saki\Util\ClassNameToString;
 use Saki\Util\Singleton;
 
 /**
@@ -12,7 +10,15 @@ use Saki\Util\Singleton;
  * @package Saki\Meld
  */
 abstract class MeldType extends Singleton {
-    use ClassNameToString;
+    /**
+     * @return string
+     */
+    function __toString() {
+        // A\B\XXClass -> XXClass
+        $actualClass = get_called_class();
+        $lastSeparatorPos = strrpos($actualClass, '\\');
+        return substr($actualClass, $lastSeparatorPos + 1);
+    }
 
     /**
      * @return int
@@ -51,12 +57,17 @@ abstract class MeldType extends Singleton {
             return [];
         }
 
-        $meldTileLists = $this->getPossibleTileLists($sourceTileList[0]);
-        $accumulator = function (array $result, TileList $meldTileList) use ($sourceTileList) {
+        $firstTile = $sourceTileList[0];
+        $meldTileLists = $this->getPossibleTileLists($firstTile);
+
+        $cuts = [];
+        foreach ($meldTileLists as $meldTileList) {
             $twoCut = $sourceTileList->toTwoCut($meldTileList->toArray());
-            return $twoCut !== false ? array_merge($result, [$twoCut]) : $result;
-        };
-        return (new ArrayList($meldTileLists))->getAggregated([], $accumulator);
+            if ($twoCut !== false) {
+                $cuts[] = $twoCut;
+            }
+        }
+        return $cuts;
     }
 
     /**

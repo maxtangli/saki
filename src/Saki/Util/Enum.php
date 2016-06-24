@@ -6,6 +6,7 @@ namespace Saki\Util;
  */
 abstract class Enum implements Immutable {
     private static $instances;
+    private static $value2StringMaps;
 
     /**
      * @param int $value
@@ -40,19 +41,26 @@ abstract class Enum implements Immutable {
     }
 
     /**
+     * Impl by factory since Reflection maybe slow.
      * @return array A map of values [enumValue => string].
      */
     static function getValue2StringMap() {
-        $result = [];
-        $refClass = new \ReflectionClass(get_called_class());
-        foreach ($refClass->getConstants() as $name => $value) {
-            $text = strtolower(str_replace('_', ' ', $name));
-            $result[$value] = $text;
+        $class = get_called_class();
+        if (!isset(self::$value2StringMaps[$class])) {
+            $result = [];
+            $refClass = new \ReflectionClass($class);
+            foreach ($refClass->getConstants() as $name => $value) {
+                $text = strtolower(str_replace('_', ' ', $name));
+                $result[$value] = $text;
+            }
+
+            self::$value2StringMaps[$class] = $result;
         }
-        return $result;
+        return self::$value2StringMaps[$class];
     }
 
     private $value;
+    private $string;
 
     /**
      * @param int $value
@@ -62,6 +70,7 @@ abstract class Enum implements Immutable {
             throw new \InvalidArgumentException();
         }
         $this->value = $value;
+        $this->string = static::getValue2StringMap()[$value];
     }
 
     private function __clone() {
@@ -75,7 +84,7 @@ abstract class Enum implements Immutable {
      * @return string
      */
     function __toString() {
-        return static::getValue2StringMap()[$this->getValue()];
+        return $this->string;
     }
 
     /**

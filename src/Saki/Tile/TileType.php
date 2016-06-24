@@ -36,23 +36,46 @@ class TileType extends Enum {
         ];
     }
 
-    static function getSuitTypes() {
-        return [self::create(self::CHARACTER_M), self::create(self::DOT_P), self::create(self::BAMBOO_S)];
+    private $isSuit;
+    private $isHonour;
+    private $isWind;
+    private $isDragon;
+
+    protected function __construct($value) {
+        parent::__construct($value);
+
+        // speed up
+        $this->isSuit = $this->getValue() <= 300;
+        $this->isHonour = Utils::inRange($this->getValue(), 410, 530);
+        $this->isWind = Utils::inRange($this->getValue(), 410, 440);
+        $this->isDragon = Utils::inRange($this->getValue(), 510, 530);
     }
 
+    /**
+     * @return boolean
+     */
     function isSuit() {
-        return $this->getValue() <= 300;
+        return $this->isSuit;
     }
 
+    /**
+     * @return boolean
+     */
     function isHonour() {
-        return Utils::inRange($this->getValue(), 410, 530);
+        return $this->isHonour;
     }
 
+    /**
+     * @return boolean
+     */
     function isWind() {
-        return Utils::inRange($this->getValue(), 410, 440);
+        return $this->isWind;
     }
 
+    /**
+     * @return boolean
+     */
     function isDragon() {
-        return Utils::inRange($this->getValue(), 510, 530);
+        return $this->isDragon;
     }
 }

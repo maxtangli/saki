@@ -11,10 +11,11 @@ class PointItem implements Immutable {
     //region Comparable impl
     use Comparable; // design note: do not use ComparableSequence to avoid confusion.
 
+    /**
+     * @param PointItem $other
+     * @return bool
+     */
     function compareTo($other) {
-        /** @var PointItem $other */
-        $other = $other;
-
         return $this->getRank() <=> $other->getRank();
     }
     //endregion

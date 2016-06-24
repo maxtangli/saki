@@ -3,6 +3,7 @@
 namespace Saki\Meld;
 
 use Saki\Tile\TileList;
+use Saki\Win\Waiting\WaitingType;
 
 /**
  * The MeldType which can be converted to target MeldType by adding 1 tile.

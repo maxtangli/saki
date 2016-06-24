@@ -11,6 +11,7 @@ use Saki\Phase\PhaseState;
 use Saki\Phase\PrivatePhaseState;
 use Saki\Phase\PublicPhaseState;
 use Saki\Tile\TileList;
+use Saki\Util\ArrayList;
 use Saki\Win\WinTarget;
 
 /**
@@ -108,7 +109,7 @@ class Round {
         $nextDealerSeatWind = $nextDealerArea->getSeatWind(); // todo simpler logic?
 
         // variable
-        $this->prevailingCurrent = $this->prevailingCurrent->toDebugInited($prevailingStatus);
+        $this->prevailingCurrent = $this->prevailingCurrent->toDebugInitialized($prevailingStatus);
         $this->areaList->walk(function (Area $area) use ($nextDealerSeatWind) {
             $area->debugInit($area->getSeatWind()->toNextSelf($nextDealerSeatWind));
         });
@@ -136,10 +137,17 @@ class Round {
     }
 
     /**
+     * @return CommandProcessor
+     */
+    function getProcessor() {
+        return $this->processor;
+    }
+
+    /**
      * @param array ...$scripts
      */
     function process(... $scripts) {
-        $this->processor->process(... $scripts);
+        $this->getProcessor()->process(... $scripts);
     }
 
     /**
@@ -313,6 +321,7 @@ class Round {
     }
 
     function toNextRound() {
+        /** @var OverPhaseState $overPhaseState */
         $overPhaseState = $this->phaseState;
         if (!$overPhaseState->getPhase()->isOver()) {
             throw new \InvalidArgumentException('Not over phase.');

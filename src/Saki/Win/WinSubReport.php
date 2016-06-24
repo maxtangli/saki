@@ -10,10 +10,11 @@ use Saki\Win\Yaku\YakuItemList;
 class WinSubReport {
     use Comparable;
 
+    /**
+     * @param WinSubReport $other
+     * @return bool
+     */
     function compareTo($other) {
-        /** @var WinSubReport $other */
-        $other = $other;
-
         $winStateDiff = $this->getWinState()->compareTo($other->getWinState());
         if ($winStateDiff != 0) {
             return $winStateDiff;

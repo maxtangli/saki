@@ -37,20 +37,7 @@ class WeakThirteenOrphanMeldType extends WeakMeldType {
     }
 
     protected function getPossibleTileLists(Tile $firstTile) {
-        throw new \BadMethodCallException('removed since too slow: +1.6s for all tests.');
-//        if ($firstTile != Tile::fromString('1m')) {
-//            return [];
-//        }
-//
-//        // baseTileList + anyone base - anyone base
-//        $base = $this->getBaseTileList();
-//        $resultSelector = function (Tile $remove, Tile $insert) use ($base) {
-//            return $base->getCopy()
-//                ->remove($remove)
-//                ->insertLast($insert);
-//        };
-//        return (new ArrayList())->fromZipped($base, $base, $resultSelector)
-//            ->toArray();
+        throw new \BadMethodCallException('not used here since too slow.');
     }
 
     function getWinSetType() {

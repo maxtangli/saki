@@ -12,12 +12,10 @@ use Saki\Util\ArrayList;
 class MeldListAnalyzer {
     private $meldTypes;
     private $allowPureWeakCount;
-    private $toConcealed;
 
-    function __construct(array $meldTypes, int $allowPureWeakCount = 0, bool $toConcealed = true) {
+    function __construct(array $meldTypes, int $allowPureWeakCount = 0) {
         $this->meldTypes = $meldTypes;
         $this->allowPureWeakCount = $allowPureWeakCount;
-        $this->toConcealed = $toConcealed;
     }
 
     /**
@@ -35,23 +33,15 @@ class MeldListAnalyzer {
     }
 
     /**
-     * @return bool
-     */
-    function getToConcealed() {
-        return $this->toConcealed;
-    }
-
-    /**
      * @param TileList $tileList
-     * @return ArrayList Return an ArrayList of MeldList, where each MeldList means a meld combination.
+     * @return ArrayList Return an ArrayList of MeldList which is a melds-combination of $tileList.
      */
     function analyzeMeldListList(TileList $tileList) {
         $orderedTileList = $tileList->getCopy()->orderByTileID();
         $meldLists = $this->analyzeMeldTypesImpl(
             $orderedTileList,
             $this->getMeldTypes(),
-            $this->getAllowPureWeakCount(),
-            $this->getToConcealed()
+            $this->getAllowPureWeakCount()
         );
         $compositionList = new ArrayList($meldLists);
         return $compositionList;
@@ -61,11 +51,10 @@ class MeldListAnalyzer {
      * @param TileList $orderedTileList
      * @param MeldType[] $meldTypes
      * @param int $allowPureWeakCount
-     * @param bool $toConcealed
      * @return MeldList[]
      */
     protected function analyzeMeldTypesImpl(TileList $orderedTileList, array $meldTypes,
-                                            int $allowPureWeakCount, bool $toConcealed) {
+                                            int $allowPureWeakCount) {
         /**
          * algorithm overview:
          *
@@ -92,8 +81,7 @@ class MeldListAnalyzer {
         $allMeldLists = [];
         foreach ($meldTypes as $meldType) {
             $thisMeldLists = $this->analyzeMeldTypeImpl(
-                $orderedTileList, $meldTypes, $allowPureWeakCount, $toConcealed,
-                $meldType
+                $orderedTileList, $meldTypes, $allowPureWeakCount, $meldType
             );
             $allMeldLists = array_merge($allMeldLists, $thisMeldLists);
         }
@@ -104,13 +92,11 @@ class MeldListAnalyzer {
      * @param TileList $orderedTileList
      * @param MeldType[] $meldTypes
      * @param int $allowPureWeakCount
-     * @param bool $toConcealed
      * @param MeldType $meldType
      * @return MeldList[]
      */
     protected function analyzeMeldTypeImpl(TileList $orderedTileList, array $meldTypes,
-                                           int $allowPureWeakCount, bool $toConcealed,
-                                           MeldType $meldType) {
+                                           int $allowPureWeakCount, MeldType $meldType) {
         $isPureWeak = $meldType->getWinSetType()->isPureWeak();
         if ($isPureWeak && $allowPureWeakCount <= 0) {
             return [];
@@ -125,9 +111,8 @@ class MeldListAnalyzer {
         foreach ($possibleCuts as list($beginTileList, $remainTileList)) {
             // success to find a valid meld begin with first tile under $meldType
             $thisMeldLists = $this->analyzeCutImpl(
-                $orderedTileList, $meldTypes, $allowPureWeakCount, $toConcealed,
-                $meldType,
-                $beginTileList, $remainTileList
+                $meldTypes, $allowPureWeakCount,
+                $meldType, $beginTileList, $remainTileList
             );
             $allMeldLists = array_merge($allMeldLists, $thisMeldLists);
         }
@@ -135,20 +120,17 @@ class MeldListAnalyzer {
     }
 
     /**
-     * @param TileList $orderedTileList
      * @param array $meldTypes
      * @param int $allowPureWeakCount
-     * @param bool $toConcealed
      * @param MeldType $meldType
      * @param TileList $beginTileOrderedList
      * @param TileList $remainTileOrderedList
      * @return array|MeldList[]
      */
-    protected function analyzeCutImpl(TileList $orderedTileList, array $meldTypes,
-                                      int $allowPureWeakCount, bool $toConcealed,
-                                      MeldType $meldType,
+    protected function analyzeCutImpl(array $meldTypes,
+                                      int $allowPureWeakCount, MeldType $meldType,
                                       TileList $beginTileOrderedList, TileList $remainTileOrderedList) {
-        $beginMeld = new Meld($beginTileOrderedList->toArray(), $meldType, $toConcealed);
+        $beginMeld = new Meld($beginTileOrderedList->toArray(), $meldType, true);
 
         if ($remainTileOrderedList->isEmpty()) {
             // with begin meld, no remain tiles exist thus success
@@ -160,7 +142,7 @@ class MeldListAnalyzer {
             ? $allowPureWeakCount - 1
             : $allowPureWeakCount;
         $remainMeldLists = $this->analyzeMeldTypesImpl(
-            $remainTileOrderedList, $meldTypes, $nextAllowPureWeakCount, $toConcealed
+            $remainTileOrderedList, $meldTypes, $nextAllowPureWeakCount
         );
 
         if (empty($remainMeldLists)) {

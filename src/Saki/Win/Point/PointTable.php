@@ -23,8 +23,8 @@ class PointTable extends Singleton {
         $result = [];
         foreach ($this->fanList as $fan) {
             foreach ($this->fuList as $fu) {
-                $fanAndfu = new FanAndFu($fan, $fu);
-                $item = $this->getPointItem($fanAndfu);
+                $fanAndFu = new FanAndFu($fan, $fu);
+                $item = $this->getPointItem($fanAndFu);
                 $winnerChange = $item->getWinnerPointChange(false, true);
                 $loserChangeWhenTsumo = $item->getLoserPointChange(true, true, false);
                 $result[$fan][$fu] = [$winnerChange, $loserChangeWhenTsumo];
@@ -40,8 +40,8 @@ class PointTable extends Singleton {
         $result = [];
         foreach ($this->fanList as $fan) {
             foreach ($this->fuList as $fu) {
-                $fanAndfu = new FanAndFu($fan, $fu);
-                $item = $this->getPointItem($fanAndfu);
+                $fanAndFu = new FanAndFu($fan, $fu);
+                $item = $this->getPointItem($fanAndFu);
                 $winnerChange = $item->getWinnerPointChange(false, false);
                 $leisureLoserChangeWhenTsumo = $item->getLoserPointChange(true, false, false);
                 $dealerLoserChangeWhenTsumo = $item->getLoserPointChange(true, false, true);

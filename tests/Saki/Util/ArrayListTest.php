@@ -21,38 +21,29 @@ class ArrayListTest extends \SakiTestCase {
         $a = [0, 1, 2, 3, 4, 0];
         $obj = new ArrayList($a);
 
-        $this->assertTrue($obj->indexExist([]));
-        $this->assertTrue($obj->indexExist(0));
-        $this->assertTrue($obj->indexExist([0]));
-        $this->assertTrue($obj->indexExist([0, 5]));
-        $this->assertFalse($obj->indexExist([0, 6]));
+        $this->assertTrue($obj->indexesExist([]));
+        $this->assertTrue($obj->indexesExist([0]));
+        $this->assertTrue($obj->indexesExist([0, 5]));
+        $this->assertFalse($obj->indexesExist([0, 6]));
 
-        $this->assertEquals(0, $obj->getValueAt(0));
-        $this->assertEquals([0], $obj->getValueAt([0]));
-    }
-
-    /**
-     * @expectedException \InvalidArgumentException
-     */
-    function testIndexException() {
-        $obj = new ArrayList([1, 2, 3]);
-        $obj->getValueAt([0, 0]);
+        $this->assertEquals(0, $obj[0]);
+        $this->assertEquals([0], $obj->getValuesAt([0]));
     }
 
     function testValue() {
         $a = [0, 1, 2, 3, 4, 0];
         $obj = new ArrayList($a);
 
+        $this->assertEquals(0, $obj->getIndex(0));
+        $this->assertEquals([0], $obj->getIndex([0]));
+        $this->assertEquals([0, 5], $obj->getIndex([0, 0]));
+        $this->assertEquals([0, 3, 5], $obj->getIndex([0, 3, 0]));
+
         $this->assertTrue($obj->valueExist([]));
         $this->assertTrue($obj->valueExist(0));
         $this->assertTrue($obj->valueExist([0]));
         $this->assertTrue($obj->valueExist([0, 0]));
         $this->assertFalse($obj->valueExist([0, 0, 0]));
-
-        $this->assertEquals(0, $obj->getIndex(0));
-        $this->assertEquals([0], $obj->getIndex([0]));
-        $this->assertEquals([0, 5], $obj->getIndex([0, 0]));
-        $this->assertEquals([0, 3, 5], $obj->getIndex([0, 3, 0]));
     }
 
     /**
@@ -71,27 +62,7 @@ class ArrayListTest extends \SakiTestCase {
             [[0, 1, 2, 0], [0, 0, 0]],
         ];
     }
-
-    /**
-     * @dataProvider getCyclicNextProvider
-     */
-    function testGetCyclicNext(array $a, $originValue, $offset, $expected) {
-        $obj = new ArrayList($a);
-        $result = $obj->getCyclicNext($originValue, $offset);
-        $this->assertEquals($expected, $result,
-            sprintf('ArrayList([%s])->getNext(%s, %s) expected %s but actual %s.', implode(',', $a), $originValue, $offset, $expected, $result));
-    }
-
-    function getCyclicNextProvider() {
-        return [
-            [[1, 2, 3, 4], 1, -5, 4],
-            [[1, 2, 3, 4], 1, -4, 1], [[1, 2, 3, 4], 1, -3, 2], [[1, 2, 3, 4], 1, -2, 3], [[1, 2, 3, 4], 1, -1, 4],
-            [[1, 2, 3, 4], 1, 0, 1], [[1, 2, 3, 4], 1, 1, 2], [[1, 2, 3, 4], 1, 2, 3], [[1, 2, 3, 4], 1, 3, 4],
-            [[1, 2, 3, 4], 1, 4, 1], [[1, 2, 3, 4], 1, 5, 2], [[1, 2, 3, 4], 1, 6, 3], [[1, 2, 3, 4], 1, 7, 4],
-            [[1, 2, 3, 4], 1, 8, 1],
-        ];
-    }
-
+    
     function testGetMinMax() {
         $a = [0, 1, 2, 3, 4];
         $obj = new ArrayList($a);

@@ -54,9 +54,8 @@ class DoraFacade {
      */
     protected function getTileDoraFanImpl(Tile $tile, array $openedIndicators) {
         $count = 0;
+        /** @var Tile $doraIndicator */
         foreach ($openedIndicators as $doraIndicator) {
-            /** @var Tile $doraIndicator */
-            $doraIndicator = $doraIndicator;
             if ($tile == $doraIndicator->getNextTile(1)) {
                 ++$count;
             }

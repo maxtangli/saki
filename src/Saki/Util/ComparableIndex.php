@@ -7,12 +7,16 @@ namespace Saki\Util;
 trait ComparableIndex {
     use ComparableSequence;
 
+    /**
+     * @param ComparableIndex $other
+     * @return bool
+     */
     function compareTo($other) {
         return $this->getIndex() <=> $other->getIndex();
     }
 
     /**
-     * @param $other
+     * @param ComparableIndex $other
      * @return int
      */
     function getOffsetTo($other) {

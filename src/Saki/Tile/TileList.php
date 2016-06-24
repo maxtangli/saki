@@ -8,6 +8,7 @@ use Saki\Util\ArrayList;
  * @package Saki\Tile
  */
 class TileList extends ArrayList {
+    //region factory
     const REGEX_EMPTY_LIST = '()';
     const REGEX_SUIT_TOKEN = '(' . Tile::REGEX_SUIT_NUMBER . '+' . TileType::REGEX_SUIT_TYPE . ')';
     const REGEX_HONOUR_TOKEN = Tile::REGEX_HONOUR_TILE;
@@ -43,7 +44,7 @@ class TileList extends ArrayList {
             } else {
                 $cType = TileType::fromString($c);
                 if ($cType->isHonour()) {
-                    $honourTile = Tile::create($cType);
+                    $honourTile = Tile::fromString($c);
                     array_unshift($tiles, $honourTile);
                 } else {
                     $lastNumberTileType = $cType;
@@ -54,6 +55,11 @@ class TileList extends ArrayList {
         return new self($tiles);
     }
 
+    /**
+     * @param array $numbers
+     * @param TileType $suitType
+     * @return TileList
+     */
     static function fromNumbers(array $numbers, TileType $suitType) {
         if (!$suitType->isSuit()) {
             throw new \InvalidArgumentException();
@@ -61,24 +67,33 @@ class TileList extends ArrayList {
         $s = implode($numbers) . $suitType;
         return self::fromString($s);
     }
+    //endregion
 
+    //region convert
+    /**
+     * @return string
+     */
     function __toString() {
-        // e.x. 123m456p789sEEECC
-        $s = "";
-        $tiles = $this->toArray();
-        $len = count($tiles);
-        for ($i = 0; $i < $len; ++$i) {
-            $tile = $tiles[$i];
-            if ($tile->getTileType()->isSuit()) {
-                $tileString = $tile->__toString();
-                $doNotPrintSuit = isset($tiles[$i + 1])
-                    && $tiles[$i + 1]->getTileType()->isSuit()
-                    && $tiles[$i + 1]->getTileType() == $tile->getTileType();
-                $s .= $doNotPrintSuit ? $tileString[0] : $tileString;
-            } else {
-                $s .= $tile;
+        $s = ''; // e.x. 123mEEE456pCC
+
+        // reverse iterate raw string and filter duplicated 'mps'
+        $rawString = implode('', $this->toArray()); // e.x. 1m2m3mEEE4p5p6pCC
+        $lastSuitType = false;
+        $len = strlen($rawString);
+        for ($i = $len - 1; $i >= 0; --$i) {
+            $c = $rawString[$i];
+            if (strpos('mps', $c) !== false) {
+                if ($c == $lastSuitType) {
+                    continue;
+                } else {
+                    $lastSuitType = $c;
+                }
+            } elseif (!is_numeric($c)) {
+                $lastSuitType = false;
             }
+            $s = $c . $s;
         }
+
         return $s;
     }
 
@@ -130,14 +145,18 @@ class TileList extends ArrayList {
      * @return TileList[]|bool Returns [$firstPartTileList, $remainTileList] if success, false otherwise.
      */
     function toTwoCut(array $firstPartTiles) {
-        if (!$this->valueExist($firstPartTiles)) {
+        try {
+            $l2 = $this->getCopy()->remove($firstPartTiles);
+        } catch (\Exception $e) {
             return false;
         }
+
         $l1 = new TileList($firstPartTiles);
-        $l2 = $this->getCopy()->remove($firstPartTiles);
         return [$l1, $l2];
     }
+    //endregion
 
+    //region property
     /**
      * @return TileListSize
      */
@@ -152,53 +171,82 @@ class TileList extends ArrayList {
             );
         }
     }
+    //endregion
 
+    //region predicate
+    /**
+     * @return bool
+     */
     function isAllSuit() {
         return $this->all(function (Tile $tile) {
             return $tile->isSuit();
         });
     }
 
+    /**
+     * @return bool
+     */
     function isAllSameSuit() {
         return $this->isAllSuit() && $this->toTileTypeList()->isSame();
     }
 
+    /**
+     * @return bool
+     */
     function isAllSimple() {
         return $this->all(function (Tile $tile) {
             return $tile->isSimple();
         });
     }
 
+    /**
+     * @return bool
+     */
     function isAllTerm() {
         return $this->all(function (Tile $tile) {
             return $tile->isTerm();
         });
     }
 
+    /**
+     * @return bool
+     */
     function isAllTermOrHonour() {
         return $this->all(function (Tile $tile) {
             return $tile->isTermOrHonour();
         });
     }
 
+    /**
+     * @return bool
+     */
     function isAllHonour() {
         return $this->all(function (Tile $tile) {
             return $tile->isHonour();
         });
     }
 
+    /**
+     * @return bool
+     */
     function isAnyTermOrHonour() {
         return $this->any(function (Tile $tile) {
             return $tile->isTermOrHonour();
         });
     }
 
+    /**
+     * @return bool
+     */
     function isAnyTerm() {
         return $this->any(function (Tile $tile) {
             return $tile->isTerm();
         });
     }
 
+    /**
+     * @return bool
+     */
     function isNineKindsOfTermOrHonour() {
         $this->assertCompletePrivateHand();
 
@@ -208,6 +256,10 @@ class TileList extends ArrayList {
         return $uniqueTermOrHonourCount >= 9;
     }
 
+    /**
+     * @param bool $isFull
+     * @return bool
+     */
     function isFlush(bool $isFull) {
         $this->assertCompletePrivateHand();
 
@@ -225,6 +277,11 @@ class TileList extends ArrayList {
         return $isSuitSameColor && ($isFull ? !$hasHonour : $hasHonour);
     }
 
+    /**
+     * @param bool $isPure
+     * @param Tile|null $targetTile
+     * @return bool
+     */
     function isNineGates(bool $isPure, Tile $targetTile = null) {
         $this->assertCompletePrivateHand();
 
@@ -248,6 +305,9 @@ class TileList extends ArrayList {
         }
     }
 
+    /**
+     * @return bool
+     */
     function isAllGreen() {
         $this->assertCompletePrivateHand();
 
@@ -257,12 +317,15 @@ class TileList extends ArrayList {
         };
         return $this->all($isAllGreenTile);
     }
+    //endregion
 
+    //region operation
     /**
      * @return $this
      */
     function orderByTileID() {
         return $this->orderByAscending(Tile::getComparator());
     }
+    //endregion
 }
 

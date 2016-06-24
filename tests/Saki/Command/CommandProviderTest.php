@@ -56,12 +56,12 @@ class CommandProviderTest extends \SakiTestCase {
 
     function executableListProvider() {
         return [
-            // Discard todo speedup
-//            [
-//                ['discard E 3m', 'discard E 4m', 'discard E 5m', 'discard E 0m', 'discard E 6m'],
-//                true, 'E', 'mockHand E 33334444555066m',
-//            ],
-            // Riichi todo speedup
+            // Discard
+            [
+                ['discard E 1m', 'discard E 5m', 'discard E 0m', 'discard E 9m', 'discard E 6p'],
+                true, 'E', 'mockHand E 111155509999m66p',
+            ],
+            // Riichi slow+0.6s todo
 //            [
 //                ['riichi E 1s', 'riichi E 2s', 'riichi E 4s', 'riichi E 5s'],
 //                true, 'E', 'mockHand E 123456789m12345s',

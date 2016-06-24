@@ -2,7 +2,6 @@
 
 namespace Saki\Tile;
 
-use Saki\Util\ArrayList;
 use Saki\Util\ComparablePriority;
 use Saki\Util\Immutable;
 use Saki\Util\Utils;
@@ -15,15 +14,38 @@ class Tile implements Immutable {
 
     //region ComparablePriority impl
     function getPriority() {
-        return TileFactory::create()->toValueID($this->tileType, $this->number, $this->isRedDora());
+        return self::$priorities[$this->__toString()];
     }
 
     //endregion
+
+    /**
+     * syntactic sugar.
+     * @param bool $compareIsRedDora
+     * @return \Closure
+     */
+    static function getEqual(bool $compareIsRedDora) {
+        return function (Tile $a, Tile $b) use ($compareIsRedDora) {
+            return $a->equalTo($b, $compareIsRedDora);
+        };
+    }
 
     const REGEX_SUIT_NUMBER = '[0-9]'; // 0 means red dora 5
     const REGEX_SUIT_TILE = '(' . self::REGEX_SUIT_NUMBER . TileType::REGEX_SUIT_TYPE . ')';
     const REGEX_HONOUR_TILE = TileType::REGEX_HONOUR_TYPE;
     const REGEX_TILE = '(' . self::REGEX_SUIT_TILE . '|' . self::REGEX_HONOUR_TILE . ')';
+    private static $priorities = [
+        '1m' => 110, '2m' => 120, '3m' => 130, '4m' => 140, '5m' => 150,
+        '0m' => 155, '6m' => 160, '7m' => 170, '8m' => 180, '9m' => 190,
+        '1p' => 210, '2p' => 220, '3p' => 230, '4p' => 240, '5p' => 250,
+        '0p' => 255, '6p' => 260, '7p' => 270, '8p' => 280, '9p' => 290,
+        '1s' => 310, '2s' => 320, '3s' => 330, '4s' => 340, '5s' => 350,
+        '0s' => 355, '6s' => 360, '7s' => 370, '8s' => 380, '9s' => 390,
+        'E' => 410, 'S' => 420, 'W' => 430, 'N' => 440,
+        'C' => 510, 'P' => 520, 'F' => 530,
+    ];
+    private static $instances = [];
+    private static $redInstances = [];
 
     /**
      * @param string $s
@@ -39,99 +61,25 @@ class Tile implements Immutable {
      * @return Tile
      */
     static function fromString(string $s) {
-        if (!self::validString($s)) {
-            throw new \InvalidArgumentException(
-                sprintf('Invalid $s[%s] for Tile.', $s)
-            );
-        }
+        if (!isset(self::$instances[$s])) {
+            if (!self::validString($s)) {
+                throw new \InvalidArgumentException(
+                    sprintf('Invalid $s[%s] for Tile.', $s)
+                );
+            }
 
-        // will be validated in create()
-        if (strlen($s) == 1) {
-            return Tile::create(TileType::fromString($s));
-        } elseif (strlen($s) == 2) {
-            if ($s[0] == '0') {
-                return Tile::create(TileType::fromString($s[1]), 5, true);
-            } else {
-                return Tile::create(TileType::fromString($s[1]), intval($s[0]));
+            $tileType = TileType::fromString(substr($s, -1));
+            $isRedDora = ($s[0] === '0');
+            $number = $isRedDora ? 5 : (strlen($s) == 2 ? intval($s[0]) : null);
+
+            $tile = new Tile($tileType, $number, $isRedDora);
+
+            self::$instances[$s] = $tile;
+            if ($isRedDora) {
+                self::$redInstances[$s] = $tile;
             }
         }
-
-        throw new \LogicException();
-    }
-
-    /**
-     * @param TileType $tileType
-     * @param null $number
-     * @param bool $isRedDora
-     * @return bool
-     */
-    protected static function valid(TileType $tileType, $number = null, bool $isRedDora = false) {
-        if ($tileType->isSuit()) {
-            return is_int($number) && Utils::inRange($number, 1, 9) && ($isRedDora === false || $number === 5);
-        } elseif ($tileType->isHonour()) {
-            return $number === null && $isRedDora == false;
-        } else {
-            throw new \LogicException();
-        }
-    }
-
-    /**
-     * @param TileType $tileType
-     * @param null|int $number
-     * @param bool $isRedDora
-     * @return Tile
-     */
-    static function create(TileType $tileType, $number = null, bool $isRedDora = false) {
-        if (!self::valid($tileType, $number, $isRedDora)) {
-            throw new \InvalidArgumentException(
-                "Invalid \$tileType[$tileType], \$number[$number].Remind that \$number should be a int."
-            );
-        }
-        $generator = function () use ($tileType, $number, $isRedDora) {
-            return new Tile($tileType, $number, $isRedDora);
-        };
-        return TileFactory::create()->getOrGenerateTile($tileType, $number, $isRedDora, $generator);
-    }
-
-    /**
-     * @param TileType $tileType
-     * @return $this
-     */
-    static function getSuitList(TileType $tileType) {
-        return (new ArrayList(range(1, 9)))->select(function ($v) use ($tileType) {
-            return Tile::create($tileType, $v);
-        });
-    }
-
-    /**
-     * @param int $n
-     * @return TileList
-     */
-    static function getWindList(int $n = 4) {
-        $valid = in_array(4, range(1, 4));
-        if (!$valid) {
-            throw new \InvalidArgumentException();
-        }
-        return (new TileList([Tile::fromString('E'), Tile::fromString('S'), Tile::fromString('W'), Tile::fromString('N')]))
-            ->take(0, $n);
-    }
-
-    /**
-     * @return TileList
-     */
-    static function getDragonList() {
-        return new TileList([Tile::fromString('C'), Tile::fromString('P'), Tile::fromString('F')]);
-    }
-
-    /**
-     * syntactic sugar.
-     * @param bool $compareIsRedDora
-     * @return \Closure
-     */
-    static function getEqual(bool $compareIsRedDora) {
-        return function (Tile $a, Tile $b) use ($compareIsRedDora) {
-            return $a->equalTo($b, $compareIsRedDora);
-        };
+        return self::$instances[$s];
     }
 
     private $tileType;
@@ -147,10 +95,10 @@ class Tile implements Immutable {
         // already validated by create()
         $this->tileType = $tileType;
         $this->number = $number;
-        // $isRedDora already handled by TileFactory
+        // $isRedDora already handled by fromString()
     }
 
-    /** todo better way
+    /**
      * @param Tile $other
      * @param bool $compareIsRedDora
      * @return bool
@@ -173,23 +121,29 @@ class Tile implements Immutable {
      * @return string
      */
     function toFormatString(bool $considerRedDora) {
-        $numberString = $this->isSuit() ? ($considerRedDora && $this->isRedDora() ? 0 : $this->getNumber()) : '';
-        $typeString = $this->getTileType()->__toString();
-        return sprintf('%s%s', $numberString, $typeString);
+        return ($considerRedDora && $this->isRedDora() ? '0' : $this->number)
+        . $this->tileType;
     }
 
     /**
-     * @return Tile[]
+     * @return bool
      */
-    function toIsRedOrNotTiles() {
-        if ($this->isSuit() && $this->getNumber() == 5) {
-            return [
-                new self($this->getTileType(), $this->getNumber(), false),
-                new self($this->getTileType(), $this->getNumber(), true),
-            ];
-        } else {
-            return [$this];
-        }
+    function ableToRed() {
+        return $this->isSuit() && $this->getNumber() == 5;
+    }
+
+    /**
+     * @return Tile
+     */
+    function toRed() {
+        return self::fromString('0' . $this->tileType); // validate
+    }
+
+    /**
+     * @return Tile
+     */
+    function toNotRed() {
+        return self::fromString($this->toFormatString(false));
     }
 
     /**
@@ -213,7 +167,7 @@ class Tile implements Immutable {
      * @return bool
      */
     function isRedDora() {
-        return TileFactory::create()->isRedDoraTile($this);
+        return in_array($this, self::$redInstances, true);
     }
 
     /**
@@ -271,15 +225,18 @@ class Tile implements Immutable {
      */
     function getNextTile(int $offset = 1) {
         $currentType = $this->getTileType();
+
         if ($currentType->isSuit()) {
-            $a = self::getSuitList($currentType);
-        } elseif ($currentType->isWind()) {
-            $a = self::getWindList();
-        } elseif ($currentType->isDragon()) {
-            $a = self::getDragonList();
+            $currentNumber = $this->getNumber();
+            $nextNumber = Utils::normalizedMod($currentNumber + $offset - 1, 9) + 1;
+            $s = $nextNumber . $currentType;
         } else {
-            throw new \LogicException();
+            $all = $currentType->isWind() ? 'ESWN' : 'CPF';
+            $currentIndex = strpos($all, $currentType->__toString());
+            $nextIndex = Utils::normalizedMod($currentIndex + $offset, strlen($all));
+            $s = $all[$nextIndex];
         }
-        return $a->getCyclicNext($this, $offset);
+
+        return self::fromString($s);
     }
 }

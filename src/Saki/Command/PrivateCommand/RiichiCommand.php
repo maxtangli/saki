@@ -23,6 +23,7 @@ class RiichiCommand extends PrivateCommand {
     protected static function getExecutableListImpl(Round $round, SeatWind $actor, Area $actorArea) {
         return new ArrayList();
 
+        // slow
         $waitingAnalyzer = $round->getGameData()->getWinAnalyzer()->getWaitingAnalyzer();
         $hand = $actorArea->getHand();
         $futureWaitingList = $waitingAnalyzer->analyzePrivate($hand->getPrivate(), $hand->getMelded());

@@ -4,6 +4,7 @@ use Saki\Command\Debug\MockHandCommand;
 use Saki\Command\PrivateCommand\DiscardCommand;
 use Saki\Command\PrivateCommand\TsumoCommand;
 use Saki\Command\PublicCommand\RonCommand;
+use Saki\Command\PublicCommandBuffer;
 use Saki\Game\Phase;
 use Saki\Game\SeatWind;
 use Saki\Tile\Tile;
@@ -45,5 +46,24 @@ class CommandTest extends \SakiTestCase {
         $round->process('skip 2');
         $this->assertEquals('N', $round->getTurn()->getSeatWind());
         $this->assertTrue($round->getPhaseState()->getPhase()->isPrivate());
+    }
+
+    function testBuffer() {
+        $round = $this->getInitRound();
+        $round->process('mockHand E 1m; discard E 1m');
+
+        $parser = $round->getProcessor()->getParser();
+        $chow = $parser->parseLine('chow S 23m');
+        $pung = $parser->parseLine('pung W 11m');
+
+        $buffer = new PublicCommandBuffer();
+        $this->assertTrue($buffer->setAble($chow));
+        $this->assertTrue($buffer->setAble($pung));
+
+        $buffer->set($chow);
+        $this->assertTrue($buffer->setAble($pung));
+
+        $buffer->set($pung);
+        $this->assertFalse($buffer->setAble($chow));
     }
 }

@@ -2,6 +2,7 @@
 namespace Saki\Win\Waiting;
 
 use Saki\Tile\Tile;
+use Saki\Tile\TileList;
 use Saki\Util\ArrayList;
 
 /**
@@ -20,12 +21,12 @@ class FutureWaitingList extends ArrayList {
     }
 
     /**
-     * @return ArrayList
+     * @return TileList
      */
     function toDiscardList() {
         $toDiscard = function (FutureWaiting $futureWaiting) {
             return $futureWaiting->getDiscard();
         };
-        return $this->toArrayList($toDiscard);
+        return new TileList($this->toArray($toDiscard));
     }
 }

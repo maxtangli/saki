@@ -193,6 +193,7 @@ class Meld extends TileList implements Immutable {
     }
 
     /**
+     * @param bool $concealedFlag
      * @return bool
      */
     function isTriple(bool $concealedFlag = null) {
@@ -200,6 +201,7 @@ class Meld extends TileList implements Immutable {
     }
 
     /**
+     * @param bool $concealedFlag
      * @return bool
      */
     function isQuad(bool $concealedFlag = null) {
@@ -207,6 +209,7 @@ class Meld extends TileList implements Immutable {
     }
 
     /**
+     * @param bool $concealedFlag
      * @return bool
      */
     function isTripleOrQuad(bool $concealedFlag = null) {

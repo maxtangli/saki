@@ -43,7 +43,7 @@ class CommandParser {
 
     /**
      * @param string $name
-     * @return class
+     * @return string class
      */
     function nameToClass(string $name) {
         $commands = $this->getNameToClassMap();

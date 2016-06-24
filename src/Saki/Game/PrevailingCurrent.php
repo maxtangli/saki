@@ -63,7 +63,7 @@ class PrevailingCurrent {
      * @param PrevailingStatus $status
      * @return PrevailingCurrent
      */
-    function toDebugInited(PrevailingStatus $status) {
+    function toDebugInitialized(PrevailingStatus $status) {
         return new PrevailingCurrent($this->getContext(), $status, 0);
     }
 

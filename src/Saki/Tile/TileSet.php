@@ -10,6 +10,10 @@ class TileSet extends TileList {
     use ReadonlyArrayList;
     private static $standardInstance;
 
+    /**
+     * WARNING: support at most 1 red tile for each suit-type.
+     * @return TileSet
+     */
     static function createStandard() {
         self::$standardInstance = self::$standardInstance ?? new self(
                 TileList::fromString(
@@ -20,5 +24,23 @@ class TileSet extends TileList {
                 )->toArray()
             );
         return self::$standardInstance;
+    }
+
+    function echoPriorityMap() {
+        $toString = function (Tile $tile) {
+            return $tile->__toString();
+        };
+        $toPriority = function (Tile $tile) {
+            return $tile->getPriority();
+        };
+
+        $list = $this->toArrayList()
+            ->distinct(Tile::getEqual(true));
+
+        $a = array_combine($list->toArray($toString), $list->toArray($toPriority));
+
+        foreach ($a as $k => $v) {
+            echo sprintf("'$k' => $v,");
+        }
     }
 }

@@ -125,7 +125,7 @@ abstract class Yaku extends Singleton {
 
     /**
      * A hook to support dora-type-yaku which requires dynamic fan count.
-     * @param WinSubTarget $subTarget
+     * @param WinSubTarget $subTarget may used by subclass.
      * @return int
      */
     protected function getExistCountImpl(WinSubTarget $subTarget) {

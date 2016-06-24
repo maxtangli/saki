@@ -29,6 +29,7 @@ class MsTimer extends Singleton {
     }
 
     /**
+     * @param callable $f
      * @return float
      */
     function measure(callable $f) {

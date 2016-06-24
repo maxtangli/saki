@@ -7,10 +7,12 @@ use Saki\Command\PublicCommand;
 use Saki\Game\Area;
 use Saki\Game\Claim;
 use Saki\Game\Round;
+use Saki\Game\SeatWind;
 use Saki\Meld\MeldType;
 use Saki\Phase\PrivatePhaseState;
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
+use Saki\Util\ArrayList;
 
 /**
  * @package Saki\Command\PublicCommand
@@ -19,6 +21,21 @@ abstract class PublicClaimCommand extends PublicCommand {
     //region Command impl
     static function getParamDeclarations() {
         return [SeatWindParamDeclaration::class, TileListParamDeclaration::class];
+    }
+
+    protected static function getExecutableListImpl(Round $round, SeatWind $actor, Area $actorArea) {
+        $hand = $actorArea->getHand();
+        $targetTile = $hand->getTarget()->getTile();
+        $public = $hand->getPublic();
+
+        $exist = function (TileList $params) use ($public) {
+            // handle red
+            return $public->valueExist($params->toArray(), Tile::getEqual(true));
+        };
+        $otherParamsList = static::getOtherParamsListImpl($targetTile->toNotRed())
+            ->where($exist);
+
+        return static::createMany($round, $actor, $otherParamsList);
     }
     //endregion
 
@@ -78,5 +95,11 @@ abstract class PublicClaimCommand extends PublicCommand {
      * @return MeldType
      */
     abstract function getClaimMeldType();
+
+    /**
+     * @param Tile $notRedTargetTile
+     * @return ArrayList
+     */
+    abstract protected static function getOtherParamsListImpl(Tile $notRedTargetTile);
     //endregion
 }

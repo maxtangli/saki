@@ -32,11 +32,11 @@ class WeakRunMeldType extends WeakMeldType {
     protected function getPossibleTileLists(Tile $firstTile) {
         $result = [];
         if ($firstTile->isSuit() && $firstTile->getNumber() <= 8) {
-            $nextTile = $firstTile->getNextTile();
+            $nextTile = $firstTile->getNextTile(1);
             $result[] = new TileList([$firstTile, $nextTile]);
 
             if ($firstTile->getNumber() <= 7) {
-                $nextNextTile = $nextTile->getNextTile();
+                $nextNextTile = $firstTile->getNextTile(2);
                 $result[] = new TileList([$firstTile, $nextNextTile]);
             }
         }

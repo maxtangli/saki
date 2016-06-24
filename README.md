@@ -20,8 +20,9 @@ rush 51-55 | 21.5h
 rush 56-60 | 33.0h
 rush 61-65 | 17.1h
 rush 66-70 | 22.9h
-rush 71-75 | ing
-     total |325.8h + ing
+rush 71-75 | 15.7h
+rush 76-80 | ing
+     total |341.5h + ing
 
 ## rush history
 
@@ -56,6 +57,7 @@ rush 3 refactor 8h
 - [x] fulfil test cases
 
 rush 4 hand 4h
+
 - [x] simple UI: TileList
 - [x] simple UI: remove a Tile
 - [x] Hand
@@ -66,6 +68,7 @@ rush 4 hand 4h
 - [x] refactor Meld, replace inheritance with association
 
 rush 5 round flow: private phase 14.5h
+
 - [x] Wall
 - [x] TurnManager
 - [x] new Round
@@ -806,7 +809,7 @@ rush 71 CommandProvider 2.3h
 - [x] Discard
 - [x] refactor: PlayerCommand constructor 0.6h
 
-rush 72 waitingAnalyzer bug
+rush 72 waitingAnalyzer bug 2.5h
 
 - [x] bug: waitingAnalyzer for special TileList 0.7h
 - [x] waitingAnalyzer: thirteen orphan case 0.4h
@@ -818,7 +821,7 @@ rush 73 command candidates: impl 4.5h
 
 - [x] refactor: getExecutableList 0.3h
 - [x] Riichi 0.1h
-- [x] NineNinedraw 0.9h
+- [x] NineNineDraw 0.9h
 - [x] Tsumo 0.2h
 - [x] ConcealedKong 1h
 - [x] ExtendKong 0.4h
@@ -830,22 +833,61 @@ rush 73 command candidates: impl 4.5h
 
 - [x] abstract declaration
 
-rush 74 refactor claim Commands
+rush 74 refactor claim Commands 2.6h
 
 - [x] plan refactor 0.3h
 - [x] refactor: chow,pung,kong,concealedKong to TileList by regex 0.3h
 - [x] refactor: introduce base class - PublicClaimCommand 0.2h
 
-- [ ] refactor: simplify getExecutableListImpl
+- [x] refactor: simplify getExecutableListImpl 1.3h
+- [x] refactor: remove silly assignment etc. 0.5h
 
-rush command candidates: speed up
+rush 75 profiler waitingAnalyzer 3.8h
 
-- [ ] speedup Riichi case
-- [ ] speedup Discard case?
+- [x] profiler 0.5h
 
-rush public command roller
+Tile.toFormatString
+Tile.create
+TileList.getIndex
+TileFactory.genOrGenerate
+TileType.isSuit 40000+times?
+ArrayList->fromArray
+Tile.valid
+TileFactory.toValueID
+ArrayList.construct
+top35%
 
-- [ ] public command roller
+- [x] simplify Tile 2.3h
+
+TileList.getIndex
+ArrayList.fromArray
+ArrayList.construct
+TileList.toString
+Tile.toFormatString
+array_map
+ArrayList.indexExist
+Tile.toString
+top35%
+
+- [x] simplify ArrayList etc. 1h
+
+ArrayList.getIndex
+ArrayList.construct
+array_map
+* analyzeMeldTypeImpl
+* getPossibleCuts
+array_filter
+getCyclicNext
+Tlle.getSuitList.$toSuit
+ArrayList.util_boxing
+top35%
+
+rush 76 optimize WaitingAnalyzer
+
+- [x] code view: MeldListAnalyzer 0.2h
+- [x] optimize,refactor ArrayList etc 1.8h
+- [ ] optimize analyzePublic
+- [ ] optimize analyzePrivate
 
 rush all yaku: tests
 
@@ -856,16 +898,18 @@ rush all yaku: tests
 rush refactor Win/
 
 - [ ] refactor Win/Yaku
-
 - [ ] refactor YakuAnalyzer 0.3h
 - [ ] WinTarget, WinResult
 
 rush refactor: etc
 
-- [ ] refactor: merge Turn, PhaseState, Phase
 - [ ] refactor tests
 - [ ] fix: mockHand target tile vs robQuadPhase target tile
 - [ ] refactor: simplify reset(),debugReset(),toNextPhase() 0.2h
+
+rush etc
+
+- [x] PublicCommandBuffer 0.6h
 
 refactor process
 
@@ -894,7 +938,7 @@ module      | process
 UI          |
 network     |
 demo        |
-other pj    |
+code reading|
 
 rush rule.md doc
 

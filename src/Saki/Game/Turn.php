@@ -10,10 +10,11 @@ use Saki\Util\Immutable;
 class Turn implements Immutable {
     use ComparableSequence;
 
+    /**
+     * @param Turn $other
+     * @return bool
+     */
     function compareTo($other) {
-        /** @var Turn $other */
-        $other = $other;
-
         $circleCountDiff = $this->circleCount <=> $other->circleCount;
         if ($circleCountDiff != 0) {
             return $circleCountDiff;

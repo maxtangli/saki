@@ -128,6 +128,9 @@ class WaitingAnalyzer {
         $orderedHand = $public->getCopy()->orderByTileID();
         $setListList = $this->getPublicMeldListAnalyzer()
             ->analyzeMeldListList($orderedHand);
+//        foreach ($setListList as $setList) {
+//            echo $setList."\n";
+//        }
 
         // collect each MeldList's waiting as final waiting
         $waiting = new TileList();

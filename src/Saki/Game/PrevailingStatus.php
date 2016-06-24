@@ -13,10 +13,11 @@ class PrevailingStatus implements Immutable {
     //region ComparableSequence impl
     use ComparableSequence;
 
+    /**
+     * @param PrevailingStatus $other
+     * @return bool
+     */
     function compareTo($other) {
-        /** @var PrevailingStatus $other */
-        $other = $other;
-
         if ($prevailingDiff = $this->getPrevailingWind()->compareTo($other->getPrevailingWind())) {
             return $prevailingDiff;
         };

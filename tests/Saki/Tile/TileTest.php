@@ -5,14 +5,14 @@ use Saki\Tile\TileType;
 
 class TileTest extends \SakiTestCase {
     function testCompare() {
-        $t5m = Tile::fromString('5m');
-        $t0m = Tile::fromString('0m');
-        $this->assertEquals(1, $t0m->compareTo($t5m));
-        $this->assertEquals(-1, $t5m->compareTo($t0m));
+        $normal5m = Tile::fromString('5m');
+        $red5m = Tile::fromString('0m');
+        $this->assertEquals(1, $red5m->compareTo($normal5m));
+        $this->assertEquals(-1, $normal5m->compareTo($red5m));
 
         $f = Tile::getComparator();
-        $this->assertEquals(1, $f($t0m, $t5m));
-        $this->assertEquals(-1, $f($t5m, $t0m));
+        $this->assertEquals(1, $f($red5m, $normal5m));
+        $this->assertEquals(-1, $f($normal5m, $red5m));
     }
 
     function testEqual() {
@@ -29,66 +29,41 @@ class TileTest extends \SakiTestCase {
     }
 
     function testOverall() {
-        $m = Tile::create(TileType::fromString('m'), 1);
+        $m = Tile::fromString('1m');
         $this->assertEquals(1, $m->getNumber());
         $this->assertEquals(TileType::CHARACTER_M, $m->getTileType()->getValue());
         $this->assertEquals('1m', $m->__toString());
 
-        $m = Tile::create(TileType::fromString('E'));
+        $m = Tile::fromString('E');
         $this->assertEquals(TileType::EAST_E, $m->getTileType()->getValue());
         $this->assertEquals('E', $m->__toString());
     }
 
     function testIdentity() {
-        $m1 = Tile::create(TileType::fromString('m'), 1);
-        $m2 = Tile::create(TileType::fromString('m'), 1);
+        $m1 = Tile::fromString('1m');
+        $m2 = Tile::fromString('1m');
         $this->assertEquals($m1, $m2);
         $this->assertSame($m1, $m2);
-        $m3 = Tile::create(TileType::fromString('m'), 2);
+        $m3 = Tile::fromString('2m');;
         $this->assertNotEquals($m1, $m3);
     }
 
-    function testFromString() {
-        $m1 = Tile::create(TileType::fromString('m'), 1);
-        $m2 = Tile::fromString('1m');
-        $this->assertEquals($m1, $m2);
-
-        $m3 = Tile::create(TileType::fromString('E'));
-        $m4 = Tile::fromString('E');
-        $this->assertEquals($m3, $m4);
-    }
-
-    function testIsRedDora() {
-        $normal5m = Tile::create(TileType::create(TileType::CHARACTER_M), 5, false);
-        $this->assertFalse($normal5m->isRedDora());
-
-        $red5m = Tile::create(TileType::create(TileType::CHARACTER_M), 5, true);
+    function testRedDoraString() {
+        $red5m = Tile::fromString('0m');
         $this->assertTrue($red5m->isRedDora());
+        $this->assertEquals(5, $red5m->getNumber());
+        $this->assertEquals('0m', $red5m->toFormatString(true));
+        $this->assertEquals('5m', $red5m->toFormatString(false));
 
+        $normal5m = Tile::fromString('5m');
+        $this->assertFalse($normal5m->isRedDora());
         $this->assertEquals($normal5m, $red5m);
         $this->assertNotSame($normal5m, $red5m);
 
-        $red5p = Tile::create(TileType::create(TileType::DOT_P), 5, true);
+        $red5p = Tile::fromString('0p');
         $this->assertTrue($red5p->isRedDora());
         $this->assertNotEquals($red5p, $red5m);
         $this->assertNotSame($red5p, $red5m);
-    }
-
-    function testRedDoraNumber() {
-        $r5m = Tile::fromString('0m');
-        $this->assertEquals(5, $r5m->getNumber());
-    }
-
-    function testRedDoraString() {
-        $m5 = Tile::create(TileType::fromString('m'), 5, true);
-        $m6 = Tile::fromString('0m');
-        $this->assertEquals($m5, $m6);
-        $this->assertTrue($m6->isRedDora());
-
-        $this->assertEquals('0m', $m5);
-        $this->assertEquals('0m', $m6);
-
-        $this->assertEquals('5m', $m5->toFormatString(false));
     }
 
     /**

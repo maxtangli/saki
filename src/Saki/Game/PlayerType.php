@@ -19,6 +19,7 @@ class PlayerType extends Enum {
     }
 
     /**
+     * @param $defaultValue
      * @return array e.x. ['E' => $defaultValue, ...]
      */
     function getSeatWindMap($defaultValue) {

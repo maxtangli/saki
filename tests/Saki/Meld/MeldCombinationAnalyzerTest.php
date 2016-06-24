@@ -10,7 +10,7 @@ class MeldListAnalyzerTest extends \SakiTestCase {
      * @dataProvider getMeldCompositionsProvider
      */
     function testGetMeldCompositions($expectedMeldListStrings, $tilesStr, $meldTypes) {
-        $round = new MeldListAnalyzer($meldTypes, 0, false);
+        $round = new MeldListAnalyzer($meldTypes, 0);
         $combinationList = $round->analyzeMeldListList(TileList::fromString($tilesStr));
         $actualMeldListStrings = array_map(function ($v) {
             return $v->__toString();
@@ -34,13 +34,13 @@ class MeldListAnalyzerTest extends \SakiTestCase {
             [[], '12s', $meldTypes],
             [[], '1s1p', $meldTypes],
             // one possibility
-            [['123s'], '123s', $meldTypes],
-            [['123m,123p'], '123m123p', $meldTypes],
-            [['123m,123p,123s'], '123m123p123s', $meldTypes],
+            [['(123s)'], '123s', $meldTypes],
+            [['(123m),(123p)'], '123m123p', $meldTypes],
+            [['(123m),(123p),(123s)'], '123m123p123s', $meldTypes],
             // multiple possibility
-            [['11s,11s', '1111s'], '1111s', $meldTypes],
+            [['(11s),(11s)', '(1111s)'], '1111s', $meldTypes],
             // not continue
-            [['11s,22s,33s', '123s,123s'], '112233s', $meldTypes],
+            [['(11s),(22s),(33s)', '(123s),(123s)'], '112233s', $meldTypes],
         ];
     }
 
@@ -48,9 +48,5 @@ class MeldListAnalyzerTest extends \SakiTestCase {
         $round = new MeldListAnalyzer([RunMeldType::create()], 0, true);
         $combinationList = $round->analyzeMeldListList(TileList::fromString('123s'));
         $this->assertEquals(Meld::fromString('(123s)'), $combinationList[0][0]);
-
-        $round = new MeldListAnalyzer([RunMeldType::create()], 0, false);
-        $combinationList = $round->analyzeMeldListList(TileList::fromString('123s'));
-        $this->assertEquals(Meld::fromString('123s'), $combinationList[0][0]);
     }
 }

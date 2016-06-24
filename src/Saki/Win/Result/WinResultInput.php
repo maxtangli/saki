@@ -139,9 +139,8 @@ class WinResultInput {
         $itemList = $this->getItemList()->getCopy()
             ->insertLast($this->getItemList()->toArray());
         $loserLocated = false;
+        /** @var WinResultInputItem $item */
         foreach ($itemList as $item) {
-            /** @var WinResultInputItem $item */
-            $item = $item;
             if ($loserLocated && $item->isWinner()) {
                 return $item->getSeatWind() == $seatWind;
             } elseif (!$loserLocated && $item->isLoser()) {

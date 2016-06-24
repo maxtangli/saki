@@ -109,10 +109,6 @@ class WinTarget {
         return $this->getActArea()->getHand()->getTarget()->getTile();
     }
 
-    function getDiscardedTileList() {
-        return $this->getRound()->getArea($this->getActor())->getDiscardedReference();
-    }
-
     function getRiichiStatus() {
         return $this->getRound()->getArea($this->getActor())->getRiichiStatus();
     }

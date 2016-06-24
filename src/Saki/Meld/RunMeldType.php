@@ -27,21 +27,22 @@ class RunMeldType extends MeldType {
          * a+2 2   1   0
          */
         $expectedDiffs = [0, 0, 0, 1, 1, 1, 1, 2, 2];
-        $diffList = (new ArrayList())->fromZipped($validCountTileList, $validCountTileList, function (Tile $t1, Tile $t2) {
+        $toDiffAbs = function (Tile $t1, Tile $t2) {
             return abs($t1->getNumber() - $t2->getNumber());
-        });
+        };
+        $diffList = (new ArrayList())->fromZipped($validCountTileList, $validCountTileList, $toDiffAbs);
         $isConsecutiveNumber = $diffList->valueExist($expectedDiffs);
         return $isConsecutiveNumber;
     }
 
     protected function getPossibleTileLists(Tile $firstTile) {
+        $result = [];
         if ($firstTile->isSuit() && $firstTile->getNumber() <= 7) {
-            $nextTile = $firstTile->getNextTile();
-            $nextNextTile = $nextTile->getNextTile();
-            return [new TileList([$firstTile, $nextTile, $nextNextTile])];
-        } else {
-            return [];
+            $nextTile = $firstTile->getNextTile(1);
+            $nextNextTile = $firstTile->getNextTile(2);
+            $result[] = new TileList([$firstTile, $nextTile, $nextNextTile]);
         }
+        return $result;
     }
 
     function getWinSetType() {
