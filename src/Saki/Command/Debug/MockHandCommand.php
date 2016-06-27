@@ -34,8 +34,11 @@ class MockHandCommand extends PlayerCommand {
 
     //region PlayerCommand impl
     protected function matchPhase(Round $round, Area $actorArea) {
-        $phaseState = $round->getPhaseState();
-        return $phaseState->getPhase()->isPrivateOrPublic();
+        // currently Robbing phase mockHand not supported
+        // since Target replace maybe complex
+        $phase = $round->getPhase();
+        return $phase->isPrivate()
+            || ($phase->isPublic() && !$round->getPhaseState()->isRobbing());
     }
 
     protected function matchActor(Round $round, Area $actorArea) {

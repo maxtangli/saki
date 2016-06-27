@@ -43,15 +43,7 @@ abstract class PublicClaimCommand extends PublicCommand {
      * @return TileList
      */
     function getTileList() {
-        /** @var TileList $tileList */
-        $tileList = $this->getParam(1);
-        $validCount = (1 + $tileList->count()) == $this->getClaimMeldType()->getTileCount();
-        if (!$validCount) {
-            throw new \InvalidArgumentException(
-                sprintf('$tileList[%s].', $tileList)
-            );
-        }
-        return $tileList;
+        return $this->getParam(1);
     }
 
     /**
@@ -80,7 +72,9 @@ abstract class PublicClaimCommand extends PublicCommand {
 
     //region PublicCommand impl
     protected function matchOther(Round $round, Area $actorArea) {
-        return $this->getClaim()->valid($actorArea);
+        $validCount = (1 + $this->getTileList()->count()) 
+            == $this->getClaimMeldType()->getTileCount();
+        return $validCount && $this->getClaim()->valid($actorArea);
     }
 
     protected function executePlayerImpl(Round $round, Area $actorArea) {

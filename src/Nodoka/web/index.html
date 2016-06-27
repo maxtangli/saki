@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Nodoka dev</title>
+</head>
+<body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+<script>
+    var conn = new WebSocket('ws://localhost:8080');
+    conn.onopen = init;
+    conn.onmessage = receive;
+
+    function init() {
+        console.log("Connection established!");
+    }
+
+    function send() {
+        var command = $('#command').val();
+        conn.send(command);
+    }
+
+    function receive(e) {
+        console.log(e.data);
+        $('#receive').html(e.data);
+    }
+</script>
+<div id="receive">receive:</div>
+
+<input id="command" type="text" value="type command here"/>
+<input type="button" value="send" onclick="send()"/>
+
+</body>
+</html>

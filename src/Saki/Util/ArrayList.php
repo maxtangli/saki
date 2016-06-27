@@ -14,12 +14,12 @@ namespace Saki\Util;
  * - support object-style and clean array operations.
  * - support readonly
  *
- * callbacks
+ * callbacks (NOTE: seems much more faster to use getKEY for comparator and equal)
  * - $accumulator: mixed, v => mixed
- * - $comparator : v1,v2 => -1,0,1
- * - $equal     : v1,v2 => bool
- * - $predicate : v => bool
- * - $selector  : v => mixed
+ * - $comparator: v1,v2 => -1,0,1
+ * - $equal: v1,v2 => bool
+ * - $predicate: v => bool
+ * - $selector: v => mixed
  *
  * @see https://msdn.microsoft.com/en-us/library/9eekhta0(v=vs.110).aspx C# IEnumerable<T> Interface
  * @see https://msdn.microsoft.com/en-us/library/system.collections.arraylist(v=vs.110).aspx C# ArrayList<T> class
@@ -829,7 +829,7 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
      * @return array
      */
     protected function util_boxing($valueOrValues) {
-        return is_array($valueOrValues) ? array_values($valueOrValues) : [$valueOrValues];
+        return is_array($valueOrValues) ? $valueOrValues : [$valueOrValues];
     }
 
     /**

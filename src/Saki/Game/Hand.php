@@ -40,11 +40,10 @@ class Hand implements Immutable {
     }
 
     /**
-     * @param Target $target
-     * @return Hand
+     * @return string
      */
-    function toSetTarget(Target $target) {
-        return new Hand($this->getPublic(), $this->getMelded(), $target);
+    function __toString() {
+        return sprintf('target[%s],public[%s],melded[%s]', $this->getTarget(), $this->getPublic(), $this->getMelded());
     }
 
     /**
@@ -72,6 +71,10 @@ class Hand implements Immutable {
         return $newHand;
     }
 
+    /**
+     * @param TileList $replace
+     * @return Hand
+     */
     function toMockHand(TileList $replace) {
         // public
         if ($replace->count() <= $this->getPublic()->count()) {

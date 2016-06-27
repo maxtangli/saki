@@ -8,6 +8,7 @@ use Saki\Game\Turn;
 use Saki\Meld\MeldList;
 
 // todo move yaku specific logic into XXXYaku
+// todo simpify methods
 class WinTarget {
     private $actor;
     private $round;

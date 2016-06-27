@@ -63,7 +63,8 @@ class ConcealedKongCommand extends PrivateCommand {
 
     //region PrivateCommand impl
     protected function matchOther(Round $round, Area $actorArea) {
-        return $this->getClaim()->valid($actorArea);
+        return $this->getTileList()->count() == 4
+        && $this->getClaim()->valid($actorArea);
     }
 
     protected function executePlayerImpl(Round $round, Area $actorArea) {

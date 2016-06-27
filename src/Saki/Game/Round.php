@@ -4,6 +4,8 @@ namespace Saki\Game;
 use Saki\Command\CommandParser;
 use Saki\Command\CommandProcessor;
 use Saki\Command\CommandSet;
+use Saki\Command\InvalidCommandException;
+use Saki\Command\PlayerCommand;
 use Saki\Meld\MeldList;
 use Saki\Phase\NullPhaseState;
 use Saki\Phase\OverPhaseState;
@@ -14,7 +16,7 @@ use Saki\Tile\TileList;
 use Saki\Util\ArrayList;
 use Saki\Win\WinTarget;
 
-/**
+/** todo simplify reset(),debugReset(),toNextPhase()
  * @package Saki\Game
  */
 class Round {
@@ -70,6 +72,21 @@ class Round {
         // to private phase
         $this->toNextPhase();
         $this->toNextPhase(); // todo better way?
+    }
+
+    /**
+     * @return string
+     */
+    function __toString() { // todo
+        return $this->areaList->__toString();
+    }
+
+    /**
+     * @return string
+     */
+    function toJson() {
+        $a = [];
+        return json_encode($a);
     }
 
     /**
@@ -144,10 +161,39 @@ class Round {
     }
 
     /**
+     * @param string $scriptLine
+     * @return Command|PlayerCommand
+     */
+    function parse(string $scriptLine) {
+        $parser = $this->getProcessor()->getParser();
+        return $parser->parseLine($scriptLine);
+    }
+    
+    /**
      * @param array ...$scripts
      */
     function process(... $scripts) {
         $this->getProcessor()->process(... $scripts);
+    }
+
+    /**
+     * @param string $scriptLine
+     * @param SeatWind|null $requireActor
+     * @return \Saki\Command\Command
+     * @throws InvalidCommandException
+     */
+    function processLine(string $scriptLine, SeatWind $requireActor = null) {
+        $command = $this->getProcessor()->getParser()->parseLine($scriptLine);
+        if ($requireActor) {
+            if (!$command instanceof PlayerCommand) {
+                throw new InvalidCommandException('Invalid command: not PlayerCommand.');
+            }
+
+            if (!$command->getActor() == $requireActor) {
+                throw new InvalidCommandException('Invalid command: not actor.');
+            }
+        }
+        return $command;
     }
 
     /**

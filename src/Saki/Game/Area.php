@@ -29,6 +29,13 @@ class Area {
     }
 
     /**
+     * @return string
+     */
+    function __toString() { // todo
+        return $this->getHand()->__toString();
+    }
+
+    /**
      * @param SeatWind $seatWind
      */
     function roll(SeatWind $seatWind) {

@@ -130,10 +130,17 @@ class Meld extends TileList implements Immutable {
         && (!$compareConcealed || $this->concealed == $other->concealed);
     }
 
+    /**
+     * @return string
+     */
     function __toString() {
         return $this->toFormatString(true);
     }
 
+    /**
+     * @param bool $considerConcealed
+     * @return string
+     */
     function toFormatString(bool $considerConcealed) {
         $s = parent::__toString();
         return $considerConcealed && $this->isConcealed() ? "($s)" : $s;

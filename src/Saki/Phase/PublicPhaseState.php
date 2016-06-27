@@ -40,6 +40,13 @@ class PublicPhaseState extends PhaseState {
     }
 
     /**
+     * @return bool
+     */
+    function isRobbing() {
+        return $this->isRonOnly;
+    }
+
+    /**
      * @param Round $round
      * @return bool
      */

@@ -21,26 +21,23 @@ class SkipCommand extends Command {
     function getSkipCount() {
         return $this->getParam(0);
     }
-
-    /**
-     * @return bool
-     */
-    protected function isPrivate() {
-        $phaseState = $this->getRound()->getPhaseState();
-        return $phaseState->getPhase()->isPrivate();
-    }
-
+    
     //region Command impl
     protected function executableImpl(Round $round) {
-        return $this->isPrivate();
+        return $round->getPhase()->isPrivateOrPublic();
     }
 
     protected function executeImpl(Round $round) {
-
         $nRemainSkip = $this->getSkipCount();
-        while ($nRemainSkip-- > 0 && $this->isPrivate()) {
-            $currentSeatWind = $round->getCurrentSeatWind();
-            $scripts = sprintf('mockHand %s C; discard %s C; passAll', $currentSeatWind, $currentSeatWind);
+        
+        if ($nRemainSkip > 0 && $round->getPhase()->isPublic()) {
+            $round->process('passAll');
+            --$nRemainSkip;
+        }
+        
+        while ($nRemainSkip-- > 0 && $round->getPhase()->isPrivate()) {
+            $currentActor = $round->getCurrentSeatWind();
+            $scripts = sprintf('mockHand %s C; discard %s C; passAll', $currentActor, $currentActor);
             $round->process($scripts);
         }
     }

@@ -1,6 +1,17 @@
 # saki
 
-A japanese-mahjong server.
+Goal: A japanese-mahjong game server + browser client.
+
+## process
+
+function   | process  | remark
+---------- | -------- | ------
+rule logic | 95%      | php
+network    | 1%,ing   | websocket
+UI         | 0%       | html5 canvas
+DB         | 0%       | nosql
+src reading| 0%       |
+release    | 0%       |
 
 ## rush statistics
 
@@ -882,12 +893,10 @@ Tlle.getSuitList.$toSuit
 ArrayList.util_boxing
 top35%
 
-rush 76 optimize WaitingAnalyzer
+rush 76 optimize WaitingAnalyzer: step1 2h
 
 - [x] code view: MeldListAnalyzer 0.2h
 - [x] optimize,refactor ArrayList etc 1.8h
-- [ ] optimize analyzePublic
-- [ ] optimize analyzePrivate
 
 rush all yaku: tests
 
@@ -895,21 +904,23 @@ rush all yaku: tests
 - [ ] test HeavenlyWin, EarthlyWin, HumanlyWin
 - [ ] refactor yaku tests
 
-rush refactor Win/
-
-- [ ] refactor Win/Yaku
-- [ ] refactor YakuAnalyzer 0.3h
-- [ ] WinTarget, WinResult
-
-rush refactor: etc
-
-- [ ] refactor tests
-- [ ] fix: mockHand target tile vs robQuadPhase target tile
-- [ ] refactor: simplify reset(),debugReset(),toNextPhase() 0.2h
-
 rush etc
 
 - [x] PublicCommandBuffer 0.6h
+- [ ] refactor: etc 0.9h
+- [ ] emulator
+- [ ] bug: ConcealedKong
+- [ ] RoundView, php class to json?
+
+rush web
+
+- [x] Racket+js demo 0.5h
+- [ ] server code 1.7h
+
+rush optimize WaitingAnalyzer: step2
+
+- [ ] optimize analyzePublic
+- [ ] optimize analyzePrivate
 
 refactor process
 
@@ -930,15 +941,6 @@ Win/Score   | ok
 Win/Series  | ok
 Win/Waiting | ok
 Win/Yaku    | todo
-
-feature process
-
-module      | process
------------ | -----
-UI          |
-network     |
-demo        |
-code reading|
 
 rush rule.md doc
 

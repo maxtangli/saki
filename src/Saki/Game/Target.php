@@ -38,7 +38,7 @@ class Target {
      */
     function __toString() {
         return $this->exist()
-            ? sprintf('%s,%s,%s', $this->getTile(), $this->getType(), $this->getCreator())
+            ? sprintf('%s,%s,by %s', $this->getTile(), $this->getType(), $this->getCreator())
             : 'null.';
     }
 

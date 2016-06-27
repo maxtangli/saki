@@ -44,11 +44,12 @@ class CommandParser {
     /**
      * @param string $name
      * @return string class
+     * @throws InvalidCommandException
      */
     function nameToClass(string $name) {
         $commands = $this->getNameToClassMap();
         if (!(array_key_exists($name, $commands))) {
-            throw new \InvalidArgumentException(
+            throw new InvalidCommandException(
                 sprintf('command name[%s] not exist, forgot to pass it into parser?', $name)
             );
         }
