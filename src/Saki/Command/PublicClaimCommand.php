@@ -9,6 +9,7 @@ use Saki\Game\Claim;
 use Saki\Game\Round;
 use Saki\Game\SeatWind;
 use Saki\Meld\MeldType;
+use Saki\Meld\QuadMeldType;
 use Saki\Phase\PrivatePhaseState;
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
@@ -32,10 +33,15 @@ abstract class PublicClaimCommand extends PublicCommand {
             // handle red
             return $public->valueExist($params->toArray(), Tile::getEqual(true));
         };
-        $otherParamsList = static::getOtherParamsListImpl($targetTile->toNotRed())
-            ->where($exist);
+        $otherParamsListRaw = static::getOtherParamsListImpl($targetTile->toNotRed());
+        if (!$otherParamsListRaw instanceof ArrayList) {
+            throw new \InvalidArgumentException(
+                sprintf('Invalid getExecutableListImpl() return type in class[%s]', static::getName())
+            );
+        }
+        $otherParamsList = $otherParamsListRaw->where($exist);
 
-        return static::createMany($round, $actor, $otherParamsList);
+        return static::createMany($round, $actor, $otherParamsList, true); // validate drawReplacementAble
     }
     //endregion
 

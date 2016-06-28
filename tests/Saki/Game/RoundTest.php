@@ -112,6 +112,8 @@ class RoundTest extends \SakiTestCase {
         $this->assertHand('23456789p13s1p', '5500m', '1p'); // todo right order of Meld?
     }
 
+    // todo test kong not able for four kongs case
+
     function testNotFourKongDrawBySamePlayer() {
         $round = $this->getInitRound();
 
@@ -174,29 +176,29 @@ class RoundTest extends \SakiTestCase {
 
         // E private phase, hand E
         $handE = $areaE->getHand();
-        $this->assertEquals('123456789m12344p', $handE->getPrivate()->toFormatString(true));
+        $this->assertEquals('123456789m12344p', $handE->getPrivate()->toSortedString(true));
         $this->assertEquals('4p', $handE->getTarget()->getTile()->__toString());
-        $this->assertEquals('123456789m1234p', $handE->getPublic()->toFormatString(true));
+        $this->assertEquals('123456789m1234p', $handE->getPublic()->toSortedString(true));
 
         // E private phase, hand S
         $round->process('mockHand S 123456789p1234s');
         $handS = $areaS->getHand();
         // no private
         $this->assertFalse($handS->getTarget()->exist());
-        $this->assertEquals('123456789p1234s', $handS->getPublic()->toFormatString(true));
+        $this->assertEquals('123456789p1234s', $handS->getPublic()->toSortedString(true));
 
         // E public phase, hand E
         $round->process('discard E 2m');
         $handE = $areaE->getHand();
         // no private
         $this->assertFalse($handE->getTarget()->exist());
-        $this->assertEquals('13456789m12344p', $handE->getPublic()->toFormatString(true));
+        $this->assertEquals('13456789m12344p', $handE->getPublic()->toSortedString(true));
 
         // E public phase, hand S
         $handS = $areaS->getHand();
-        $this->assertEquals('2m123456789p1234s', $handS->getPrivate()->toFormatString(true));
+        $this->assertEquals('2m123456789p1234s', $handS->getPrivate()->toSortedString(true));
         $this->assertEquals('2m', $handS->getTarget()->getTile()->toFormatString(true));
-        $this->assertEquals('123456789p1234s', $handS->getPublic()->toFormatString(true));
+        $this->assertEquals('123456789p1234s', $handS->getPublic()->toSortedString(true));
     }
 
     function testPointList() {

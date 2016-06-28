@@ -53,6 +53,14 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
     }
 
     /**
+     * @param string $glue
+     * @return string
+     */
+    function toFormatString(string $glue) {
+        return implode($glue, $this->innerArray);
+    }
+
+    /**
      * @param callable|null $selector
      * @return array
      */

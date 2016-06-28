@@ -119,10 +119,25 @@ class Claim implements Immutable {
      * @return bool
      */
     function valid(Area $area) {
+        if (!$this->validToMeld()) {
+            return false;
+        }
+
+        $toMeld = $this->getToMeld();
+        $validDrawReplacementAble = !$toMeld->isQuad()
+            || $area->getRound()->getWall()->getDeadWall()->isAbleDrawReplacement();
+        if (!$validDrawReplacementAble) {
+            return false;
+        }
+
         $hand = $area->getHand();
-        return $this->validToMeld()
-        && $hand->getPrivate()->valueExist($this->getFromTiles(), Tile::getEqual(true)) // handle red
+        $validHand = $hand->getPrivate()->valueExist($this->getFromTiles(), Tile::getEqual(true)) // handle red
         && $hand->getMelded()->valueExist($this->getFromMeldedOrNull() ?? [], Meld::getEqual(true, true)); // handle red
+        if (!$validHand) {
+            return false;
+        }
+
+        return true;
     }
 
     /**

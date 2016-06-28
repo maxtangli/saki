@@ -183,7 +183,7 @@ class MeldList extends ArrayList {
         $runMeldList = $this->toFiltered([RunMeldType::create()]);
         $keySelector = function (Meld $runMeld) {
             $considerConcealed = false;
-            return $runMeld->toFormatString($considerConcealed);
+            return $runMeld->toSortedString($considerConcealed);
         };
         $counts = $runMeldList->getCounts($keySelector); // ['123s' => 2 ...]
         $doubleChowCount = (new ArrayList(array_values($counts)))->getCount(function (int $n) {

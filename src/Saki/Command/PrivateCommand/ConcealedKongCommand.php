@@ -36,7 +36,7 @@ class ConcealedKongCommand extends PrivateCommand {
             return [new TileList($list->toArray())];
         };
         $otherParamsList = $tileGroupList->select($toArray);
-        return static::createMany($round, $actor, $otherParamsList);
+        return static::createMany($round, $actor, $otherParamsList, true); // validate drawReplacementAble
     }
     //endregion
 
@@ -63,8 +63,8 @@ class ConcealedKongCommand extends PrivateCommand {
 
     //region PrivateCommand impl
     protected function matchOther(Round $round, Area $actorArea) {
-        return $this->getTileList()->count() == 4
-        && $this->getClaim()->valid($actorArea);
+        $validCount = $this->getTileList()->count() == 4;
+        return $validCount && $this->getClaim()->valid($actorArea);
     }
 
     protected function executePlayerImpl(Round $round, Area $actorArea) {

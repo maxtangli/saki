@@ -8,10 +8,10 @@ function   | process  | remark
 ---------- | -------- | ------
 rule logic | 95%      | php
 network    | 1%,ing   | websocket
-UI         | 0%       | html5 canvas
-DB         | 0%       | nosql
-src reading| 0%       |
-release    | 0%       |
+UI         | 0%       | html5 canvas, to support any devices with a browser
+DB         | 0%       | nosql, since very little db access
+src reading| 0%       | read open source mahjong projects to improve
+release    | 0%       | wish to achieve in 2016
 
 ## rush statistics
 
@@ -898,24 +898,27 @@ rush 76 optimize WaitingAnalyzer: step1 2h
 - [x] code view: MeldListAnalyzer 0.2h
 - [x] optimize,refactor ArrayList etc 1.8h
 
-rush all yaku: tests
-
-- [ ] test and fix BottomOfTheSea Fish/Moon 0.1h // ? what's wrong
-- [ ] test HeavenlyWin, EarthlyWin, HumanlyWin
-- [ ] refactor yaku tests
-
 rush etc
 
 - [x] PublicCommandBuffer 0.6h
-- [ ] refactor: etc 0.9h
-- [ ] emulator
-- [ ] bug: ConcealedKong
-- [ ] RoundView, php class to json?
+- [x] refactor: etc 0.9h
+
+- [x] bug: kong command should be invalid if not drawReplacementAble 0.5h
+- [ ] simulator: 1.3h
+
+- [ ] refactor: PlayerCommand.matchPhase, matchActor should be static
 
 rush web
 
 - [x] Racket+js demo 0.5h
 - [ ] server code 1.7h
+- [ ] RoundView, php class to json?
+
+rush all yaku: tests
+
+- [ ] test and fix BottomOfTheSea Fish/Moon 0.1h // ? what's wrong
+- [ ] test HeavenlyWin, EarthlyWin, HumanlyWin
+- [ ] refactor yaku tests
 
 rush optimize WaitingAnalyzer: step2
 

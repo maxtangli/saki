@@ -54,7 +54,7 @@ class DeadWall {
      * @param Tile $tile
      */
     function debugSetNextDrawReplacement(Tile $tile) {
-        $this->assertCanDrawReplacement();
+        $this->assertAbleDrawReplacement();
         $this->tileList->replaceAt(0, $tile);
     }
 
@@ -91,7 +91,7 @@ class DeadWall {
      * @return Tile
      */
     function drawReplacement() {
-        $this->assertCanDrawReplacement();
+        $this->assertAbleDrawReplacement();
 
         $tile = $this->tileList->getFirst();
         $this->tileList->removeFirst();
@@ -107,19 +107,18 @@ class DeadWall {
     function getRemainTileCount() {
         return $this->tileList->count();
     }
-
+    
     /**
      * @return bool
      */
-    function canDrawReplacement() {
-        return $this->getRemainTileCount() >= 10;
+    function isAbleDrawReplacement() {
+        $remainReplacementCount = $this->tileList->count() - 10;
+        return $remainReplacementCount > 0;
     }
 
-    protected function assertCanDrawReplacement() {
-        if (!$this->canDrawReplacement()) {
-            throw new \InvalidArgumentException(
-                sprintf('failed to assert [%s] <= 10.', $this->tileList->count())
-            );
+    protected function assertAbleDrawReplacement() {
+        if (!$this->isAbleDrawReplacement()) {
+            throw new \InvalidArgumentException('not drawable');
         }
     }
 }

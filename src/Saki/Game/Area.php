@@ -32,7 +32,7 @@ class Area {
      * @return string
      */
     function __toString() { // todo
-        return $this->getHand()->__toString();
+        return sprintf('actor[%s],%s', $this->getSeatWind(), $this->getHand());
     }
 
     /**

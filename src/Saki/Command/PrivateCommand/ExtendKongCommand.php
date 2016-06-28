@@ -47,7 +47,7 @@ class ExtendKongCommand extends PrivateCommand {
         $otherParamsList = (new ArrayList())
             ->fromSelectMany($triples, $toOtherParamsList);
 
-        return static::createMany($round, $actor, $otherParamsList);
+        return static::createMany($round, $actor, $otherParamsList, true); // validate drawReplacementAble
     }
     //endregion
 

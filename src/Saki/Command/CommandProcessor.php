@@ -1,18 +1,21 @@
 <?php
 namespace Saki\Command;
+use Saki\Game\Round;
 
 /**
  * @package Saki\Command
  */
-
 class CommandProcessor {
     private $parser;
+    private $provider;
 
     /**
-     * @param CommandParser $parser
+     * @param Round $round
+     * @param CommandSet $commandSet
      */
-    function __construct(CommandParser $parser) {
-        $this->parser = $parser;
+    function __construct(Round $round, CommandSet $commandSet) {
+        $this->parser = new CommandParser($round, $commandSet);
+        $this->provider = new CommandProvider($round, $commandSet);
     }
 
     /**
@@ -20,6 +23,13 @@ class CommandProcessor {
      */
     function getParser() {
         return $this->parser;
+    }
+
+    /**
+     * @return CommandProvider
+     */
+    function getProvider() {
+        return $this->provider;
     }
 
     /**

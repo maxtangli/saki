@@ -21,7 +21,7 @@ class ChowCommand extends PublicClaimCommand {
 
     protected static function getOtherParamsListImpl(Tile $notRedTargetTile) {
         if (!$notRedTargetTile->isSuit()) {
-            return [];
+            return new ArrayList();
         }
 
         /**

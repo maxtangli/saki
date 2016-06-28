@@ -1,6 +1,7 @@
 <?php
 namespace Saki\Command;
 
+use Saki\Command\Debug\PassAllCommand;
 use Saki\Game\Round;
 use Saki\Game\SeatWind;
 use Saki\Util\ArrayList;
@@ -46,6 +47,18 @@ class CommandProvider {
         };
         $allExecutableList = (new ArrayList())
             ->fromSelectMany($this->getPlayerCommandSet(), $getClassExecutableList);
+        return $allExecutableList;
+    }
+
+    /**
+     * @return ArrayList ArrayList of PlayerCommand.
+     */
+    function getAllExecutableList() {
+        $round = $this->getRound();
+        $actorList = $round->getGameData()->getPlayerType()
+            ->getSeatWindList();
+        $allExecutableList = (new ArrayList())
+            ->fromSelectMany($actorList, [$this, 'getExecutableList']);
         return $allExecutableList;
     }
 }

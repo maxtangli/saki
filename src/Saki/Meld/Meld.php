@@ -134,14 +134,14 @@ class Meld extends TileList implements Immutable {
      * @return string
      */
     function __toString() {
-        return $this->toFormatString(true);
+        return $this->toSortedString(true);
     }
 
     /**
      * @param bool $considerConcealed
      * @return string
      */
-    function toFormatString(bool $considerConcealed) {
+    function toSortedString(bool $considerConcealed) {
         $s = parent::__toString();
         return $considerConcealed && $this->isConcealed() ? "($s)" : $s;
     }

@@ -1,7 +1,7 @@
 <?php
 namespace Saki\Game;
 
-use Saki\Command\CommandParser;
+use Saki\Command\Command;
 use Saki\Command\CommandProcessor;
 use Saki\Command\CommandSet;
 use Saki\Command\InvalidCommandException;
@@ -47,9 +47,7 @@ class Round {
 
         // immutable
         $this->gameData = $gameData;
-        $this->processor = new CommandProcessor(
-            new CommandParser($this, CommandSet::createStandard())
-        );
+        $this->processor = new CommandProcessor($this, CommandSet::createStandard());
 
         // variable
         $this->prevailingCurrent = PrevailingCurrent::createFirst($gameData->getPrevailingContext());
@@ -78,13 +76,14 @@ class Round {
      * @return string
      */
     function __toString() { // todo
-        return $this->areaList->__toString();
+        $areaListString = $this->areaList->toFormatString("\n");
+        return $areaListString;
     }
 
     /**
      * @return string
      */
-    function toJson() {
+    function toJson() { // todo
         $a = [];
         return json_encode($a);
     }
@@ -168,7 +167,7 @@ class Round {
         $parser = $this->getProcessor()->getParser();
         return $parser->parseLine($scriptLine);
     }
-    
+
     /**
      * @param array ...$scripts
      */

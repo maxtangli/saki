@@ -101,7 +101,7 @@ class TileList extends ArrayList {
      * @param bool $sort
      * @return string
      */
-    function toFormatString(bool $sort) {
+    function toSortedString(bool $sort) {
         return $sort ? $this->getCopy()->orderByTileID()->__toString() : $this->__toString();
     }
 

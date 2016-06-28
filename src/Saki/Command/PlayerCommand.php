@@ -19,12 +19,12 @@ abstract class PlayerCommand extends Command {
     static function getExecutableList(Round $round, SeatWind $actor) {
         $actorArea = $round->getArea($actor);
 
-        // match Actor
+        // Actor match
         if (!$actorArea->isActor()) {
             return new ArrayList();
         }
 
-        // match Phase
+        // Command phase match
         $class = get_called_class();
         $phase = $round->getPhase();
         $matchPhase = ($phase->isPrivate() && is_subclass_of($class, PrivateCommand::class))
