@@ -910,9 +910,10 @@ rush etc
 
 rush web
 
-- [x] Racket+js demo 0.5h
+- [x] import Racket+js 0.5h
 - [ ] server code 1.7h
-- [ ] RoundView, php class to json?
+- [ ] Round.toJson 0.5h
+- [ ] html view 1.7h
 
 rush all yaku: tests
 

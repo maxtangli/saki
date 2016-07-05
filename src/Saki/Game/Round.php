@@ -83,9 +83,8 @@ class Round {
     /**
      * @return string
      */
-    function toJson() { // todo
-        $a = [];
-        return json_encode($a);
+    function toJson() {
+        return RoundSerializer::toJson($this);
     }
 
     /**

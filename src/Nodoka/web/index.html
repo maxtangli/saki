@@ -12,7 +12,7 @@
     conn.onmessage = receive;
 
     function init() {
-        console.log("Connection established!");
+        addLog("Connection established!");
     }
 
     function send() {
@@ -20,15 +20,55 @@
         conn.send(command);
     }
 
-    function receive(e) {
-        console.log(e.data);
-        $('#receive').html(e.data);
+    function receive(response) {
+        var jsonString = response.data;
+        addLog(jsonString);
+        render(jsonString);
+    }
+
+    function addLog(text) {
+        var log = $('#log');
+        var newVal = log.val() + text + '\n\n';
+        log.val(newVal);
+    }
+
+    function render(jsonString) {
+        var data = JSON.parse(jsonString);
+        if (data.isError) {
+            return;
+        }
+
+        var s = '';
+
+        // areas
+        var areas = data.areas;
+        for (actor of ['E','S','W','N']) {
+            var area = areas.actor;
+
+            s += actor + ':'
+
+            s += '<input type="button" value="' + actor +'" onclick=""/>'
+
+            s += '<br/>';
+        }
+
+        $('#gui').html(s);
     }
 </script>
-<div id="receive">receive:</div>
 
+server response log<br/>
+<textarea id="log" style="margin: 0px; width: 596px; height: 250px;"></textarea>
+<br/>
+
+free command input<br/>
 <input id="command" type="text" value="type command here"/>
 <input type="button" value="send" onclick="send()"/>
+<br/>
+
+gui<br/>
+<div id="gui">
+
+</div>
 
 </body>
 </html>

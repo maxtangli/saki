@@ -62,6 +62,19 @@ class Utils {
         };
     }
 
+    /**
+     * @return \Closure
+     */
+    static function getToStringCallback() {
+        /**
+         * @param object $object
+         * @return string
+         */
+        return function ($object) {
+            return $object->__toString();
+        };
+    }
+    
     private function __construct() {
     }
 }
