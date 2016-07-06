@@ -15,60 +15,115 @@
         addLog("Connection established!");
     }
 
-    function send() {
-        var command = $('#command').val();
+    function send(command) {
         conn.send(command);
     }
 
     function receive(response) {
         var jsonString = response.data;
         addLog(jsonString);
-        render(jsonString);
+        //render(jsonString);
+        var view = new View('gui');
+        view.render(jsonString);
     }
 
     function addLog(text) {
         var log = $('#log');
         var newVal = log.val() + text + '\n\n';
         log.val(newVal);
+        log.prop('scrollTop', log.prop('scrollHeight'));
     }
 
-    function render(jsonString) {
-        var data = JSON.parse(jsonString);
-        if (data.isError) {
-            return;
+    function clearLog() {
+        $('#log').val('');
+    }
+
+    View = function (divID) {
+        this.div = $('#' + divID);
+        return this;
+    };
+
+    View.prototype = {
+        render: function render(jsonString) {
+            var data = JSON.parse(jsonString);
+            if (data.result != 'ok') {
+                return;
+            }
+
+            var s = this.areasView(data.areas);
+
+            this.div.html(s);
+        },
+
+        areasView: function (areas) {
+            var s = '';
+            for (var area of areas) {
+                s += this.areaView(area);
+            }
+            return s;
+//            return areas.map(this.areaView).join(); // error: index.html:71 Uncaught TypeError: this.handView is not a function
+        },
+
+        areaView: function (area) {
+            return this.handView(area.actor, area.public, area.target, area.melded)
+                    + '<br/>'
+                    + this.commandsView(area.commands)
+                    + '<br/>';
+        },
+
+        handView: function (actor, publicTiles, targetTile, melded) {
+            return actor
+                    + '<br/>' + this.tilesView(publicTiles)
+                    + this.spaceView() + this.targetView(targetTile)
+                    + this.meldedView(melded);
+        },
+
+        tilesView: function (tiles) {
+            return tiles.map(this.tileView).join('');
+        },
+
+        targetView: function (targetTile) {
+            return targetTile !== null ? this.tileView(targetTile) : '';
+        },
+
+        meldedView: function (melded) {
+            return '';
+//            return melded.map(this.meldedView).join(this.spaceView);
+        },
+
+        meldView: function (meld) {
+            return this.tilesView(meld);
+        },
+
+        tileView: function (tile) {
+            return '<input type="button" value="' + tile + '" disabled="true">';
+        },
+
+        commandsView: function (commands) {
+            return commands.map(this.commandView).join(this.spaceView());
+        },
+
+        commandView: function (command) {
+            return '<input type="button" value="' + command + '" onclick="send(this.value)">';
+        },
+
+        spaceView: function () {
+            return '&nbsp;&nbsp;';
         }
-
-        var s = '';
-
-        // areas
-        var areas = data.areas;
-        for (actor of ['E','S','W','N']) {
-            var area = areas.actor;
-
-            s += actor + ':'
-
-            s += '<input type="button" value="' + actor +'" onclick=""/>'
-
-            s += '<br/>';
-        }
-
-        $('#gui').html(s);
     }
 </script>
 
-server response log<br/>
+server response log<input type="button" value="clear" onclick="clearLog()"/><br/>
 <textarea id="log" style="margin: 0px; width: 596px; height: 250px;"></textarea>
 <br/>
 
 free command input<br/>
 <input id="command" type="text" value="type command here"/>
-<input type="button" value="send" onclick="send()"/>
+<input type="button" value="send" onclick="send($('#command').val())"/>
 <br/>
 
-gui<br/>
-<div id="gui">
-
-</div>
+gui(debug ver)<br/>
+<div id="gui"></div>
 
 </body>
 </html>

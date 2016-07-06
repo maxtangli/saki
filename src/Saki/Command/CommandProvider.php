@@ -47,6 +47,13 @@ class CommandProvider {
         };
         $allExecutableList = (new ArrayList())
             ->fromSelectMany($this->getPlayerCommandSet(), $getClassExecutableList);
+
+        // todo replace by pass
+        $isPublicActor = $round->getArea($actor)->isPublicActor();
+        if ($isPublicActor) {
+            $allExecutableList->insertLast(new PassAllCommand($this->getRound()));
+        }
+
         return $allExecutableList;
     }
 

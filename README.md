@@ -908,12 +908,12 @@ rush etc
 
 - [ ] refactor: PlayerCommand.matchPhase, matchActor should be static
 
-rush web
+rush web demo
 
 - [x] import Racket+js 0.5h
 - [ ] server code 1.7h
 - [ ] Round.toJson 0.5h
-- [ ] html view 1.7h
+- [ ] html view 3.4h
 
 rush all yaku: tests
 

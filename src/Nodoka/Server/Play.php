@@ -55,7 +55,7 @@ class Play implements MessageComponentInterface {
         echo "An error has occurred: {$e->getMessage()}.\n";
 
         $a = [
-            'isError' => true,
+            'result' => 'error',
             'message' => $e->getMessage(),
         ];
         $json = json_encode($a);

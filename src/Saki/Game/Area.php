@@ -82,11 +82,24 @@ class Area {
     /**
      * @return bool
      */
+    function isPrivateActor() {
+        return $this->getRound()->getPhase()->isPrivate() 
+            && $this->isCurrentSeatWind();
+    }
+    
+    /**
+     * @return bool
+     */
+    function isPublicActor() {
+        return $this->getRound()->getPhase()->isPublic() 
+        && !$this->isCurrentSeatWind();
+    }
+
+    /**
+     * @return bool
+     */
     function isActor() {
-        $phase = $this->getRound()->getPhase();
-        $isCurrentSeatWind = $this->isCurrentSeatWind();
-        return ($phase->isPrivate() && $isCurrentSeatWind)
-        || ($phase->isPublic() && !$isCurrentSeatWind);
+        return $this->isPrivateActor() || $this->isPublicActor();
     }
 
     /**

@@ -191,7 +191,7 @@ class Round {
                 throw new InvalidCommandException('Invalid command: not actor.');
             }
         }
-        return $command;
+        $command->execute();
     }
 
     /**

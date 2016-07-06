@@ -6,6 +6,7 @@ use Saki\Command\Command;
 use Saki\Command\CommandProvider;
 use Saki\Command\CommandSet;
 use Saki\Game\SeatWind;
+use Saki\Util\Utils;
 
 class CommandProviderTest extends \SakiTestCase {
     /**
@@ -24,11 +25,8 @@ class CommandProviderTest extends \SakiTestCase {
                 );
             }
         }
-
-        $toString = function (Command $command) {
-            return $command->__toString();
-        };
-        $strings = $executableList->toArray($toString);
+        
+        $strings = $executableList->toArray(Utils::getToStringCallback());
 
         if ($contains) {
             foreach ($expected as $s) {
