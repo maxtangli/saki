@@ -51,6 +51,15 @@ class PrevailingStatus implements Immutable {
     }
 
     /**
+     * @return string
+     */
+    function __toString() {
+        $n = $this->getPrevailingWindTurn();
+        return sprintf('%s,%s%s', 
+            $this->getPrevailingWind(), $n, Utils::getNumberSuffix($n));
+    }
+
+    /**
      * @return PrevailingStatus
      */
     function toNextPrevailingWindTurn() {

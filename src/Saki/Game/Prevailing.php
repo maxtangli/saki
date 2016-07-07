@@ -5,10 +5,10 @@ namespace Saki\Game;
  * A PrevailingStatus whose rolling is defined by a PrevailingContext.
  * @package Saki\Game
  */
-class PrevailingCurrent {
+class Prevailing {
     /**
      * @param PrevailingContext $context
-     * @return PrevailingCurrent
+     * @return Prevailing
      */
     static function createFirst(PrevailingContext $context) {
         return new self($context, PrevailingStatus::createFirst(), 0);
@@ -38,13 +38,20 @@ class PrevailingCurrent {
     }
 
     /**
+     * @return string
+     */
+    function __toString() {
+        return sprintf('%s,%s continue', $this->getStatus(), $this->getSeatWindTurn());
+    }
+
+    /**
      * @param bool $keepDealer
-     * @return $this|PrevailingCurrent
+     * @return $this|Prevailing
      */
     function toRolled(bool $keepDealer) {
         if ($keepDealer) {
             $nextSeatWindTurn = $this->getSeatWindTurn() + 1;
-            return new PrevailingCurrent($this->getContext(), $this->getStatus(), $nextSeatWindTurn);
+            return new Prevailing($this->getContext(), $this->getStatus(), $nextSeatWindTurn);
         }
 
         // not keep dealer + sudden death last => error
@@ -56,15 +63,15 @@ class PrevailingCurrent {
         $nextStatus = $this->isCurrentPrevailingWindLast() ?
             $this->getStatus()->toNextPrevailingWind() :
             $this->getStatus()->toNextPrevailingWindTurn();
-        return new PrevailingCurrent($this->getContext(), $nextStatus, 0);
+        return new Prevailing($this->getContext(), $nextStatus, 0);
     }
 
     /**
      * @param PrevailingStatus $status
-     * @return PrevailingCurrent
+     * @return Prevailing
      */
     function toDebugInitialized(PrevailingStatus $status) {
-        return new PrevailingCurrent($this->getContext(), $status, 0);
+        return new Prevailing($this->getContext(), $status, 0);
     }
 
     /**

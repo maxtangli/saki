@@ -28,7 +28,6 @@ abstract class IndicatorWind implements Immutable {
         $nextWind = $this->getWindTile()->getNextTile($offset);
         return static::fromString($nextWind->__toString());
     }
-
     //endregion
 
     private static $instances = [];

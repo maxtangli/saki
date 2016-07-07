@@ -50,8 +50,13 @@ class Open implements Immutable {
      * @return bool
      */
     function valid(Area $area) {
-        $hand = $area->getHand();
-        return $hand->getPrivate()->valueExist($this->getTile(), Tile::getEqual(true)); // handle red
+        if ($area->getRiichiStatus()->isRiichi()) {
+            $targetTile = $area->getHand()->getTarget()->getTile();
+            return $this->getTile()->equalTo($targetTile, true);
+        } else {
+            $private = $area->getHand()->getPrivate();
+            return $private->valueExist($this->getTile(), Tile::getEqual(true)); // handle red
+        }
     }
 
     /**

@@ -42,7 +42,7 @@ class TsumoCommand extends PrivateCommand {
             [$actor, $round->getWinReport($actor)->getFanAndFu()],
             $round->getOtherSeatWinds([$actor]),
             $round->getRiichiHolder()->getRiichiPoints(),
-            $round->getPrevailingCurrent()->getSeatWindTurn()
+            $round->getPrevailing()->getSeatWindTurn()
         ));
         $round->toNextPhase(
             new OverPhaseState($result)

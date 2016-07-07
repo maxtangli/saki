@@ -33,12 +33,12 @@ class WinTarget {
      * @return PrevailingWind
      */
     function getPrevailingWind() {
-        return $this->getRound()->getPrevailingCurrent()->getStatus()->getPrevailingWind();
+        return $this->getRound()->getPrevailing()->getStatus()->getPrevailingWind();
     }
 
     // todo remove
     function getPrevailingWindTile() {
-        return $this->getRound()->getPrevailingCurrent()->getStatus()->getPrevailingWind()->getWindTile();
+        return $this->getRound()->getPrevailing()->getStatus()->getPrevailingWind()->getWindTile();
     }
 
     function getTileSet() {

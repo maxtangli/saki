@@ -78,9 +78,10 @@ abstract class PublicClaimCommand extends PublicCommand {
 
     //region PublicCommand impl
     protected function matchOther(Round $round, Area $actorArea) {
+        $validNextSeatWind = !$this->requirePublicNextActor() || $actorArea->isPublicNextActor();
         $validCount = (1 + $this->getTileList()->count()) 
             == $this->getClaimMeldType()->getTileCount();
-        return $validCount && $this->getClaim()->valid($actorArea);
+        return $validNextSeatWind && $validCount && $this->getClaim()->valid($actorArea);
     }
 
     protected function executePlayerImpl(Round $round, Area $actorArea) {
@@ -91,6 +92,10 @@ abstract class PublicClaimCommand extends PublicCommand {
     //endregion
 
     //region subclass hooks
+    function requirePublicNextActor() {
+        return false;
+    }
+    
     /**
      * @return MeldType
      */

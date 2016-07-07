@@ -32,7 +32,7 @@ class OverPhaseState extends PhaseState {
     function isGameOver(Round $round) { // todo refactor into simpler ver
 
         $pointList = $round->getPointHolder()->getPointList();
-        $prevailingCurrent = $round->getPrevailingCurrent();
+        $prevailingCurrent = $round->getPrevailing();
 
         if ($pointList->hasMinus()) {
             return true;

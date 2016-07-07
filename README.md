@@ -904,6 +904,8 @@ rush etc
 - [x] refactor: etc 0.9h
 
 - [x] bug: kong command should be invalid if not drawReplacementAble 0.5h
+- [x] bug: chow condition of next seatWind 0.1h todo test
+- [x] bug: discard condition when riichi 0.1h todo test
 - [ ] simulator: 1.3h
 
 - [ ] refactor: PlayerCommand.matchPhase, matchActor should be static
@@ -911,9 +913,12 @@ rush etc
 rush web demo
 
 - [x] import Racket+js 0.5h
-- [ ] server code 1.7h
+
+- [ ] server code 1.9h
 - [ ] Round.toJson 0.5h
-- [ ] html view 3.4h
+- [ ] html view 5.1h
+
+- [x] debug command: init, toNext
 
 rush all yaku: tests
 

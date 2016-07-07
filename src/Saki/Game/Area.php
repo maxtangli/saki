@@ -98,6 +98,14 @@ class Area {
     /**
      * @return bool
      */
+    function isPublicNextActor() {
+        return $this->isPublicActor() &&
+        $this->getRound()->getCurrentSeatWind()->toNext() == $this->getSeatWind();
+    }
+
+    /**
+     * @return bool
+     */
     function isActor() {
         return $this->isPrivateActor() || $this->isPublicActor();
     }

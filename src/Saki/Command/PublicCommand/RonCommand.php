@@ -42,7 +42,7 @@ class RonCommand extends PublicCommand {
             $round->getCurrentSeatWind(),
             $round->getOtherSeatWinds([$actor, $round->getCurrentSeatWind()]),
             $round->getRiichiHolder()->getRiichiPoints(),
-            $round->getPrevailingCurrent()->getSeatWindTurn()
+            $round->getPrevailing()->getSeatWindTurn()
         ));
         $round->toNextPhase(
             new OverPhaseState($result)

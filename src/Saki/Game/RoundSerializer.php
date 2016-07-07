@@ -15,7 +15,18 @@ class RoundSerializer {
      */
     static function toJson(Round $r) { // todo
         $commandProvider = $r->getProcessor()->getProvider();
-        
+
+        $prevailing = $r->getPrevailing();
+        $phase = $r->getPhase();
+        $round = [
+            'prevailing' => $prevailing->__toString(),
+            'prevailingWind' => $prevailing->getStatus()->getPrevailingWind()->__toString(),
+            'prevailingWindTurn' => $prevailing->getStatus()->getPrevailingWindTurn(),
+            'seatWindTurn' => $prevailing->getSeatWindTurn(),
+            'phase' => $phase->__toString(),
+            'result' => $phase->isOver() ? $r->getPhaseState()->getResult()->__toString() : null,
+        ];
+
         $areas = [];
         /** @var Area $area */
         foreach ($r->getAreaList() as $area) {
@@ -36,6 +47,7 @@ class RoundSerializer {
         
         $a = [
             'result' => 'ok',
+            'round' => $round,
             'areas' => $areas,
         ];
         

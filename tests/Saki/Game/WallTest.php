@@ -1,6 +1,8 @@
 <?php
 
 use Saki\Game\Wall;
+use Saki\Tile\Tile;
+use Saki\Tile\TileList;
 use Saki\Tile\TileSet;
 
 class WallTest extends \SakiTestCase {
@@ -12,21 +14,22 @@ class WallTest extends \SakiTestCase {
         $this->assertCount($standardCnt, $w->getTileSet());
 
         // reset and shuffle
-        $w->reset(true);
+        $w->reset();
 
         // pop
         $s = '111122223333444455556666777788889999m' .
             '111122223333444455556666777788889999p' .
             '111122223333444455556666777788889999s' .
             'EEEESSSSWWWWNNNNCCCCPPPPFFFF';
-        $tileList = \Saki\Tile\TileList::fromString($s);
+        $tileList = TileList::fromString($s);
         $tileSet = new TileSet($tileList->toArray());
         $w = new Wall($tileSet);
+        $w->reset(false);
         $t = $w->draw();
-        $this->assertEquals(\Saki\Tile\Tile::fromString('F'), $t);
+        $this->assertEquals(Tile::fromString('F'), $t);
 
         // shift
         $t = $w->getDeadWall()->drawReplacement();
-        $this->assertEquals(\Saki\Tile\Tile::fromString('1m'), $t);
+        $this->assertEquals(Tile::fromString('1m'), $t);
     }
 }

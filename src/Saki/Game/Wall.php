@@ -24,7 +24,7 @@ class Wall {
         }
 
         $this->tileSet = $tileSet;
-        $this->reset(false);
+        $this->reset();
     }
 
     /**

@@ -74,7 +74,24 @@ class Utils {
             return $object->__toString();
         };
     }
-    
+
+    /**
+     * @param int $n
+     * @return string
+     */
+    static function getNumberSuffix(int $n) {
+        if (!Utils::inRange($n, 1, 4)) {
+            throw new \InvalidArgumentException('todo');
+        }
+        $m = [
+            1 => 'st',
+            2 => 'nd',
+            3 => 'rd',
+            4 => 'th'
+        ];
+        return $m[$n];
+    }
+
     private function __construct() {
     }
 }

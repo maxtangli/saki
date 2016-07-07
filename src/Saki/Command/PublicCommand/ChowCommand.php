@@ -15,6 +15,10 @@ use Saki\Util\Utils;
  */
 class ChowCommand extends PublicClaimCommand {
     //region PublicClaimCommand impl
+    function requirePublicNextActor() {
+        return true;
+    }
+
     function getClaimMeldType() {
         return RunMeldType::create();
     }

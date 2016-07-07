@@ -2,6 +2,7 @@
 namespace Saki\Command;
 
 use Saki\Command\Debug\PassAllCommand;
+use Saki\Command\Debug\ToNextRoundCommand;
 use Saki\Game\Round;
 use Saki\Game\SeatWind;
 use Saki\Util\ArrayList;
@@ -48,10 +49,16 @@ class CommandProvider {
         $allExecutableList = (new ArrayList())
             ->fromSelectMany($this->getPlayerCommandSet(), $getClassExecutableList);
 
-        // todo replace by pass
+        // debug only todo replace by pass
         $isPublicActor = $round->getArea($actor)->isPublicActor();
         if ($isPublicActor) {
             $allExecutableList->insertLast(new PassAllCommand($this->getRound()));
+        }
+
+        // debug only todo remove
+        $toNextRoundCommand = new ToNextRoundCommand($this->getRound());
+        if ($toNextRoundCommand->executable()) {
+            $allExecutableList->insertLast($toNextRoundCommand);
         }
 
         return $allExecutableList;

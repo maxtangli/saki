@@ -22,6 +22,13 @@ abstract class Result implements Immutable {
     }
 
     /**
+     * @return ResultType
+     */
+    function __toString() {
+        return $this->getResultType()->__toString();
+    }
+
+    /**
      * @return int
      */
     function getPlayerCount() {

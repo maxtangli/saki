@@ -24,7 +24,7 @@ class Round {
     private $gameData;
     private $processor;
     // variable
-    private $prevailingCurrent;
+    private $prevailing;
     /**
      * An ArrayList of Area, same size with PlayerList, order by ascend initial SeatWind.
      * @var ArrayList
@@ -50,7 +50,7 @@ class Round {
         $this->processor = new CommandProcessor($this, CommandSet::createStandard());
 
         // variable
-        $this->prevailingCurrent = PrevailingCurrent::createFirst($gameData->getPrevailingContext());
+        $this->prevailing = Prevailing::createFirst($gameData->getPrevailingContext());
         $this->riichiHolder = new RiichiHolder($playerList->getPlayerType());
         $this->pointHolder = new PointHolder($gameData->getScoreStrategy()->getPointSetting());
 
@@ -93,7 +93,7 @@ class Round {
      */
     function roll(bool $keepDealer, bool $isWin = false) {
         // variable
-        $this->prevailingCurrent = $this->prevailingCurrent->toRolled($keepDealer);
+        $this->prevailing = $this->prevailing->toRolled($keepDealer);
         $this->areaList->walk(function (Area $area) use ($keepDealer) {
             $area->roll($area->getSeatWind()->toRolled($keepDealer));
         });
@@ -101,7 +101,7 @@ class Round {
         $this->riichiHolder->roll($isWin);
 
         // round variable
-        $this->wall->reset(true);
+        $this->wall->reset();
         $this->turn = Turn::createFirst();
         $this->phaseState = new NullPhaseState();
         $this->openHistory->reset();
@@ -124,7 +124,7 @@ class Round {
         $nextDealerSeatWind = $nextDealerArea->getSeatWind(); // todo simpler logic?
 
         // variable
-        $this->prevailingCurrent = $this->prevailingCurrent->toDebugInitialized($prevailingStatus);
+        $this->prevailing = $this->prevailing->toDebugInitialized($prevailingStatus);
         $this->areaList->walk(function (Area $area) use ($nextDealerSeatWind) {
             $area->debugInit($area->getSeatWind()->toNextSelf($nextDealerSeatWind));
         });
@@ -132,7 +132,7 @@ class Round {
         $this->riichiHolder->init();
 
         // round variable
-        $this->wall->reset(true);
+        $this->wall->reset();
         $this->turn = Turn::createFirst();
         $this->phaseState = new NullPhaseState();
         $this->openHistory->reset();
@@ -195,10 +195,10 @@ class Round {
     }
 
     /**
-     * @return PrevailingCurrent
+     * @return Prevailing
      */
-    function getPrevailingCurrent() {
-        return $this->prevailingCurrent;
+    function getPrevailing() {
+        return $this->prevailing;
     }
 
     /**
