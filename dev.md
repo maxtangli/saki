@@ -947,4 +947,4 @@ rush rule.md doc
 - [ ] command 0.6h
 - [ ] yaku 2.8h
 - [ ] furiten 0.8h
-- [ ] demo 0.8h
+- [ ] demo 1.3h
