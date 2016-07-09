@@ -37,12 +37,14 @@ class RonCommand extends PublicCommand {
     protected function executePlayerImpl(Round $round, Area $actorArea) {
         $actor = $this->getActor();
 
+        $winReport = $round->getWinReport($actor);
         $result = new WinResult(WinResultInput::createRon(
-            [[$actor, $round->getWinReport($actor)->getFanAndFu()]],
+            [[$actor, $winReport->getFanAndFu()]],
             $round->getCurrentSeatWind(),
             $round->getOtherSeatWinds([$actor, $round->getCurrentSeatWind()]),
             $round->getRiichiHolder()->getRiichiPoints(),
-            $round->getPrevailing()->getSeatWindTurn()
+            $round->getPrevailing()->getSeatWindTurn(),
+            [$winReport]
         ));
         $round->toNextPhase(
             new OverPhaseState($result)

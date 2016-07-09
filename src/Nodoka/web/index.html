@@ -14,8 +14,8 @@
     function init() {
         addLog("Connection established!");
 
-        $("#command").keyup(function(event){
-            if(event.keyCode == 13){
+        $("#command").keyup(function (event) {
+            if (event.keyCode == 13) {
                 $("#send").click();
             }
         });
@@ -63,14 +63,32 @@
 
         allView: function (data) {
             return this.roundView(data.round) + '<br/>'
+                    + this.wallView(data.wall) + '<br/>'
                     + this.areasView(data.areas) + '<br/>';
         },
 
         roundView: function (round) {
-            return 'Round<br/>'
+            return 'gameover:' + round.isGameOver + '<br/>'
                     + 'prevailing:' + round.prevailing + '<br/>'
                     + 'phase:' + round.phase + '<br/>'
-                    + 'result:' + round.result + '<br/>';
+                    + 'result:' + round.result + '<br/>'
+                    + 'winReports:' + '<br/>' + this.winReportsView(round.winReports);
+        },
+
+        winReportsView: function (winReports) {
+            if (winReports.length == 0) {
+                return '';
+            }
+
+            var w = winReports[0]; // todo multiple - win
+            return this.spaceView() + w.actor + this.spaceView() + w.fan + 'fan' + w.fu + 'fu' + '<br/>'
+                    + this.spaceView() + w.yakuItems.join('<br/>' + this.spaceView());
+        },
+
+        wallView: function (wall) {
+            return 'remainTileCount:' + wall.remainTileCount + '<br/>'
+                    + 'doraIndicators:' + this.tilesView(wall.doraIndicators) + '<br/>'
+                    + 'uraDoraIndicators:' + this.tilesView(wall.uraDoraIndicators) + '<br/>';
         },
 
         areasView: function (areas) {
@@ -136,17 +154,28 @@
     }
 </script>
 
-server response log<input type="button" value="clear" onclick="clearLog()"/><br/>
-<textarea id="log" style="margin: 0px; width: 596px; height: 250px;"></textarea><br/>
+<fieldset>
+    <legend>log</legend>
+    <textarea id="log" style="margin: 0px; width: 596px; height: 250px;"></textarea><br/>
+    <input type="button" value="clear" onclick="clearLog()"/><br/>
+</fieldset>
 <br/>
 
-free command input<br/>
-<input id="command" type="text" value="type command here"/>
-<input id="send" type="button" value="send" onclick="send($('#command').val())"/><br/>
+<fieldset>
+    <legend>free commands</legend>
+    free input:<input id="command" type="text" value="type command here"/>
+    <input id="send" type="button" value="send" onclick="send($('#command').val())"/><br/>
+    debug commands:<input type="button" value="init" onclick="send(this.value)"/>
+    <input type="button" value="mockHand E 123456789m12344p" onclick="send(this.value)"/>
+    <input type="button" value="mockHand E 11123456789999m" onclick="send(this.value)"/>
+    <br/>
+</fieldset>
 <br/>
 
-gui(debug ver)<br/>
-<div id="gui"></div>
+<fieldset>
+    <legend>gui(debug ver)</legend>
+    <div id="gui"></div>
+</fieldset>
 
 </body>
 </html>

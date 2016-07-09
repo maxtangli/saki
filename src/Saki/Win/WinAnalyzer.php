@@ -84,7 +84,7 @@ class WinAnalyzer {
         $handMeldListList = $this->getHandMeldListAnalyzer()
             ->analyzeMeldListList($handTileList);
         if ($handMeldListList->isEmpty()) {
-            return WinReport::createNotWin();
+            return WinReport::createNotWin($target->getActor());
         }
 
         // 2. handMeldList's List -> subTargetList -> subResultList
@@ -107,7 +107,7 @@ class WinAnalyzer {
         /** @var WinSubReport $targetSubResult */
         $targetSubResult = $subResultList->getMax(WinSubReport::getComparator());
 
-        $finalYakuList = $targetSubResult->getYakuList();
+        $finalYakuList = $targetSubResult->getYakuItemList();
         $finalFu = $targetSubResult->getFu();
 
         $finalWinState = $targetSubResult->getWinState();
@@ -121,7 +121,7 @@ class WinAnalyzer {
             }
         }
 
-        $finalResult = new WinReport($finalWinState, $finalYakuList, $finalFu);
+        $finalResult = new WinReport($target->getActor(), $finalWinState, $finalYakuList, $finalFu);
         return $finalResult;
     }
 
@@ -132,16 +132,18 @@ class WinAnalyzer {
      * @return WinSubReport
      */
     function analyzeSub(WinSubTarget $subTarget) {
+        $actor = $subTarget->getActor();
+
         // case1: not win
         $series = $this->getSeriesAnalyzer()->analyzeSeries($subTarget->getAllMeldList());
         if (!$series->isExist()) {
-            return new WinSubReport(WinState::create(WinState::NOT_WIN), new YakuItemList(), 0);
+            return new WinSubReport($actor, WinState::create(WinState::NOT_WIN), new YakuItemList(), 0);
         }
 
         // case2: no yaku false win
         $yakuList = $this->getYakuAnalyzer()->analyzeYakuList($subTarget);
         if ($yakuList->count() == 0) {
-            return new WinSubReport(WinState::create(WinState::NO_YAKU_FALSE_WIN), new YakuItemList(), 0);
+            return new WinSubReport($actor, WinState::create(WinState::NO_YAKU_FALSE_WIN), new YakuItemList(), 0);
         }
 
         // case3: win by self or win by other
@@ -153,7 +155,7 @@ class WinAnalyzer {
         $fuResult = FuAnalyzer::create()->getResult($fuTarget);
         $fu = $fuResult->getTotalFu();
 
-        return new WinSubReport($winState, $yakuList, $fu);
+        return new WinSubReport($actor, $winState, $yakuList, $fu);
     }
 
     /**

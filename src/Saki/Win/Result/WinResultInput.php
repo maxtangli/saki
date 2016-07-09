@@ -4,6 +4,7 @@ namespace Saki\Win\Result;
 use Saki\Game\PlayerType;
 use Saki\Game\SeatWind;
 use Saki\Util\ArrayList;
+use Saki\Win\WinReport;
 
 /**
  * WinResult's implementation helper which wraps the input data.
@@ -15,20 +16,24 @@ class WinResultInput {
      * @param array $others
      * @param int $riichiPoints
      * @param int $seatWindTurn
+     * @param WinReport|null $winReportForView 
      * @return WinResultInput
      */
-    static function createTsumo($winnerPair, array $others, int $riichiPoints, int $seatWindTurn) {
+    static function createTsumo($winnerPair, array $others, int $riichiPoints, int $seatWindTurn, WinReport $winReportForView = null) {
         list($winner, $fuAndCount) = $winnerPair;
+
+        $winner = WinResultInputItem::createWinner($winner, $fuAndCount);
+
+        $toLoser = function (SeatWind $seatWind) {
+            return WinResultInputItem::createLoser($seatWind);
+        };
+        $loserList = (new ArrayList($others))->select($toLoser);
+
         $itemList = (new ArrayList())
-            ->insertLast(
-                WinResultInputItem::createWinner($winner, $fuAndCount)
-            )
-            ->insertLast(
-                (new ArrayList($others))->select(function (SeatWind $seatWind) {
-                    return WinResultInputItem::createLoser($seatWind);
-                })->toArray()
-            );
-        return new self(true, $itemList, $riichiPoints, $seatWindTurn);
+            ->insertLast($winner)
+            ->concat($loserList);
+        $winReportList = $winReportForView !== null ? new ArrayList([$winReportForView]) : new ArrayList();
+        return new self(true, $itemList, $riichiPoints, $seatWindTurn, $winReportList);
     }
 
     /**
@@ -37,41 +42,50 @@ class WinResultInput {
      * @param array $others
      * @param int $riichiPoints
      * @param int $seatWindTurn
+     * @param array $winReportsForView
      * @return WinResultInput
      */
-    static function createRon(array $winnerPairs, SeatWind $loser, array $others, int $riichiPoints, int $seatWindTurn) {
+    static function createRon(array $winnerPairs, SeatWind $loser, array $others, int $riichiPoints, int $seatWindTurn, array $winReportsForView = null) {
+        $toWinner = function (array $winnerPair) {
+            list($winner, $fuAndCount) = $winnerPair;
+            return WinResultInputItem::createWinner($winner, $fuAndCount);
+        };
+        $winnerList = (new ArrayList($winnerPairs))->select($toWinner);
+
+        $loser = WinResultInputItem::createLoser($loser);
+
+        $toIrrelevant = function (SeatWind $seatWind) {
+            return WinResultInputItem::createIrrelevant($seatWind);
+        };
+        $irrelevantList = (new ArrayList($others))->select($toIrrelevant);
+
         $itemList = (new ArrayList())
-            ->insertLast(
-                (new ArrayList($winnerPairs))->select(function (array $winnerPair) {
-                    list($winner, $fuAndCount) = $winnerPair;
-                    return WinResultInputItem::createWinner($winner, $fuAndCount);
-                })->toArray()
-            )->insertLast(
-                WinResultInputItem::createLoser($loser)
-            )->insertLast(
-                (new ArrayList($others))->select(function (SeatWind $seatWind) {
-                    return WinResultInputItem::createIrrelevant($seatWind);
-                })->toArray()
-            );
-        return new self(false, $itemList, $riichiPoints, $seatWindTurn);
+            ->concat($winnerList)
+            ->insertLast($loser)
+            ->concat($irrelevantList);
+        $winReportList = new ArrayList($winReportsForView ?? []);
+        return new self(false, $itemList, $riichiPoints, $seatWindTurn, $winReportList);
     }
 
     private $isTsumo;
     private $itemList;
     private $riichiPoints;
     private $seatWindTurn;
+    private $winReportList;
 
     /**
      * @param bool $isTsumo
      * @param ArrayList $itemList
      * @param int $riichiPoints
      * @param int $seatWindTurn
+     * @param ArrayList $winReportList
      */
-    function __construct(bool $isTsumo, ArrayList $itemList, int $riichiPoints, int $seatWindTurn) {
+    protected function __construct(bool $isTsumo, ArrayList $itemList, int $riichiPoints, int $seatWindTurn, ArrayList $winReportList) {
         $this->isTsumo = $isTsumo;
         $this->itemList = $itemList;
         $this->riichiPoints = $riichiPoints;
         $this->seatWindTurn = $seatWindTurn;
+        $this->winReportList = $winReportList;
     }
 
     /**
@@ -100,6 +114,13 @@ class WinResultInput {
      */
     function getSeatWindTurn() {
         return $this->seatWindTurn;
+    }
+
+    /**
+     * @return ArrayList
+     */
+    function getWinReportList() {
+        return $this->winReportList;
     }
 
     /**

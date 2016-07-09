@@ -1,6 +1,7 @@
 <?php
 namespace Saki\Command;
 
+use Saki\Command\Debug\InitCommand;
 use Saki\Command\Debug\PassAllCommand;
 use Saki\Command\Debug\ToNextRoundCommand;
 use Saki\Game\Round;
@@ -59,6 +60,12 @@ class CommandProvider {
         $toNextRoundCommand = new ToNextRoundCommand($this->getRound());
         if ($toNextRoundCommand->executable()) {
             $allExecutableList->insertLast($toNextRoundCommand);
+        }
+
+        // debug only todo remove
+        if ($round->isGameOver()) {
+            $initCommand = new InitCommand($round);
+            $allExecutableList->insertLast($initCommand);
         }
 
         return $allExecutableList;

@@ -30,6 +30,16 @@ class RoundTest extends \SakiTestCase {
         $this->assertLastOpen('0p');
     }
 
+    function testDiscardWhenReach() {
+        $round = $this->getInitRound();
+        $round->process(
+            'mockHand E 123456789p12347s; riichi E 7s; skip 4;',
+            'mockHand E 123456789p12348s'
+        );
+        $this->assertExecutable('discard E 8s');
+        $this->assertNotExecutable('discard E 4s');
+    }
+
     function testReach() {
         // todo
     }
@@ -46,6 +56,18 @@ class RoundTest extends \SakiTestCase {
         $this->assertHasClaim($claimTurn);
         $this->assertCurrentTurnChanged('S', $claimTurn);
         $this->assertHand('5m12346789p13s', '340m', '3s');
+    }
+
+    function testChowRequireNext() {
+        $round = $this->getInitRound();
+
+        $round->process(
+            'skip 3; mockHand N 3m; discard N 3m',
+            'mockHand E 450m12346789p13s; mockHand S 450m12346789p13s; mockHand W 450m12346789p13s'
+        );
+        $this->assertExecutable('chow E 45m');
+        $this->assertNotExecutable('chow S 45m');
+        $this->assertNotExecutable('chow W 45m');
     }
 
     function testPung() {

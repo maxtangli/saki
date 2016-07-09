@@ -75,6 +75,30 @@ class SakiTestCase extends \PHPUnit_Framework_TestCase {
     }
     //endregion
 
+    //region Command
+    function assertExecutable(string $line) {
+        $this->assertExecutableImpl(true, $line);
+    }
+
+    function assertNotExecutable(string $line) {
+        $this->assertExecutableImpl(false, $line);
+    }
+
+    private function assertExecutableImpl(bool $executable, string $line) {
+        $round = $this->getCurrentRound();
+        $parser = $round->getProcessor()->getParser();
+        $command = $parser->parseLine($line);
+        
+        if ($executable) {
+            $message = sprintf('Failed asserting that Command[%s] is executable.', $line);
+            $this->assertTrue($command->executable(), $message);
+        } else {
+            $message = sprintf('Failed asserting that Command[%s] is not executable.', $line);
+            $this->assertFalse($command->executable(), $message);
+        }
+    }
+    //endregion
+
     //region Areas
     function assertHand(string $private = null, string $melded = null, string $targetTile = null,
                         string $seatWind = null) {

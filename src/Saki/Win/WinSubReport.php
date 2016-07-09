@@ -1,6 +1,7 @@
 <?php
 namespace Saki\Win;
 
+use Saki\Game\SeatWind;
 use Saki\Util\Comparable;
 use Saki\Win\Point\FanAndFu;
 use Saki\Win\Point\PointLevel;
@@ -29,31 +30,41 @@ class WinSubReport {
         return $fuDiff;
     }
 
+    private $actor;
     private $winState;
-    private $yakuList;
+    private $yakuItemList;
     private $fu;
 
     /**
+     * @param SeatWind $actor
      * @param WinState $winState
-     * @param YakuItemList $yakuList
+     * @param YakuItemList $yakuItemList
      * @param int $fu
      */
-    function __construct(WinState $winState, YakuItemList $yakuList, $fu) {
+    function __construct(SeatWind $actor, WinState $winState, YakuItemList $yakuItemList, $fu) {
+        $this->actor = $actor;
         $this->winState = $winState;
-        $this->yakuList = $yakuList;
+        $this->yakuItemList = $yakuItemList;
         $this->fu = $fu;
     }
 
+    /**
+     * @return SeatWind
+     */
+    function getActor() {
+        return $this->actor;
+    }
+    
     function getWinState() {
         return $this->winState;
     }
 
-    function getYakuList() {
-        return $this->yakuList;
+    function getYakuItemList() {
+        return $this->yakuItemList;
     }
 
     function getFanAndFu() {
-        return new FanAndFu($this->getYakuList()->getTotalFan(), $this->fu);
+        return new FanAndFu($this->getYakuItemList()->getTotalFan(), $this->fu);
     }
 
     function getFu() {
@@ -61,7 +72,7 @@ class WinSubReport {
     }
 
     function getFan() {
-        return $this->getYakuList()->getTotalFan();
+        return $this->getYakuItemList()->getTotalFan();
     }
 
     function getPointLevel() {

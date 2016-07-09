@@ -65,11 +65,19 @@ class DeadWall {
         return array_slice($this->doraIndicators, 0, $this->openedDoraIndicatorCount);
     }
 
+    function getOpenedDoraIndicatorList() {
+        return new TileList($this->getOpenedDoraIndicators());
+    }
+    
     /**
      * @return Tile[]
      */
     function getOpenedUraDoraIndicators() {
         return $this->uraDoraOpened ? array_slice($this->uraDoraIndicators, 0, $this->openedDoraIndicatorCount) : [];
+    }
+    
+    function getOpenedUraDoraIndicatorList() {
+        return new TileList($this->getOpenedUraDoraIndicators());
     }
 
     /**

@@ -4,6 +4,7 @@ namespace Saki\Phase;
 use Saki\Game\Phase;
 use Saki\Game\Round;
 use Saki\Win\Result\Result;
+use Saki\Win\Result\WinResult;
 
 /**
  * @package Saki\Phase
@@ -19,7 +20,7 @@ class OverPhaseState extends PhaseState {
     }
 
     /**
-     * @return Result
+     * @return Result|WinResult
      */
     function getResult() {
         return $this->result;

@@ -38,11 +38,13 @@ class TsumoCommand extends PrivateCommand {
 
         $round->getWall()->getDeadWall()->openUraDoraIndicator();
 
+        $winReport = $round->getWinReport($actor);
         $result = new WinResult(WinResultInput::createTsumo(
-            [$actor, $round->getWinReport($actor)->getFanAndFu()],
+            [$actor, $winReport->getFanAndFu()],
             $round->getOtherSeatWinds([$actor]),
             $round->getRiichiHolder()->getRiichiPoints(),
-            $round->getPrevailing()->getSeatWindTurn()
+            $round->getPrevailing()->getSeatWindTurn(),
+            $winReport
         ));
         $round->toNextPhase(
             new OverPhaseState($result)

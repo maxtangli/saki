@@ -364,6 +364,13 @@ class Round {
         $this->phaseState->enter($this);
     }
 
+    function isGameOver() {
+        /** @var OverPhaseState $phaseState */
+        $phaseState = $this->phaseState;
+        return $phaseState->getPhase()->isOver()
+            && $phaseState->isGameOver($this);
+    }
+    
     function toNextRound() {
         /** @var OverPhaseState $overPhaseState */
         $overPhaseState = $this->phaseState;

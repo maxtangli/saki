@@ -23,7 +23,7 @@ class YakuItem implements Immutable {
      * @return string
      */
     function __toString() {
-        return sprintf('%s,%s', $this->yaku, $this->fan);
+        return sprintf('%s,%s fan', $this->yaku, $this->fan);
     }
 
     /**

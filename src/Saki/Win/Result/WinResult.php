@@ -2,6 +2,7 @@
 namespace Saki\Win\Result;
 
 use Saki\Game\SeatWind;
+use Saki\Util\ArrayList;
 
 /**
  * @package Saki\Win\Result
@@ -24,6 +25,13 @@ class WinResult extends Result {
         return $this->input;
     }
 
+    /**
+     * @return ArrayList
+     */
+    function getWinReportList() {
+        return $this->getInput()->getWinReportList();
+    }
+    
     //region impl
     function isKeepDealer() {
         // Dealer is winner

@@ -21,7 +21,7 @@ class DiscardCommand extends PrivateCommand {
 
     protected static function getExecutableListImpl(Round $round, SeatWind $actor, Area $actorArea) {
         $private = $actorArea->getHand()->getPrivate();
-        $uniquePrivate = $private->getCopy()->distinct(Tile::getEqual(true));
+        $uniquePrivate = $private->getCopy()->distinct(Tile::getEqual(true))->orderByTileID();
         return static::createMany($round, $actor, $uniquePrivate);
     }
     //endregion
