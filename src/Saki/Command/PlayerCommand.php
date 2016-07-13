@@ -10,7 +10,7 @@ use Saki\Util\ArrayList;
  * @package Saki\Command
  */
 abstract class PlayerCommand extends Command {
-    //region subclass hooks
+    //region getExecutableList
     /**
      * @param Round $round
      * @param SeatWind $actor
@@ -19,17 +19,9 @@ abstract class PlayerCommand extends Command {
     static function getExecutableList(Round $round, SeatWind $actor) {
         $actorArea = $round->getArea($actor);
 
-        // Actor match
-        if (!$actorArea->isActor()) {
-            return new ArrayList();
-        }
-
-        // Command phase match
-        $class = get_called_class();
-        $phase = $round->getPhase();
-        $matchPhase = ($phase->isPrivate() && is_subclass_of($class, PrivateCommand::class))
-            || ($phase->isPublic() && is_subclass_of($class, PublicCommand::class));
-        if (!$matchPhase) {
+        $validPhaseAndActor = static::matchPhase($round, $actorArea)
+            && static::matchActor($round, $actorArea);
+        if (!$validPhaseAndActor) {
             return new ArrayList();
         }
 
@@ -71,6 +63,7 @@ abstract class PlayerCommand extends Command {
     }
     //endregion
 
+    //region constructor, getter
     /**
      * @param Round $round
      * @param array $params
@@ -96,6 +89,7 @@ abstract class PlayerCommand extends Command {
     function getActorArea() {
         return $this->getRound()->getArea($this->getActor());
     }
+    //endregion
 
     //region override Command
     protected function executableImpl(Round $round) {
@@ -118,7 +112,7 @@ abstract class PlayerCommand extends Command {
      * @return bool
      *
      */
-    abstract protected function matchPhase(Round $round, Area $actorArea);
+    abstract static protected function matchPhase(Round $round, Area $actorArea);
 
     /**
      * @param Round $round
@@ -126,7 +120,7 @@ abstract class PlayerCommand extends Command {
      * @return bool
      *
      */
-    abstract protected function matchActor(Round $round, Area $actorArea);
+    abstract static protected function matchActor(Round $round, Area $actorArea);
 
     /**
      * @param Round $round

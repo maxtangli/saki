@@ -84,8 +84,10 @@ class PublicPhaseState extends PhaseState {
     function leave(Round $round) {
         $this->handleDraw($round);
 
-        $round->getTargetHolder()
-            ->setTarget(Target::createNull());
+        if (!$this->getNextState($round)->getPhase()->isOver()) {
+            $round->getTargetHolder()
+                ->setTarget(Target::createNull());
+        }
     }
     //endregion
 }

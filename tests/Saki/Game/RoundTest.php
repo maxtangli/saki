@@ -1,5 +1,6 @@
 <?php
 
+use Saki\Command\PrivateCommand\ConcealedKongCommand;
 use Saki\Game\SeatWind;
 use Saki\Win\Result\ResultType;
 
@@ -134,7 +135,7 @@ class RoundTest extends \SakiTestCase {
         $this->assertHand('23456789p13s1p', '5500m', '1p'); // todo right order of Meld?
     }
 
-    // todo test kong not able for four kongs case
+    // todo test not kong able
 
     function testNotFourKongDrawBySamePlayer() {
         $round = $this->getInitRound();
@@ -146,7 +147,7 @@ class RoundTest extends \SakiTestCase {
             'mockHand E 1111s; concealedKong E 1s1s1s1s',
             'mockHand E 1s; discard E 1s; passAll'
         );
-        $this->assertPrivate();
+        $this->assertPrivate('S');
     }
 
     function testFourKongDrawByConcealedKong() {
@@ -158,6 +159,7 @@ class RoundTest extends \SakiTestCase {
             'mockHand W 1111s1m; concealedKong W 1s1s1s1s; discard W 1m; passAll',
             'mockHand N 1111s1m; concealedKong N 1s1s1s1s; discard N 1m; passAll'
         );
+        
         $this->assertResultType(ResultType::FOUR_KONG_DRAW);
     }
 

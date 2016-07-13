@@ -9,20 +9,20 @@ use Saki\Game\Round;
  */
 abstract class PublicCommand extends PlayerCommand {
     //region PlayerCommand impl
-    protected function matchPhase(Round $round, Area $actorArea) {
+    protected static function matchPhase(Round $round, Area $actorArea) {
         $phaseState = $round->getPhaseState();
         if (!$phaseState->getPhase()->isPublic()) {
             return false;
         }
 
         if ($phaseState->isRonOnly()) {
-            return $this->isRon();
+            return static::isRon();
         }
 
         return true;
     }
 
-    protected function matchActor(Round $round, Area $actorArea) {
+    protected static function matchActor(Round $round, Area $actorArea) {
         // todo introduce PublicCommandRoller
         return !$actorArea->isCurrentSeatWind();
     }

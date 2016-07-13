@@ -33,8 +33,6 @@ class SakiTestCase extends \PHPUnit_Framework_TestCase {
         }
         parent::assertContains($needle, $haystack, $message, $ignoreCase, $checkForObjectIdentity, $checkForNonObjectIdentity);
     }
-
-
     //endregion
 
     //region Utils
@@ -58,12 +56,12 @@ class SakiTestCase extends \PHPUnit_Framework_TestCase {
     private static $round;
 
     /**
-     * @param PrevailingStatus|null $rebugResetData
+     * @param PrevailingStatus|null $debugResetData
      * @return Round
      */
-    static function getInitRound(PrevailingStatus $rebugResetData = null) {
+    static function getInitRound(PrevailingStatus $debugResetData = null) {
         self::$round = self::$round ?? new Round();
-        self::$round->debugInit($rebugResetData ?? PrevailingStatus::createFirst());
+        self::$round->debugInit($debugResetData ?? PrevailingStatus::createFirst());
         return self::$round;
     }
 
@@ -159,14 +157,14 @@ class SakiTestCase extends \PHPUnit_Framework_TestCase {
 
     //region Phase
     function assertPrivate(string $currentSeatWind = null) {
-        $this->assertPhase(Phase::PRIVATE_PHASE, $currentSeatWind);
+        $this->assertPhaseImpl(Phase::PRIVATE_PHASE, $currentSeatWind);
     }
 
     function assertPublic(string $currentSeatWind = null) {
-        $this->assertPhase(Phase::PUBLIC_PHASE, $currentSeatWind);
+        $this->assertPhaseImpl(Phase::PUBLIC_PHASE, $currentSeatWind);
     }
 
-    protected function assertPhase(int $phaseValue, string $currentSeatWind = null) {
+    private function assertPhaseImpl(int $phaseValue, string $currentSeatWind = null) {
         $round = $this->getCurrentRound();
 
         $currentPhase = $round->getPhaseState()->getPhase();
@@ -179,6 +177,36 @@ class SakiTestCase extends \PHPUnit_Framework_TestCase {
     }
     //endregion
 
+    //region Yaku
+    function assertYakuList(string $actor, array $expectedContainYakus = null, int $expectedFan = null,
+                            array $expectedNotContainYakus = null) {
+        $round = $this->getCurrentRound();
+        $winReport = $round->getWinReport(SeatWind::fromString($actor));
+        $yakuItemList = $winReport->getYakuItemList();
+        $yakus = $yakuItemList->toYakuList()->toArray();
+
+        if ($expectedContainYakus !== null) {
+            foreach ($expectedContainYakus as $expectedContainYaku) {
+                $this->assertContains($expectedContainYaku, $yakus);
+            }
+        }
+
+        if ($expectedFan !== null) {
+            $this->assertEquals($expectedFan, $yakuItemList->getTotalFan());
+        }
+
+        if ($expectedNotContainYakus !== null) {
+            foreach ($expectedNotContainYakus as $expectedNotContainYaku) {
+                $this->assertNotContains($expectedNotContainYaku, $yakus);
+            }
+        }
+    }
+
+    function assertYakuListEmpty(string $actor) {
+        $this->assertYakuList($actor, null, 0);
+    }
+    //endregion
+    
     //region Result
     function assertResultType(int $resultTypeValue) {
         $expected = ResultType::create($resultTypeValue);

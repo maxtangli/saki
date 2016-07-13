@@ -885,7 +885,7 @@ rush 76 optimize WaitingAnalyzer: step1 2h
 - [x] code view: MeldListAnalyzer 0.2h
 - [x] optimize,refactor ArrayList etc 1.8h
 
-rush etc
+rush 77 etc 4.6h
 
 - [x] PublicCommandBuffer 0.6h
 - [x] refactor: etc 0.9h
@@ -893,15 +893,15 @@ rush etc
 - [x] simulator ing: 1.3h
 
 - [x] debug command: init, toNext
-- [x] bug: kong command should be invalid if not drawReplacementAble 0.5h todo test
+- [x] bug: kong command should be invalid if not drawReplacementAble 0.6h
 - [x] bug: chow condition of next seatWind 0.3h
 - [x] bug: discard condition when riichi 0.2h
 - [x] add WinReport for WinResult 0.4h
-- [ ] bug: target should exist in OverPhase
+- [x] bug: target should exist in OverPhase 0.2h
 
-- [ ] refactor: PlayerCommand.matchPhase, matchActor should be static
+- [x] refactor: PlayerCommand.matchPhase, matchActor should be static 0.1h
 
-rush web demo ing
+rush 78 web demo 8.8h
 
 - [x] import Racket+js 0.5h
 
@@ -909,11 +909,16 @@ rush web demo ing
 - [x] Round.toJson 0.5h
 - [x] html view demo 5.9h
 
-rush all yaku: tests
+rush 79 refactor and complete yaku tests
 
-- [ ] test and fix BottomOfTheSea Fish/Moon 0.1h // ? what's wrong
-- [ ] test HeavenlyWin, EarthlyWin, HumanlyWin
+- [x] refactor DoraYaku tests 0.5h
+- [x] refactor RiichiYaku tests 0.4h
+- [x] refactor FirstTurnWin etc tests 0.2h
+- [x] test BlessingOfHeaven etc 0.4h
+
 - [ ] refactor yaku tests
+
+- [ ] detailed search about BottomOfTheSea 0.1h
 
 rush optimize WaitingAnalyzer: step2
 

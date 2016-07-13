@@ -366,8 +366,8 @@
 - 役牌-场风，PrevailingWind：任意牌型，有1个场风的刻子或杠子。
 - 岭上开花，AfterAKong：任意牌型，在自家任意杠宣告后和牌，目标牌是岭上牌。
 - 抢杠，RobbingAKong：任意牌型，在他家加杠宣告后和牌，目标牌是加杠宣告牌。
-- 海底捞月，*BottomOfTheSeaFish：任意牌型，自摸和，目标牌是最后一张牌。最后一回合杠的情况？
-- 河底摸鱼，*BottomOfTheSeaMoon：任意牌型，荣和，目标牌是最后一张牌。
+- 海底捞月，*BottomOfTheSeaMoon：任意牌型，自摸和，目标牌是最后一张牌。最后一回合杠的情况？
+- 河底摸鱼，*BottomOfTheSeaFish：任意牌型，荣和，目标牌是最后一张牌。
 
 ### 2番役，TwoFanYaku
 

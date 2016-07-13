@@ -44,6 +44,9 @@ use Saki\Win\Yaku\Yakuman\AllHonoursYaku;
 use Saki\Win\Yaku\Yakuman\AllTerminalsYaku;
 use Saki\Win\Yaku\Yakuman\BigFourWindsYaku;
 use Saki\Win\Yaku\Yakuman\BigThreeDragonsYaku;
+use Saki\Win\Yaku\Yakuman\BlessingOfEarthYaku;
+use Saki\Win\Yaku\Yakuman\BlessingOfHeavenYaku;
+use Saki\Win\Yaku\Yakuman\BlessingOfManYaku;
 use Saki\Win\Yaku\Yakuman\FourConcealedPungsYaku;
 use Saki\Win\Yaku\Yakuman\FourKongsYaku;
 use Saki\Win\Yaku\Yakuman\LittleFourWindsYaku;
@@ -396,82 +399,57 @@ class YakuTest extends \SakiTestCase {
     }
 
     function testRiichi() {
-        $round = YakuTestData::getInitedRound();
-
-        // pass first round
-        $round->process('mockHand E E; discard E E; passAll');
-        $round->process('mockHand S E; discard S E; passAll');
-        $round->process('mockHand W E; discard W E; passAll');
-        $round->process('mockHand N N; discard N N; passAll');
-
-        // E reach
-        $round->process('mockHand E 123456789s2355mE; riichi E E; passAll');
-
-        // S discard, E may win
-        $round->process('mockHand S 1m; discard S 1m');
-
-        $yakuList = $round->getWinReport(SeatWind::createEast())->getYakuItemList()->toYakuList();
-
-        $this->assertContains(RiichiYaku::create(), $yakuList, $yakuList);
+        $round = $this->getInitRound();
+        $round->process(
+            // pass first round (to avoid double reach), E reach
+            'skip 4; mockHand E 123456789s2355mE; riichi E E; passAll',
+            // S discard, E may win
+            'mockHand S 1m; discard S 1m'
+        );
+        $this->assertYakuList('E', [RiichiYaku::create()]);
     }
 
     function testDoubleRiichi() {
-        $round = YakuTestData::getInitedRound();
-
-        // E double reach
-        $round->process('mockHand E 123456789s2355mE; riichi E E; passAll');
-
-        // S discard, E may win
-        $round->process('mockHand S 1m; discard S 1m');
-
-        $yakuList = $round->getWinReport(SeatWind::createEast())->getYakuItemList()->toYakuList();
-
-        $this->assertNotContains(RiichiYaku::create(), $yakuList, $yakuList);
-        $this->assertContains(DoubleRiichiYaku::create(), $yakuList, $yakuList);
+        $round = $this->getInitRound();
+        $round->process(
+            // E double reach
+            'mockHand E 123456789s2355mE; riichi E E; passAll',
+            // S discard, E may win
+            'mockHand S 1m; discard S 1m'
+        );
+        $this->assertYakuList('E', [DoubleRiichiYaku::create()], null, [RiichiYaku::create()]);
     }
 
     function testFirstTurnWin() {
-        $round = YakuTestData::getInitedRound();
-
-        $round->process('mockHand E E; discard E E; passAll');
-        $round->process('mockHand S 123456789s2355mS; riichi S S; passAll'); // S double reach
-        $round->process('mockHand W E; discard W E; passAll');
-        $round->process('mockHand N E; discard N E; passAll');
-
-        $round->process('mockHand E E; discard E E; mockNextDraw 1m; passAll');
-        $areaS = $round->getArea(SeatWind::createSouth());
-        $this->assertEquals(Tile::fromString('1m'), $areaS->getHand()->getTarget()->getTile());
-
-        // S tsumo FirstTurnWin
-        $yakuList = $round->getWinReport($round->getCurrentSeatWind())->getYakuItemList()->toYakuList();
-        $this->assertContains(FirstTurnWinYaku::create(), $yakuList, $yakuList);
+        $round = $this->getInitRound();
+        $round->process(
+            // S double reach
+            'skip 1; mockHand S 123456789s2355mS; riichi S S; passAll; skip 2',
+            // S tsumo FirstTurnWin
+            'mockHand E E; discard E E; mockNextDraw 1m; passAll'
+        );
+        $this->assertHand(null, null, '1m', 'S');
+        $this->assertYakuList('S', [FirstTurnWinYaku::create()]);
     }
 
     function testKingSTileWin() {
-        $round = YakuTestData::getInitedRound();
-
-        $round->process('mockNextReplace 5m; mockHand E 123s456s789s7777m5m; concealedKong E 7m7m7m7m');
-        $yakuList = $round->getWinReport($round->getCurrentSeatWind())->getYakuItemList()->toYakuList();
-        $this->assertContains(AfterAKongWinYaku::create(), $yakuList, $yakuList);
+        $round = $this->getInitRound();
+        $round->process(
+            'mockNextReplace 5m; mockHand E 123s456s789s7777m5m; concealedKong E 7m7m7m7m'
+        );
+        $this->assertYakuList('E', [AfterAKongWinYaku::create()]);
     }
 
     function testRobbingAQuad() {
-        $round = YakuTestData::getInitedRound();
-
+        $round = $this->getInitRound();
         $round->process(
             'skip 4',
             'mockHand W 23m123456789s11p',
             'mockHand E 1m; discard E 1m',
             'mockHand S 11m; pung S 1m1m; mockHand S 1m; extendKong S 1m 111m'
         );
-        $areaW = $round->getArea(SeatWind::createWest());
-
-        // target tile changed
-        $this->assertEquals(Tile::fromString('1m'), $areaW->getHand()->getTarget()->getTile());
-
-        // robAQuad exist
-        $yakuList = $round->getWinReport(SeatWind::createWest())->getYakuItemList()->toYakuList();
-        $this->assertContains(RobbingAKongYaku::create(), $yakuList, $yakuList);
+        $this->assertHand(null, null, '1m', 'W');
+        $this->assertYakuList('W', [RobbingAKongYaku::create()]);
     }
 
     function testBottomOfTheSeaMoon() {
@@ -483,70 +461,79 @@ class YakuTest extends \SakiTestCase {
     }
 
     function testDora() {
-        $round = YakuTestData::getInitedRound();
+        $round = $this->getInitRound();
 
+        // dora not counted without other yakus
         $round->process('skip 4; mockDeadWall EEEE1919293949s 5 false; mockHand E 222789s789m12345m');
+        $this->assertYakuListEmpty('E');
 
-        // rely other yakus
-        $yakuList = $round->getWinReport(SeatWind::createEast())->getYakuItemList()->toYakuList();
-        $this->assertEmpty($yakuList);
-
-        // fan count
+        // dora counted with other yakus
         $round->process('mockHand E 222789s789m12355m');
-        $yakuItemList = $round->getWinReport(SeatWind::createEast())->getYakuItemList();
-        $yakuList = $yakuItemList->toYakuList();
-        $this->assertContains(DoraYaku::create(), $yakuList, $yakuList);
-        $expectFan = 1 + 6; // selfDraw + 6 dora
-        $this->assertEquals($expectFan, $yakuItemList->getTotalFan(), $yakuItemList);
+        $this->assertYakuList('E', [DoraYaku::create()], 1 + 6); // selfDraw + 6 dora
     }
 
     function testUraDora() {
-        $round = YakuTestData::getInitedRound();
+        $round = $this->getInitRound();
 
+        // uraDora not counted without other yakus
         $round->process('skip 4; mockDeadWall EEEE9191929394s 5 true; mockHand E 222789s789m12345m');
+        $this->assertYakuListEmpty('E');
 
-        // rely other yakus
-        $yakuList = $round->getWinReport(SeatWind::createEast())->getYakuItemList()->toYakuList();
-        $this->assertEmpty($yakuList);
-
-        // fan count
+        // uraDora counted with other yakus
         $round->process('mockHand E 222789s789m12355m');
-        $yakuItemList = $round->getWinReport(SeatWind::createEast())->getYakuItemList();
-        $yakuList = $yakuItemList->toYakuList();
-        $this->assertContains(UraDoraYaku::create(), $yakuList, $yakuList);
-        $expectFan = 1 + 6; // selfDraw + 6 uraDora
-        $this->assertEquals($expectFan, $yakuItemList->getTotalFan(), $yakuItemList);
+        $this->assertYakuList('E', [UraDoraYaku::create()], 1 + 6); // selfDraw + 6 uraDora
     }
 
     function testRedDora() {
-        $round = YakuTestData::getInitedRound();
+        $round = $this->getInitRound();
 
+        // redDora not counted without other yakus
         $round->process('skip 4; mockDeadWall EEEE9999999999s 1 false; mockHand E 222789s789m12340m');
+        $this->assertYakuListEmpty('E');
 
-        // rely other yakus
-        $yakuList = $round->getWinReport(SeatWind::createEast())->getYakuItemList()->toYakuList();
-        $this->assertEmpty($yakuList);
-
-        // fan count
+        // redDora counted with other yakus
         $round->process('mockHand E 222789s789m12300m');
-        $yakuItemList = $round->getWinReport(SeatWind::createEast())->getYakuItemList();
-        $yakuList = $yakuItemList->toYakuList();
-        $this->assertContains(RedDoraYaku::create(), $yakuList, $yakuList);
-        $expectFan = 3; // selfDraw + 6 uraDora
-        $this->assertEquals($expectFan, $yakuItemList->getTotalFan(), $yakuItemList);
-        // todo for first time execution, failed and return 2 rather than 3? RedTile impl trick's bad smell...
+        $this->assertYakuList('E', [RedDoraYaku::create()], 3); // selfDraw + 2 redDora
     }
 
-    function testHeavenlyWin() {
-        // todo
+    function testBlessingOfHeaven() {
+        $round = $this->getInitRound();
+
+        $round->process('mockHand E 123456789m12355s');
+        $this->assertYakuList('E', [BlessingOfHeavenYaku::create()]);
+
+        // failed if declared
+        $round->process('mockHand E 1111m; concealedKong E 1111m; mockHand E 123456789m55s');
+        $this->assertYakuList('E', null, null, [BlessingOfHeavenYaku::create()]);
+
+        // failed if not first turn
+        // failed if not dealer
     }
 
-    function testEarthlyWin() {
-        // todo
+    function testBlessingOfEarth() {
+        $round = $this->getInitRound();
+        $round->process('skip 1; mockHand S 123456789m12355s');
+        $this->assertYakuList('S', [BlessingOfEarthYaku::create()]);
+
+        // failed if declared
+        // failed if not first turn
+        // failed if not leisure
     }
 
-    function testHumanlyWin() {
-        // todo
+    function testBlessingOfMan() {
+        $round = $this->getInitRound();
+        $round->process('mockHand E 5s; discard E 5s; mockHand S 123456789m1235s');
+        $this->assertYakuList('S', [BlessingOfManYaku::create()]);
+
+        // failed if discard not empty
+        $round->process(
+            'passAll; mockHand S C; discard S C; passAll',
+            'mockHand S 123456789m1235s; mockHand W 5s; discard W 5s'
+        );
+        $this->assertYakuList('S', null, null, [BlessingOfManYaku::create()]);
+
+        // failed if declared
+        // failed if not first turn
     }
 }
 
@@ -571,17 +558,16 @@ class YakuTestData {
     private $currentSeatWind;
     private $actorSeatWind;
 
-    function __construct(string $handMeldListString, string $meldedString = null, string $targetTileString = null,
-                         string $currentString = null, string $actorString = null, string $prevailingWindString = null) {
-        $this->handMeldList = MeldList::fromString($handMeldListString)->toConcealed(true);
-        $this->melded = MeldList::fromString($meldedString !== null ? $meldedString : "");
-        $this->targetTile = $targetTileString !== null ? Tile::fromString($targetTileString) : $this->handMeldList[0][0];
+    function __construct(string $handMeldList, string $melded = null, string $targetTile = null,
+                         string $current = null, string $actor = null, string $prevailingWind = null) {
+        $this->handMeldList = MeldList::fromString($handMeldList)->toConcealed(true);
+        $this->melded = MeldList::fromString($melded !== null ? $melded : "");
+        $this->targetTile = $targetTile !== null ? Tile::fromString($targetTile) : $this->handMeldList[0][0];
 
-        $this->currentSeatWind = SeatWind::fromString($currentString ?? 'E');
-        $this->actorSeatWind = $actorString !== null ? SeatWind::fromString($actorString) : $this->currentSeatWind;
+        $this->currentSeatWind = SeatWind::fromString($current ?? 'E');
+        $this->actorSeatWind = $actor !== null ? SeatWind::fromString($actor) : $this->currentSeatWind;
 
-        $prevailingWind = PrevailingWind::fromString($prevailingWindString ?? 'E');
-        $this->roundDebugResetData = new PrevailingStatus($prevailingWind, 1, 0);
+        $this->roundDebugResetData = new PrevailingStatus(PrevailingWind::fromString($prevailingWind ?? 'E'), 1, 0);
     }
 
     function __toString() {

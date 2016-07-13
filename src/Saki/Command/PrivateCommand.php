@@ -9,12 +9,12 @@ use Saki\Game\Round;
  */
 abstract class PrivateCommand extends PlayerCommand {
     //region PlayerCommand impl
-    protected function matchPhase(Round $round, Area $actorArea) {
+    protected static function matchPhase(Round $round, Area $actorArea) {
         $phaseState = $round->getPhaseState();
         return $phaseState->getPhase()->isPrivate();
     }
 
-    protected function matchActor(Round $round, Area $actorArea) {
+    protected static function matchActor(Round $round, Area $actorArea) {
         return $actorArea->isCurrentSeatWind();
     }
     //endregion
