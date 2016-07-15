@@ -46,14 +46,6 @@ abstract class Command {
         return strpos(get_called_class(), 'Debug') !== false;
     }
 
-    /**
-     * Used in: PublicCommand.matchPhase()
-     * @return bool
-     */
-    static function isRon() {
-        return strpos(get_called_class(), 'Ron') !== false;
-    }
-
     //region subclass hooks
     /**
      * @return ParamDeclaration[]

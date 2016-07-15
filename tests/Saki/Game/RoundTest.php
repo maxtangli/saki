@@ -122,7 +122,7 @@ class RoundTest extends \SakiTestCase {
         $claimTurn = $round->getTurn();
         $round->process('extendKong S 0m 055m');
         $this->assertPublic();
-        $this->assertTrue($round->getPhaseState()->isRonOnly());
+        $this->assertFalse($round->getPhaseState()->allowClaim());
         $this->assertHasNotClaim($claimTurn);
         $this->assertCurrentTurnNotChanged($claimTurn);
         $this->assertHand(null, null, '0m', 'E');

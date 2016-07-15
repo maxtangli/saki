@@ -10,16 +10,8 @@ use Saki\Game\Round;
 abstract class PublicCommand extends PlayerCommand {
     //region PlayerCommand impl
     protected static function matchPhase(Round $round, Area $actorArea) {
-        $phaseState = $round->getPhaseState();
-        if (!$phaseState->getPhase()->isPublic()) {
-            return false;
-        }
-
-        if ($phaseState->isRonOnly()) {
-            return static::isRon();
-        }
-
-        return true;
+        return $round->getPhaseState()->getPhase()
+            ->isPublic();
     }
 
     protected static function matchActor(Round $round, Area $actorArea) {

@@ -12,6 +12,7 @@ class Wall {
     private $tileSet;
     private $deadWall;
     private $doraFacade;
+    /** @var TileList */
     private $remainTileList;
 
     /**
@@ -53,7 +54,17 @@ class Wall {
      * @param Tile $tile
      */
     function debugSetNextDrawTile(Tile $tile) {
-        $this->getRemainTileList()->replaceAt($this->getRemainTileList()->count() - 1, $tile);
+        $lastPos = $this->getRemainTileCount() - 1;
+        $this->remainTileList->replaceAt($lastPos, $tile); // validate
+    }
+    
+    function debugSetRemainTileCount(int $n) {
+        $removeCount = $this->getRemainTileCount() - $n;
+        $this->remainTileList->removeLast($removeCount); // validate
+        
+        if ($this->remainTileList->count() != $n) {
+            throw new \LogicException();    
+        }
     }
 
     /**
@@ -89,6 +100,13 @@ class Wall {
      */
     function getRemainTileCount() {
         return $this->getRemainTileList()->count();
+    }
+
+    /**
+     * @return bool
+     */
+    function isBottomOfTheSea() {
+        return $this->getRemainTileCount() == 0;
     }
 
     /**

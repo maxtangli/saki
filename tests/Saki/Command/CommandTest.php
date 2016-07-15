@@ -15,11 +15,6 @@ class CommandTest extends \SakiTestCase {
         $this->assertTrue(MockHandCommand::isDebug());
     }
 
-    function testIsRon() {
-        $this->assertFalse(TsumoCommand::isRon());
-        $this->assertTrue(RonCommand::isRon());
-    }
-
     function testDiscard() {
         $round = $this->getInitRound();
 

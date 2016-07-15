@@ -18,34 +18,45 @@ class PublicPhaseState extends PhaseState {
      * @return PublicPhaseState
      */
     static function createRobbing(SeatWind $actor, Claim $claim, Target $target) {
-        $phase = new self();
-        $phase->isRonOnly = true;
+        list($allowClaim, $isRobbing) = [false, true];
+        $phase = new self($allowClaim, $isRobbing);
         $phase->setCustomNextState(
             new PrivatePhaseState($actor, false, $claim, $target)
         );
         return $phase;
     }
 
-    private $isRonOnly;
+    static function create() {
+        list($allowClaim, $isRobbing) = [true, false];
+        return new self($allowClaim, $isRobbing);
+    }
 
-    function __construct() {
-        $this->isRonOnly = false;
+    private $allowClaim;
+    private $isRobbing;
+
+    /**
+     * @param bool $allowClaim
+     * @param bool $isRobbing
+     */
+    private function __construct(bool $allowClaim, bool $isRobbing) {
+        $this->allowClaim = $allowClaim;
+        $this->isRobbing = $isRobbing;
     }
 
     /**
-     * @return bool
+     * @return boolean
      */
-    function isRonOnly() {
-        return $this->isRonOnly;
+    function allowClaim() {
+        return $this->allowClaim;
     }
 
     /**
      * @return bool
      */
     function isRobbing() {
-        return $this->isRonOnly;
+        return $this->isRobbing;
     }
-
+    
     /**
      * @param Round $round
      * @return bool
@@ -75,10 +86,14 @@ class PublicPhaseState extends PhaseState {
     }
 
     function enter(Round $round) {
-        // do nothing
-
+        // set target
         $target = $round->getOpenHistory()->getLastOpen()->toTarget();
         $round->getTargetHolder()->setTarget($target);
+        
+        // bottom of sea not allow claim
+        if ($round->getWall()->isBottomOfTheSea()) {
+            $this->allowClaim = false;
+        }
     }
 
     function leave(Round $round) {

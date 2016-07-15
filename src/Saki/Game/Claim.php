@@ -123,6 +123,13 @@ class Claim implements Immutable {
             return false;
         }
 
+        // phaseState allow claim
+        $allowClaim = $area->getRound()->getPhaseState()->allowClaim();
+        if (!$allowClaim) {
+            return false;
+        }
+
+        // kong commands require ableDrawReplacement
         $toMeld = $this->getToMeld();
         $validDrawReplacementAble = !$toMeld->isQuad()
             || $area->getRound()->getWall()->getDeadWall()->isAbleDrawReplacement();
@@ -130,6 +137,7 @@ class Claim implements Immutable {
             return false;
         }
 
+        // able to create meld
         $hand = $area->getHand();
         $validHand = $hand->getPrivate()->valueExist($this->getFromTiles(), Tile::getEqual(true)) // handle red
         && $hand->getMelded()->valueExist($this->getFromMeldedOrNull() ?? [], Meld::getEqual(true, true)); // handle red

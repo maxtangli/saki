@@ -3,12 +3,14 @@ namespace Saki\Command\Debug;
 
 use Saki\Command\Command;
 use Saki\Command\ParamDeclaration\IntParamDeclaration;
+use Saki\Command\ParamDeclaration\TileParamDeclaration;
 use Saki\Game\Round;
+use Saki\Tile\Tile;
 
 /**
  * @package Saki\Command\Debug
  */
-class SkipCommand extends Command {
+class MockWallRemainCommand extends Command {
     //region Command impl
     static function getParamDeclarations() {
         return [IntParamDeclaration::class];
@@ -16,24 +18,28 @@ class SkipCommand extends Command {
     //endregion
 
     /**
-     * @return int
+     * @return Tile
      */
-    function getSkipCount() {
+    function getWallRemainTileCount() {
         return $this->getParam(0);
     }
-    
+
+    /**
+     * @return \Saki\Game\Wall
+     */
+    protected function getWall() {
+        return $this->getRound()->getWall();
+        
+    }
+
     //region Command impl
     protected function executableImpl(Round $round) {
-        return $round->getPhase()->isPrivateOrPublic();
+        return $this->getWall()->getRemainTileCount() 
+        >= $this->getWallRemainTileCount();
     }
 
     protected function executeImpl(Round $round) {
-        $nRemainSkip = $this->getSkipCount();
-        while ($nRemainSkip-- > 0) {
-            $nextSeatWind = $round->getCurrentSeatWind()->toNext();
-            $skipToCommand = sprintf('skipTo %s true', $nextSeatWind);
-            $round->process($skipToCommand);
-        }
+        $this->getWall()->debugSetRemainTileCount($this->getWallRemainTileCount());
     }
     //endregion
 }

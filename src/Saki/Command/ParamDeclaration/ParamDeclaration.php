@@ -14,7 +14,9 @@ abstract class ParamDeclaration {
     static function toObjects(array $paramDeclarations, array $paramStrings) {
         $valid = count($paramDeclarations) == count($paramStrings);
         if (!$valid) {
-            throw new \InvalidArgumentException();
+            throw new \InvalidArgumentException(
+                sprintf(implode($paramStrings).',',get_called_class())
+            );
         }
 
         // ['E','1m'] => [SeatWind, Tile]

@@ -16,6 +16,7 @@ class PrivatePhaseState extends PhaseState {
     private $shouldDraw;
     private $claim;
     private $target;
+    private $allowClaim;
 
     /**
      * @param SeatWind $actor
@@ -24,10 +25,15 @@ class PrivatePhaseState extends PhaseState {
      * @param Target|null $target
      */
     function __construct(SeatWind $actor, bool $shouldDraw, Claim $claim = null, Target $target = null) {
+        if ($shouldDraw && $claim) {
+            throw new \InvalidArgumentException();
+        }
+
         $this->actor = $actor;
         $this->shouldDraw = $shouldDraw;
         $this->claim = $claim;
         $this->target = $target;
+        $this->allowClaim = true;
     }
 
     /**
@@ -44,13 +50,20 @@ class PrivatePhaseState extends PhaseState {
         return $this->shouldDraw;
     }
 
+    /**
+     * @return boolean
+     */
+    function allowClaim() {
+        return $this->allowClaim;
+    }
+
     //region PhaseState impl
     function getPhase() {
         return Phase::createPrivate();
     }
 
     function getDefaultNextState(Round $round) {
-        return new PublicPhaseState();
+        return PublicPhaseState::create();
     }
 
     function enter(Round $round) {

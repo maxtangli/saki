@@ -6,6 +6,8 @@ use Saki\Util\ReadonlyArrayList;
 use Saki\Win\Series\Series;
 use Saki\Win\Yaku\Fan1\AfterAKongWinYaku;
 use Saki\Win\Yaku\Fan1\AllSimplesYaku;
+use Saki\Win\Yaku\Fan1\BottomOfTheSeaFishYaku;
+use Saki\Win\Yaku\Fan1\BottomOfTheSeaMoonYaku;
 use Saki\Win\Yaku\Fan1\DoraYaku;
 use Saki\Win\Yaku\Fan1\DragonPungGreenYaku;
 use Saki\Win\Yaku\Fan1\DragonPungRedYaku;
@@ -53,7 +55,6 @@ use Saki\Win\Yaku\Yakuman2\PureNineGatesYaku;
 use Saki\Win\Yaku\Yakuman2\PureThirteenOrphansYaku;
 
 /**
- * The yakus set used in a game.
  * @package Saki\Win\Yaku
  */
 class YakuSet extends ArrayList {
@@ -66,34 +67,36 @@ class YakuSet extends ArrayList {
     static function createStandard() {
         self::$standardInstance = self::$standardInstance ?? new self([
                 // Fan1
-                PinfuYaku::create(),
-                AllSimplesYaku::create(),
-                FullyConcealedHandYaku::create(),
-                DoraYaku::create(),
-                PureDoubleChowYaku::create(),
-                FirstTurnWinYaku::create(),
-                DragonPungGreenYaku::create(),
                 AfterAKongWinYaku::create(),
-                RiichiYaku::create(),
-                RedDoraYaku::create(),
+                AllSimplesYaku::create(),
+                BottomOfTheSeaFishYaku::create(),
+                BottomOfTheSeaMoonYaku::create(),
+                DoraYaku::create(),
+                DragonPungGreenYaku::create(),
                 DragonPungRedYaku::create(),
-                RobbingAKongYaku::create(),
+                DragonPungWhiteYaku::create(),
+                FirstTurnWinYaku::create(),
+                FullyConcealedHandYaku::create(),
+                PinfuYaku::create(),
                 PrevailingWindYaku::create(),
+                PureDoubleChowYaku::create(),
+                RedDoraYaku::create(),
+                RiichiYaku::create(),
+                RobbingAKongYaku::create(),
                 SeatWindYaku::create(),
                 UraDoraYaku::create(),
-                DragonPungWhiteYaku::create(),
                 // Fan2
-                AllTerminalsAndHonoursYaku::create(),
                 AllPungsYaku::create(),
+                AllTerminalsAndHonoursYaku::create(),
                 DoubleRiichiYaku::create(),
-                PureStraightYaku::create(),
                 LittleThreeDragonsYaku::create(),
-                OutsideHandYaku::create(),
-                SevenPairsYaku::create(),
                 MixedTripleChowYaku::create(),
-                TriplePungYaku::create(),
+                OutsideHandYaku::create(),
+                PureStraightYaku::create(),
+                SevenPairsYaku::create(),
                 ThreeConcealedPungsYaku::create(),
                 ThreeKongsYaku::create(),
+                TriplePungYaku::create(),
                 // Fan3
                 HalfFlushYaku::create(),
                 TerminalsInAllSetsYaku::create(),
@@ -107,12 +110,12 @@ class YakuSet extends ArrayList {
                 BigFourWindsYaku::create(),
                 BigThreeDragonsYaku::create(),
                 BlessingOfEarthYaku::create(),
-                FourConcealedPungsYaku::create(),
-                FourKongsYaku::create(),
                 BlessingOfHeavenYaku::create(),
                 BlessingOfManYaku::create(),
-                NineGatesYaku::create(),
+                FourConcealedPungsYaku::create(),
+                FourKongsYaku::create(),
                 LittleFourWindsYaku::create(),
+                NineGatesYaku::create(),
                 ThirteenOrphansYaku::create(),
                 // Yakuman2
                 PureFourConcealedPungsYaku::create(),

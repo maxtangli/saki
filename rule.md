@@ -9,6 +9,7 @@
 
 - Mahjong International League/Riichi Competition Rules http://mahjong-mil.org/riichirules2016.pdf
 - 日本プロ麻雀連盟/競技ルール http://www.ma-jan.or.jp/guide/game_rule.html
+- 天鳳 http://tenhou.net/
 - wiki/麻雀のルール https://ja.wikipedia.org/wiki/麻雀のルール
 
 # 规则采用
@@ -21,7 +22,7 @@
 
 进行规则
 
-- 赤宝牌：有，包括：r5m，r5p，r5s，共3张。
+- 赤宝牌：有，包括：0m，0p，0s，共3张。
 - 里宝牌：有，不可放弃。
 - 明杠宝牌：有，成立时即翻后补牌，被抢杠时杠不成立不翻。
 
@@ -174,11 +175,15 @@
 - 大明杠，Kong：public + target -> declare, toPrivate(actor, draw=false)
 - 荣和，Ron：toOver(result)
 
+待整理
+- 河底牌不允许个人/公共的吃碰杠
+
 ### 杠指令
 
 条件
 - 有构成杠的牌。
-- 场上的杠少于4个。
+- 场上的杠少于4个=可补牌。
+- 非河底。
 
 大明杠
 1. 他家公共阶段，杠宣言成立
@@ -366,7 +371,7 @@
 - 役牌-场风，PrevailingWind：任意牌型，有1个场风的刻子或杠子。
 - 岭上开花，AfterAKong：任意牌型，在自家任意杠宣告后和牌，目标牌是岭上牌。
 - 抢杠，RobbingAKong：任意牌型，在他家加杠宣告后和牌，目标牌是加杠宣告牌。
-- 海底捞月，*BottomOfTheSeaMoon：任意牌型，自摸和，目标牌是最后一张牌。最后一回合杠的情况？
+- 海底捞月，*BottomOfTheSeaMoon：任意牌型，自摸和，目标牌是最后一张牌。
 - 河底摸鱼，*BottomOfTheSeaFish：任意牌型，荣和，目标牌是最后一张牌。
 
 ### 2番役，TwoFanYaku

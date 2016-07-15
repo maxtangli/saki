@@ -7,8 +7,10 @@ use Saki\Command\Debug\MockDeadWallCommand;
 use Saki\Command\Debug\MockHandCommand;
 use Saki\Command\Debug\MockNextDrawCommand;
 use Saki\Command\Debug\MockNextReplaceCommand;
+use Saki\Command\Debug\MockWallRemainCommand;
 use Saki\Command\Debug\PassAllCommand;
 use Saki\Command\Debug\SkipCommand;
+use Saki\Command\Debug\SkipToCommand;
 use Saki\Command\Debug\ToNextRoundCommand;
 use Saki\Command\PrivateCommand\ConcealedKongCommand;
 use Saki\Command\PrivateCommand\DiscardCommand;
@@ -49,12 +51,14 @@ class CommandSet extends ArrayList {
                 RonCommand::class,
                 // debug
                 InitCommand::class,
-                MockNextReplaceCommand::class,
                 MockDeadWallCommand::class,
                 MockHandCommand::class,
                 MockNextDrawCommand::class,
+                MockNextReplaceCommand::class,
+                MockWallRemainCommand::class,
                 PassAllCommand::class,
                 SkipCommand::class,
+                SkipToCommand::class,
                 ToNextRoundCommand::class,
             ]);
         return self::$standardInstance;

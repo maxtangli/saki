@@ -9,6 +9,8 @@ use Saki\Tile\Tile;
 use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\Fan1\AfterAKongWinYaku;
 use Saki\Win\Yaku\Fan1\AllSimplesYaku;
+use Saki\Win\Yaku\Fan1\BottomOfTheSeaFishYaku;
+use Saki\Win\Yaku\Fan1\BottomOfTheSeaMoonYaku;
 use Saki\Win\Yaku\Fan1\DoraYaku;
 use Saki\Win\Yaku\Fan1\DragonPungGreenYaku;
 use Saki\Win\Yaku\Fan1\DragonPungRedYaku;
@@ -57,7 +59,7 @@ use Saki\Win\Yaku\Yakuman2\PureThirteenOrphansYaku;
 
 class YakuTest extends \SakiTestCase {
     static function assertYakuExist($expected, YakuTestData $yakuTestData, Yaku $yaku) {
-        $subTarget = $yakuTestData->toWinSubTarget();
+        $subTarget = $yakuTestData->getWinSubTarget();
         self::assertEquals($expected, $yaku->existIn($subTarget),
             sprintf(
                 "yaku        : %s"
@@ -443,8 +445,7 @@ class YakuTest extends \SakiTestCase {
     function testRobbingAQuad() {
         $round = $this->getInitRound();
         $round->process(
-            'skip 4',
-            'mockHand W 23m123456789s11p',
+            'skip 4; mockHand W 23m123456789s11p',
             'mockHand E 1m; discard E 1m',
             'mockHand S 11m; pung S 1m1m; mockHand S 1m; extendKong S 1m 111m'
         );
@@ -453,11 +454,19 @@ class YakuTest extends \SakiTestCase {
     }
 
     function testBottomOfTheSeaMoon() {
-        // todo
+        $round = $this->getInitRound();
+        $round->process(
+            'skip 4; mockWallRemain 0; mockHand E 123456789m12355s'
+        );
+        $this->assertYakuList('E', [BottomOfTheSeaMoonYaku::create()]);
     }
 
     function testBottomOfTheSeaFish() {
-        // todo
+        $round = $this->getInitRound();
+        $round->process(
+            'skip 4; mockWallRemain 0; mockHand E 5s; discard E 5s; mockHand S 123456789m1235s'
+        );
+        $this->assertYakuList('S', [BottomOfTheSeaFishYaku::create()]);
     }
 
     function testDora() {
@@ -537,18 +546,13 @@ class YakuTest extends \SakiTestCase {
     }
 }
 
-/**
- * Convenient adaptor for write yaku test cases.
- * todo remove
- * goal
- * - YakuTestCase: RoundDebugSetData RoundDebugSkipToData targetPlayer yaku isExist getRound
- */
+// todo remove
 class YakuTestData {
     private static $round;
 
-    static function getInitedRound(PrevailingStatus $rebugResetData = null) {
+    static function getInitRound(PrevailingStatus $debugResetData = null) {
         self::$round = self::$round ?? new Round();
-        self::$round->debugInit($rebugResetData ?? PrevailingStatus::createFirst());
+        self::$round->debugInit($debugResetData ?? PrevailingStatus::createFirst());
         return self::$round;
     }
 
@@ -559,12 +563,12 @@ class YakuTestData {
     private $actorSeatWind;
 
     function __construct(string $handMeldList, string $melded = null, string $targetTile = null,
-                         string $current = null, string $actor = null, string $prevailingWind = null) {
+                         string $currentSeatWind = null, string $actor = null, string $prevailingWind = null) {
         $this->handMeldList = MeldList::fromString($handMeldList)->toConcealed(true);
         $this->melded = MeldList::fromString($melded !== null ? $melded : "");
         $this->targetTile = $targetTile !== null ? Tile::fromString($targetTile) : $this->handMeldList[0][0];
 
-        $this->currentSeatWind = SeatWind::fromString($current ?? 'E');
+        $this->currentSeatWind = SeatWind::fromString($currentSeatWind ?? 'E');
         $this->actorSeatWind = $actor !== null ? SeatWind::fromString($actor) : $this->currentSeatWind;
 
         $this->roundDebugResetData = new PrevailingStatus(PrevailingWind::fromString($prevailingWind ?? 'E'), 1, 0);
@@ -574,38 +578,25 @@ class YakuTestData {
         return sprintf('handMeldList[%s], declaredMeldList[%s], currentSeatWind[%s], targetSeatWind[%s]'
             , $this->handMeldList, $this->melded, $this->currentSeatWind, $this->actorSeatWind);
     }
-
-    function toWinSubTarget() {
-        $round = self::getInitedRound($this->roundDebugResetData);
-
-        // set phase
+    
+    function getWinSubTarget() {
+        $round = self::getInitRound($this->roundDebugResetData);
+        
+        // to phase
         $currentSeatWind = $this->currentSeatWind;
         $actorSeatWind = $this->actorSeatWind;
         $isPrivate = $currentSeatWind == $actorSeatWind;
+        $skipToCommand = sprintf('skipTo %s %s', $currentSeatWind, $isPrivate);
+        $round->process($skipToCommand);
 
-        // set tiles
+        // set hand
         $handMeldList = $this->handMeldList;
+        $melded = $this->melded;
         $targetTile = $this->targetTile;
         $area = $round->getArea($actorSeatWind);
-        $melded = $this->melded;
-
-        while ($round->getCurrentSeatWind() != $currentSeatWind) {
-            $round->process('skip 1');
-        }
-        if (!$isPrivate) {
-            $round->process(sprintf('mockHand %s %s; discard %s %s',
-                $currentSeatWind, $targetTile, $currentSeatWind, $targetTile));
-        }
-
-        if ($isPrivate) { // target tile not set
-            $private = $handMeldList->toTileList();
-            $targetTile = $targetTile ?? $private->getLast();
-            $public = $private->getCopy()->remove($targetTile);
-            $hand = $area->getHand()->toHand($public, $melded, $targetTile);
-        } else { // targetTile already set by debugSkipTo
-            $public = $handMeldList->toTileList()->remove($targetTile);
-            $hand = $area->getHand()->toHand($public, $melded, null);
-        }
+        $public = $handMeldList->toTileList()->remove($targetTile);
+        // for public phase, targetTile already set by debugSkipTo
+        $hand = $area->getHand()->toHand($public, $melded, $isPrivate ? $targetTile : null);
         $area->setHand($hand);
 
         return new WinSubTarget($handMeldList, $actorSeatWind, $round);

@@ -915,10 +915,11 @@ rush 79 refactor and complete yaku tests
 - [x] refactor RiichiYaku tests 0.4h
 - [x] refactor FirstTurnWin etc tests 0.2h
 - [x] test BlessingOfHeaven etc 0.4h
+- [x] fix BottomOfTheSea 1.1h
 
-- [ ] refactor yaku tests
+- [x] add SkipToCommand 0.5h
 
-- [ ] detailed search about BottomOfTheSea 0.1h
+- [ ] refactor yaku tests 0.2h
 
 rush optimize WaitingAnalyzer: step2
 
