@@ -1,9 +1,7 @@
 <?php
 
-use Saki\Game\Hand;
 use Saki\Game\PrevailingStatus;
 use Saki\Game\PrevailingWind;
-use Saki\Game\Round;
 use Saki\Game\SeatWind;
 use Saki\Meld\MeldList;
 use Saki\Tile\Tile;
@@ -62,10 +60,46 @@ use Saki\Win\Yaku\Yakuman2\PureThirteenOrphansYaku;
 class YakuTest extends \SakiTestCase {
     /**
      * @dataProvider yakuProvider
+     * @param Yaku $yaku
+     * @param bool $expectedExist
+     * @param string $handMeldListString
+     * @param string $meldedString
+     * @param string $targetTileString
+     * @param string $currentSeatWindString
+     * @param string $actorString
+     * @param string $prevailingWindString
      */
-    function testYaku(YakuTestData $yakuTestData, Yaku $yaku, $expected) {
-        $subTarget = $yakuTestData->getWinSubTarget();
-        $this->assertEquals($expected, $yaku->existIn($subTarget));
+    function testYaku(Yaku $yaku, bool $expectedExist,
+                      string $handMeldListString, string $meldedString = null, string $targetTileString = null,
+                      string $currentSeatWindString = null, string $actorString = null,
+                      string $prevailingWindString = null
+    ) {
+        // prepare params
+        $handMeldList = MeldList::fromString($handMeldListString)->toConcealed(true);
+        $melded = MeldList::fromString($meldedString !== null ? $meldedString : "");
+        $targetTile = $targetTileString !== null ? Tile::fromString($targetTileString) : $handMeldList[0][0];
+
+        $currentSeatWind = SeatWind::fromString($currentSeatWindString ?? 'E');
+        $actorSeatWind = $actorString !== null ? SeatWind::fromString($actorString) : $currentSeatWind;
+        $isPrivate = $currentSeatWind == $actorSeatWind;
+
+        $prevailingStatus = new PrevailingStatus(PrevailingWind::fromString($prevailingWindString ?? 'E'), 1, 0);
+
+        // init round, set phase
+        $round = $this->getInitRound($prevailingStatus);
+        $skipToCommand = sprintf('skipTo %s %s', $currentSeatWind, $isPrivate);
+        $round->process($skipToCommand);
+
+        // set hand
+        $area = $round->getArea($actorSeatWind);
+        $public = $handMeldList->toTileList()->remove($targetTile);
+        $round->getTargetHolder()->replaceTargetTile($targetTile);
+        $hand = $area->getHand()->toHand($public, $melded);
+        $area->setHand($hand);
+
+        // assert
+        $winSubTarget = new WinSubTarget($handMeldList, $actorSeatWind, $round);
+        $this->assertBool($expectedExist, $yaku->existIn($winSubTarget));
     }
 
     function yakuProvider() {
@@ -73,182 +107,182 @@ class YakuTest extends \SakiTestCase {
             // AfterAKongWinYaku is tested alone
 
             // test AllSimplesYaku
-            [new YakuTestData('234m,456m,888s,55s', '678m'), AllSimplesYaku::create(), true],
+            [AllSimplesYaku::create(), true, '234m,456m,888s,55s', '678m'],
             // not without term
-            [new YakuTestData('234m,456m,888s,55s', '789m'), AllSimplesYaku::create(), false],
+            [AllSimplesYaku::create(), false, '234m,456m,888s,55s', '789m'],
             // not without honour
-            [new YakuTestData('234m,456m,888s,EE', '789m'), AllSimplesYaku::create(), false],
+            [AllSimplesYaku::create(), false, '234m,456m,888s,EE', '789m'],
 
             // BottomOfTheSeaFishYaku is tested alone
             // BottomOfTheSeaMoonYaku is tested alone
             // DoraYaku is tested alone
 
             // test DragonPungRedYaku
-            [new YakuTestData('123m,44m,55m,66m,55s', 'CCC', '5s'), DragonPungRedYaku::create(), true],
-            [new YakuTestData('123m,44m,55m,66m,55s', '111s', '5s'), DragonPungRedYaku::create(), false],
+            [DragonPungRedYaku::create(), true, '123m,44m,55m,66m,55s', 'CCC', '5s'],
+            [DragonPungRedYaku::create(), false, '123m,44m,55m,66m,55s', '111s', '5s'],
 
             // test DragonPungWhiteYaku
-            [new YakuTestData('123m,44m,55m,66m,55s', 'PPP', '5s'), DragonPungWhiteYaku::create(), true],
-            [new YakuTestData('123m,44m,55m,66m,55s', '111s', '5s'), DragonPungWhiteYaku::create(), false],
+            [DragonPungWhiteYaku::create(), true, '123m,44m,55m,66m,55s', 'PPP', '5s'],
+            [DragonPungWhiteYaku::create(), false, '123m,44m,55m,66m,55s', '111s', '5s'],
 
             // test DragonPungGreenYaku
-            [new YakuTestData('123m,44m,55m,66m,55s', 'FFF', '5s'), DragonPungGreenYaku::create(), true],
-            [new YakuTestData('123m,44m,55m,66m,55s', '111s', '5s'), DragonPungGreenYaku::create(), false],
+            [DragonPungGreenYaku::create(), true, '123m,44m,55m,66m,55s', 'FFF', '5s'],
+            [DragonPungGreenYaku::create(), false, '123m,44m,55m,66m,55s', '111s', '5s'],
 
             // FirstTurnWinYaku is tested alone
 
             // test FullyConcealedHandYaku
-            [new YakuTestData('123m,456m,77m,88m,11s,55s', null, '1s'), FullyConcealedHandYaku::create(), true],
+            [FullyConcealedHandYaku::create(), true, '123m,456m,77m,88m,11s,55s', null, '1s'],
             // not isConcealed
-            [new YakuTestData('123m,77m,88m,11s,55s', '333m', '1s'), FullyConcealedHandYaku::create(), false],
+            [FullyConcealedHandYaku::create(), false, '123m,77m,88m,11s,55s', '333m', '1s'],
             // not selfDraw
-            [new YakuTestData('123m,456m,77m,88m,11s,55s', null, '1s', 'E', 'W'), FullyConcealedHandYaku::create(), false],
+            [FullyConcealedHandYaku::create(), false, '123m,456m,77m,88m,11s,55s', null, '1s', 'E', 'W'],
 
             // test PinfuYaku
-            [new YakuTestData('123m,456m,789m,123s,55s', null, '1s'), PinfuYaku::create(), true],
+            [PinfuYaku::create(), true, '123m,456m,789m,123s,55s', null, '1s'],
             // not isConcealed
-            [new YakuTestData('123m,456m,123s,55s', '789m', '1s'), PinfuYaku::create(), false],
+            [PinfuYaku::create(), false, '123m,456m,123s,55s', '789m', '1s'],
             // not 4 run
-            [new YakuTestData('123m,456m,999m,123s,55s', null, '1s'), PinfuYaku::create(), false],
+            [PinfuYaku::create(), false, '123m,456m,999m,123s,55s', null, '1s'],
             // not suit pair
-            [new YakuTestData('123m,456m,789m,123s,EE', null, '1s'), PinfuYaku::create(), false],
+            [PinfuYaku::create(), false, '123m,456m,789m,123s,EE', null, '1s'],
             // not two-pair waiting
-            [new YakuTestData('123m,456m,789m,123s,55s', null, '2s'), PinfuYaku::create(), false],
+            [PinfuYaku::create(), false, '123m,456m,789m,123s,55s', null, '2s'],
 
             // test PrevailingWindYaku
-            [new YakuTestData('123m,44m,55m,66m,55s', 'EEE', '5s'), PrevailingWindYaku::create(), true],
+            [PrevailingWindYaku::create(), true, '123m,44m,55m,66m,55s', 'EEE', '5s'],
             // not prevailingWind
-            [new YakuTestData('123m,44m,55m,66m,55s', 'EEE', '5s', null, null, PrevailingWind::fromString('S')), PrevailingWindYaku::create(), false],
+            [PrevailingWindYaku::create(), false, '123m,44m,55m,66m,55s', 'EEE', '5s', null, null, PrevailingWind::fromString('S')],
 
             // test PureDoubleChowYaku
-            [new YakuTestData('123m,123m,77m,88m,11s,EE', null, 'E'), PureDoubleChowYaku::create(), true],
+            [PureDoubleChowYaku::create(), true, '123m,123m,77m,88m,11s,EE', null, 'E'],
             // not isConcealed
-            [new YakuTestData('123m,123m,EE', '123s,123s', 'E'), PureDoubleChowYaku::create(), false],
+            [PureDoubleChowYaku::create(), false, '123m,123m,EE', '123s,123s', 'E'],
 
             // test TwicePureDoubleChowYaku
-            [new YakuTestData('123m,123m,123s,123s,EE', null, 'E'), TwicePureDoubleChowYaku::create(), true],
+            [TwicePureDoubleChowYaku::create(), true, '123m,123m,123s,123s,EE', null, 'E'],
             // not non-duplicate
-            [new YakuTestData('123m,123m,123m,123m,EE', null, 'E'), TwicePureDoubleChowYaku::create(), false],
+            [TwicePureDoubleChowYaku::create(), false, '123m,123m,123m,123m,EE', null, 'E'],
             // not isConcealed
-            [new YakuTestData('123m,123m,EE', '123s,123s', 'E'), TwicePureDoubleChowYaku::create(), false],
+            [TwicePureDoubleChowYaku::create(), false, '123m,123m,EE', '123s,123s', 'E'],
 
             // RedDoraYaku is tested alone
             // RiichiYaku is tested alone
             // RobbingAKongYaku is tested alone
 
             // test SeatWindYaku
-            [new YakuTestData('123m,44m,55m,66m,55s', 'SSS', '5s', 'E', 'S'), SeatWindYaku::create(), true],
+            [SeatWindYaku::create(), true, '123m,44m,55m,66m,55s', 'SSS', '5s', 'E', 'S'],
             // not seatWind
-            [new YakuTestData('123m,44m,55m,66m,55s', 'SSS', '5s', 'E', 'E'), SeatWindYaku::create(), false],
+            [SeatWindYaku::create(), false, '123m,44m,55m,66m,55s', 'SSS', '5s', 'E', 'E'],
 
             // UraDoraYaku is tested alone
 
             // test AllPungsYaku
-            [new YakuTestData('111m,999m,111s,EE', "999s"), AllPungsYaku::create(), true],
-            [new YakuTestData('111m,999m,111s,EE', "9999s"), AllPungsYaku::create(), true],
+            [AllPungsYaku::create(), true, '111m,999m,111s,EE', "999s"],
+            [AllPungsYaku::create(), true, '111m,999m,111s,EE', "9999s"],
             // not 4+1
-            [new YakuTestData('111m,99m,11s,22s,EE', "999s"), AllPungsYaku::create(), false],
+            [AllPungsYaku::create(), false, '111m,99m,11s,22s,EE', "999s"],
             // not all triples
-            [new YakuTestData('123m,999m,111s,EE', "999s"), AllPungsYaku::create(), false],
+            [AllPungsYaku::create(), false, '123m,999m,111s,EE', "999s"],
 
             // test AllTerminalsAndHonoursYaku
-            [new YakuTestData('111m,999m,111s,EE', "999s"), AllTerminalsAndHonoursYaku::create(), true],
-            [new YakuTestData('111m,999m,111s,11p', "999s"), AllTerminalsAndHonoursYaku::create(), true],
+            [AllTerminalsAndHonoursYaku::create(), true, '111m,999m,111s,EE', "999s"],
+            [AllTerminalsAndHonoursYaku::create(), true, '111m,999m,111s,11p', "999s"],
             // not all terminals
-            [new YakuTestData('123m,999m,111s,EE', "999s"), AllTerminalsAndHonoursYaku::create(), false],
+            [AllTerminalsAndHonoursYaku::create(), false, '123m,999m,111s,EE', "999s"],
             // not 4+1
-            [new YakuTestData('11m,99m,11p,99p,11s,99s,EE'), AllTerminalsAndHonoursYaku::create(), false],
+            [AllTerminalsAndHonoursYaku::create(), false, '11m,99m,11p,99p,11s,99s,EE'],
 
             // DoubleRiichi is tested alone
 
             // test LittleThreeDragonsYaku
-            [new YakuTestData('CCC,PPP,FF,11m,22m,33m'), LittleThreeDragonsYaku::create(), true],
-            [new YakuTestData('CCC,FF,11m,22m,33m', 'PPPP'), LittleThreeDragonsYaku::create(), true],
+            [LittleThreeDragonsYaku::create(), true, 'CCC,PPP,FF,11m,22m,33m'],
+            [LittleThreeDragonsYaku::create(), true, 'CCC,FF,11m,22m,33m', 'PPPP'],
             // not 2 pung + 1 pair
-            [new YakuTestData('CCC,PPP,FFF,11m', '789m'), LittleThreeDragonsYaku::create(), false],
+            [LittleThreeDragonsYaku::create(), false, 'CCC,PPP,FFF,11m', '789m'],
 
             // test MixedTripleChowYaku
-            [new YakuTestData('234m,234p,EEE,NN', '234s'), MixedTripleChowYaku::create(), true],
+            [MixedTripleChowYaku::create(), true, '234m,234p,EEE,NN', '234s'],
             // not all three color
-            [new YakuTestData('234m,234m,EEE,NN', '234s'), MixedTripleChowYaku::create(), false],
+            [MixedTripleChowYaku::create(), false, '234m,234m,EEE,NN', '234s'],
 
             // test OutsideHandYaku
-            [new YakuTestData('123m,789m,123s,EE', '789s'), OutsideHandYaku::create(), true],
-            [new YakuTestData('123m,789m,123s,11s', '789s'), OutsideHandYaku::create(), true],
+            [OutsideHandYaku::create(), true, '123m,789m,123s,EE', '789s'],
+            [OutsideHandYaku::create(), true, '123m,789m,123s,11s', '789s'],
             // not any run
-            [new YakuTestData('111m,999m,111p,11s', '9999p'), OutsideHandYaku::create(), false],
+            [OutsideHandYaku::create(), false, '111m,999m,111p,11s', '9999p'],
             // not all outside
-            [new YakuTestData('123m,789m,123s,11s', '678s'), OutsideHandYaku::create(), false],
+            [OutsideHandYaku::create(), false, '123m,789m,123s,11s', '678s'],
             // not 4+1
-            [new YakuTestData('11m,99m,11p,99p,11s,99s,EE'), OutsideHandYaku::create(), false],
+            [OutsideHandYaku::create(), false, '11m,99m,11p,99p,11s,99s,EE'],
 
             // test TerminalsInAllSetsYaku
-            [new YakuTestData('123m,789m,123s,11s', '789s'), TerminalsInAllSetsYaku::create(), true],
+            [TerminalsInAllSetsYaku::create(), true, '123m,789m,123s,11s', '789s'],
             // not any run
-            [new YakuTestData('111m,999m,111p,11s', '999p'), TerminalsInAllSetsYaku::create(), false],
+            [TerminalsInAllSetsYaku::create(), false, '111m,999m,111p,11s', '999p'],
             // not all outside
-            [new YakuTestData('123m,789m,123s,11s', '678s'), TerminalsInAllSetsYaku::create(), false],
+            [TerminalsInAllSetsYaku::create(), false, '123m,789m,123s,11s', '678s'],
             // not pure outside
-            [new YakuTestData('123m,789m,123s,EE', '789s'), TerminalsInAllSetsYaku::create(), false],
+            [TerminalsInAllSetsYaku::create(), false, '123m,789m,123s,EE', '789s'],
             // not 4+1
-            [new YakuTestData('11m,99m,11p,99p,11s,99s,11s'), TerminalsInAllSetsYaku::create(), false],
+            [TerminalsInAllSetsYaku::create(), false, '11m,99m,11p,99p,11s,99s,11s'],
 
             // test PureStraightYaku
-            [new YakuTestData('123m,456m,111s,EE', '789m'), PureStraightYaku::create(), true],
+            [PureStraightYaku::create(), true, '123m,456m,111s,EE', '789m'],
             // not full straight
-            [new YakuTestData('123m,456m,111s,EE', '789s'), PureStraightYaku::create(), false],
+            [PureStraightYaku::create(), false, '123m,456m,111s,EE', '789s'],
 
             // test SevenPairsYaku
-            [new YakuTestData('11m,22m,33s,44m,55p,EE,CC'), SevenPairsYaku::create(), true],
+            [SevenPairsYaku::create(), true, '11m,22m,33s,44m,55p,EE,CC'],
             // not different pairs
-            [new YakuTestData('11m,22m,33s,44m,55p,EE,EE'), SevenPairsYaku::create(), false],
+            [SevenPairsYaku::create(), false, '11m,22m,33s,44m,55p,EE,EE'],
             // not all pairs
-            [new YakuTestData('11m,222m,333s,55p,EE,CC'), SevenPairsYaku::create(), false],
+            [SevenPairsYaku::create(), false, '11m,222m,333s,55p,EE,CC'],
 
             // test ThreeConcealedPungsYaku
-            [new YakuTestData('111m,222m,444m,123s,EE'), ThreeConcealedPungsYaku::create(), true],
-            [new YakuTestData('111m,222m,123s,EE', '(4444m)'), ThreeConcealedPungsYaku::create(), true],
+            [ThreeConcealedPungsYaku::create(), true, '111m,222m,444m,123s,EE'],
+            [ThreeConcealedPungsYaku::create(), true, '111m,222m,123s,EE', '(4444m)'],
             // not isConcealed
-            [new YakuTestData('111m,222m,123s,EE', '444m'), ThreeConcealedPungsYaku::create(), false],
+            [ThreeConcealedPungsYaku::create(), false, '111m,222m,123s,EE', '444m'],
             // not three
-            [new YakuTestData('111m,234m,456m,444m,EE'), ThreeConcealedPungsYaku::create(), false],
-            [new YakuTestData('111m,222m,333m,444m,EE'), ThreeConcealedPungsYaku::create(), false],
+            [ThreeConcealedPungsYaku::create(), false, '111m,234m,456m,444m,EE'],
+            [ThreeConcealedPungsYaku::create(), false, '111m,222m,333m,444m,EE'],
 
             // test ThreeKongsYaku
-            [new YakuTestData('123s,44s', '1111m,2222m,3333m'), ThreeKongsYaku::create(), true],
-            [new YakuTestData('123s,44s', '1111m,2222m,(3333m)'), ThreeKongsYaku::create(), true],
+            [ThreeKongsYaku::create(), true, '123s,44s', '1111m,2222m,3333m'],
+            [ThreeKongsYaku::create(), true, '123s,44s', '1111m,2222m,(3333m)'],
             // not three
-            [new YakuTestData('123s,44s', '1111m,2222m,333m'), ThreeKongsYaku::create(), false],
-            [new YakuTestData('44s', '1111m,2222m,3333m,4444m'), ThreeKongsYaku::create(), false],
+            [ThreeKongsYaku::create(), false, '123s,44s', '1111m,2222m,333m'],
+            [ThreeKongsYaku::create(), false, '44s', '1111m,2222m,3333m,4444m'],
 
             // test TriplePungYaku
-            [new YakuTestData('333m,333s,NN', '333p,234s'), TriplePungYaku::create(), true],
-            [new YakuTestData('333m,333s,NN', '3333p,234s'), TriplePungYaku::create(), true],
-            [new YakuTestData('333m,333s,NN', '(3333p),234s'), TriplePungYaku::create(), true],
+            [TriplePungYaku::create(), true, '333m,333s,NN', '333p,234s'],
+            [TriplePungYaku::create(), true, '333m,333s,NN', '3333p,234s'],
+            [TriplePungYaku::create(), true, '333m,333s,NN', '(3333p),234s'],
             // not same number
-            [new YakuTestData('333m,444s,NN', '3333p,234s'), TriplePungYaku::create(), false],
+            [TriplePungYaku::create(), false, '333m,444s,NN', '3333p,234s'],
             // not same number, with honour
-            [new YakuTestData('333m,444s,NN', '3333p,CCCC'), TriplePungYaku::create(), false],
+            [TriplePungYaku::create(), false, '333m,444s,NN', '3333p,CCCC'],
             // not different color(though not practical)
-            [new YakuTestData('333m,333m,NN', '3333p,234s'), TriplePungYaku::create(), false],
+            [TriplePungYaku::create(), false, '333m,333m,NN', '3333p,234s'],
 
             // test HalfFlushYaku
-            [new YakuTestData('123m,33m,44m,55m,EEE,SS'), HalfFlushYaku::create(), true],
+            [HalfFlushYaku::create(), true, '123m,33m,44m,55m,EEE,SS'],
             // no honour
-            [new YakuTestData('123m,33m,44m,55m,123m,11m'), HalfFlushYaku::create(), false],
+            [HalfFlushYaku::create(), false, '123m,33m,44m,55m,123m,11m'],
             // no suit types
-            [new YakuTestData('EEE,SSS,WWW,NNN,CC'), HalfFlushYaku::create(), false],
+            [HalfFlushYaku::create(), false, 'EEE,SSS,WWW,NNN,CC'],
             // not same Suit types
-            [new YakuTestData('123m,33m,44m,55m,123m,11s'), HalfFlushYaku::create(), false],
+            [HalfFlushYaku::create(), false, '123m,33m,44m,55m,123m,11s'],
 
             // test FullFlushYaku
-            [new YakuTestData('123m,33m,44m,55m,123m,11m'), FullFlushYaku::create(), true],
+            [FullFlushYaku::create(), true, '123m,33m,44m,55m,123m,11m'],
             // not all suit
-            [new YakuTestData('123m,33m,44m,55m,EEE,SS'), FullFlushYaku::create(), false],
+            [FullFlushYaku::create(), false, '123m,33m,44m,55m,EEE,SS'],
             // no suit types
-            [new YakuTestData('EEE,SSS,WWW,NNN,CC'), FullFlushYaku::create(), false],
+            [FullFlushYaku::create(), false, 'EEE,SSS,WWW,NNN,CC'],
             // not same Suit types
-            [new YakuTestData('123m,33m,44m,55m,123m,11s'), FullFlushYaku::create(), false],
+            [FullFlushYaku::create(), false, '123m,33m,44m,55m,123m,11s'],
 
             // TerminalsInAllSetsYaku is tested following OutsideHandYaku
             // TwicePureDoubleChowYaku is tested following PureDoubleChowYaku
@@ -256,105 +290,105 @@ class YakuTest extends \SakiTestCase {
             // FullFlushYaku is tested following HalfFlushYaku
 
             // test AllGreenYaku
-            [new YakuTestData('234s,234s,FF', '666s,888s'), AllGreenYaku::create(), true],
-            [new YakuTestData('222s,333s,444s,666s,88s'), AllGreenYaku::create(), true],
+            [AllGreenYaku::create(), true, '234s,234s,FF', '666s,888s'],
+            [AllGreenYaku::create(), true, '222s,333s,444s,666s,88s'],
             // not 41 series
-            [new YakuTestData('22s,22s,33s,44s,66s,88s,FF'), AllGreenYaku::create(), false],
+            [AllGreenYaku::create(), false, '22s,22s,33s,44s,66s,88s,FF'],
             // not all green tiles
-            [new YakuTestData('222s,333s,FF', '666s,111s'), AllGreenYaku::create(), false],
+            [AllGreenYaku::create(), false, '222s,333s,FF', '666s,111s'],
 
             // test AllHonoursYaku
-            [new YakuTestData('CC', 'EEE,SSS,WWW,NNN'), AllHonoursYaku::create(), true],
-            [new YakuTestData('EEE,SSS,WWW,NNN,CC'), AllHonoursYaku::create(), true],
-            [new YakuTestData('EE,SS,WW,NN,CC,PP,FF'), AllHonoursYaku::create(), true],
+            [AllHonoursYaku::create(), true, 'CC', 'EEE,SSS,WWW,NNN'],
+            [AllHonoursYaku::create(), true, 'EEE,SSS,WWW,NNN,CC'],
+            [AllHonoursYaku::create(), true, 'EE,SS,WW,NN,CC,PP,FF'],
             // not all honours
-            [new YakuTestData('EEE,SSS,WWW,NNN,11s'), AllHonoursYaku::create(), false],
+            [AllHonoursYaku::create(), false, 'EEE,SSS,WWW,NNN,11s'],
 
             // test AllTerminalsYaku
-            [new YakuTestData('111m,999m,11s', '111p,999p'), AllTerminalsYaku::create(), true],
+            [AllTerminalsYaku::create(), true, '111m,999m,11s', '111p,999p'],
             // not 41 series
-            [new YakuTestData('11m,11m,99m,11p,99p,11s,99s'), AllTerminalsYaku::create(), false],
+            [AllTerminalsYaku::create(), false, '11m,11m,99m,11p,99p,11s,99s'],
             // not all terminals
-            [new YakuTestData('EEE,999m,11s', '111p,999p'), AllTerminalsYaku::create(), false],
+            [AllTerminalsYaku::create(), false, 'EEE,999m,11s', '111p,999p'],
 
             // test BigFourWindsYaku
-            [new YakuTestData('EEE,SSS,WWW,11s', 'NNN'), BigFourWindsYaku::create(), true],
-            [new YakuTestData('EEE,SSS,WWW,11s', 'NNNN'), BigFourWindsYaku::create(), true],
+            [BigFourWindsYaku::create(), true, 'EEE,SSS,WWW,11s', 'NNN'],
+            [BigFourWindsYaku::create(), true, 'EEE,SSS,WWW,11s', 'NNNN'],
             // not 4 winds
-            [new YakuTestData('EEE,SSS,WW', 'NNN,123s'), BigFourWindsYaku::create(), false],
+            [BigFourWindsYaku::create(), false, 'EEE,SSS,WW', 'NNN,123s'],
 
             // test BigThreeDragonsYaku
-            [new YakuTestData('CCC,PPP,123s,11s', 'FFF'), BigThreeDragonsYaku::create(), true],
-            [new YakuTestData('CCC,PPP,123s,11s', 'FFFF'), BigThreeDragonsYaku::create(), true],
-            [new YakuTestData('CCC,PPP,123s,11s', '(FFFF)'), BigThreeDragonsYaku::create(), true],
+            [BigThreeDragonsYaku::create(), true, 'CCC,PPP,123s,11s', 'FFF'],
+            [BigThreeDragonsYaku::create(), true, 'CCC,PPP,123s,11s', 'FFFF'],
+            [BigThreeDragonsYaku::create(), true, 'CCC,PPP,123s,11s', '(FFFF)'],
             // not 3 tripleOrQuads
-            [new YakuTestData('CC,PPP,123s,EEE', 'FFF'), BigThreeDragonsYaku::create(), false],
+            [BigThreeDragonsYaku::create(), false, 'CC,PPP,123s,EEE', 'FFF'],
 
             // BlessingOfEarthYaku is tested alone
             // BlessingOfHeavenYaku is tested alone
             // BlessingOfManYaku is tested alone
 
             // test FourConcealedPungsYaku
-            [new YakuTestData('111s,222s,333s,444s,55s'), FourConcealedPungsYaku::create(), true],
-            [new YakuTestData('111s,222s,333s,55s', '(4444s)'), FourConcealedPungsYaku::create(), true],
+            [FourConcealedPungsYaku::create(), true, '111s,222s,333s,444s,55s'],
+            [FourConcealedPungsYaku::create(), true, '111s,222s,333s,55s', '(4444s)'],
             // not 4 isConcealed
-            [new YakuTestData('111s,222s,333s,55s', '444s'), FourConcealedPungsYaku::create(), false],
+            [FourConcealedPungsYaku::create(), false, '111s,222s,333s,55s', '444s'],
             // not 4
-            [new YakuTestData('111s,222s,333s,456s,55s'), FourConcealedPungsYaku::create(), false],
+            [FourConcealedPungsYaku::create(), false, '111s,222s,333s,456s,55s'],
 
             // test FourKongsYaku
-            [new YakuTestData('11s', '2222s,3333s,4444s,5555s'), FourKongsYaku::create(), true],
-            [new YakuTestData('11s', '2222s,3333s,4444s,(5555s)'), FourKongsYaku::create(), true],
+            [FourKongsYaku::create(), true, '11s', '2222s,3333s,4444s,5555s'],
+            [FourKongsYaku::create(), true, '11s', '2222s,3333s,4444s,(5555s)'],
             // not 4 quads
-            [new YakuTestData('11s', '2222s,3333s,4444s,555s'), FourKongsYaku::create(), false],
+            [FourKongsYaku::create(), false, '11s', '2222s,3333s,4444s,555s'],
 
             // test PureFourConcealedPungsYaku
-            [new YakuTestData('111s,222s,333s,444s,55s', null, '5s'), PureFourConcealedPungsYaku::create(), true],
-            [new YakuTestData('111s,222s,333s,55s', '(4444s)', '5s'), PureFourConcealedPungsYaku::create(), true],
+            [PureFourConcealedPungsYaku::create(), true, '111s,222s,333s,444s,55s', null, '5s'],
+            [PureFourConcealedPungsYaku::create(), true, '111s,222s,333s,55s', '(4444s)', '5s'],
             // not one pair waiting
-            [new YakuTestData('111s,222s,333s,444s,55s', null, '1s'), PureFourConcealedPungsYaku::create(), false],
-            [new YakuTestData('111s,222s,333s,55s', '(4444s)', '1s'), PureFourConcealedPungsYaku::create(), false],
+            [PureFourConcealedPungsYaku::create(), false, '111s,222s,333s,444s,55s', null, '1s'],
+            [PureFourConcealedPungsYaku::create(), false, '111s,222s,333s,55s', '(4444s)', '1s'],
             // not 4 isConcealed
-            [new YakuTestData('111s,222s,333s,55s', '444s', '5s'), PureFourConcealedPungsYaku::create(), false],
+            [PureFourConcealedPungsYaku::create(), false, '111s,222s,333s,55s', '444s', '5s'],
             // not 4
-            [new YakuTestData('111s,222s,333s,456s,55s', null, '5s'), PureFourConcealedPungsYaku::create(), false],
+            [PureFourConcealedPungsYaku::create(), false, '111s,222s,333s,456s,55s', null, '5s'],
 
             // test LittleFourWindsYaku
-            [new YakuTestData('EEE,SSS,WW', 'NNN,123s'), LittleFourWindsYaku::create(), true],
-            [new YakuTestData('EEE,SSS,WW', 'NNNN,123s'), LittleFourWindsYaku::create(), true],
+            [LittleFourWindsYaku::create(), true, 'EEE,SSS,WW', 'NNN,123s'],
+            [LittleFourWindsYaku::create(), true, 'EEE,SSS,WW', 'NNNN,123s'],
             // not 3+1 winds
-            [new YakuTestData('EEE,SSS,WWW,11s', 'NNN'), LittleFourWindsYaku::create(), false],
+            [LittleFourWindsYaku::create(), false, 'EEE,SSS,WWW,11s', 'NNN'],
 
             // test NineGatesYaku
-            [new YakuTestData('111s,123s,456s,789s,99s', null, '1s'), NineGatesYaku::create(), true],
-            [new YakuTestData('111s,22s,345s,678s,999s', null, '2s'), NineGatesYaku::create(), true],
-            [new YakuTestData('111s,22s,345s,678s,999s', null, '3s'), NineGatesYaku::create(), true],
+            [NineGatesYaku::create(), true, '111s,123s,456s,789s,99s', null, '1s'],
+            [NineGatesYaku::create(), true, '111s,22s,345s,678s,999s', null, '2s'],
+            [NineGatesYaku::create(), true, '111s,22s,345s,678s,999s', null, '3s'],
             // not concealed
-            [new YakuTestData('111s,22s,345s,678s', '999s'), NineGatesYaku::create(), false],
+            [NineGatesYaku::create(), false, '111s,22s,345s,678s', '999s'],
             // not all suit
-            [new YakuTestData('111s,22s,345s,678s,EEE'), NineGatesYaku::create(), false],
+            [NineGatesYaku::create(), false, '111s,22s,345s,678s,EEE'],
             // not same color suit
-            [new YakuTestData('111s,22s,345s,678s,999m'), NineGatesYaku::create(), false],
+            [NineGatesYaku::create(), false, '111s,22s,345s,678s,999m'],
 
             // test PureNineGatesYaku
-            [new YakuTestData('111s,123s,456s,789s,99s', null, '1s'), PureNineGatesYaku::create(), true],
-            [new YakuTestData('111s,22s,345s,678s,999s', null, '2s'), PureNineGatesYaku::create(), true],
+            [PureNineGatesYaku::create(), true, '111s,123s,456s,789s,99s', null, '1s'],
+            [PureNineGatesYaku::create(), true, '111s,22s,345s,678s,999s', null, '2s'],
             // not pure
-            [new YakuTestData('111s,22s,345s,678s,999s', null, '3s'), PureNineGatesYaku::create(), false],
+            [PureNineGatesYaku::create(), false, '111s,22s,345s,678s,999s', null, '3s'],
             // not concealed
-            [new YakuTestData('111s,22s,345s,678s', '999s'), PureNineGatesYaku::create(), false],
+            [PureNineGatesYaku::create(), false, '111s,22s,345s,678s', '999s'],
             // not all suit
-            [new YakuTestData('111s,22s,345s,678s,EEE'), PureNineGatesYaku::create(), false],
+            [PureNineGatesYaku::create(), false, '111s,22s,345s,678s,EEE'],
             // not same color suit
-            [new YakuTestData('111s,22s,345s,678s,999m'), PureNineGatesYaku::create(), false],
+            [PureNineGatesYaku::create(), false, '111s,22s,345s,678s,999m'],
 
             // test ThirteenOrphansYaku
-            [new YakuTestData('119m19p19sESWNCPF', null, '1m'), ThirteenOrphansYaku::create(), true],
-            [new YakuTestData('119m19p19sESWNCPF', null, '9m'), ThirteenOrphansYaku::create(), true],
+            [ThirteenOrphansYaku::create(), true, '119m19p19sESWNCPF', null, '1m'],
+            [ThirteenOrphansYaku::create(), true, '119m19p19sESWNCPF', null, '9m'],
 
             // test PureThirteenOrphansYaku
-            [new YakuTestData('119m19p19sESWNCPF', null, '1m'), PureThirteenOrphansYaku::create(), true],
-            [new YakuTestData('119m19p19sESWNCPF', null, '9m'), PureThirteenOrphansYaku::create(), false],
+            [PureThirteenOrphansYaku::create(), true, '119m19p19sESWNCPF', null, '1m'],
+            [PureThirteenOrphansYaku::create(), false, '119m19p19sESWNCPF', null, '9m'],
         ];
     }
 
@@ -501,76 +535,5 @@ class YakuTest extends \SakiTestCase {
 
         // failed if declared
         // failed if not first turn
-    }
-}
-
-// todo remove
-class YakuTestData {
-    private static $round;
-
-    static function getInitRound(PrevailingStatus $debugResetData = null) {
-        self::$round = self::$round ?? new Round();
-        self::$round->debugInit($debugResetData ?? PrevailingStatus::createFirst());
-        return self::$round;
-    }
-
-    private $handMeldList;
-    private $melded;
-    private $targetTile;
-    private $currentSeatWind;
-    private $actorSeatWind;
-    private $prevailingStatus;
-
-    private $winSubTarget;
-
-    function __construct(string $handMeldListString, string $meldedString = null, string $targetTileString = null,
-                         string $currentSeatWindString = null, string $actorString = null, string $prevailingWindString = null) {
-
-        $handMeldList = MeldList::fromString($handMeldListString)->toConcealed(true);
-        $melded = MeldList::fromString($meldedString !== null ? $meldedString : "");
-        $targetTile = $targetTileString !== null ? Tile::fromString($targetTileString) : $handMeldList[0][0];
-
-        $currentSeatWind = SeatWind::fromString($currentSeatWindString ?? 'E');
-        $actorSeatWind = $actorString !== null ? SeatWind::fromString($actorString) : $currentSeatWind;
-
-        $prevailingStatus = new PrevailingStatus(PrevailingWind::fromString($prevailingWindString ?? 'E'), 1, 0);
-
-        $this->handMeldList = $handMeldList;
-        $this->melded = $melded;
-        $this->targetTile = $targetTile;
-
-        $this->currentSeatWind = $currentSeatWind;
-        $this->actorSeatWind = $actorSeatWind;
-
-        $this->prevailingStatus = $prevailingStatus;
-    }
-
-    function __toString() {
-        return sprintf('handMeldList[%s], declaredMeldList[%s], currentSeatWind[%s], targetSeatWind[%s]'
-            , $this->handMeldList, $this->melded, $this->currentSeatWind, $this->actorSeatWind);
-    }
-
-    function getWinSubTarget() {
-        $round = self::getInitRound($this->prevailingStatus);
-
-        // to phase
-        $currentSeatWind = $this->currentSeatWind;
-        $actorSeatWind = $this->actorSeatWind;
-        $isPrivate = $currentSeatWind == $actorSeatWind;
-        $skipToCommand = sprintf('skipTo %s %s', $currentSeatWind, $isPrivate);
-        $round->process($skipToCommand);
-
-        // set hand
-        $handMeldList = $this->handMeldList;
-        $melded = $this->melded;
-        $targetTile = $this->targetTile;
-
-        $area = $round->getArea($actorSeatWind);
-        $public = $handMeldList->toTileList()->remove($targetTile);
-        $round->getTargetHolder()->replaceTargetTile($targetTile);
-        $hand = $area->getHand()->toHand($public, $melded);
-        $area->setHand($hand);
-
-        return new WinSubTarget($handMeldList, $actorSeatWind, $round);
     }
 }

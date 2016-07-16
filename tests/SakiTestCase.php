@@ -23,7 +23,7 @@ class SakiTestCase extends \PHPUnit_Framework_TestCase {
         parent::assertEquals($expected, $actual, $message, $delta, $maxDepth, $canonicalize, $ignoreCase);
     }
 
-    public static function assertContains($needle, $haystack, $message = '', $ignoreCase = false, $checkForObjectIdentity = true, $checkForNonObjectIdentity = false) {
+    static function assertContains($needle, $haystack, $message = '', $ignoreCase = false, $checkForObjectIdentity = true, $checkForNonObjectIdentity = false) {
         if ($message === '') {
             $message = sprintf(
                 "array[%s]\nneedle[%s]\n",
@@ -36,6 +36,19 @@ class SakiTestCase extends \PHPUnit_Framework_TestCase {
     //endregion
 
     //region Utils
+    /**
+     * @param bool $expected
+     * @param $actual
+     * @param string $message
+     */
+    static function assertBool(bool $expected, $actual, $message = '') {
+        if ($expected) {
+            static::assertTrue($actual, $message);
+        } else {
+            static::assertFalse($actual, $message);
+        }
+    }
+    
     /**
      * @param string $expected
      * @param ArrayList $arrayList
@@ -56,12 +69,12 @@ class SakiTestCase extends \PHPUnit_Framework_TestCase {
     private static $round;
 
     /**
-     * @param PrevailingStatus|null $debugResetData
+     * @param PrevailingStatus|null $prevailingStatus
      * @return Round
      */
-    static function getInitRound(PrevailingStatus $debugResetData = null) {
+    static function getInitRound(PrevailingStatus $prevailingStatus = null) {
         self::$round = self::$round ?? new Round();
-        self::$round->debugInit($debugResetData ?? PrevailingStatus::createFirst());
+        self::$round->debugInit($prevailingStatus ?? PrevailingStatus::createFirst());
         return self::$round;
     }
 

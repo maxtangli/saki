@@ -909,7 +909,7 @@ rush 78 web demo 8.8h
 - [x] Round.toJson 0.5h
 - [x] html view demo 5.9h
 
-rush 79 refactor and complete yaku tests
+rush 79 refactor and complete yaku tests 4.8h
 
 - [x] refactor DoraYaku tests 0.5h
 - [x] refactor RiichiYaku tests 0.4h
@@ -922,7 +922,7 @@ rush 79 refactor and complete yaku tests
 - [x] refactor YakuTestData 0.4h
 - [x] fix pure yaku tests 0.4h
 - [x] organize yaku tests 0.4h
-- [ ] remove YakuTestData
+- [x] remove YakuTestData 0.5h
 
 rush 80 refactor TargetHolder
 
