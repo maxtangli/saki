@@ -53,12 +53,15 @@ class Hand implements Immutable {
      * @return Hand
      */
     function toHand(TileList $public = null, MeldList $melded = null, Tile $targetTile = null) {
-        // todo allow public-phase target tile set
-        $validTargetTile = $targetTile === null ||
-            $this->getTarget()->getType()->isOwnByCreator();
+        $validTargetTile = $targetTile === null
+            || $this->getTarget()->getTile() == $targetTile
+            || $this->getTarget()->getType()->isOwnByCreator(); // todo allow public-phase target tile set
         if (!$validTargetTile) {
             throw new \InvalidArgumentException(
-                sprintf('Invalid current $target[%s].', $this->getTarget())
+                sprintf(
+                    'Invalid argument [%s],[%s],[%s] for current $target[%s].',
+                    $public, $melded, $targetTile, $this->getTarget()
+                )
             );
         }
 

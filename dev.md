@@ -919,7 +919,14 @@ rush 79 refactor and complete yaku tests
 
 - [x] add SkipToCommand 0.5h
 
-- [ ] refactor yaku tests 0.2h
+- [x] refactor YakuTestData 0.4h
+- [x] fix pure yaku tests 0.4h
+- [x] organize yaku tests 0.4h
+- [ ] remove YakuTestData
+
+rush 80 refactor TargetHolder
+
+
 
 rush optimize WaitingAnalyzer: step2
 

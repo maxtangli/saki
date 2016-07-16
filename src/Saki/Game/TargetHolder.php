@@ -48,14 +48,9 @@ class TargetHolder {
     }
 
     /**
-     * @param SeatWind $seatWind
-     * @param Tile $newTargetTile
+     * @param Tile $tile
      */
-    function replaceTarget(SeatWind $seatWind, Tile $newTargetTile) {
-        $currentTarget = $this->getTarget($seatWind);
-        if (!$currentTarget->exist()) {
-            throw new \InvalidArgumentException();
-        }
-        $this->target = $this->target->toSetValue($newTargetTile);
+    function replaceTargetTile(Tile $tile) {
+        $this->target = $this->target->toSetValue($tile);
     }
 }

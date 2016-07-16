@@ -274,7 +274,9 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
         }
 
         if (!empty($targetValues)) {
-            throw new \InvalidArgumentException();
+            throw new \InvalidArgumentException(
+                sprintf('Failed to find $targetValues[%s]', implode($targetValues))
+            );
         }
 
         ksort($foundIndexes);

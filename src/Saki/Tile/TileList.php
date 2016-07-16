@@ -287,7 +287,7 @@ class TileList extends ArrayList {
 
         $valid = !$isPure || $targetTile;
         if (!$valid) {
-            throw new \InvalidArgumentException();
+            throw new \InvalidArgumentException('Require targetTile for pure case.');
         }
 
         if (!$this->isFlush(true)) {
@@ -301,7 +301,7 @@ class TileList extends ArrayList {
         if (!$isPure) {
             return $this->valueExist($requiredPartTileList->toArray());
         } else {
-            return $this->getCopy()->remove($targetTile)->valueExist($requiredPartTileList);
+            return $this->getCopy()->remove($targetTile)->valueExist($requiredPartTileList->toArray());
         }
     }
 

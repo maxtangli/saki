@@ -255,7 +255,7 @@ class MeldList extends ArrayList {
 
         $valid = !$requirePairWaiting || $targetTile !== null;
         if (!$valid) {
-            throw new \InvalidArgumentException();
+            throw new \InvalidArgumentException('Require targetTile for pure case.');
         }
 
         if ($this->count() != 1) {

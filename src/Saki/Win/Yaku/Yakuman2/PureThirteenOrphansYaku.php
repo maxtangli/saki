@@ -22,7 +22,7 @@ class PureThirteenOrphansYaku extends Yaku {
     }
 
     protected function matchOther(WinSubTarget $subTarget) {
-        return $subTarget->getAllMeldList()->isThirteenOrphan(true);
+        return $subTarget->getAllMeldList()->isThirteenOrphan(true, $subTarget->getTileOfTargetTile());
     }
 
     function getExcludedYakus() {
