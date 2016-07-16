@@ -69,7 +69,7 @@ class TileTest extends \SakiTestCase {
     /**
      * @dataProvider nextTileProvider
      */
-    function testNextTile($tileString, $offset, $nextTileString) {
+    function testNextTile(string $tileString, int $offset, string $nextTileString) {
         $tile = Tile::fromString($tileString);
         $nextTile = Tile::fromString($nextTileString);
         $result = $tile->getNextTile($offset);

@@ -4,7 +4,6 @@ namespace Saki\Tile;
 use Saki\Util\ArrayList;
 
 /**
- * A sequence of Tile.
  * @package Saki\Tile
  */
 class TileList extends ArrayList {

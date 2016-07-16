@@ -58,6 +58,34 @@ use Saki\Win\Yaku\Yakuman2\PureNineGatesYaku;
 use Saki\Win\Yaku\Yakuman2\PureThirteenOrphansYaku;
 
 class YakuTest extends \SakiTestCase {
+    function assertYakuList(string $actor, array $expectedContainYakus = null, int $expectedFan = null,
+                            array $expectedNotContainYakus = null) {
+        $round = $this->getCurrentRound();
+        $winReport = $round->getWinReport(SeatWind::fromString($actor));
+        $yakuItemList = $winReport->getYakuItemList();
+        $yakus = $yakuItemList->toYakuList()->toArray();
+
+        if ($expectedContainYakus !== null) {
+            foreach ($expectedContainYakus as $expectedContainYaku) {
+                $this->assertContains($expectedContainYaku, $yakus);
+            }
+        }
+
+        if ($expectedFan !== null) {
+            $this->assertEquals($expectedFan, $yakuItemList->getTotalFan());
+        }
+
+        if ($expectedNotContainYakus !== null) {
+            foreach ($expectedNotContainYakus as $expectedNotContainYaku) {
+                $this->assertNotContains($expectedNotContainYaku, $yakus);
+            }
+        }
+    }
+
+    function assertYakuListEmpty(string $actor) {
+        $this->assertYakuList($actor, null, 0);
+    }
+
     /**
      * @dataProvider yakuProvider
      * @param Yaku $yaku
@@ -98,7 +126,7 @@ class YakuTest extends \SakiTestCase {
         $area->setHand($hand);
 
         // assert
-        $winSubTarget = new WinSubTarget($handMeldList, $actorSeatWind, $round);
+        $winSubTarget = new WinSubTarget($round, $actorSeatWind, $handMeldList);
         $this->assertBool($expectedExist, $yaku->existIn($winSubTarget));
     }
 

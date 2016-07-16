@@ -177,6 +177,10 @@ class SakiTestCase extends \PHPUnit_Framework_TestCase {
         $this->assertPhaseImpl(Phase::PUBLIC_PHASE, $currentSeatWind);
     }
 
+    function assertOver() {
+        $this->assertPhaseImpl(Phase::OVER_PHASE);
+    }
+    
     private function assertPhaseImpl(int $phaseValue, string $currentSeatWind = null) {
         $round = $this->getCurrentRound();
 
@@ -188,56 +192,11 @@ class SakiTestCase extends \PHPUnit_Framework_TestCase {
             $this->assertEquals(SeatWind::fromString($currentSeatWind), $currentSeatWind);
         }
     }
-    //endregion
 
-    //region Yaku
-    function assertYakuList(string $actor, array $expectedContainYakus = null, int $expectedFan = null,
-                            array $expectedNotContainYakus = null) {
-        $round = $this->getCurrentRound();
-        $winReport = $round->getWinReport(SeatWind::fromString($actor));
-        $yakuItemList = $winReport->getYakuItemList();
-        $yakus = $yakuItemList->toYakuList()->toArray();
-
-        if ($expectedContainYakus !== null) {
-            foreach ($expectedContainYakus as $expectedContainYaku) {
-                $this->assertContains($expectedContainYaku, $yakus);
-            }
-        }
-
-        if ($expectedFan !== null) {
-            $this->assertEquals($expectedFan, $yakuItemList->getTotalFan());
-        }
-
-        if ($expectedNotContainYakus !== null) {
-            foreach ($expectedNotContainYakus as $expectedNotContainYaku) {
-                $this->assertNotContains($expectedNotContainYaku, $yakus);
-            }
-        }
-    }
-
-    function assertYakuListEmpty(string $actor) {
-        $this->assertYakuList($actor, null, 0);
-    }
-    //endregion
-    
-    //region Result
     function assertResultType(int $resultTypeValue) {
         $expected = ResultType::create($resultTypeValue);
         $actual = $this->getCurrentRound()->getPhaseState()->getResult()->getResultType();
         $this->assertEquals($expected, $actual);
-    }
-
-    function assertPointItem(string $seatWindString, int $point, int $rank, PointItem $pointItem) {
-        $this->assertEquals(SeatWind::fromString($seatWindString), $pointItem->getSeatWind());
-        $this->assertEquals($point, $pointItem->getPoint());
-        $this->assertEquals($rank, $pointItem->getRank());
-    }
-
-    function assertPointList(array $expectItems, PointList $pointList) {
-        foreach ($expectItems as $i => list($seatWindString, $point, $rank)) {
-            $pointItem = $pointList[$i];
-            $this->assertPointItem($seatWindString, $point, $rank, $pointItem);
-        }
     }
     //endregion
 }

@@ -3,41 +3,43 @@
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 use Saki\Tile\TileType;
+use Saki\Util\Utils;
 
 class TileListTest extends \SakiTestCase {
     /**
      * @dataProvider validStringProvider
      */
-    function testValidString($s, $expected) {
-        $this->assertSame($expected, TileList::validString($s), "\$s[$s]");
+    function testValidString(bool $expected, string $tileList) {
+        $this->assertBool($expected, TileList::validString($tileList));
     }
 
     function validStringProvider() {
         return [
-            ['1m', true],
-            ['11m', true],
-            ['E11mE', true],
-            ['11sE12s123123sESWNCN', true],
-            ['', true],
-            ['1m1', false],
-            ['0m', true],
+            [true, '1m'],
+            [true, '11m'],
+            [true, 'E11mE'],
+            [true, '11sE12s123123sESWNCN'],
+            [true, ''],
+            [false, '1m1'],
+            [true, '0m'],
         ];
     }
 
     /**
      * @dataProvider fromStringProvider
      */
-    function testFromString($s, $tiles) {
-        $this->assertEquals($tiles, iterator_to_array(TileList::fromString($s, false)->getIterator()));
+    function testFromString(array $expectedTiles, string $tileList) {
+        $this->assertEquals($expectedTiles,
+            TileList::fromString($tileList)->toArray(Utils::getToStringCallback()));
     }
 
     function fromStringProvider() {
         return [
-            ['1m', [Tile::fromString('1m')]],
-            ['11m', [Tile::fromString('1m'), Tile::fromString('1m')]],
-            ['E11mE', [Tile::fromString('E'), Tile::fromString('1m'), Tile::fromString('1m'), Tile::fromString('E')]],
-            ['0m', [Tile::fromString('0m')]],
-            ['05m', [Tile::fromString('0m'), Tile::fromString('5m')]],
+            [['1m'], '1m'],
+            [['1m', '1m'], '11m'],
+            [['E', '1m', '1m', 'E'], 'E11mE'],
+            [['0m'], '0m'],
+            [['0m', '5m'], '05m'],
         ];
     }
 
@@ -67,19 +69,20 @@ class TileListTest extends \SakiTestCase {
     /**
      * @dataProvider toStringProvider
      */
-    function testToString(array $tileStrings, $expected) {
-        $tiles = array_map(function ($v) {
+    function testToString(string $expected, array $tileStrings) {
+        $toTile = function ($v) {
             return Tile::fromString($v);
-        }, $tileStrings);
-        $h = new \Saki\Tile\TileList($tiles);
-        $this->assertSame($expected, $h->__toString());
+        };
+        $tiles = array_map($toTile, $tileStrings);
+        $tileList = new TileList($tiles);
+        $this->assertSame($expected, $tileList->__toString());
     }
 
     function toStringProvider() {
         return [
-            [['1m', '1p', '1s', 'E', 'C'], '1m1p1sEC'], // keep order
-            [['1m', '1m', '1m',], '111m'], // short write
-            [['1m', '1m', '1m', 'E'], '111mE'],  // short write with Honour
+            ['1m1p1sEC', ['1m', '1p', '1s', 'E', 'C']], // keep order
+            ['111m', ['1m', '1m', '1m',]], // short write
+            ['111mE', ['1m', '1m', '1m', 'E']],  // short write with Honour
         ];
     }
 

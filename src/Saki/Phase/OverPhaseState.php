@@ -3,6 +3,7 @@ namespace Saki\Phase;
 
 use Saki\Game\Phase;
 use Saki\Game\Round;
+use Saki\Win\Point\PointList;
 use Saki\Win\Result\Result;
 use Saki\Win\Result\WinResult;
 
@@ -30,8 +31,7 @@ class OverPhaseState extends PhaseState {
      * @param Round $round
      * @return bool
      */
-    function isGameOver(Round $round) { // todo refactor into simpler ver
-
+    function isGameOver(Round $round) {
         $pointList = $round->getPointHolder()->getPointList();
         $prevailingCurrent = $round->getPrevailing();
 
@@ -44,7 +44,7 @@ class OverPhaseState extends PhaseState {
         }
 
         if ($prevailingCurrent->isSuddenDeathLast()) {
-            return true; // todo right? write detailed rule doc
+            return true;
         } // else isNormalLast or isSuddenDeath
 
         if ($pointList->hasTiledTop()) {
@@ -52,12 +52,11 @@ class OverPhaseState extends PhaseState {
         }
 
         $topItem = $pointList->getSingleTop();
-        $isTopEnoughPoint = $topItem->getPoint() >= 30000; // todo wrap in rule class
+        $isTopEnoughPoint = $topItem->getPoint() >= 30000;
         if (!$isTopEnoughPoint) {
             return false;
         } // else isTopPlayerEnoughPoint
-
-        // todo
+        
         $isDealerTop = $topItem->getSeatWind()->isDealer();
         $result = $round->getPhaseState()->getResult();
         return !($result->isKeepDealer()) || $isDealerTop;
@@ -65,7 +64,7 @@ class OverPhaseState extends PhaseState {
 
     /**
      * @param Round $round
-     * @return \Saki\Win\Point\PointList
+     * @return PointList
      */
     function getFinalScore(Round $round) {
         if (!$this->isGameOver($round)) {

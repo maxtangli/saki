@@ -5,6 +5,10 @@ use Saki\Win\Series\Series;
 use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\Yaku;
 
+/**
+ * 緑一色
+ * @package Saki\Win\Yaku\Yakuman
+ */
 class AllGreenYaku extends Yaku {
     function getConcealedFan() {
         return 13;
@@ -19,6 +23,6 @@ class AllGreenYaku extends Yaku {
     }
 
     protected function matchOther(WinSubTarget $subTarget) {
-        return $subTarget->getPrivateComplete()->isAllGreen();
+        return $subTarget->getComplete()->isAllGreen();
     }
 }

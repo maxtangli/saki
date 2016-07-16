@@ -17,15 +17,20 @@ class Wall {
 
     /**
      * @param TileSet $tileSet
+     * @param bool $shuffle
      */
-    function __construct(TileSet $tileSet) {
+    function __construct(TileSet $tileSet, bool $shuffle = true) {
         $valid = $tileSet->count() === 136;
         if (!$valid) {
             throw new \InvalidArgumentException();
         }
 
         $this->tileSet = $tileSet;
-        $this->reset();
+
+        list($deadWallTileLists, $currentTileList) = $this->generateTwoParts($shuffle);
+        $this->deadWall = new DeadWall($deadWallTileLists);
+        $this->doraFacade = new DoraFacade($this->deadWall);
+        $this->remainTileList = $currentTileList;
     }
 
     /**
@@ -33,14 +38,21 @@ class Wall {
      * @param bool $shuffle
      */
     function reset($shuffle = true) {
+        list($deadWallTileLists, $currentTileList) = $this->generateTwoParts($shuffle);
+        $this->deadWall->reset($deadWallTileLists);
+        $this->remainTileList = $currentTileList;
+    }
+
+    /**
+     * @param bool $shuffle
+     * @return TileList[] list($deadWallTileLists, $currentTileList)
+     */
+    protected function generateTwoParts(bool $shuffle = true) {
         $baseTileList = new TileList($this->getTileSet()->toArray());
         if ($shuffle) {
             $baseTileList->shuffle();
         }
-        list($deadWallTileLists, $currentTileList) = $baseTileList->toTwoPart(14);
-        $this->deadWall = new DeadWall($deadWallTileLists); // todo remove new
-        $this->doraFacade = new DoraFacade($this->deadWall);
-        $this->remainTileList = $currentTileList;
+        return $baseTileList->toTwoPart(14);
     }
 
     /**

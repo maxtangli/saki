@@ -1,32 +1,16 @@
 <?php
 namespace Saki\Win\Yaku\Fan1;
 
-use Saki\Win\WinSubTarget;
-use Saki\Win\Yaku\Yaku;
+use Saki\Game\DoraFacade;
+use Saki\Tile\TileList;
+use Saki\Win\Yaku\AbstractDoraYaku;
 
-class DoraYaku extends Yaku {
-    function getConcealedFan() {
-        return 1;
-    }
-
-    function getNotConcealedFan() {
-        return 1;
-    }
-
-    protected function getExistCountImpl(WinSubTarget $subTarget) {
-        $doraFacade = $subTarget->getDoraFacade();
-        $privateFull = $subTarget->getPrivateComplete();
-        return $doraFacade->getHandDoraFan($privateFull);
-    }
-
-    function getRequiredSeries() {
-        return [];
-    }
-
-    protected function matchOther(WinSubTarget $subTarget) {
-        $doraFacade = $subTarget->getDoraFacade();
-        $privateFull = $subTarget->getPrivateComplete();
-        return $doraFacade->getHandDoraFan($privateFull) > 0;
+/**
+ * ドラ
+ * @package Saki\Win\Yaku\Fan1
+ */
+class DoraYaku extends AbstractDoraYaku {
+    function getDoraFanImpl(DoraFacade $doraFacade, TileList $complete) {
+        return $doraFacade->getHandDoraFan($complete);
     }
 }
-

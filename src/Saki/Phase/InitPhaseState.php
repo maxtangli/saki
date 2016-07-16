@@ -21,7 +21,6 @@ class InitPhaseState extends PhaseState {
     }
 
     function enter(Round $round) {
-        // todo move shuffle logic into here
         $round->deal();
     }
 

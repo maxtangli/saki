@@ -15,7 +15,7 @@ use Saki\Util\Immutable;
  * - target : targetData, fromSelf or fromOther.
  * - private: public + targetData which mustExist. Error if targetData not exist. Used in: win analyze.
  * - melded: meldList.
- * - complete: private + melded.toTileList. Used in: some yaku analyze? todo better way
+ * - complete: private + melded.toTileList. Used in: some yaku analyze?
  *
  * @package Saki\Hand
  */
@@ -55,7 +55,7 @@ class Hand implements Immutable {
     function toHand(TileList $public = null, MeldList $melded = null, Tile $targetTile = null) {
         $validTargetTile = $targetTile === null
             || $this->getTarget()->getTile() == $targetTile
-            || $this->getTarget()->getType()->isOwnByCreator(); // todo allow public-phase target tile set
+            || $this->getTarget()->getType()->isOwnByCreator(); // currently public-target-tile-set is not allowed 
         if (!$validTargetTile) {
             throw new \InvalidArgumentException(
                 sprintf(

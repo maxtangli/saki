@@ -6,7 +6,7 @@ use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\AbstractValueTilesYaku;
 
 /**
- * 役牌　白
+ * 役牌 白
  * @package Saki\Win\Yaku\Fan1
  */
 class DragonPungWhiteYaku extends AbstractValueTilesYaku {

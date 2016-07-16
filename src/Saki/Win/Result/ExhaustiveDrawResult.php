@@ -24,7 +24,7 @@ class ExhaustiveDrawResult extends Result {
      * @param array $waitingMap An array in format: ['E' => $isWaiting ...].
      */
     function __construct(array $waitingMap) {
-        // todo validate
+        // ignore validation
         $this->waitingMap = $waitingMap;
         $playerType = PlayerType::create(count($waitingMap));
         $resultType = ResultType::create(ResultType::EXHAUSTIVE_DRAW);

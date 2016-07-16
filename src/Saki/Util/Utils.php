@@ -81,7 +81,7 @@ class Utils {
      */
     static function getNumberSuffix(int $n) {
         if (!Utils::inRange($n, 1, 4)) {
-            throw new \InvalidArgumentException('todo');
+            throw new \InvalidArgumentException('Not implemented.');
         }
         $m = [
             1 => 'st',

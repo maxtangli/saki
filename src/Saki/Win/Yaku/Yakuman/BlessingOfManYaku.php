@@ -4,6 +4,10 @@ namespace Saki\Win\Yaku\Yakuman;
 use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\Yaku;
 
+/**
+ * 人和
+ * @package Saki\Win\Yaku\Yakuman
+ */
 class BlessingOfManYaku extends Yaku {
     function getConcealedFan() {
         return 13;
@@ -18,6 +22,8 @@ class BlessingOfManYaku extends Yaku {
     }
 
     protected function matchOther(WinSubTarget $subTarget) {
-        return $subTarget->isBlessingOfMan();
+        return $subTarget->getRound()->isFirstTurnAndNoClaim($subTarget->getActor())
+        && $subTarget->getPhase()->isPublic()
+        && $subTarget->getActorArea()->getDiscard()->isEmpty();
     }
 }

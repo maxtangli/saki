@@ -4,6 +4,10 @@ namespace Saki\Win\Yaku\Fan1;
 use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\Yaku;
 
+/**
+ * 立直
+ * @package Saki\Win\Yaku\Fan1
+ */
 class RiichiYaku extends Yaku {
     function getConcealedFan() {
         return 1;

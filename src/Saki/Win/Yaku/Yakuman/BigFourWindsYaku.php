@@ -4,6 +4,10 @@ namespace Saki\Win\Yaku\Yakuman;
 use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\Yaku;
 
+/**
+ * 大四喜
+ * @package Saki\Win\Yaku\Yakuman
+ */
 class BigFourWindsYaku extends Yaku {
     function getConcealedFan() {
         return 13;

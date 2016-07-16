@@ -82,7 +82,7 @@ class MeldTypeTest extends \SakiTestCase {
     /**
      * @dataProvider weakRunProvider
      */
-    function testWeakRun($tileListString, array $waitingTileStrings, $waitingTypeValue) {
+    function testWeakRun(string $tileListString, array $waitingTileStrings, int $waitingTypeValue) {
         $weakRun = WeakRunMeldType::create();
         $tileList = TileList::fromString($tileListString);
         $waitingTileList = (new ArrayList($waitingTileStrings))->select(function ($s) {
@@ -94,7 +94,7 @@ class MeldTypeTest extends \SakiTestCase {
         $this->assertEquals($waitingTileList->toArray(), $weakRun->getWaitingTileList($tileList)->toArray());
         $this->assertEquals($waitingType, $weakRun->getWaitingType($tileList), $weakRun->getWaitingType($tileList));
 
-        // test toTargetMeld todo
+        // test toTargetMeld
         $weakRunMeld = Meld::fromString($tileListString);
         foreach ($waitingTileList as $waitingTile) {
             $this->assertTrue($weakRunMeld->canToTargetMeld($waitingTile));

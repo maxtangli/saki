@@ -6,6 +6,10 @@ use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\Fan2\OutsideHandYaku;
 use Saki\Win\Yaku\Yaku;
 
+/**
+ * 純全帯么九
+ * @package Saki\Win\Yaku\Fan3
+ */
 class TerminalsInAllSetsYaku extends Yaku {
     function getConcealedFan() {
         return 3;

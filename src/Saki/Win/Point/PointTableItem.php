@@ -1,7 +1,7 @@
 <?php
 namespace Saki\Win\Point;
 
-/** todo support 2 or 3 players cases
+/**
  * Calculate Winner or Loser's point change without multi-win case.
  * @package Saki\Result
  */
@@ -81,46 +81,5 @@ class PointTableItem {
     protected function util_toFinalPoint(int $rawPoint) {
         $sgn = $rawPoint / abs($rawPoint);
         return intval(ceil(abs($rawPoint) / 100) * 100) * $sgn;
-    }
-
-    /** todo remove
-     * @param bool $receiverIsDealer
-     * @param bool $tsumo
-     * @return int
-     */
-    function getReceivePoint(bool $receiverIsDealer, bool $tsumo) {
-        if (!$tsumo) {
-            return $this->getPayPoint($receiverIsDealer, $tsumo, false);
-        } else {
-            if ($receiverIsDealer) {
-                return 3 * $this->getPayPoint($receiverIsDealer, $tsumo, false);
-            } else {
-                return 2 * $this->getPayPoint($receiverIsDealer, $tsumo, false)
-                + $this->getPayPoint($receiverIsDealer, $tsumo, true);
-            }
-        }
-    }
-
-    /** todo remove
-     * @param bool $receiverIsDealer
-     * @param bool $tsumo
-     * @param bool $payerIsDealer
-     * @return int
-     */
-    function getPayPoint(bool $receiverIsDealer, bool $tsumo, bool $payerIsDealer) {
-        $valid = !($receiverIsDealer && $payerIsDealer);
-        if (!$valid) {
-            throw new \InvalidArgumentException();
-        }
-
-        if ($tsumo) {
-            $ratio = ($receiverIsDealer || $payerIsDealer) ? 2 : 1;
-        } else {
-            $ratio = $receiverIsDealer ? 6 : 4;
-        }
-        $point = $this->getBasePoint() * $ratio;
-
-        $point = intval(ceil($point / 100) * 100); // 切り上げ. e.x.640->700
-        return $point;
     }
 }

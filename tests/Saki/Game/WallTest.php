@@ -6,15 +6,15 @@ use Saki\Tile\TileList;
 use Saki\Tile\TileSet;
 
 class WallTest extends \SakiTestCase {
-    function testOverall() {
-        $standardCnt = 136;
+    function testAll() {
+        $tileCount = 136;
 
         // new, no shuffle
-        $w = new Wall(TileSet::createStandard());
-        $this->assertCount($standardCnt, $w->getTileSet());
+        $wall = new Wall(TileSet::createStandard());
+        $this->assertCount($tileCount, $wall->getTileSet());
 
         // reset and shuffle
-        $w->reset();
+        $wall->reset();
 
         // pop
         $s = '111122223333444455556666777788889999m' .
@@ -23,13 +23,13 @@ class WallTest extends \SakiTestCase {
             'EEEESSSSWWWWNNNNCCCCPPPPFFFF';
         $tileList = TileList::fromString($s);
         $tileSet = new TileSet($tileList->toArray());
-        $w = new Wall($tileSet);
-        $w->reset(false);
-        $t = $w->draw();
-        $this->assertEquals(Tile::fromString('F'), $t);
+        $wall = new Wall($tileSet);
+        $wall->reset(false);
+        $tile = $wall->draw();
+        $this->assertEquals(Tile::fromString('F'), $tile);
 
         // shift
-        $t = $w->getDeadWall()->drawReplacement();
-        $this->assertEquals(Tile::fromString('1m'), $t);
+        $tile = $wall->getDeadWall()->drawReplacement();
+        $this->assertEquals(Tile::fromString('1m'), $tile);
     }
 }

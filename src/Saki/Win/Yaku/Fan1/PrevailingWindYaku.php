@@ -5,7 +5,7 @@ use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\AbstractValueTilesYaku;
 
 /**
- * 役牌　場風
+ * 役牌 場風
  * @package Saki\Win\Yaku\Fan1
  */
 class PrevailingWindYaku extends AbstractValueTilesYaku {

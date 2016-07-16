@@ -5,6 +5,10 @@ use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\Fan1\PureDoubleChowYaku;
 use Saki\Win\Yaku\Yaku;
 
+/**
+ * 二盃口
+ * @package Saki\Win\Yaku\Fan3
+ */
 class TwicePureDoubleChowYaku extends Yaku {
     function getConcealedFan() {
         return 3;

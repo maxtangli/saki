@@ -6,7 +6,7 @@ use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\Yaku;
 
 /**
- * 混全帯么九（ホンチャンタイヤオチュウ）
+ * 混全帯么九
  * @package Saki\Win\Yaku\Fan2
  */
 class OutsideHandYaku extends Yaku {

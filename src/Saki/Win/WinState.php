@@ -4,12 +4,11 @@ namespace Saki\Win;
 use Saki\Util\ComparablePriority;
 use Saki\Util\Enum;
 
+/**
+ * @package Saki\Win
+ */
 class WinState extends Enum {
-    static function getTsumoOrOther(bool $isPrivate) {
-        $v = $isPrivate ? self::WIN_BY_SELF : self::WIN_BY_OTHER;
-        return self::create($v);
-    }
-
+    //region ComparablePriority impl
     use ComparablePriority;
 
     function getPriority() {
@@ -23,6 +22,16 @@ class WinState extends Enum {
         ];
         return $m[$this->getValue()];
     }
+    //endregion
+
+    /**
+     * @param bool $isPrivate
+     * @return static
+     */
+    static function getTsumoOrOther(bool $isPrivate) {
+        $v = $isPrivate ? self::WIN_BY_SELF : self::WIN_BY_OTHER;
+        return self::create($v);
+    }
 
     const NOT_WIN = 1; // なし
     const WAITING_BUY_NOT_WIN = 2; // 聴牌
@@ -31,20 +40,32 @@ class WinState extends Enum {
     const WIN_BY_SELF = 5; // ツモ
     const WIN_BY_OTHER = 6; // ロン
 
+    /**
+     * @return bool
+     */
     function isWaiting() {
         return $this->getValue() != self::NOT_WIN;
     }
 
+    /**
+     * @return bool
+     */
     function isTrueWin() {
         $targetValues = [self::WIN_BY_SELF, self::WIN_BY_OTHER];
         return in_array($this->getValue(), $targetValues);
     }
 
+    /**
+     * @return bool
+     */
     function isFalseWin() {
         $targetValues = [self::FURITEN_FALSE_WIN, self::NO_YAKU_FALSE_WIN];
         return in_array($this->getValue(), $targetValues);
     }
 
+    /**
+     * @return bool
+     */
     function isTrueOrFalseWin() {
         return $this->isTrueWin() || $this->isFalseWin();
     }

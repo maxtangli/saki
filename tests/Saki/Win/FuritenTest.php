@@ -17,11 +17,8 @@ class FuritenTest extends \SakiTestCase {
         $round->process(...$scripts);
 
         $winState = $round->getWinReport(SeatWind::fromString($seatWind))->getWinState();
-        if ($isFuriten) {
-            $this->assertEquals(WinState::create(WinState::FURITEN_FALSE_WIN), $winState);
-        } else {
-            $this->assertEquals(WinState::create(WinState::WIN_BY_OTHER), $winState);
-        }
+        $expected = WinState::create($isFuriten ? WinState::FURITEN_FALSE_WIN : WinState::WIN_BY_OTHER);
+        $this->assertEquals($expected, $winState);
     }
 
     function testSelf() {

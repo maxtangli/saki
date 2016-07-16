@@ -5,6 +5,10 @@ use Saki\Win\Series\Series;
 use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\Yaku;
 
+/**
+ * 対々和
+ * @package Saki\Win\Yaku\Fan2
+ */
 class AllPungsYaku extends Yaku {
     function getConcealedFan() {
         return 2;

@@ -5,8 +5,6 @@ namespace Saki\Win\Score;
  * @package Saki\Win\Score
  */
 class RankUmaScoreStrategy extends ScoreStrategy {
-    // todo support multi player
-
     private $m = [
         1 => 20000,
         2 => 10000,

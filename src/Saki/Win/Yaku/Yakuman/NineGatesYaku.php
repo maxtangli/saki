@@ -4,6 +4,10 @@ namespace Saki\Win\Yaku\Yakuman;
 use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\Yaku;
 
+/**
+ * 九蓮宝燈
+ * @package Saki\Win\Yaku\Yakuman
+ */
 class NineGatesYaku extends Yaku {
     function getConcealedFan() {
         return 13;
@@ -18,6 +22,6 @@ class NineGatesYaku extends Yaku {
     }
 
     protected function matchOther(WinSubTarget $subTarget) {
-        return $subTarget->getPrivateComplete()->isNineGates(false);
+        return $subTarget->getComplete()->isNineGates(false);
     }
 }

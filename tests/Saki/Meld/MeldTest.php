@@ -120,8 +120,5 @@ class MeldTest extends \SakiTestCase {
         $this->assertArrayList('9m', $mt->getWaitingTileList(TileList::fromString('11m19p19sESWNCPF')));
 
         $this->assertFalse($mt->valid(TileList::fromString('111m9p19sESWNCPF')));
-
-//        $all = $mt->getPossibleTileLists(Tile::fromString('1m'));
-//        $this->assertCount(13*13, $all);
     }
 }

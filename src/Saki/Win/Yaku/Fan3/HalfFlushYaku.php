@@ -5,7 +5,7 @@ use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\Yaku;
 
 /**
- * 混一色（ホン​イーソー）
+ * 混一色
  * @package Saki\Win\Yaku\Fan3
  */
 class HalfFlushYaku extends Yaku {
@@ -22,7 +22,7 @@ class HalfFlushYaku extends Yaku {
     }
 
     protected function matchOther(WinSubTarget $subTarget) {
-        return $subTarget->getPrivateComplete()->isFlush(false);
+        return $subTarget->getComplete()->isFlush(false);
     }
 }
 

@@ -19,8 +19,9 @@ rush 56-60 | 33.0h
 rush 61-65 | 17.1h
 rush 66-70 | 22.9h
 rush 71-75 | 15.7h
-rush 76-80 | ing
-     total |341.5h + ing
+rush 76-80 | 23.4h
+rush 81-85 | ing
+     total |364.9h + ing
 
 ## rush history
 
@@ -707,14 +708,12 @@ rush 62 refactor Win/ 3.5h
 - [x] refactor Series 0.8h
 
 - [x] refactor Win/Waiting 0.3h
-// todo confirm order rule
 
 rush 63 rewrite Win/Score 2.3h
 
 - [x] ScoreStrategy // 1.3h
 - [x] test // 0.7h
 - [x] adapt ScoreStrategy 0.3h
-// todo confirm final score rule
 
 rush 64 refactor Areas 3.4h
 
@@ -924,9 +923,28 @@ rush 79 refactor and complete yaku tests 4.8h
 - [x] organize yaku tests 0.4h
 - [x] remove YakuTestData 0.5h
 
-rush 80 refactor TargetHolder
+rush 80 refactor tests etc. 3.2h
 
+- [x] refactor tests 0.7h
+- [x] refactor Win/Fu 0.6h
+- [x] refactor WinTarget 0.5h
+- [x] refactor Win/Yaku 0.3h
+- [x] refactor Win/Yaku/XXX 0.5h
+- [x] clear to-do-s 0.6h
 
+rush multiple-player
+
+- [ ] room?
+
+rush toward 100% rules!
+
+- [ ] add multiple ron
+- [ ] integrate PublicCommandRoller
+- [ ] meld display style
+- [ ] 食替
+- [ ] 流局满贯
+- [ ] 包牌
+- [ ] game over rule confirm & tests
 
 rush optimize WaitingAnalyzer: step2
 
@@ -938,20 +956,21 @@ refactor process
 module      | process
 ----------- | -----
 Command     | ok
-Game        | refactor Round, replaceTarget, targetType
+Game        | ok
 Meld        | ok
-Phase       | todo
-Tile        | remove TileListSize.isComplete()
+Phase       | ok
+Tile        | ok
 Util        | ok
-Win         | todo
+Win         | ok
 Win/Draw    | ok
-Win/Fu      | todo
+Win/Fu      | ok
 Win/Point   | ok
 Win/Result  | ok
 Win/Score   | ok
 Win/Series  | ok
 Win/Waiting | ok
-Win/Yaku    | todo
+Win/Yaku    | ok
+Win/Yaku/XX | ok
 
 rush rule.md doc
 

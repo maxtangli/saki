@@ -2,7 +2,6 @@
 
 namespace tests\Command;
 
-use Saki\Command\Command;
 use Saki\Command\CommandProvider;
 use Saki\Command\CommandSet;
 use Saki\Game\SeatWind;
@@ -25,7 +24,7 @@ class CommandProviderTest extends \SakiTestCase {
                 );
             }
         }
-        
+
         $strings = $executableList->toArray(Utils::getToStringCallback());
 
         if ($contains) {

@@ -4,6 +4,10 @@ namespace Saki\Win\Yaku\Fan1;
 use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\Yaku;
 
+/**
+ * 槍槓
+ * @package Saki\Win\Yaku\Fan1
+ */
 class RobbingAKongYaku extends Yaku {
     function getConcealedFan() {
         return 1;
@@ -18,7 +22,7 @@ class RobbingAKongYaku extends Yaku {
     }
 
     protected function matchOther(WinSubTarget $subTarget) {
-        return $subTarget->isRobbingAKong();
+        return $subTarget->getTarget()->isRobbingAKong();
     }
 }
 

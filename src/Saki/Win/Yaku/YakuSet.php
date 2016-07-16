@@ -126,12 +126,14 @@ class YakuSet extends ArrayList {
     }
 
     /**
-     * @return ArrayList An ArrayList of Series required by any Yaku in YakuSet.
+     * @return ArrayList An ArrayList of Series required by this YakuSet.
      */
     function getSeriesList() {
-        return (new ArrayList())->fromSelectMany($this, function (Yaku $yaku) {
+        $getRequiredSeries = function (Yaku $yaku) {
             return $yaku->getRequiredSeries();
-        })->insertFirst(Series::create(Series::FOUR_WIN_SET_AND_ONE_PAIR))
+        };
+        return (new ArrayList())->fromSelectMany($this, $getRequiredSeries)
+            ->insertFirst(Series::create(Series::FOUR_WIN_SET_AND_ONE_PAIR))
             ->distinct();
     }
 }

@@ -8,7 +8,7 @@ class Simulator {
     function run() {
         $round = new Round();
 
-        while (true) { // todo move into proper class
+        while (true) {
             // echo round info
             echo $round->__toString() . "\n";
 

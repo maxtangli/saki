@@ -1,21 +1,15 @@
 <?php
 namespace Saki\Game;
+
+use Saki\Util\Singleton;
 use Saki\Util\Utils;
-use Saki\Win\Result\WinResult;
 use Saki\Win\WinReport;
 
 /**
  * @package Saki\Game
  */
-class RoundSerializer {
-    private function __construct() {
-    }
-
-    /**
-     * @param Round $r
-     * @return string
-     */
-    static function toJson(Round $r) { // todo
+class RoundSerializer extends Singleton {
+    function toArray(Round $r) {
         $commandProvider = $r->getProcessor()->getProvider();
 
         $prevailing = $r->getPrevailing();
@@ -71,14 +65,30 @@ class RoundSerializer {
                 'commands' => $commandProvider->getExecutableList($actor)->toArray(Utils::getToStringCallback()),
             ];
         }
-        
+
         $a = [
             'result' => 'ok',
             'round' => $round,
             'wall' => $wall,
             'areas' => $areas,
         ];
-        
-        return json_encode($a);
+
+        return $a;
+    }
+
+    /**
+     * @param Round $round
+     * @return string
+     */
+    function toString(Round $round) {
+        return implode("\n", $this->toArray($round));
+    }
+    
+    /**
+     * @param Round $round
+     * @return string
+     */
+    function toJson(Round $round) {
+        return json_encode($this->toArray($round));
     }
 }

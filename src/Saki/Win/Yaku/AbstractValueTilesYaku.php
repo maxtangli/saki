@@ -4,7 +4,11 @@ namespace Saki\Win\Yaku;
 use Saki\Tile\Tile;
 use Saki\Win\WinSubTarget;
 
+/**
+ * @package Saki\Win\Yaku
+ */
 abstract class AbstractValueTilesYaku extends Yaku {
+    //region Yaku impl
     function getConcealedFan() {
         return 1;
     }
@@ -21,6 +25,7 @@ abstract class AbstractValueTilesYaku extends Yaku {
         return $subTarget->getAllMeldList()
             ->isValueTiles($this->getValueTile($subTarget));
     }
+    //endregion
 
     /**
      * @param WinSubTarget $subTarget

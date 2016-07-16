@@ -6,6 +6,10 @@ use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\Yaku;
 use Saki\Win\Yaku\Yakuman\ThirteenOrphansYaku;
 
+/**
+ * 国士無双十三面待ち
+ * @package Saki\Win\Yaku\Yakuman2
+ */
 class PureThirteenOrphansYaku extends Yaku {
     function getConcealedFan() {
         return 26;
@@ -22,12 +26,11 @@ class PureThirteenOrphansYaku extends Yaku {
     }
 
     protected function matchOther(WinSubTarget $subTarget) {
-        return $subTarget->getAllMeldList()->isThirteenOrphan(true, $subTarget->getTileOfTargetTile());
+        $targetTile = $subTarget->getTarget()->getTile();
+        return $subTarget->getAllMeldList()->isThirteenOrphan(true, $targetTile);
     }
 
     function getExcludedYakus() {
-        return [
-            ThirteenOrphansYaku::create()
-        ];
+        return [ThirteenOrphansYaku::create()];
     }
 }

@@ -82,49 +82,49 @@ class DoraFacade {
     }
 
     /**
-     * @param TileList $allTileList
+     * @param TileList $complete
      * @return int
      */
-    function getHandDoraFan(TileList $allTileList) {
-        return $this->getHandDoraFanImpl($allTileList, [$this, 'getTileDoraFan']);
+    function getHandDoraFan(TileList $complete) {
+        return $this->getHandDoraFanImpl($complete, [$this, 'getTileDoraFan']);
     }
 
     /**
-     * @param TileList $allTileList
+     * @param TileList $complete
      * @return int
      */
-    function getHandUraDoraFan(TileList $allTileList) {
-        return $this->getHandDoraFanImpl($allTileList, [$this, 'getTileUraDoraFan']);
+    function getHandUraDoraFan(TileList $complete) {
+        return $this->getHandDoraFanImpl($complete, [$this, 'getTileUraDoraFan']);
     }
 
     /**
-     * @param TileList $allTileList
+     * @param TileList $complete
      * @return int
      */
-    function getHandRedDoraFan(TileList $allTileList) {
-        return $this->getHandDoraFanImpl($allTileList, [$this, 'getTileRedDoraFan']);
+    function getHandRedDoraFan(TileList $complete) {
+        return $this->getHandDoraFanImpl($complete, [$this, 'getTileRedDoraFan']);
     }
 
     /**
-     * @param TileList $allTileList
+     * @param TileList $complete
      * @return int
      */
-    function getHandAllDoraFan(TileList $allTileList) {
-        return $this->getHandDoraFanImpl($allTileList, [$this, 'getTileAllDoraFan']);
+    function getHandAllDoraFan(TileList $complete) {
+        return $this->getHandDoraFanImpl($complete, [$this, 'getTileAllDoraFan']);
     }
 
     /**
-     * @param TileList $allTileList
+     * @param TileList $complete
      * @param callable $getDoraFanCallback
      * @return int
      */
-    protected function getHandDoraFanImpl(TileList $allTileList, callable $getDoraFanCallback) {
-        if (!$allTileList->getSize()->isComplete()) {
+    protected function getHandDoraFanImpl(TileList $complete, callable $getDoraFanCallback) {
+        if (!$complete->getSize()->isComplete()) {
             throw new \InvalidArgumentException();
         }
 
         $count = 0;
-        foreach ($allTileList as $tile) {
+        foreach ($complete as $tile) {
             $count += $getDoraFanCallback($tile);
         }
         return $count;

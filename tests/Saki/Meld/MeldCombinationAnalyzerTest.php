@@ -2,30 +2,32 @@
 
 use Saki\Meld\Meld;
 use Saki\Meld\MeldListAnalyzer;
+use Saki\Meld\PairMeldType;
+use Saki\Meld\QuadMeldType;
 use Saki\Meld\RunMeldType;
+use Saki\Meld\TripleMeldType;
 use Saki\Tile\TileList;
+use Saki\Util\Utils;
 
 class MeldListAnalyzerTest extends \SakiTestCase {
     /**
      * @dataProvider getMeldCompositionsProvider
      */
-    function testGetMeldCompositions($expectedMeldListStrings, $tilesStr, $meldTypes) {
-        $round = new MeldListAnalyzer($meldTypes, 0);
-        $combinationList = $round->analyzeMeldListList(TileList::fromString($tilesStr));
-        $actualMeldListStrings = array_map(function ($v) {
-            return $v->__toString();
-        }, $combinationList->toArray());
-        $meldTypesStr = implode(',', $meldTypes);
-        $msg = "\$tilesStr[$tilesStr] \$meldTypes[$meldTypesStr]";
-        $this->assertSame($expectedMeldListStrings, $actualMeldListStrings, $msg);
+    function testAnalyzeMeldListList(array $expectedMeldListStrings, string $tileList, array $meldTypes) {
+        $analyzer = new MeldListAnalyzer($meldTypes, 0);
+        $meldListList = $analyzer->analyzeMeldListList(TileList::fromString($tileList));
+
+        $actualMeldListStrings = $meldListList->toArray(Utils::getToStringCallback());
+        $message = sprintf('$tileList[%s], $meldTypes[%s].', $tileList, implode(',', $meldTypes));
+        $this->assertSame($expectedMeldListStrings, $actualMeldListStrings, $message);
     }
 
     function getMeldCompositionsProvider() {
         $meldTypes = [
-            \Saki\Meld\PairMeldType::create(),
-            \Saki\Meld\RunMeldType::create(),
-            \Saki\Meld\TripleMeldType::create(),
-            \Saki\Meld\QuadMeldType::create(),
+            PairMeldType::create(),
+            RunMeldType::create(),
+            TripleMeldType::create(),
+            QuadMeldType::create(),
         ];
         return [
             // empty case

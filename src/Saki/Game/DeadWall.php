@@ -34,7 +34,9 @@ class DeadWall {
      */
     function reset(TileList $tileList, int $openedDoraIndicatorCount = 1, bool $uraDoraOpened = false) {
         if (count($tileList) != 14) {
-            throw new \InvalidArgumentException();
+            throw new \InvalidArgumentException(
+                sprintf('Invalid $tileList[%s].', $tileList)
+            );
         }
         $this->tileList = $tileList;
         $this->doraIndicators = [$tileList[4], $tileList[6], $tileList[8], $tileList[10], $tileList[12]];

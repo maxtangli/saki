@@ -46,10 +46,8 @@ abstract class Result implements Immutable {
      * @return array An array to indicate point changes in format e.x. ['E' => -1000 ...].
      */
     function getPointChangeMap() {
-        $keyList = SeatWind::createList($this->getPlayerCount()); // todo refactor
-        $valueList = $keyList->toArrayList(function (SeatWind $seatWind) {
-            return $this->getPointChange($seatWind);
-        });
+        $keyList = SeatWind::createList($this->getPlayerCount());
+        $valueList = $keyList->toArrayList([$this, 'getPointChange']);
         return array_combine($keyList->toArray(), $valueList->toArray());
     }
 

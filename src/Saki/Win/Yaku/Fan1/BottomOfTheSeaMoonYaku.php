@@ -4,6 +4,10 @@ namespace Saki\Win\Yaku\Fan1;
 use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\Yaku;
 
+/**
+ * 海底摸月
+ * @package Saki\Win\Yaku\Fan1
+ */
 class BottomOfTheSeaMoonYaku extends Yaku {
     function getConcealedFan() {
         return 1;
@@ -18,8 +22,8 @@ class BottomOfTheSeaMoonYaku extends Yaku {
     }
 
     protected function matchOther(WinSubTarget $subTarget) {
-        return $subTarget->getWallRemainTileAmount() == 0
-        && $subTarget->isPrivatePhase();
+        return $subTarget->getWall()->isBottomOfTheSea()
+        && $subTarget->getPhase()->isPrivate();
     }
 }
 

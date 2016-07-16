@@ -4,6 +4,10 @@ namespace Saki\Win\Yaku\Fan1;
 use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\Yaku;
 
+/**
+ * 一発
+ * @package Saki\Win\Yaku\Fan1
+ */
 class FirstTurnWinYaku extends Yaku {
     function getConcealedFan() {
         return 1;
@@ -18,7 +22,7 @@ class FirstTurnWinYaku extends Yaku {
     }
 
     protected function matchOther(WinSubTarget $subTarget) {
-        return $subTarget->isFirstTurnWin();
+        return $subTarget->getActorArea()->isFirstTurnWin();
     }
 }
 

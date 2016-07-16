@@ -6,7 +6,7 @@ use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\Yaku;
 
 /**
- * 混老頭（ホンロウトウ）
+ * 混老頭
  * @package Saki\Win\Yaku\Fan2
  */
 class AllTerminalsAndHonoursYaku extends Yaku {

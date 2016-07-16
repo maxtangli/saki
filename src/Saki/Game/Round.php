@@ -14,9 +14,10 @@ use Saki\Phase\PrivatePhaseState;
 use Saki\Phase\PublicPhaseState;
 use Saki\Tile\TileList;
 use Saki\Util\ArrayList;
+use Saki\Win\WinReport;
 use Saki\Win\WinTarget;
 
-/** todo simplify reset(),debugReset(),toNextPhase()
+/** todo simplify roll(),debugInit(),toNextPhase()
  * @package Saki\Game
  */
 class Round {
@@ -63,9 +64,10 @@ class Round {
         $this->targetHolder = new TargetHolder();
 
         // variable
-        $this->areaList = $playerList->toArrayList(function (Player $player) {
+        $toArea = function (Player $player) {
             return new Area($player, $this);
-        });
+        };
+        $this->areaList = $playerList->toArrayList($toArea);
 
         // to private phase
         $this->toNextPhase();
@@ -75,16 +77,15 @@ class Round {
     /**
      * @return string
      */
-    function __toString() { // todo
-        $areaListString = $this->areaList->toFormatString("\n");
-        return $areaListString;
+    function __toString() {
+        return RoundSerializer::create()->toString($this);
     }
 
     /**
      * @return string
      */
     function toJson() {
-        return RoundSerializer::toJson($this);
+        return RoundSerializer::create()->toJson($this);
     }
 
     /**
@@ -94,9 +95,10 @@ class Round {
     function roll(bool $keepDealer, bool $isWin = false) {
         // variable
         $this->prevailing = $this->prevailing->toRolled($keepDealer);
-        $this->areaList->walk(function (Area $area) use ($keepDealer) {
+        $roll = function (Area $area) use ($keepDealer) {
             $area->roll($area->getSeatWind()->toRolled($keepDealer));
-        });
+        };
+        $this->areaList->walk($roll);
         // $this->pointHolder no change
         $this->riichiHolder->roll($isWin);
 
@@ -110,7 +112,7 @@ class Round {
 
         // to private phase
         $this->toNextPhase();
-        $this->toNextPhase(); // todo better way?
+        $this->toNextPhase();
     }
 
     /**
@@ -121,7 +123,7 @@ class Round {
             $prevailingStatus->getInitialSeatWindOfDealer()
         )->getPlayer()->getInitialSeatWind();
         $nextDealerArea = $this->getInitialSeatWindArea($nextDealerInitialSeatWind);
-        $nextDealerSeatWind = $nextDealerArea->getSeatWind(); // todo simpler logic?
+        $nextDealerSeatWind = $nextDealerArea->getSeatWind();
 
         // variable
         $this->prevailing = $this->prevailing->toDebugInitialized($prevailingStatus);
@@ -141,7 +143,7 @@ class Round {
 
         // to private phase
         $this->toNextPhase();
-        $this->toNextPhase(); // todo better way?
+        $this->toNextPhase();
     }
 
     /**
@@ -177,7 +179,7 @@ class Round {
     /**
      * @param string $scriptLine
      * @param SeatWind|null $requireActor
-     * @return \Saki\Command\Command
+     * @return Command
      * @throws InvalidCommandException
      */
     function processLine(string $scriptLine, SeatWind $requireActor = null) {
@@ -213,9 +215,10 @@ class Round {
      * @return Area
      */
     function getArea(SeatWind $seatWind) {
-        return $this->areaList->getSingle(function (Area $area) use ($seatWind) {
+        $isSeatWind = function (Area $area) use ($seatWind) {
             return $area->getSeatWind() == $seatWind;
-        });
+        };
+        return $this->areaList->getSingle($isSeatWind);
     }
 
     /**
@@ -223,9 +226,10 @@ class Round {
      * @return Area
      */
     function getInitialSeatWindArea(SeatWind $initialSeatWind) {
-        return $this->areaList->getSingle(function (Area $area) use ($initialSeatWind) {
+        $isInitialSeatWind = function (Area $area) use ($initialSeatWind) {
             return $area->getPlayer()->getInitialSeatWind() == $initialSeatWind;
-        });
+        };
+        return $this->areaList->getSingle($isInitialSeatWind);
     }
 
     /**
@@ -297,13 +301,14 @@ class Round {
      */
     function getOtherSeatWinds(array $excludes) {
         return SeatWind::createList($this->areaList->count())
-            ->remove($excludes)->toArray();
+            ->remove($excludes)
+            ->toArray();
     }
 
     /**
      * Roll to $seatWind.
-     * If $seatWind is not current, handle CircleCount update.
-     * Do nothing otherwise.
+     * - If $seatWind is not current, handle CircleCount update.
+     * - Do nothing otherwise.
      * @param SeatWind $seatWind
      */
     function toSeatWind(SeatWind $seatWind) {
@@ -333,22 +338,23 @@ class Round {
 
     /**
      * @param SeatWind $actor
-     * @return \Saki\Win\WinReport
+     * @return WinReport
      */
     function getWinReport(SeatWind $actor) {
         // WinTarget will assert valid player
         return $this->getGameData()->getWinAnalyzer()
-            ->analyze(new WinTarget($actor, $this));
+            ->analyze(new WinTarget($this, $actor));
     }
 
     function deal() {
         $playerType = PlayerType::create($this->areaList->count());
         $deal = $this->getWall()->deal($playerType);
-        $this->areaList->walk(function (Area $area) use ($deal) {
+        $acceptDeal = function (Area $area) use ($deal) {
             $initialTiles = $deal[$area->getSeatWind()->__toString()];
             $newHand = new Hand(new TileList($initialTiles), new MeldList(), Target::createNull());
             $area->setHand($newHand);
-        });
+        };
+        $this->areaList->walk($acceptDeal);
     }
 
     /**
@@ -364,6 +370,19 @@ class Round {
         $this->phaseState->enter($this);
     }
 
+    /**
+     * @param SeatWind $seatWind
+     * @return bool
+     */
+    function isFirstTurnAndNoClaim(SeatWind $seatWind) {
+        $fromTurn = new Turn(1, $seatWind);
+        return $this->getTurn()->isFirstCircle()
+        && !$this->getClaimHistory()->hasClaim($fromTurn);
+    }
+    
+    /**
+     * @return bool
+     */
     function isGameOver() {
         /** @var OverPhaseState $phaseState */
         $phaseState = $this->phaseState;
@@ -371,6 +390,7 @@ class Round {
             && $phaseState->isGameOver($this);
     }
     
+    // todo move into OverPhase?
     function toNextRound() {
         /** @var OverPhaseState $overPhaseState */
         $overPhaseState = $this->phaseState;

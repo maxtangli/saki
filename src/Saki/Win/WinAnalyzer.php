@@ -79,8 +79,10 @@ class WinAnalyzer {
      * @return WinReport
      */
     function analyze(WinTarget $target) {
+        $hand = $target->getHand();
+        
         // 1. handTileList target -> handMeldList's List
-        $handTileList = $target->getPrivateHand();
+        $handTileList = $hand->getPrivate();
         $handMeldListList = $this->getHandMeldListAnalyzer()
             ->analyzeMeldListList($handTileList);
         if ($handMeldListList->isEmpty()) {
@@ -101,7 +103,7 @@ class WinAnalyzer {
          * final yakuList     = best subResult.yakuList
          * final fu      = best subResult.fu
          * final winState     = best subResult.winState + handle furiten
-         * todo waiting-but-not-win case
+         * todo add waiting-but-not-win case?
          */
 
         /** @var WinSubReport $targetSubResult */
@@ -113,7 +115,7 @@ class WinAnalyzer {
         $finalWinState = $targetSubResult->getWinState();
         if ($finalWinState->isTrueWin()) {
             $waitingTileList = $this->getWaitingAnalyzer()->analyzePublic(
-                $target->getPublicHand(), $target->getDeclaredMeldList()
+                $hand->getPublic(), $hand->getMelded()
             );
             $isFuritenFalseWin = $this->isFuriten($target, $waitingTileList);
             if ($isFuritenFalseWin) {
@@ -147,9 +149,8 @@ class WinAnalyzer {
         }
 
         // case3: win by self or win by other
-        $winState = WinState::getTsumoOrOther($subTarget->isPrivatePhase());
+        $winState = WinState::getTsumoOrOther($subTarget->getPhase()->isPrivate());
 
-//        $waitingType = $series->getWaitingType($subTarget->getAllMeldList(), $subTarget->getTileOfTargetTile(), $subTarget->getDeclaredMeldList());
         $waitingType = $series->getWaitingType($subTarget->getSubHand());
         $fuTarget = new FuTarget($subTarget, $yakuList, $waitingType);
         $fuResult = FuAnalyzer::create()->getResult($fuTarget);
@@ -166,12 +167,12 @@ class WinAnalyzer {
      */
     function isFuriten(WinTarget $target, TileList $waitingTileList) {
         /**
-         * design note: as a function since its not too complex,
-         * extract class if dynamic furiten rule setting is required
+         * design note: implemented as a function since it's not so complex,
+         * extract class if dynamic furiten rule setting is required.
          */
 
         // A player who is furiten, can still win on a self-drawn tile
-        if ($target->isPrivatePhase()) {
+        if ($target->getPhase()->isPrivate()) {
             return false;
         }
 
@@ -179,7 +180,7 @@ class WinAnalyzer {
         $isNgTile = function (Tile $ngTile) use ($waitingTileList) {
             return $waitingTileList->valueExist($ngTile);
         };
-        $mySeatWind = $target->getSeatWind();
+        $mySeatWind = $target->getActor();
 
         // open furiten: self open TileList contains target tile
         $selfOpenList = $openHistory->getSelfOpen($mySeatWind);

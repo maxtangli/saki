@@ -11,10 +11,14 @@ use Saki\Win\Yaku\Fan2\SevenPairsYaku;
 use Saki\Win\Yaku\YakuItemList;
 
 /**
- * ref: http://ja.wikipedia.org/wiki/%E9%BA%BB%E9%9B%80%E3%81%AE%E5%BE%97%E7%82%B9%E8%A8%88%E7%AE%97#.E7.AC.A6.E3.81.AE.E8.A8.88.E7.AE.97
- * @package Saki\Win
+ * @see http://ja.wikipedia.org/wiki/麻雀の得点計算#.E7.AC.A6.E3.81.AE.E8.A8.88.E7.AE.97
+ * @package Saki\Win\Fu
  */
 class FuAnalyzer extends Singleton {
+    /**
+     * @param FuTarget $target
+     * @return FuResult
+     */
     function getResult(FuTarget $target) {
         $specialYakuTotalFu = $this->getSpecialYakuTotalFu($target->getYakuList(), $target->isSelfPhase());
         if ($specialYakuTotalFu !== false) {
@@ -33,6 +37,11 @@ class FuAnalyzer extends Singleton {
         }
     }
 
+    /**
+     * @param YakuItemList $yakuList
+     * @param $tsumo
+     * @return bool|int
+     */
     function getSpecialYakuTotalFu(YakuItemList $yakuList, $tsumo) {
         if ($yakuList->getTotalFan() > 4) {
             return 0;
@@ -55,31 +64,43 @@ class FuAnalyzer extends Singleton {
         return false;
     }
 
+    /**
+     * @param MeldList $meldList
+     * @return int
+     */
     function getWinSetListFu(MeldList $meldList) {
-        return array_reduce($meldList->toArray(), function ($totalFu, Meld $meld) {
-            return $totalFu + $this->getWinSetFu($meld);
-        }, 0);
+        return $meldList->getSum([$this, 'getWinSetFu']);
     }
 
+    /**
+     * @param MeldList $meldList
+     * @return WinSetFuResult[]
+     */
     function getWinSetListFuResult(MeldList $meldList) {
-        return array_reduce($meldList->toArray(), function (array $result, Meld $meld) {
+        $aggregator = function (array $result, Meld $meld) {
             $winSetFu = $this->getWinSetFu($meld);
             if ($winSetFu > 0) {
-                $result[] = new MeldFuResult($meld, $winSetFu);
+                $result[] = new WinSetFuResult($meld, $winSetFu);
             }
             return $result;
-        }, []);
+        };
+        return array_reduce($meldList->toArray(), $aggregator, []);
     }
 
+    /**
+     * @param Meld $winSetMeld
+     * @return int
+     */
     function getWinSetFu(Meld $winSetMeld) {
         /**
          * 面子
-         * 順子  0符
-         * 刻子 中張 么九
-         * 明刻  2符  4符
-         * 暗刻  4符  8符
-         * 明槓  8符 16符
-         * 暗槓 16符 32符
+         * - 順子  0符
+         * - 刻子
+         *        中張 么九
+         * - 明刻  2符  4符
+         * - 暗刻  4符  8符
+         * - 明槓  8符 16符
+         * - 暗槓 16符 32符
          */
         if ($winSetMeld->isTripleOrQuad()) {
             $baseFu = 2;
@@ -93,6 +114,12 @@ class FuAnalyzer extends Singleton {
         }
     }
 
+    /**
+     * @param Meld $pairMeld
+     * @param Tile $seatWind
+     * @param Tile $prevailingWind
+     * @return int
+     */
     function getPairFu(Meld $pairMeld, Tile $seatWind, Tile $prevailingWind) {
         if (!$pairMeld->isPair()) {
             throw new \InvalidArgumentException();
@@ -100,12 +127,12 @@ class FuAnalyzer extends Singleton {
 
         /**
          * 雀頭
-         * 数牌   0符
-         * 客風   0符
-         * 自風   2符
-         * 場風   2符
-         * 三元牌 2符
-         * 連風牌 4符
+         * - 数牌   0符
+         * - 客風   0符
+         * - 自風   2符
+         * - 場風   2符
+         * - 三元牌 2符
+         * - 連風牌 4符
          */
         $pairTile = $pairMeld[0];
         $dragonFu = $pairTile->isDragon() ? 2 : 0;
@@ -115,14 +142,18 @@ class FuAnalyzer extends Singleton {
         return $pairFu;
     }
 
+    /**
+     * @param WaitingType $waitingType
+     * @return int
+     */
     function getWaitingTypeFu(WaitingType $waitingType) {
         /**
          * 待ち
-         * 両面待ち 0符
-         * 双碰待ち 0符
-         * 嵌張待ち 2符
-         * 辺張待ち 2符
-         * 単騎待ち 2符
+         * - 両面待ち 0符
+         * - 双碰待ち 0符
+         * - 嵌張待ち 2符
+         * - 辺張待ち 2符
+         * - 単騎待ち 2符
          */
         $targetWaitingTypes = [
             WaitingType::create(WaitingType::MIDDLE_RUN_WAITING),
@@ -133,19 +164,34 @@ class FuAnalyzer extends Singleton {
         return $waitingTypeFu;
     }
 
+    /**
+     * @return int
+     */
     function getBaseFu() {
         return 20; // 副底	20符
     }
 
-    function getConcealedFu($isConcealed) {
+    /**
+     * @param bool $isConcealed
+     * @return int
+     */
+    function getConcealedFu(bool $isConcealed) {
         return $isConcealed ? 10 : 0; // 門前加符	10符
     }
 
-    function getTsumoFu($isTsumo) {
+    /**
+     * @param bool $isTsumo
+     * @return int
+     */
+    function getTsumoFu(bool $isTsumo) {
         return $isTsumo ? 2 : 0; // ツモ符	2符
     }
 
-    function roughToTotal($roughFu) {
+    /**
+     * @param int $roughFu
+     * @return int
+     */
+    function roughToTotal(int $roughFu) {
         return intval(ceil($roughFu / 10) * 10); // 各項目をすべて加算し、その合計を10符単位に切り上げたものである
     }
 }

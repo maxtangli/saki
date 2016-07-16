@@ -5,6 +5,10 @@ use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\Fan3\HalfFlushYaku;
 use Saki\Win\Yaku\Yaku;
 
+/**
+ * 清一色
+ * @package Saki\Win\Yaku\Fan6
+ */
 class FullFlushYaku extends Yaku {
     function getConcealedFan() {
         return 6;
@@ -19,7 +23,7 @@ class FullFlushYaku extends Yaku {
     }
 
     protected function matchOther(WinSubTarget $subTarget) {
-        return $subTarget->getPrivateComplete()->isFlush(true);
+        return $subTarget->getComplete()->isFlush(true);
     }
 
     function getExcludedYakus() {

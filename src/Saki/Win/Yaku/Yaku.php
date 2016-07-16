@@ -80,7 +80,7 @@ abstract class Yaku extends Singleton {
             return 0;
         }
 
-        $fan = $subTarget->isConcealed() ? $this->getConcealedFan() : $this->getNotConcealedFan();
+        $fan = $subTarget->getHand()->isConcealed() ? $this->getConcealedFan() : $this->getNotConcealedFan();
         $existCount = $this->getExistCountImpl($subTarget);
         return $fan * $existCount;
     }
@@ -97,7 +97,7 @@ abstract class Yaku extends Singleton {
      * @return bool
      */
     final protected function matchConcealed(WinSubTarget $subTarget) {
-        return !$this->requireConcealed() || $subTarget->isConcealed();
+        return !$this->requireConcealed() || $subTarget->getHand()->isConcealed();
     }
 
     /**
@@ -112,9 +112,10 @@ abstract class Yaku extends Singleton {
 
         // todo move getSeries into $subTarget
         $allMeldList = $subTarget->getAllMeldList();
-        return (new ArrayList($requiredSeries))->any(function (Series $series) use ($allMeldList) {
+        $seriesExist = function (Series $series) use ($allMeldList) {
             return $series->existIn($allMeldList);
-        });
+        };
+        return (new ArrayList($requiredSeries))->any($seriesExist);
     }
 
     /**

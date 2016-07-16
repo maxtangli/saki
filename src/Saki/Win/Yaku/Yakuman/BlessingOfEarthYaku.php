@@ -4,6 +4,10 @@ namespace Saki\Win\Yaku\Yakuman;
 use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\Yaku;
 
+/**
+ * 地和
+ * @package Saki\Win\Yaku\Yakuman
+ */
 class BlessingOfEarthYaku extends Yaku {
     function getConcealedFan() {
         return 13;
@@ -18,6 +22,9 @@ class BlessingOfEarthYaku extends Yaku {
     }
 
     protected function matchOther(WinSubTarget $subTarget) {
-        return $subTarget->isBlessingOfEarth();
+        $actor = $subTarget->getActor();
+        return $subTarget->getRound()->isFirstTurnAndNoClaim($actor)
+        && $subTarget->getPhase()->isPrivate()
+        && $actor->isLeisureFamily();
     }
 }

@@ -13,10 +13,13 @@ class SeriesTypeTest extends \SakiTestCase {
     /**
      * @dataProvider FourWinSetAndOnePairProvider
      */
-    function testFourWinSetAndOnePair($meldListString, $tileString, $expectedSeries, $expectedWaitingTypeValue, $expectedWaitingTileStrings) {
-        $s = Series::create($expectedSeries);
+    function testFourWinSetAndOnePair(string $meldListString,
+                                      string $tileString,
+                                      int $expectedSeries,
+                                      int $expectedWaitingTypeValue) {
+        $series = Series::create($expectedSeries);
         $allMeldList = MeldList::fromString($meldListString);
-        $this->assertTrue($s->existIn($allMeldList), sprintf('[%s],[%s].', $allMeldList, $s));
+        $this->assertTrue($series->existIn($allMeldList), sprintf('[%s],[%s].', $allMeldList, $series));
 
         $privateMeldList = MeldList::fromString($meldListString);
         $melded = new MeldList();
@@ -25,14 +28,12 @@ class SeriesTypeTest extends \SakiTestCase {
         $subHand = new SubHand($privateMeldList, $melded, $target);
 
         $expectedWaitingType = WaitingType::create($expectedWaitingTypeValue);
-        $actualWaitingType = $s->getWaitingType($subHand);
+        $actualWaitingType = $series->getWaitingType($subHand);
         $this->assertEquals($expectedWaitingType, $actualWaitingType, "[$meldListString],[$tileString] -> [$expectedWaitingType] but [$actualWaitingType].");
     }
 
     function FourWinSetAndOnePairProvider() {
         return [
-//            ['123s,456s,789s,111m,EE', 'W', Series::FOUR_WIN_SET_AND_ONE_PAIR, WaitingType::NOT_WAITING, []],
-
             ['123s,456s,789s,111m,11s', '9s', Series::FOUR_WIN_SET_AND_ONE_PAIR, WaitingType::TWO_SIDE_RUN_WAITING, ['6s', '9s']],
             ['123s,567s,789s,111m,11s', '7s', Series::FOUR_WIN_SET_AND_ONE_PAIR, WaitingType::TWO_SIDE_RUN_WAITING, ['4s', '7s']],
             ['123s,567s,789s,777s,11s', '7s', Series::FOUR_WIN_SET_AND_ONE_PAIR, WaitingType::TWO_SIDE_RUN_WAITING, ['1s', '4s', '7s']],
@@ -51,7 +52,7 @@ class SeriesTypeTest extends \SakiTestCase {
     }
 
     function testSevenPairsNotExist() {
-        $s = Series::create(Series::SEVEN_PAIRS);
-        $this->assertFalse($s->existIn(MeldList::fromString('11s,11s,33s,44s,55s,66s,77s')));
+        $series = Series::create(Series::SEVEN_PAIRS);
+        $this->assertFalse($series->existIn(MeldList::fromString('11s,11s,33s,44s,55s,66s,77s')));
     }
 }

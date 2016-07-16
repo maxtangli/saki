@@ -1,10 +1,48 @@
 <?php
 
 use Saki\Command\PrivateCommand\ConcealedKongCommand;
+use Saki\Game\Phase;
 use Saki\Game\SeatWind;
+use Saki\Tile\Tile;
+use Saki\Tile\TileList;
 use Saki\Win\Result\ResultType;
 
 class RoundTest extends \SakiTestCase {
+    //region Core
+    function testGetHand() {
+        $round = $this->getInitRound();
+
+        $round->process('mockHand E 123456789m12344p');
+        $areaE = $round->getArea(SeatWind::createEast());
+        $areaS = $round->getArea(SeatWind::createSouth());
+
+        // E private phase, hand E
+        $handE = $areaE->getHand();
+        $this->assertEquals('123456789m12344p', $handE->getPrivate()->toSortedString(true));
+        $this->assertEquals('4p', $handE->getTarget()->getTile()->__toString());
+        $this->assertEquals('123456789m1234p', $handE->getPublic()->toSortedString(true));
+
+        // E private phase, hand S
+        $round->process('mockHand S 123456789p1234s');
+        $handS = $areaS->getHand();
+        // no private
+        $this->assertFalse($handS->getTarget()->exist());
+        $this->assertEquals('123456789p1234s', $handS->getPublic()->toSortedString(true));
+
+        // E public phase, hand E
+        $round->process('discard E 2m');
+        $handE = $areaE->getHand();
+        // no private
+        $this->assertFalse($handE->getTarget()->exist());
+        $this->assertEquals('13456789m12344p', $handE->getPublic()->toSortedString(true));
+
+        // E public phase, hand S
+        $handS = $areaS->getHand();
+        $this->assertEquals('2m123456789p1234s', $handS->getPrivate()->toSortedString(true));
+        $this->assertEquals('2m', $handS->getTarget()->getTile()->toFormatString(true));
+        $this->assertEquals('123456789p1234s', $handS->getPublic()->toSortedString(true));
+    }
+    
     function testNew() {
         // todo
     }
@@ -13,18 +51,34 @@ class RoundTest extends \SakiTestCase {
         // todo
     }
 
-    function testOver() {
+    function testGameOver() {
+        // to E Round N Dealer
         $round = $this->getInitRound();
         $round->roll(false);
         $round->roll(false);
         $round->roll(false);
 
-        $round->process('mockHand E 123456789m12355s; tsumo E');
-        $this->assertTrue($round->getPhaseState()->isGameOver($round));
-        $f = $round->getPhaseState()->getFinalScore($round);
-        // todo
-    }
+        $area = $round->getCurrentArea();
+        $pointHolder = $round->getPointHolder();
 
+        // E Player tsumo, but point not over 30000
+        $area->setHand(
+            $area->getHand()->toHand(TileList::fromString('13m456m789m123s55s'), null, Tile::fromString('2m'))
+        );
+        $round->process('tsumo E');
+        $pointHolder->setPoint(SeatWind::fromString('E'), 25000);
+        $this->assertFalse($round->getPhaseState()->isGameOver($round));
+
+        // point over 30000
+        $pointHolder->setPoint(SeatWind::fromString('E'), 29999);
+        $this->assertFalse($round->getPhaseState()->isGameOver($round));
+
+        $pointHolder->setPoint(SeatWind::fromString('E'), 30000);
+        $this->assertTrue($round->getPhaseState()->isGameOver($round));
+    }
+    //endregion
+
+    //region Command
     function testDiscard() {
         $round = $this->getInitRound();
         $round->process('mockHand E 0p; discard E 0p');
@@ -137,9 +191,36 @@ class RoundTest extends \SakiTestCase {
 
     // todo test not kong able
 
-    function testNotFourKongDrawBySamePlayer() {
+    function testTsumo() {
         $round = $this->getInitRound();
 
+        // test over phase
+        $round->process('mockHand E 123m456m789m123s55s; tsumo E');
+        $this->assertOver();
+        $this->assertCount(1, $round->getWall()->getDoraFacade()->getOpenedUraDoraIndicators());
+
+        // test toNextRound
+        $round->toNextRound();
+        $this->assertPrivate();
+        $this->assertEquals(SeatWind::createEast(), $round->getDealerArea()->getPlayer()->getInitialSeatWind());
+    }
+
+    function testRon() {
+        $this->getInitRound()->process(
+            'mockHand E 4s; discard E 4s',
+            'mockHand S 123m456m789m23s55s; ron S'
+        );
+        $this->assertResultType(ResultType::WIN_BY_OTHER);
+    }
+
+    function testMultiRon() {
+        // todo
+    }
+    //endregion
+
+    //region Draw
+    function testNotFourKongDrawBySamePlayer() {
+        $round = $this->getInitRound();
         $round->process(
             'mockHand E 1111s; concealedKong E 1s1s1s1s',
             'mockHand E 1111s; concealedKong E 1s1s1s1s',
@@ -152,20 +233,17 @@ class RoundTest extends \SakiTestCase {
 
     function testFourKongDrawByConcealedKong() {
         $round = $this->getInitRound();
-
         $round->process(
             'mockHand E 1111s1m; concealedKong E 1s1s1s1s; discard E 1m; passAll',
             'mockHand S 1111s1m; concealedKong S 1s1s1s1s; discard S 1m; passAll',
             'mockHand W 1111s1m; concealedKong W 1s1s1s1s; discard W 1m; passAll',
             'mockHand N 1111s1m; concealedKong N 1s1s1s1s; discard N 1m; passAll'
         );
-        
         $this->assertResultType(ResultType::FOUR_KONG_DRAW);
     }
 
     function testFourKongDrawByExtendKong() {
         $round = $this->getInitRound();
-
         $round->process(
             'mockHand E 1m; discard E 1m; passAll',
             'mockHand S 1111s1m; concealedKong S 1s1s1s1s; discard S 1m; passAll',
@@ -178,7 +256,6 @@ class RoundTest extends \SakiTestCase {
 
     function testFourKongDrawByKong() {
         $round = $this->getInitRound();
-
         $round->process(
             'mockHand E 1111s1m; concealedKong E 1s1s1s1s; discard E 1m; passAll',
             'mockHand S 1111s1m; concealedKong S 1s1s1s1s; discard S 1m; passAll',
@@ -191,47 +268,45 @@ class RoundTest extends \SakiTestCase {
         $this->assertResultType(ResultType::FOUR_KONG_DRAW);
     }
 
-    function testGetHand() {
+    function testNineNineDraw() {
         $round = $this->getInitRound();
 
-        $round->process('mockHand E 123456789m12344p');
-        $areaE = $round->getArea(SeatWind::createEast());
-        $areaS = $round->getArea(SeatWind::createSouth());
+        $validTileList = TileList::fromString('19m19p15559sESWNC');
+        $this->assertTrue($validTileList->isNineKindsOfTermOrHonour());
 
-        // E private phase, hand E
-        $handE = $areaE->getHand();
-        $this->assertEquals('123456789m12344p', $handE->getPrivate()->toSortedString(true));
-        $this->assertEquals('4p', $handE->getTarget()->getTile()->__toString());
-        $this->assertEquals('123456789m1234p', $handE->getPublic()->toSortedString(true));
-
-        // E private phase, hand S
-        $round->process('mockHand S 123456789p1234s');
-        $handS = $areaS->getHand();
-        // no private
-        $this->assertFalse($handS->getTarget()->exist());
-        $this->assertEquals('123456789p1234s', $handS->getPublic()->toSortedString(true));
-
-        // E public phase, hand E
-        $round->process('discard E 2m');
-        $handE = $areaE->getHand();
-        // no private
-        $this->assertFalse($handE->getTarget()->exist());
-        $this->assertEquals('13456789m12344p', $handE->getPublic()->toSortedString(true));
-
-        // E public phase, hand S
-        $handS = $areaS->getHand();
-        $this->assertEquals('2m123456789p1234s', $handS->getPrivate()->toSortedString(true));
-        $this->assertEquals('2m', $handS->getTarget()->getTile()->toFormatString(true));
-        $this->assertEquals('123456789p1234s', $handS->getPublic()->toSortedString(true));
+        $round->process('mockHand E 19m19p15559sESWNC; nineNineDraw E');
+        $this->assertResultType(ResultType::NINE_NINE_DRAW);
     }
 
-    function testPointList() {
+    function testExhaustiveDraw() {
         $round = $this->getInitRound();
-
-        $facade = $round->getPointHolder()->getPointList();
-
-        $this->assertFalse($facade->hasMinus());
-        $this->assertTrue($facade->hasTiledTop());
-        $this->assertEquals(25000, $facade->getFirst()->getPoint());
+        for ($phase = $round->getPhaseState()->getPhase(); $phase != Phase::createOver(); $phase = $round->getPhaseState()->getPhase()) {
+            $round->process('skip 1');
+        }
+        $this->assertResultType(ResultType::EXHAUSTIVE_DRAW);
     }
+
+    // comment out since slow 230ms todo
+//    function testFourRiichiDraw() { 
+//        $round = $this->getInitRound();
+//        $round->process(
+//            'mockHand E 123456789m12357s; riichi E 7s; passAll',
+//            'mockHand S 123456789m12357s; riichi S 7s; passAll',
+//            'mockHand W 123456789m12357s; riichi W 7s; passAll',
+//            'mockHand N 123456789m12357s; riichi N 7s; passAll'
+//        );
+//        $this->assertResultType(ResultType::FOUR_REACH_DRAW);
+//    }
+
+    function testFourWindDraw() {
+        $round = $this->getInitRound();
+        $round->process(
+            'mockHand E E; discard E E; passAll',
+            'mockHand S E; discard S E; passAll',
+            'mockHand W E; discard W E; passAll',
+            'mockHand N E; discard N E; passAll'
+        );
+        $this->assertResultType(ResultType::FOUR_WIND_DRAW);
+    }
+    //endregion
 }

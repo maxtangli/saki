@@ -7,6 +7,10 @@ use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\Yaku;
 use Saki\Win\Yaku\Yakuman\FourConcealedPungsYaku;
 
+/**
+ * 四暗刻単騎
+ * @package Saki\Win\Yaku\Yakuman2
+ */
 class PureFourConcealedPungsYaku extends Yaku {
     function getConcealedFan() {
         return 26;
@@ -23,19 +27,17 @@ class PureFourConcealedPungsYaku extends Yaku {
     }
 
     protected function matchOther(WinSubTarget $subTarget) {
-        $isFourConcealedTriples = $subTarget->getAllMeldList()->isFourPungsOrKongsAndAPair(true);
+        $isFourConcealedTriples = $subTarget->getAllMeldList()
+            ->isFourPungsOrKongsAndAPair(true);
 
-        $waitingType = Series::create(Series::FOUR_WIN_SET_AND_ONE_PAIR)->getWaitingType(
-            $subTarget->getSubHand()
-        );
-        $isPairWaiting = $waitingType == WaitingType::create(WaitingType::PAIR_WAITING);
+        $waitingType = Series::create(Series::FOUR_WIN_SET_AND_ONE_PAIR)
+            ->getWaitingType($subTarget->getSubHand());
+        $isPairWaiting = ($waitingType == WaitingType::create(WaitingType::PAIR_WAITING));
 
         return $isFourConcealedTriples && $isPairWaiting;
     }
 
     function getExcludedYakus() {
-        return [
-            FourConcealedPungsYaku::create()
-        ];
+        return [FourConcealedPungsYaku::create()];
     }
 }
