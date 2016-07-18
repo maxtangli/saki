@@ -49,7 +49,7 @@ class WeakRunMeldType extends WeakMeldType {
         return RunMeldType::create();
     }
 
-    protected function getWaitingTileListImpl(TileList $validMeldTileList) {
+    protected function getWaitingImpl(TileList $validMeldTileList) {
         list(, $min, $max) = $this->getNumbers($validMeldTileList);
         $v = $this->getWaitingTypeImpl($validMeldTileList)->getValue();
         if ($v == WaitingType::MIDDLE_RUN_WAITING) {

@@ -71,7 +71,7 @@ class OverPhaseState extends PhaseState {
             throw new \InvalidArgumentException('Game is not over.');
         }
 
-        $scoreStrategy = $round->getGameData()->getScoreStrategy();
+        $scoreStrategy = $round->getRule()->getScoreStrategy();
         $raw = $round->getPointHolder()->getPointList();
         return $scoreStrategy->rawToFinal($raw);
     }

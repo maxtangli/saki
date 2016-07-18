@@ -76,7 +76,7 @@ class CommandProvider {
      */
     function getAllExecutableList() {
         $round = $this->getRound();
-        $actorList = $round->getGameData()->getPlayerType()
+        $actorList = $round->getRule()->getPlayerType()
             ->getSeatWindList();
         $allExecutableList = (new ArrayList())
             ->fromSelectMany($actorList, [$this, 'getExecutableList']);

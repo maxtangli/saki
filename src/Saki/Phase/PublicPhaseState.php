@@ -62,7 +62,7 @@ class PublicPhaseState extends PhaseState {
      * @return bool
      */
     protected function handleDraw(Round $round) {
-        $drawAnalyzer = $round->getGameData()->getDrawAnalyzer();
+        $drawAnalyzer = $round->getRule()->getDrawAnalyzer();
         $drawOrFalse = $drawAnalyzer->analyzeDrawOrFalse($round);
         if ($drawOrFalse !== false) {
             $drawResult = $drawOrFalse->getResult($round);

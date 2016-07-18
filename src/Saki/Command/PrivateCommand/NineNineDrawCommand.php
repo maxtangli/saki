@@ -34,7 +34,7 @@ class NineNineDrawCommand extends PrivateCommand {
 
     protected function executePlayerImpl(Round $round, Area $actorArea) {
         $result = new AbortiveDrawResult(
-            $round->getGameData()->getPlayerType(),
+            $round->getRule()->getPlayerType(),
             ResultType::create(ResultType::NINE_NINE_DRAW)
         );
         $round->toNextPhase(

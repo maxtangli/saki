@@ -50,8 +50,18 @@ class Open implements Immutable {
      * @return bool
      */
     function valid(Area $area) {
+        // valid SwapCalling
+        // note: seems not good to place here
+        $round = $area->getRound();
+        $swapCalling = $round->getRule()->getSwapCalling();
+        $phaseState = $round->getPhaseState();
+        $targetTile = $area->getHand()->getTarget()->getTile();
+        if (!$swapCalling->allowOpen($phaseState, $targetTile)) {
+            return false;
+        }
+
+        // valid tile
         if ($area->getRiichiStatus()->isRiichi()) {
-            $targetTile = $area->getHand()->getTarget()->getTile();
             return $this->getTile()->equalTo($targetTile, true);
         } else {
             $private = $area->getHand()->getPrivate();

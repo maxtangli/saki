@@ -22,7 +22,7 @@ use Saki\Win\WinTarget;
  */
 class Round {
     // immutable
-    private $gameData;
+    private $rule;
     private $processor;
     // variable
     private $prevailing;
@@ -43,20 +43,20 @@ class Round {
     private $targetHolder;
 
     function __construct() {
-        $gameData = new GameData();
-        $playerList = new PlayerList($gameData->getPlayerType(), $gameData->getScoreStrategy()->getPointSetting()->getInitialPoint());
+        $rule = new Rule();
+        $playerList = new PlayerList($rule->getPlayerType(), $rule->getScoreStrategy()->getPointSetting()->getInitialPoint());
 
         // immutable
-        $this->gameData = $gameData;
+        $this->rule = $rule;
         $this->processor = new CommandProcessor($this, CommandSet::createStandard());
 
         // variable
-        $this->prevailing = Prevailing::createFirst($gameData->getPrevailingContext());
+        $this->prevailing = Prevailing::createFirst($rule->getPrevailingContext());
         $this->riichiHolder = new RiichiHolder($playerList->getPlayerType());
-        $this->pointHolder = new PointHolder($gameData->getScoreStrategy()->getPointSetting());
+        $this->pointHolder = new PointHolder($rule->getScoreStrategy()->getPointSetting());
 
         // round variable
-        $this->wall = new Wall($gameData->getTileSet());
+        $this->wall = new Wall($rule->getTileSet());
         $this->turn = Turn::createFirst();
         $this->phaseState = new NullPhaseState();
         $this->openHistory = new OpenHistory();
@@ -147,10 +147,10 @@ class Round {
     }
 
     /**
-     * @return GameData
+     * @return Rule
      */
-    function getGameData() {
-        return $this->gameData;
+    function getRule() {
+        return $this->rule;
     }
 
     /**
@@ -165,8 +165,8 @@ class Round {
      * @return Command|PlayerCommand
      */
     function parse(string $scriptLine) {
-        $parser = $this->getProcessor()->getParser();
-        return $parser->parseLine($scriptLine);
+        return $this->getProcessor()->getParser()
+            ->parseLine($scriptLine);
     }
 
     /**
@@ -183,7 +183,8 @@ class Round {
      * @throws InvalidCommandException
      */
     function processLine(string $scriptLine, SeatWind $requireActor = null) {
-        $command = $this->getProcessor()->getParser()->parseLine($scriptLine);
+        $command = $this->getProcessor()->getParser()
+            ->parseLine($scriptLine);
         if ($requireActor) {
             if (!$command instanceof PlayerCommand) {
                 throw new InvalidCommandException('Invalid command: not PlayerCommand.');
@@ -342,7 +343,7 @@ class Round {
      */
     function getWinReport(SeatWind $actor) {
         // WinTarget will assert valid player
-        return $this->getGameData()->getWinAnalyzer()
+        return $this->getRule()->getWinAnalyzer()
             ->analyze(new WinTarget($this, $actor));
     }
 

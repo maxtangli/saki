@@ -21,14 +21,14 @@ class RiichiCommand extends PrivateCommand {
     }
 
     protected static function getExecutableListImpl(Round $round, SeatWind $actor, Area $actorArea) {
+        if (false) { // slow
+            $waitingAnalyzer = $round->getRule()->getWinAnalyzer()->getWaitingAnalyzer();
+            $hand = $actorArea->getHand();
+            $futureWaitingList = $waitingAnalyzer->analyzePrivate($hand->getPrivate(), $hand->getMelded());
+            $otherParamsList = $futureWaitingList->toDiscardList();
+            return static::createMany($round, $actor, $otherParamsList);
+        }
         return new ArrayList();
-
-        // slow
-        $waitingAnalyzer = $round->getGameData()->getWinAnalyzer()->getWaitingAnalyzer();
-        $hand = $actorArea->getHand();
-        $futureWaitingList = $waitingAnalyzer->analyzePrivate($hand->getPrivate(), $hand->getMelded());
-        $otherParamsList = $futureWaitingList->toDiscardList();
-        return static::createMany($round, $actor, $otherParamsList);
     }
     //endregion
 

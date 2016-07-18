@@ -932,6 +932,16 @@ rush 80 refactor tests etc. 3.2h
 - [x] refactor Win/Yaku/XXX 0.5h
 - [x] clear to-do-s 0.6h
 
+rush 81 swap-calling 1.4h
+
+- [x] search 0.1h
+- [x] rule.swapCalling 0.1h
+- [x] chow.executable 0.3h
+- [x] test 0.2h
+- [x] discard.executable 0.7h
+- [x] test
+- [x] refactor
+
 rush multiple-player
 
 - [ ] room?
@@ -940,16 +950,21 @@ rush toward 100% rules!
 
 - [ ] add multiple ron
 - [ ] integrate PublicCommandRoller
-- [ ] meld display style
-- [ ] 食替
 - [ ] 流局满贯
 - [ ] 包牌
 - [ ] game over rule confirm & tests
+- [ ] meld display style
 
 rush optimize WaitingAnalyzer: step2
 
 - [ ] optimize analyzePublic
 - [ ] optimize analyzePrivate
+
+rush large scale refactoring
+
+- [ ] red dora design
+- [ ] Claim design
+- [ ] toNextPhase design
 
 refactor process
 

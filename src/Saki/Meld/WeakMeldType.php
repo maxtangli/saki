@@ -21,11 +21,11 @@ abstract class WeakMeldType extends MeldType {
      * @param TileList $meldTileList
      * @return TileList sorted waiting-tile list.
      */
-    final function getWaitingTileList(TileList $meldTileList) {
+    final function getWaiting(TileList $meldTileList) {
         if (!$this->valid($meldTileList)) {
             throw new \InvalidArgumentException();
         }
-        return $this->getWaitingTileListImpl($meldTileList);
+        return $this->getWaitingImpl($meldTileList);
     }
 
     /**
@@ -49,7 +49,7 @@ abstract class WeakMeldType extends MeldType {
      * @param TileList $validMeldTileList
      * @return TileList
      */
-    abstract protected function getWaitingTileListImpl(TileList $validMeldTileList);
+    abstract protected function getWaitingImpl(TileList $validMeldTileList);
 
     /**
      * @param TileList $validMeldTileList

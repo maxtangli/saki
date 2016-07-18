@@ -105,7 +105,7 @@ class Meld extends TileList implements Immutable {
         $actualMeldType = $meldType ?? self::getMeldTypeAnalyzer()->analyzeMeldType($l); // validate
         if (!$actualMeldType->valid($l)) {
             throw new \InvalidArgumentException(
-                sprintf('Invalid $meldType[%s] for $tiles[%s].', $meldType, $this)
+                sprintf('Invalid $meldType[%s] for $tiles[%s].', $meldType, implode(',', $tiles))
             );
         }
 
@@ -314,7 +314,7 @@ class Meld extends TileList implements Immutable {
             return false;
         }
 
-        $waitingTileList = $this->getMeldType()->getWaitingTileList($this);
+        $waitingTileList = $this->getMeldType()->getWaiting($this);
         return $waitingTileList->valueExist($newTile);
     }
 
@@ -339,7 +339,7 @@ class Meld extends TileList implements Immutable {
      * @return TileList
      */
     function getWaiting() {
-        return $this->getMeldType()->getWaitingTileList($this);
+        return $this->getMeldType()->getWaiting($this);
     }
 
     /**

@@ -91,7 +91,7 @@ class MeldTypeTest extends \SakiTestCase {
         $waitingType = WaitingType::create($waitingTypeValue);
 
         // test waitingTiles, waitingType
-        $this->assertEquals($waitingTileList->toArray(), $weakRun->getWaitingTileList($tileList)->toArray());
+        $this->assertEquals($waitingTileList->toArray(), $weakRun->getWaiting($tileList)->toArray());
         $this->assertEquals($waitingType, $weakRun->getWaitingType($tileList), $weakRun->getWaitingType($tileList));
 
         // test toTargetMeld

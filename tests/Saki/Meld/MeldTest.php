@@ -116,8 +116,8 @@ class MeldTest extends \SakiTestCase {
     function testWeakThirteenOrphan() {
         $mt = WeakThirteenOrphanMeldType::create();
 
-        $this->assertArrayList('19m19p19sESWNCPF', $mt->getWaitingTileList(TileList::fromString('19m19p19sESWNCPF')));
-        $this->assertArrayList('9m', $mt->getWaitingTileList(TileList::fromString('11m19p19sESWNCPF')));
+        $this->assertArrayList('19m19p19sESWNCPF', $mt->getWaiting(TileList::fromString('19m19p19sESWNCPF')));
+        $this->assertArrayList('9m', $mt->getWaiting(TileList::fromString('11m19p19sESWNCPF')));
 
         $this->assertFalse($mt->valid(TileList::fromString('111m9p19sESWNCPF')));
     }

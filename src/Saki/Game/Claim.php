@@ -13,13 +13,13 @@ class Claim implements Immutable {
     /**
      * @param SeatWind $actor
      * @param Turn $turn
-     * @param Tile $tile
+     * @param Tile $targetTile
      * @param Meld $fromMelded
      * @return Claim
      */
-    static function createFromMelded(SeatWind $actor, Turn $turn, Tile $tile, Meld $fromMelded) {
-        $toMeld = $fromMelded->canToTargetMeld($tile)
-            ? $fromMelded->toTargetMeld($tile)
+    static function createFromMelded(SeatWind $actor, Turn $turn, Tile $targetTile, Meld $fromMelded) {
+        $toMeld = $fromMelded->canToTargetMeld($targetTile)
+            ? $fromMelded->toTargetMeld($targetTile)
             : null;
         return new self($actor, $turn, $toMeld, $fromMelded);
     }
@@ -30,32 +30,37 @@ class Claim implements Immutable {
      * @param Tile[] $tiles
      * @param MeldType $meldType
      * @param bool $concealed
+     * @param Tile $otherTile
      * @return Claim
      */
     static function create(SeatWind $actor, Turn $turn,
-                           array $tiles, MeldType $meldType, bool $concealed) {
+                           array $tiles, MeldType $meldType, bool $concealed,
+                           Tile $otherTile = null) {
         $toMeld = Meld::valid($tiles, $meldType, $concealed)
             ? new Meld($tiles, $meldType, $concealed)
             : null;
-        return new self($actor, $turn, $toMeld, null);
+        return new self($actor, $turn, $toMeld, null, $otherTile);
     }
 
     private $actor;
     private $turn;
     private $toMeld;
     private $fromMelded;
+    private $otherTile; // todo remove?
 
     /**
      * @param SeatWind $actor
      * @param Turn $turn
      * @param Meld $toMeld
      * @param Meld|null $fromMelded
+     * @param Tile $otherTile
      */
-    protected function __construct(SeatWind $actor, Turn $turn, Meld $toMeld, Meld $fromMelded = null) {
+    protected function __construct(SeatWind $actor, Turn $turn, Meld $toMeld, Meld $fromMelded = null, Tile $otherTile = null) {
         $this->actor = $actor;
         $this->turn = $turn;
         $this->toMeld = $toMeld;
         $this->fromMelded = $fromMelded;
+        $this->otherTile = $otherTile;
     }
 
     /**
@@ -115,32 +120,56 @@ class Claim implements Immutable {
     }
 
     /**
+     * Used in: SwapCalling
+     * @return array
+     */
+    function getFromSelfTiles() {
+        return $this->getToMeld()->toTileList()
+            ->remove($this->getFromMeldedTiles())
+            ->remove($this->otherTile ?? [])
+            ->toArray();
+    }
+
+    /**
      * @param Area $area
      * @return bool
      */
     function valid(Area $area) {
+        // params ok
         if (!$this->validToMeld()) {
             return false;
         }
 
+        $toMeld = $this->getToMeld();
+        $round = $area->getRound();
+        $hand = $area->getHand();
+
         // phaseState allow claim
-        $allowClaim = $area->getRound()->getPhaseState()->allowClaim();
+        $allowClaim = $round->getPhaseState()->allowClaim();
         if (!$allowClaim) {
             return false;
         }
 
+        // chow commands require SwapCalling.executable
+        // note: seems not good to place here
+        $swapCalling = $round->getRule()->getSwapCalling();
+        $validSwapCalling = !$toMeld->isRun()
+            || $swapCalling->allowChow($hand->getPublic(), $hand->getTarget()->getTile(), $toMeld);
+        if (!$validSwapCalling) {
+            return false;
+        }
+
         // kong commands require ableDrawReplacement
-        $toMeld = $this->getToMeld();
+        // note: seems not good to place here
         $validDrawReplacementAble = !$toMeld->isQuad()
-            || $area->getRound()->getWall()->getDeadWall()->isAbleDrawReplacement();
+            || $round->getWall()->getDeadWall()->isAbleDrawReplacement();
         if (!$validDrawReplacementAble) {
             return false;
         }
 
         // able to create meld
-        $hand = $area->getHand();
         $validHand = $hand->getPrivate()->valueExist($this->getFromTiles(), Tile::getEqual(true)) // handle red
-        && $hand->getMelded()->valueExist($this->getFromMeldedOrNull() ?? [], Meld::getEqual(true, true)); // handle red
+            && $hand->getMelded()->valueExist($this->getFromMeldedOrNull() ?? [], Meld::getEqual(true, true)); // handle red
         if (!$validHand) {
             return false;
         }

@@ -51,6 +51,23 @@ class PrivatePhaseState extends PhaseState {
     }
 
     /**
+     * @return bool
+     */
+    function hasClaim() {
+        return $this->claim !== null;
+    }
+    
+    /**
+     * @return Claim
+     */
+    function getClaim() {
+        if (!$this->hasClaim()) {
+            throw new \BadMethodCallException();
+        }
+        return $this->claim;
+    }
+    
+    /**
      * @return boolean
      */
     function allowClaim() {
@@ -79,7 +96,7 @@ class PrivatePhaseState extends PhaseState {
                 ->setTarget($newTarget);
         }
 
-        if ($this->claim !== null) {
+        if ($this->hasClaim()) {
             $target = $this->target ?? $round->getOpenHistory()->getLastOpen()->toTarget();
             $round->getTargetHolder()
                 ->setTarget($target);

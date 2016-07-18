@@ -28,7 +28,7 @@ class WeakPairMeldType extends WeakMeldType {
         return PairMeldType::create();
     }
 
-    protected function getWaitingTileListImpl(TileList $validMeldTileList) {
+    protected function getWaitingImpl(TileList $validMeldTileList) {
         return new TileList([$validMeldTileList[0]]);
     }
 

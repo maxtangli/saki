@@ -72,7 +72,8 @@ abstract class PublicClaimCommand extends PublicCommand {
             $this->getRound()->getTurn(),
             $this->getClaimTiles(),
             $this->getClaimMeldType(),
-            false
+            false,
+            $this->getActorArea()->getHand()->getTarget()->getTile()
         );
     }
 

@@ -13,7 +13,7 @@ class Riichi extends Open {
     }
 
     function valid(Area $area) {
-        $waitingAnalyzer = $area->getRound()->getGameData()
+        $waitingAnalyzer = $area->getRound()->getRule()
             ->getWinAnalyzer()->getWaitingAnalyzer();
         $hand = $area->getHand();
         list($private, $melded, $tile) = [$hand->getPrivate(), $hand->getMelded(), $this->getTile()];

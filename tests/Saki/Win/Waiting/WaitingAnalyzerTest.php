@@ -9,7 +9,7 @@ class WaitingAnalyzerTest extends \SakiTestCase {
      */
     function testPublicData(string $expected, string $public, string $melded) {
         $round = $this->getInitRound();
-        $waitingAnalyzer = $round->getGameData()->getWinAnalyzer()->getWaitingAnalyzer();
+        $waitingAnalyzer = $round->getRule()->getWinAnalyzer()->getWaitingAnalyzer();
         $waitingTileList = $waitingAnalyzer->analyzePublic(
             TileList::fromString($public),
             MeldList::fromString($melded)
@@ -44,7 +44,7 @@ class WaitingAnalyzerTest extends \SakiTestCase {
      */
     function testPrivateData(string $expected, string $private, string $melded) {
         $round = $this->getInitRound();
-        $waitingAnalyzer = $round->getGameData()->getWinAnalyzer()->getWaitingAnalyzer();
+        $waitingAnalyzer = $round->getRule()->getWinAnalyzer()->getWaitingAnalyzer();
         $futureWaitingList = $waitingAnalyzer->analyzePrivate(
             TileList::fromString($private),
             MeldList::fromString($melded)

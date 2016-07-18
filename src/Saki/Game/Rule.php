@@ -14,13 +14,14 @@ use Saki\Win\Yaku\YakuSet;
  * Immutable data during a game.
  * @package Saki\Game
  */
-class GameData implements Immutable {
+class Rule implements Immutable {
     // specified
     private $playerType;
     private $prevailingContext;
     private $scoreStrategy;
     private $tileSet;
     private $yakuSet;
+    private $swapCalling;
     // generated
     private $winAnalyzer;
     private $drawAnalyzer;
@@ -43,6 +44,7 @@ class GameData implements Immutable {
         ]);
         $this->tileSet = TileSet::createStandard();
         $this->yakuSet = YakuSet::createStandard();
+        $this->swapCalling = new SwapCalling(false);
         // generated
         $this->winAnalyzer = new WinAnalyzer($this->yakuSet);
         $this->drawAnalyzer = DrawAnalyzer::createStandard();
@@ -81,6 +83,13 @@ class GameData implements Immutable {
      */
     function getYakuSet() {
         return $this->yakuSet;
+    }
+
+    /**
+     * @return SwapCalling
+     */
+    function getSwapCalling() {
+        return $this->swapCalling;
     }
 
     /**

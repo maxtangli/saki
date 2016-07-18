@@ -19,7 +19,7 @@ class FourWindDraw extends Draw {
 
     protected function getResultImpl(Round $round) {
         return new AbortiveDrawResult(
-            $round->getGameData()->getPlayerType(),
+            $round->getRule()->getPlayerType(),
             ResultType::create(ResultType::FOUR_WIND_DRAW)
         );
     }

@@ -28,7 +28,7 @@ class PairMeldType extends WeakMeldType {
     //endregion
 
     //region WeakMeldType impl
-    protected function getWaitingTileListImpl(TileList $validMeldTileList) {
+    protected function getWaitingImpl(TileList $validMeldTileList) {
         return new TileList([$validMeldTileList[0]]);
     }
 

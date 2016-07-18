@@ -95,6 +95,16 @@ class RoundTest extends \SakiTestCase {
         $this->assertNotExecutable('discard E 4s');
     }
 
+    function testDiscardSwapCalling() {
+        $round = $this->getInitRound();
+        $round->process(
+            'mockHand E 1s; discard E 1s',
+            'mockHand S 1234s; chow S 23s'
+        );
+        $this->assertNotExecutable('discard S 1s');
+        $this->assertNotExecutable('discard S 4s');
+    }
+
     function testReach() {
         // todo
     }
@@ -115,7 +125,6 @@ class RoundTest extends \SakiTestCase {
 
     function testChowRequireNext() {
         $round = $this->getInitRound();
-
         $round->process(
             'skip 3; mockHand N 3m; discard N 3m',
             'mockHand E 450m12346789p13s; mockHand S 450m12346789p13s; mockHand W 450m12346789p13s'
@@ -123,6 +132,18 @@ class RoundTest extends \SakiTestCase {
         $this->assertExecutable('chow E 45m');
         $this->assertNotExecutable('chow S 45m');
         $this->assertNotExecutable('chow W 45m');
+    }
+
+    function testChowSwapCalling(){
+        $round = $this->getInitRound();
+        $round->process(
+            'mockHand E 1111s; concealedKong E 1111s',
+            'mockHand E 1111s; concealedKong E 1111s',
+            'mockHand E 1111s; concealedKong E 1111s',
+            'mockHand E 1234sC; discard E C; skip 3',
+            'mockHand N 1s; discard N 1s'
+        );
+        $this->assertNotExecutable('chow E 23s');
     }
 
     function testPung() {

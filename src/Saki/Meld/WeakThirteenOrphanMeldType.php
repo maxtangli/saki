@@ -50,7 +50,7 @@ class WeakThirteenOrphanMeldType extends WeakMeldType {
         return ThirteenOrphanMeldType::create();
     }
 
-    protected function getWaitingTileListImpl(TileList $validMeldTileList) {
+    protected function getWaitingImpl(TileList $validMeldTileList) {
         $uniqueTileList = $validMeldTileList->toTileList()->distinct();
         return $uniqueTileList->count() == 13 ?
             $uniqueTileList :
