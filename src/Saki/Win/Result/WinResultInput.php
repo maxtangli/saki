@@ -146,9 +146,10 @@ class WinResultInput {
      * @return WinResultInputItem
      */
     function getItem(SeatWind $seatWind) {
-        return $this->getItemList()->getSingle(function (WinResultInputItem $item) use ($seatWind) {
+        $isSeatWind = function (WinResultInputItem $item) use ($seatWind) {
             return $item->getSeatWind() == $seatWind;
-        });
+        };
+        return $this->getItemList()->getSingle($isSeatWind);
     }
 
     /**
@@ -177,26 +178,29 @@ class WinResultInput {
      * @return ArrayList An ArrayList of WinResultInputItem.
      */
     function getWinnerItemList() {
-        return $this->getItemList()->getCopy()->where(function (WinResultInputItem $item) {
+        $isWinner = function (WinResultInputItem $item) {
             return $item->isWinner();
-        });
+        };
+        return $this->getItemList()->getCopy()->where($isWinner);
     }
 
     /**
      * @return int
      */
     function getWinnerCount() {
-        return $this->getItemList()->getCount(function (WinResultInputItem $item) {
+        $isWinner = function (WinResultInputItem $item) {
             return $item->isWinner();
-        });
+        };
+        return $this->getItemList()->getCount($isWinner);
     }
 
     /**
      * @return int
      */
     function getLoserCount() {
-        return $this->getItemList()->getCount(function (WinResultInputItem $item) {
+        $isLoser = function (WinResultInputItem $item) {
             return $item->isLoser();
-        });
+        };
+        return $this->getItemList()->getCount($isLoser);
     }
 }

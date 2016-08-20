@@ -4,6 +4,7 @@ namespace Saki\Meld;
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 use Saki\Util\Singleton;
+use Saki\Util\Utils;
 
 /**
  * A specific pattern for a not empty TileList.
@@ -15,9 +16,7 @@ abstract class MeldType extends Singleton {
      */
     function __toString() {
         // A\B\XXClass -> XXClass
-        $actualClass = get_called_class();
-        $lastSeparatorPos = strrpos($actualClass, '\\');
-        return substr($actualClass, $lastSeparatorPos + 1);
+        return Utils::strLastPart(get_called_class());
     }
 
     /**

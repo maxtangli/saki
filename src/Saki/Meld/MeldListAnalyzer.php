@@ -13,6 +13,10 @@ class MeldListAnalyzer {
     private $meldTypes;
     private $allowPureWeakCount;
 
+    /**
+     * @param MeldType[] $meldTypes
+     * @param int $allowPureWeakCount
+     */
     function __construct(array $meldTypes, int $allowPureWeakCount = 0) {
         $this->meldTypes = $meldTypes;
         $this->allowPureWeakCount = $allowPureWeakCount;

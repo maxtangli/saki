@@ -20,25 +20,44 @@ class Utils {
 
     /**
      * @param $v
-     * @param $lowerLimit
-     * @param $upperLimit
+     * @param $lower
+     * @param $upper
      * @return bool
      */
-    static function inRange($v, $lowerLimit, $upperLimit) {
-        return $lowerLimit <= $v && $v <= $upperLimit;
+    static function inRange($v, $lower, $upper) {
+        return $lower <= $v && $v <= $upper;
     }
 
     /**
      * @param string $delimiter
-     * @param string $string
+     * @param string $s
      * @return string[]
      */
-    static function explodeNotEmpty(string $delimiter, string $string) {
-        $tokens = explode($delimiter, $string);
+    static function explodeNotEmpty(string $delimiter, string $s) {
+        $tokens = explode($delimiter, $s);
         if ($tokens === false) {
             throw new \InvalidArgumentException();
         }
         return $tokens;
+    }
+
+    /**
+     * @param string $s
+     * @param string $remove
+     * @param string $beforeNeedle
+     * @return string
+     */
+    static function strLastPart(string $s, string $remove = null, string $beforeNeedle = null) {
+        $actualBeforeNeedle = $beforeNeedle ?? "\\";
+        $actualRemove = $remove ?? "";
+
+        $lastPart = substr(strrchr($s, $actualBeforeNeedle), 1);
+        if ($lastPart === false) {
+            throw new \InvalidArgumentException();
+        }
+
+        $lastPart = str_replace($actualRemove, '', $lastPart);
+        return $lastPart;
     }
 
     /**

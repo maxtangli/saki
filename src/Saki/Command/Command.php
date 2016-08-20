@@ -1,24 +1,9 @@
 <?php
-/*
-Command
-- Command.new(context, specificParams...), Command.execute().
-- goal: support central control on commands, such as history, priority,
-- Usage: new DiscardCommand($context, $player, $tile).execute();
-
-CommandParser
-- goal: support string2command
-- CommandParser.parse(string): first token as class, remains as params.
-- Command.fromString(string): multi-poly impl of parse(string).
-- Usage: CommandParser.parse('discard E 1p'), DiscardCommand.fromString('discard E 1p');
-
-Command.executable() execute()
-- executable: client's responsibility.
-- execution
- */
 namespace Saki\Command;
 
 use Saki\Command\ParamDeclaration\ParamDeclaration;
 use Saki\Game\Round;
+use Saki\Util\Utils;
 
 /**
  * goal
@@ -32,11 +17,7 @@ abstract class Command {
      */
     static function getName() {
         // Saki\Command\DiscardCommand -> discard
-        $cls = get_called_class();
-        $s = substr($cls, strrpos($cls, '\\') + 1);
-        $s = str_replace('Command', '', $s);
-        $s = lcfirst($s);
-        return $s;
+        return lcfirst(Utils::strLastPart(get_called_class(), 'Command'));
     }
 
     /**
@@ -127,14 +108,12 @@ abstract class Command {
     /**
      * @param Round $round
      * @return bool
-     *
      */
     abstract protected function executableImpl(Round $round);
 
     /**
      * @param Round $round
      * @return
-     *
      */
     abstract protected function executeImpl(Round $round);
     //endregion

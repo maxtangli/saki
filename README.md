@@ -7,7 +7,7 @@ Develop progress
 function   | progress | remark
 ---------- | -------- | ------
 rule logic | 95%      | php7, phpunit
-network    | 1%,ing   | websocket, Racket(php library)
+network    | 10%,ing  | websocket, Racket(php library)
 UI         | 0%       | html5 canvas, to support any devices with a browser
 DB         | 0%       | nosql, since not so frequently db access
 src reading| 0%       | read open source mahjong projects to improve
@@ -21,8 +21,8 @@ Prerequisite: php7, composer.
 2. cd saki
 3. composer install
 4. setup server: php bin/server.php
-5. setup client: open src/Nodoka/web/index.html with any browser [supports websocket!](https://www.websocket.org/echo.html).
+5. setup client: open src/Nodoka/web/index.html with any browser [supports websocket](https://www.websocket.org/echo.html).
 
-## usage
+## demo usage
 
 ![demo UI screen shot by 2016-07-09](https://github.com/maxtangli/saki/blob/master/reference/Nodoka_dev.png)

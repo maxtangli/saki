@@ -942,18 +942,37 @@ rush 81 swap-calling 1.4h
 - [x] test
 - [x] refactor
 
-rush multiple-player
+rush integrate PublicCommandBuffer ?5h?
 
-- [ ] room?
+- [ ] integrate PublicCommandBuffer
+
+rush multiple ron ?5h?
+
+- [ ] multiple ron flow
 
 rush toward 100% rules!
 
-- [ ] add multiple ron
-- [ ] integrate PublicCommandRoller
-- [ ] 流局满贯
-- [ ] 包牌
-- [ ] game over rule confirm & tests
-- [ ] meld display style
+- [ ] 流局满贯 ?5h?
+- [ ] 包牌 ?5h?
+- [ ] game over rule confirm & tests ?5h?
+- [ ] meld display style ?5h?
+
+rush multiple-player ?30h?
+
+- [ ] room?
+
+rush UI ?30h?
+
+- [ ] wall
+- [ ] areas
+- [ ] round data
+- [ ] winReport
+- [ ] result
+
+rush least DB ?10h?
+
+- [ ] which nosql?
+- [ ] save user win/lose/draw statistics
 
 rush optimize WaitingAnalyzer: step2
 
