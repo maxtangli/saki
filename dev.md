@@ -942,6 +942,12 @@ rush 81 swap-calling 1.4h
 - [x] test
 - [x] refactor
 
+rush 82 hosting
+
+- [x] setup AWS LAMP + websocket server 6.5h
+- [x] test with my friend LS 0.5h
+- [ ] improve
+
 rush integrate PublicCommandBuffer ?5h?
 
 - [ ] integrate PublicCommandBuffer

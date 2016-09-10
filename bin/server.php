@@ -1,5 +1,5 @@
 <?php
-require dirname(__DIR__) . '../vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 
 use Nodoka\Server\Play;
 use Ratchet\Http\HttpServer;
@@ -15,4 +15,5 @@ $server = IoServer::factory(
     8080
 );
 
+echo "server run.\n";
 $server->run();

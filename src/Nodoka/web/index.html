@@ -7,7 +7,9 @@
 <body>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
 <script>
-    var conn = new WebSocket('ws://localhost:8080');
+    //var url = 'ws://localhost:8080';
+    var url = 'ws://ec2-52-198-24-187.ap-northeast-1.compute.amazonaws.com:8080/';
+    var conn = new WebSocket(url);
     conn.onopen = init;
     conn.onmessage = receive;
 
