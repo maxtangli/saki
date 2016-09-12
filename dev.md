@@ -942,11 +942,35 @@ rush 81 swap-calling 1.4h
 - [x] test
 - [x] refactor
 
-rush 82 hosting
+rush 82 hosting 8h
 
 - [x] setup AWS LAMP + websocket server 6.5h
 - [x] test with my friend LS 0.5h
-- [ ] improve
+- [x] nohup php bin/server.php &
+- access privilege for /var/www symbol link fies 1h
+
+rush 83 UI: smart device UI, hand, tileSet 3.7h
+
+- [x] prepare images 0.2h
+- [x] search UI library, know jQuery Mobile 0.7h
+
+- [x] button group 0.2h
+- icon only button 1.2h
+- [x] tile button: use text 0.1h
+- [x] hand prototype 0.7h
+- [x] tileSet 0.6h
+
+rush 84 UI
+
+- [ ] area
+- [ ] round data
+
+rush UI ?30h?
+
+- [ ] wall
+- [ ] areas
+- [ ] winReport
+- [ ] result
 
 rush integrate PublicCommandBuffer ?5h?
 
@@ -966,14 +990,6 @@ rush toward 100% rules!
 rush multiple-player ?30h?
 
 - [ ] room?
-
-rush UI ?30h?
-
-- [ ] wall
-- [ ] areas
-- [ ] round data
-- [ ] winReport
-- [ ] result
 
 rush least DB ?10h?
 

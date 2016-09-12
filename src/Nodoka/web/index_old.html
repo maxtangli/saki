@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Nodoka dev</title>
+</head>
+<body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+<script>
+    //var url = 'ws://localhost:8080';
+    var url = 'ws://ec2-52-198-24-187.ap-northeast-1.compute.amazonaws.com:8080/';
+    var conn = new WebSocket(url);
+    conn.onopen = init;
+    conn.onmessage = receive;
+
+    function init() {
+        addLog("Connection established!");
+
+        $("#command").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#send").click();
+            }
+        });
+    }
+
+    function send(command) {
+        conn.send(command);
+    }
+
+    function receive(response) {
+        var jsonString = response.data;
+
+        addLog(jsonString);
+
+        var view = new View('gui');
+        view.render(jsonString);
+    }
+
+    function addLog(text) {
+        var log = $('#log');
+        var newVal = log.val() + text + '\n\n';
+        log.val(newVal);
+
+        log.prop('scrollTop', log.prop('scrollHeight'));
+    }
+
+    function clearLog() {
+        $('#log').val('');
+    }
+
+    View = function (divID) {
+        this.div = $('#' + divID);
+        return this;
+    };
+
+    View.prototype = {
+        render: function (jsonString) {
+            var data = JSON.parse(jsonString);
+            if (data.result != 'ok') {
+                return;
+            }
+
+            this.div.html(this.allView(data));
+        },
+
+        allView: function (data) {
+            return this.roundView(data.round) + '<br/>'
+                    + this.wallView(data.wall) + '<br/>'
+                    + this.areasView(data.areas) + '<br/>';
+        },
+
+        roundView: function (round) {
+            return 'gameover:' + round.isGameOver + '<br/>'
+                    + 'prevailing:' + round.prevailing + '<br/>'
+                    + 'phase:' + round.phase + '<br/>'
+                    + 'result:' + round.result + '<br/>'
+                    + 'winReports:' + '<br/>' + this.winReportsView(round.winReports);
+        },
+
+        winReportsView: function (winReports) {
+            if (winReports.length == 0) {
+                return '';
+            }
+
+            var w = winReports[0]; // todo multiple - win
+            return this.spaceView() + w.actor + this.spaceView() + w.fan + 'fan' + w.fu + 'fu' + '<br/>'
+                    + this.spaceView() + w.yakuItems.join('<br/>' + this.spaceView());
+        },
+
+        wallView: function (wall) {
+            return 'remainTileCount:' + wall.remainTileCount + '<br/>'
+                    + 'doraIndicators:' + this.tilesView(wall.doraIndicators) + '<br/>'
+                    + 'uraDoraIndicators:' + this.tilesView(wall.uraDoraIndicators) + '<br/>';
+        },
+
+        areasView: function (areas) {
+            return areas.map(this.areaView, this).join('');
+        },
+
+        areaView: function (area) {
+            return area.actor
+                    + this.spaceView() + area.point + '<br/>'
+                    + 'discard:' + this.tilesView(area.discard) + '<br/>'
+                    + 'target:' + this.targetView(area.target) + '<br/>'
+                    + 'hand:' + this.tilesView(area.public)
+                    + this.spaceView() + this.meldedView(area.melded, this) + '<br/>'
+                    + this.commandsView(area.commands)
+                    + '<br/>';
+        },
+
+        handView: function (area) {
+            return area.actor
+                    + this.spaceView() + area.point + '<br/>'
+                    + 'discard:' + this.tilesView(area.discard) + '<br/>'
+                    + 'target:' + this.targetView(area.target) + '<br/>'
+                    + 'hand:' + this.tilesView(area.public)
+                    + this.spaceView() + this.meldedView(area.melded, this);
+        },
+
+        tilesView: function (tiles) {
+            return tiles.map(this.tileView, this).join('');
+        },
+
+        targetView: function (targetTile) {
+            return targetTile !== null ? this.tileView(targetTile) : '';
+        },
+
+        meldedView: function (melded) {
+            var s = '';
+            for (var meld of melded) {
+                s += this.meldView(meld) + this.spaceView();
+            }
+            return s;
+//            return melded.map(this.meldedView, this).join(this.spaceView);
+        },
+
+        meldView: function (meld) {
+            return '<input type="button" value="' + meld + '" disabled="true">';
+        },
+
+        tileView: function (tile) {
+            return '<input type="button" value="' + tile + '" disabled="true">';
+        },
+
+        commandsView: function (commands) {
+            return 'commands:' + commands.map(this.commandView).join(this.spaceView());
+        },
+
+        commandView: function (command) {
+            return '<input type="button" value="' + command + '" onclick="send(this.value)">';
+        },
+
+        spaceView: function () {
+            return '&nbsp;&nbsp;';
+        }
+    }
+</script>
+
+<fieldset>
+    <legend>log</legend>
+    <textarea id="log" style="margin: 0px; width: 596px; height: 250px;"></textarea><br/>
+    <input type="button" value="clear" onclick="clearLog()"/><br/>
+</fieldset>
+<br/>
+
+<fieldset>
+    <legend>free commands</legend>
+    free input:<input id="command" type="text" value="type command here"/>
+    <input id="send" type="button" value="send" onclick="send($('#command').val())"/><br/>
+    debug commands:<input type="button" value="init" onclick="send(this.value)"/>
+    <input type="button" value="mockHand E 123456789m12344p" onclick="send(this.value)"/>
+    <input type="button" value="mockHand E 11123456789999m" onclick="send(this.value)"/>
+    <br/>
+</fieldset>
+<br/>
+
+<fieldset>
+    <legend>gui(debug ver)</legend>
+    <div id="gui"></div>
+</fieldset>
+
+</body>
+</html>

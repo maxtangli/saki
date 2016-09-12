@@ -1,183 +1,112 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Nodoka dev</title>
+    <title>saki-dev</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css"/>
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    <link rel="stylesheet" href="css/saki.css"/>
 </head>
+
 <body>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
-<script>
-    //var url = 'ws://localhost:8080';
-    var url = 'ws://ec2-52-198-24-187.ap-northeast-1.compute.amazonaws.com:8080/';
-    var conn = new WebSocket(url);
-    conn.onopen = init;
-    conn.onmessage = receive;
 
-    function init() {
-        addLog("Connection established!");
+<div data-role="page" id="testpage">
+    <div data-role="header">
+        <h1>Default theme</h1>
+    </div><!-- /header -->
 
-        $("#command").keyup(function (event) {
-            if (event.keyCode == 13) {
-                $("#send").click();
-            }
-        });
-    }
+    <div class="ui-content" role="main">
+        <div id="tileSet">
+            <div id="tileSet-m" data-role="controlgroup" data-type="horizontal">
+                <a href="#" class="ui-btn"><span class="black">一</span><br/><span class="red">萬</span></a>
+                <a href="#" class="ui-btn"><span class="black">二</span><br/><span class="red">萬</span></a>
+                <a href="#" class="ui-btn"><span class="black">三</span><br/><span class="red">萬</span></a>
+                <a href="#" class="ui-btn"><span class="black">四</span><br/><span class="red">萬</span></a>
+                <a href="#" class="ui-btn"><span class="black">五</span><br/><span class="red">萬</span></a>
+                <a href="#" class="ui-btn"><span class="red">五</span><br/><span class="red">萬</span></a>
+                <a href="#" class="ui-btn"><span class="black">六</span><br/><span class="red">萬</span></a>
+                <a href="#" class="ui-btn"><span class="black">七</span><br/><span class="red">萬</span></a>
+                <a href="#" class="ui-btn"><span class="black">八</span><br/><span class="red">萬</span></a>
+                <a href="#" class="ui-btn"><span class="black">九</span><br/><span class="red">萬</span></a>
+            </div>
+            <div id="tileSet-p" data-role="controlgroup" data-type="horizontal">
+                <a href="#" class="ui-btn"><span class="red">一</span><br/><span class="black">筒</span></a>
+                <a href="#" class="ui-btn"><span class="black">二</span><br/><span class="black">筒</span></a>
+                <a href="#" class="ui-btn"><span class="red">三</span><br/><span class="black">筒</span></a>
+                <a href="#" class="ui-btn"><span class="black">四</span><br/><span class="black">筒</span></a>
+                <a href="#" class="ui-btn"><span class="red">五</span><br/><span class="black">筒</span></a>
+                <a href="#" class="ui-btn"><span class="red">五</span><br/><span class="red">筒</span></a>
+                <a href="#" class="ui-btn"><span class="red">六</span><br/><span class="black">筒</span></a>
+                <a href="#" class="ui-btn"><span class="red">七</span><br/><span class="black">筒</span></a>
+                <a href="#" class="ui-btn"><span class="black">八</span><br/><span class="black">筒</span></a>
+                <a href="#" class="ui-btn"><span class="red">九</span><br/><span class="black">筒</span></a>
+            </div>
+            <div id="tileSet-s" data-role="controlgroup" data-type="horizontal">
+                <a href="#" class="ui-btn"><span class="red">一</span><br/><span class="green">索</span></a>
+                <a href="#" class="ui-btn"><span class="green">二</span><br/><span class="green">索</span></a>
+                <a href="#" class="ui-btn"><span class="green">三</span><br/><span class="green">索</span></a>
+                <a href="#" class="ui-btn"><span class="green">四</span><br/><span class="green">索</span></a>
+                <a href="#" class="ui-btn"><span class="red">五</span><br/><span class="green">索</span></a>
+                <a href="#" class="ui-btn"><span class="red">五</span><br/><span class="red">索</span></a>
+                <a href="#" class="ui-btn"><span class="green">六</span><br/><span class="green">索</span></a>
+                <a href="#" class="ui-btn"><span class="red">七</span><br/><span class="green">索</span></a>
+                <a href="#" class="ui-btn"><span class="green">八</span><br/><span class="green">索</span></a>
+                <a href="#" class="ui-btn"><span class="red">九</span><br/><span class="green">索</span></a>
+            </div>
+            <div id="tileSet-hornor" data-role="controlgroup" data-type="horizontal">
+                <a href="#" class="ui-btn"><span class="black">東</span><br/>　</a>
+                <a href="#" class="ui-btn"><span class="black">南</span><br/>　</a>
+                <a href="#" class="ui-btn"><span class="black">西</span><br/>　</a>
+                <a href="#" class="ui-btn"><span class="black">北</span><br/>　</a>
+                <a href="#" class="ui-btn"><span class="red">中</span><br/>　</a>
+                <a href="#" class="ui-btn"><span class="white">白</span><br/>　</a>
+                <a href="#" class="ui-btn"><span class="green">発</span><br/>　</a>
+            </div>
+            <div id="tileSet-target-wall" data-role="controlgroup" data-type="horizontal" class="ui-inline">
+                <a href="#" class="ui-btn">　<br/>　</a>
+            </div>
+            <div id="tileSet-target-public" data-role="controlgroup" data-type="horizontal" class="ui-inline">
+                <a href="#" class="ui-btn ui-state-disabled">　<br/>　</a>
+            </div>
+        </div>
 
-    function send(command) {
-        conn.send(command);
-    }
+        <div id="hand">
+            <div id="public" data-role="controlgroup" data-type="horizontal" class="ui-inline">
+                <a href="#" class="ui-btn"><span class="black">一</span><br/><span class="red">萬</span></a>
+                <a href="#" class="ui-btn"><span class="black">二</span><br/><span class="red">萬</span></a>
+                <a href="#" class="ui-btn"><span class="black">三</span><br/><span class="red">萬</span></a>
+                <a href="#" class="ui-btn"><span class="black">四</span><br/><span class="red">萬</span></a>
+                <a href="#" class="ui-btn"><span class="black">五</span><br/><span class="red">萬</span></a>
+                <a href="#" class="ui-btn"><span class="black">六</span><br/><span class="red">萬</span></a>
+                <a href="#" class="ui-btn"><span class="red">中</span><br/>　</a>
+            </div>
 
-    function receive(response) {
-        var jsonString = response.data;
+            <div id="target" data-role="controlgroup" data-type="horizontal" class="ui-inline">
+                <a href="#" class="ui-btn ui-state-disabled"><span class="black">　</span><br/>&nbsp;</a>
+            </div>
 
-        addLog(jsonString);
+            <div id="declare" class="ui-inline">
+                <div data-role="controlgroup" data-type="horizontal" class="ui-inline">
+                    <a href="#" class="ui-btn"><span class="red">中</span><br/>　</a>
+                    <a href="#" class="ui-btn"><span class="white">白</span><br/>　</a>
+                    <a href="#" class="ui-btn"><span class="green">発</span><br/>　</a>
+                </div>
 
-        var view = new View('gui');
-        view.render(jsonString);
-    }
+                <div data-role="controlgroup" data-type="horizontal" class="ui-inline">
+                    <a href="#" class="ui-btn"><span class="red">七</span><br/><span class="black">筒</span></a>
+                    <a href="#" class="ui-btn"><span class="black">八</span><br/><span class="black">筒</span></a>
+                    <a href="#" class="ui-btn"><span class="red">九</span><br/><span class="black">筒</span></a>
 
-    function addLog(text) {
-        var log = $('#log');
-        var newVal = log.val() + text + '\n\n';
-        log.val(newVal);
+                </div>
+            </div>
+        </div>
+    </div><!-- /content -->
 
-        log.prop('scrollTop', log.prop('scrollHeight'));
-    }
-
-    function clearLog() {
-        $('#log').val('');
-    }
-
-    View = function (divID) {
-        this.div = $('#' + divID);
-        return this;
-    };
-
-    View.prototype = {
-        render: function (jsonString) {
-            var data = JSON.parse(jsonString);
-            if (data.result != 'ok') {
-                return;
-            }
-
-            this.div.html(this.allView(data));
-        },
-
-        allView: function (data) {
-            return this.roundView(data.round) + '<br/>'
-                    + this.wallView(data.wall) + '<br/>'
-                    + this.areasView(data.areas) + '<br/>';
-        },
-
-        roundView: function (round) {
-            return 'gameover:' + round.isGameOver + '<br/>'
-                    + 'prevailing:' + round.prevailing + '<br/>'
-                    + 'phase:' + round.phase + '<br/>'
-                    + 'result:' + round.result + '<br/>'
-                    + 'winReports:' + '<br/>' + this.winReportsView(round.winReports);
-        },
-
-        winReportsView: function (winReports) {
-            if (winReports.length == 0) {
-                return '';
-            }
-
-            var w = winReports[0]; // todo multiple - win
-            return this.spaceView() + w.actor + this.spaceView() + w.fan + 'fan' + w.fu + 'fu' + '<br/>'
-                    + this.spaceView() + w.yakuItems.join('<br/>' + this.spaceView());
-        },
-
-        wallView: function (wall) {
-            return 'remainTileCount:' + wall.remainTileCount + '<br/>'
-                    + 'doraIndicators:' + this.tilesView(wall.doraIndicators) + '<br/>'
-                    + 'uraDoraIndicators:' + this.tilesView(wall.uraDoraIndicators) + '<br/>';
-        },
-
-        areasView: function (areas) {
-            return areas.map(this.areaView, this).join('');
-        },
-
-        areaView: function (area) {
-            return area.actor
-                    + this.spaceView() + area.point + '<br/>'
-                    + 'discard:' + this.tilesView(area.discard) + '<br/>'
-                    + 'target:' + this.targetView(area.target) + '<br/>'
-                    + 'hand:' + this.tilesView(area.public)
-                    + this.spaceView() + this.meldedView(area.melded, this) + '<br/>'
-                    + this.commandsView(area.commands)
-                    + '<br/>';
-        },
-
-        handView: function (area) {
-            return area.actor
-                    + this.spaceView() + area.point + '<br/>'
-                    + 'discard:' + this.tilesView(area.discard) + '<br/>'
-                    + 'target:' + this.targetView(area.target) + '<br/>'
-                    + 'hand:' + this.tilesView(area.public)
-                    + this.spaceView() + this.meldedView(area.melded, this);
-        },
-
-        tilesView: function (tiles) {
-            return tiles.map(this.tileView, this).join('');
-        },
-
-        targetView: function (targetTile) {
-            return targetTile !== null ? this.tileView(targetTile) : '';
-        },
-
-        meldedView: function (melded) {
-            var s = '';
-            for (var meld of melded) {
-                s += this.meldView(meld) + this.spaceView();
-            }
-            return s;
-//            return melded.map(this.meldedView, this).join(this.spaceView);
-        },
-
-        meldView: function (meld) {
-            return '<input type="button" value="' + meld + '" disabled="true">';
-        },
-
-        tileView: function (tile) {
-            return '<input type="button" value="' + tile + '" disabled="true">';
-        },
-
-        commandsView: function (commands) {
-            return 'commands:' + commands.map(this.commandView).join(this.spaceView());
-        },
-
-        commandView: function (command) {
-            return '<input type="button" value="' + command + '" onclick="send(this.value)">';
-        },
-
-        spaceView: function () {
-            return '&nbsp;&nbsp;';
-        }
-    }
-</script>
-
-<fieldset>
-    <legend>log</legend>
-    <textarea id="log" style="margin: 0px; width: 596px; height: 250px;"></textarea><br/>
-    <input type="button" value="clear" onclick="clearLog()"/><br/>
-</fieldset>
-<br/>
-
-<fieldset>
-    <legend>free commands</legend>
-    free input:<input id="command" type="text" value="type command here"/>
-    <input id="send" type="button" value="send" onclick="send($('#command').val())"/><br/>
-    debug commands:<input type="button" value="init" onclick="send(this.value)"/>
-    <input type="button" value="mockHand E 123456789m12344p" onclick="send(this.value)"/>
-    <input type="button" value="mockHand E 11123456789999m" onclick="send(this.value)"/>
-    <br/>
-</fieldset>
-<br/>
-
-<fieldset>
-    <legend>gui(debug ver)</legend>
-    <div id="gui"></div>
-</fieldset>
+    <div data-role="footer" data-position="fixed">
+        <h4>Footer</h4>
+    </div><!-- /footer -->
+</div><!-- /page -->
 
 </body>
 </html>

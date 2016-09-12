@@ -6,23 +6,21 @@ Develop progress
 
 function   | progress | remark
 ---------- | -------- | ------
-rule logic | 95%      | php7, phpunit
-network    | 10%,ing  | websocket, Racket(php library)
-UI         | 0%       | html5 canvas, to support any devices with a browser
-DB         | 0%       | nosql, since not so frequently db access
+rule logic | 95%      | PHP7, PHPUnit
+network    | 10%      | Racket(PHP WebSocket library)
+UI         | 1%       | jQuery Mobile
+DB         | 0%       | Redis
 src reading| 0%       | read open source mahjong projects to improve
 release    | 0%       | wish to achieve in 2016
 
-## install
-
-Prerequisite: php7, composer.
-
-1. git clone https://github.com/maxtangli/saki.git
-2. cd saki
-3. composer install
-4. setup server: php bin/server.php
-5. setup client: open src/Nodoka/web/index.html with any browser [supports websocket](https://www.websocket.org/echo.html).
-
 ## demo usage
 
+See a demo hosted in [AWS EC2](http://ec2-52-198-24-187.ap-northeast-1.compute.amazonaws.com/).
+
 ![demo UI screen shot by 2016-07-09](https://github.com/maxtangli/saki/blob/master/reference/Nodoka_dev.png)
+
+## reference
+
+- rules based on [tenhou.net](http://tenhou.net/man/).
+- terms based on Riichi Competition Rules from [European Mahjong Association](http://mahjong-europe.org/index.php?option=com_content&view=category&layout=blog&id=61&Itemid=64).
+- business free mahjong images from [majandofu.com](http://majandofu.com/mahjong-images).

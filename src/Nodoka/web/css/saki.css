@@ -1,0 +1,24 @@
+/*.ui-icon-tile-E:after {*/
+    /*background: url("images/E.png");*/
+/*}*/
+
+.ui-inline {
+    display: inline;
+    margin-right: 44px;
+}
+
+.black {
+    color: black;
+}
+
+.red {
+    color: red;
+}
+
+.white {
+    color: white;
+}
+
+.green {
+    color:green;
+}
