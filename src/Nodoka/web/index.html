@@ -1,113 +1,103 @@
-<!DOCTYPE html>
 <html>
 <head>
-    <title>saki-dev</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css"/>
-    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
-    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    <title>Saki Play(demo)</title>
     <link rel="stylesheet" href="css/saki.css"/>
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="scripts/saki.js"></script>
 </head>
-
 <body>
-
-<div data-role="page" id="testpage">
-    <div data-role="header">
-        <h1>Default theme</h1>
-    </div><!-- /header -->
-
-    <div class="ui-content" role="main">
-        <div id="tileSet">
-            <div id="tileSet-m" data-role="controlgroup" data-type="horizontal">
-                <a href="#" class="ui-btn"><span class="black">一</span><br/><span class="red">萬</span></a>
-                <a href="#" class="ui-btn"><span class="black">二</span><br/><span class="red">萬</span></a>
-                <a href="#" class="ui-btn"><span class="black">三</span><br/><span class="red">萬</span></a>
-                <a href="#" class="ui-btn"><span class="black">四</span><br/><span class="red">萬</span></a>
-                <a href="#" class="ui-btn"><span class="black">五</span><br/><span class="red">萬</span></a>
-                <a href="#" class="ui-btn"><span class="red">五</span><br/><span class="red">萬</span></a>
-                <a href="#" class="ui-btn"><span class="black">六</span><br/><span class="red">萬</span></a>
-                <a href="#" class="ui-btn"><span class="black">七</span><br/><span class="red">萬</span></a>
-                <a href="#" class="ui-btn"><span class="black">八</span><br/><span class="red">萬</span></a>
-                <a href="#" class="ui-btn"><span class="black">九</span><br/><span class="red">萬</span></a>
-            </div>
-            <div id="tileSet-p" data-role="controlgroup" data-type="horizontal">
-                <a href="#" class="ui-btn"><span class="red">一</span><br/><span class="black">筒</span></a>
-                <a href="#" class="ui-btn"><span class="black">二</span><br/><span class="black">筒</span></a>
-                <a href="#" class="ui-btn"><span class="red">三</span><br/><span class="black">筒</span></a>
-                <a href="#" class="ui-btn"><span class="black">四</span><br/><span class="black">筒</span></a>
-                <a href="#" class="ui-btn"><span class="red">五</span><br/><span class="black">筒</span></a>
-                <a href="#" class="ui-btn"><span class="red">五</span><br/><span class="red">筒</span></a>
-                <a href="#" class="ui-btn"><span class="red">六</span><br/><span class="black">筒</span></a>
-                <a href="#" class="ui-btn"><span class="red">七</span><br/><span class="black">筒</span></a>
-                <a href="#" class="ui-btn"><span class="black">八</span><br/><span class="black">筒</span></a>
-                <a href="#" class="ui-btn"><span class="red">九</span><br/><span class="black">筒</span></a>
-            </div>
-            <div id="tileSet-s" data-role="controlgroup" data-type="horizontal">
-                <a href="#" class="ui-btn"><span class="red">一</span><br/><span class="green">索</span></a>
-                <a href="#" class="ui-btn"><span class="green">二</span><br/><span class="green">索</span></a>
-                <a href="#" class="ui-btn"><span class="green">三</span><br/><span class="green">索</span></a>
-                <a href="#" class="ui-btn"><span class="green">四</span><br/><span class="green">索</span></a>
-                <a href="#" class="ui-btn"><span class="red">五</span><br/><span class="green">索</span></a>
-                <a href="#" class="ui-btn"><span class="red">五</span><br/><span class="red">索</span></a>
-                <a href="#" class="ui-btn"><span class="green">六</span><br/><span class="green">索</span></a>
-                <a href="#" class="ui-btn"><span class="red">七</span><br/><span class="green">索</span></a>
-                <a href="#" class="ui-btn"><span class="green">八</span><br/><span class="green">索</span></a>
-                <a href="#" class="ui-btn"><span class="red">九</span><br/><span class="green">索</span></a>
-            </div>
-            <div id="tileSet-hornor" data-role="controlgroup" data-type="horizontal">
-                <a href="#" class="ui-btn"><span class="black">東</span><br/>　</a>
-                <a href="#" class="ui-btn"><span class="black">南</span><br/>　</a>
-                <a href="#" class="ui-btn"><span class="black">西</span><br/>　</a>
-                <a href="#" class="ui-btn"><span class="black">北</span><br/>　</a>
-                <a href="#" class="ui-btn"><span class="red">中</span><br/>　</a>
-                <a href="#" class="ui-btn"><span class="white">白</span><br/>　</a>
-                <a href="#" class="ui-btn"><span class="green">発</span><br/>　</a>
-            </div>
-            <div id="tileSet-target-wall" data-role="controlgroup" data-type="horizontal" class="ui-inline">
-                <a href="#" class="ui-btn">　<br/>　</a>
-            </div>
-            <div id="tileSet-target-public" data-role="controlgroup" data-type="horizontal" class="ui-inline">
-                <a href="#" class="ui-btn ui-state-disabled">　<br/>　</a>
-            </div>
-        </div>
-
-        <div id="hand">
-            <div id="public" data-role="controlgroup" data-type="horizontal" class="ui-inline">
-                <a href="#" class="ui-btn"><span class="black">一</span><br/><span class="red">萬</span></a>
-                <a href="#" class="ui-btn"><span class="black">二</span><br/><span class="red">萬</span></a>
-                <a href="#" class="ui-btn"><span class="black">三</span><br/><span class="red">萬</span></a>
-                <a href="#" class="ui-btn"><span class="black">四</span><br/><span class="red">萬</span></a>
-                <a href="#" class="ui-btn"><span class="black">五</span><br/><span class="red">萬</span></a>
-                <a href="#" class="ui-btn"><span class="black">六</span><br/><span class="red">萬</span></a>
-                <a href="#" class="ui-btn"><span class="red">中</span><br/>　</a>
-            </div>
-
-            <div id="target" data-role="controlgroup" data-type="horizontal" class="ui-inline">
-                <a href="#" class="ui-btn ui-state-disabled"><span class="black">　</span><br/>&nbsp;</a>
-            </div>
-
-            <div id="declare" class="ui-inline">
-                <div data-role="controlgroup" data-type="horizontal" class="ui-inline">
-                    <a href="#" class="ui-btn"><span class="red">中</span><br/>　</a>
-                    <a href="#" class="ui-btn"><span class="white">白</span><br/>　</a>
-                    <a href="#" class="ui-btn"><span class="green">発</span><br/>　</a>
-                </div>
-
-                <div data-role="controlgroup" data-type="horizontal" class="ui-inline">
-                    <a href="#" class="ui-btn"><span class="red">七</span><br/><span class="black">筒</span></a>
-                    <a href="#" class="ui-btn"><span class="black">八</span><br/><span class="black">筒</span></a>
-                    <a href="#" class="ui-btn"><span class="red">九</span><br/><span class="black">筒</span></a>
-
-                </div>
-            </div>
-        </div>
-    </div><!-- /content -->
-
-    <div data-role="footer" data-position="fixed">
-        <h4>Footer</h4>
-    </div><!-- /footer -->
-</div><!-- /page -->
-
+<header>
+    <h1>Play</h1>
+    <input type="button" value="css off" id="cssSwitcher"/>
+</header>
+<main>
+    <article>
+        <header>
+            <h2>Current Play</h2>
+            <nav>
+                <h3>Contents</h3>
+                <ul>
+                    <li><a href="#room">Room</a></li>
+                    <li><a href="#round">Round</a></li>
+                    <li>
+                        <a href="#areas">Areas</a>
+                        <ul>
+                            <li><a href="#area1">Area1</a></li>
+                            <li><a href="#area2">Area2</a></li>
+                            <li><a href="#area3">Area3</a></li>
+                            <li><a href="#area4">Area4</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+        </header>
+        <section id="room">
+            <h3>Room</h3>
+        </section>
+        <section id="round">
+            <h3>Round</h3>
+        </section>
+        <section id="areas">
+            <h3>Areas</h3>
+            <section id="area1">
+                <h4>Area1</h4>
+                <ol class="private">
+                    <h5>private</h5>
+                    <li class="tile tile-1m selectable">1m</li>
+                    <li class="tile tile-2m selectable">2m</li>
+                    <li class="tile tile-3m selectable">3m</li>
+                    <li class="tile tile-4m selectable">4m</li>
+                    <li class="tile tile-5m selectable">5m</li>
+                    <li class="tile tile-6m selectable">6m</li>
+                    <li class="tile tile-C selectable">C</li>
+                    <li class="tile tile-C selectable">C</li>
+                </ol>
+                <ol class="declare">
+                    <h5>declare</h5>
+                    <li class="meld">
+                        <ol>
+                            <li class="tile tile-7m">7m</li>
+                            <li class="tile tile-8m">8m</li>
+                            <li class="tile tile-9m">9m</li>
+                        </ol>
+                    </li>
+                    <li class="meld">
+                        <ol>
+                            <li class="tile tile-1p">1p</li>
+                            <li class="tile tile-2p">2p</li>
+                            <li class="tile tile-3p">3p</li>
+                        </ol>
+                    </li>
+                </ol>
+                <ul class="commands">
+                    <h5>commands</h5>
+                    <li class="command"><input type="button" value="discard 1m"/></li>
+                    <li class="command"><input type="button" value="discard 2m"/></li>
+                    <li class="command"><input type="button" value="discard 3m"/></li>
+                </ul>
+            </section>
+            <section id="area2">
+                <h4>Area2</h4>
+            </section>
+            <section id="area3">
+                <h4>Area3</h4>
+            </section>
+            <section id="area4">
+                <h4>Area4</h4>
+            </section>
+        </section>
+    </article>
+</main>
+<footer>
+    <p>
+        Copyright ©
+        <span itemprop="copyrightYear">2016</span>
+        <span itemprop="copyrightHolder">tang</span>
+    </p>
+    <p>
+        <a href="https://github.com/maxtangli/saki" target="_blank">Source Code@GitHub</a> -
+        <a href="mailto:maxtangli@qq.com">Contact Me</a>
+    </p>
+</footer>
 </body>
 </html>

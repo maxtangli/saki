@@ -960,11 +960,19 @@ rush 83 UI: smart device UI, hand, tileSet 3.7h
 - [x] hand prototype 0.7h
 - [x] tileSet 0.6h
 
-rush 84 UI ?30h?
+rush 84 UI areas
 
 - [x] plan contents 0.5h
-- [x] js: Saki.Game 1.1h
-- [ ] areas
+
+- [x] html: standard semantic 1h
+- [x] css: private, declare 2h
+- [ ] css: commands
+
+- [x] js: Saki.Game 1.3h
+- [ ] js: Saki.DemoView 0.5h
+
+rush UI result
+
 - [ ] round data
 - [ ] winReport
 - [ ] result

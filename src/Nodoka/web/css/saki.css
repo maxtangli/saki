@@ -1,24 +1,184 @@
-/*.ui-icon-tile-E:after {*/
-    /*background: url("images/E.png");*/
-/*}*/
+.selectable {
 
-.ui-inline {
-    display: inline;
-    margin-right: 44px;
 }
 
-.black {
-    color: black;
+.selectable:hover {
+    opacity: .5;
 }
 
-.red {
-    color: red;
+/*-- area --*/
+.private, .declare {
+    display: inline-block;
 }
 
-.white {
-    color: white;
+.private .tile {
+    display: inline-block;
 }
 
-.green {
-    color:green;
+.declare .meld {
+    display: inline-block;
 }
+
+/*-- meld --*/
+.meld .tile {
+    display: inline-block;
+}
+
+/*-- tile --*/
+.tile {
+    width: 66px;
+    height: 90px;
+    background-repeat: no-repeat;
+    color: transparent; /* hidden text */
+}
+
+.tile-1m {
+    background-image: url("images/1m.png");
+}
+
+.tile-2m {
+    background-image: url("images/2m.png");
+}
+
+.tile-3m {
+    background-image: url("images/3m.png");
+}
+
+.tile-4m {
+    background-image: url("images/4m.png");
+}
+
+.tile-5m {
+    background-image: url("images/5m.png");
+}
+
+.tile-0m {
+    background-image: url("images/0m.png");
+}
+
+.tile-6m {
+    background-image: url("images/6m.png");
+}
+
+.tile-7m {
+    background-image: url("images/7m.png");
+}
+
+.tile-8m {
+    background-image: url("images/8m.png");
+}
+
+.tile-9m {
+    background-image: url("images/9m.png");
+}
+
+.tile-1p {
+    background-image: url("images/1p.png");
+}
+
+.tile-2p {
+    background-image: url("images/2p.png");
+}
+
+.tile-3p {
+    background-image: url("images/3p.png");
+}
+
+.tile-4p {
+    background-image: url("images/4p.png");
+}
+
+.tile-5p {
+    background-image: url("images/5p.png");
+}
+
+.tile-0p {
+    background-image: url("images/0p.png");
+}
+
+.tile-6p {
+    background-image: url("images/6p.png");
+}
+
+.tile-7p {
+    background-image: url("images/7p.png");
+}
+
+.tile-8p {
+    background-image: url("images/8p.png");
+}
+
+.tile-9p {
+    background-image: url("images/9p.png");
+}
+
+.tile-1s {
+    background-image: url("images/1s.png");
+}
+
+.tile-2s {
+    background-image: url("images/2s.png");
+}
+
+.tile-3s {
+    background-image: url("images/3s.png");
+}
+
+.tile-4s {
+    background-image: url("images/4s.png");
+}
+
+.tile-5s {
+    background-image: url("images/5s.png");
+}
+
+.tile-0s {
+    background-image: url("images/0s.png");
+}
+
+.tile-6s {
+    background-image: url("images/6s.png");
+}
+
+.tile-7s {
+    background-image: url("images/7s.png");
+}
+
+.tile-8s {
+    background-image: url("images/8s.png");
+}
+
+.tile-9s {
+    background-image: url("images/9s.png");
+}
+
+.tile-E {
+    background-image: url("images/E.png");
+}
+
+.tile-S {
+    background-image: url("images/S.png");
+}
+
+.tile-W {
+    background-image: url("images/W.png");
+}
+
+.tile-N {
+    background-image: url("images/N.png");
+}
+
+.tile-C {
+    background-image: url("images/C.png");
+}
+
+.tile-P {
+    background-image: url("images/P.png");
+}
+
+.tile-F {
+    background-image: url("images/F.png");
+}
+
+
+

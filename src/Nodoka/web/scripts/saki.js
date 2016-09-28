@@ -4,6 +4,16 @@ var Saki = {
         return function () {
             method.apply(object, arguments);
         };
+    },
+    debug: function (message) {
+        console.log(message + ' ' + jQuery.type(message) + ' ' + new Date().getMilliseconds());
+    },
+    css: function (on) {
+        if (on) {
+            $('link[rel="stylesheet"]').removeAttr('disabled');
+        } else {
+            $('link[rel="stylesheet"]').attr('disabled', 'disabled');
+        }
     }
 };
 
@@ -57,8 +67,15 @@ Saki.DemoView = function () {
 };
 Saki.DemoView.prototype = {
     init: function () {
+        Saki.debug('view.init()');
     },
     render: function (jsonData) {
+        Saki.debug('view.render()');
+
+        var publicData = jsonData.areas[0].public;
+        var hand = $('#area1 .hand');
+        // hand.html(publicData.toString());
+        // todo
     },
     error: function (jsonData) {
     }
@@ -66,6 +83,23 @@ Saki.DemoView.prototype = {
 Saki.DemoView.prototype.constructor = Saki.DemoView;
 
 // execute
-var view = new Saki.DemoView();
-var game = new Saki.Game(view);
-game.open();
+(function () {
+    $(document).ready(function () {
+        var cssSwitch = (function () {
+            var on = true;
+            return function () {
+                on = !on;
+                Saki.css(on);
+                $(this).val(on ? 'css off' : 'css on');
+            };
+        })();
+        $('#cssSwitcher').click(cssSwitch);
+
+        Saki.debug('$(document).ready');
+        var view = new Saki.DemoView();
+        var game = new Saki.Game(view);
+        game.open();
+    });
+
+    Saki.debug('js');
+})();

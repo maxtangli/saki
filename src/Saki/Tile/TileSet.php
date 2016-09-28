@@ -26,6 +26,13 @@ class TileSet extends TileList {
         return self::$standardInstance;
     }
 
+    /**
+     * @return TileList
+     */
+    function toUniqueTileList() {
+        return (new TileList($this->toArray()))->distinct();
+    }
+
     function echoPriorityMap() {
         $toString = function (Tile $tile) {
             return $tile->__toString();
