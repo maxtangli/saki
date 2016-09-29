@@ -7,25 +7,51 @@
 }
 
 /*-- area --*/
-.private, .declare {
+
+.discard {
+    padding-left: 0px;
+}
+
+.discard li {
     display: inline-block;
 }
 
-.private .tile {
+.private {
+    padding-left: 0px;
+}
+
+.private li {
     display: inline-block;
 }
 
-.declare .meld {
+.melded {
+    padding-left: 0px;
+}
+
+.melded li {
     display: inline-block;
 }
 
-/*-- meld --*/
-.meld .tile {
+.meld {
+    padding-left: 0px;
+    padding-right: 33px;
+}
+
+.commands {
+    padding-left: 0px;
+}
+
+.commands li {
     display: inline-block;
+}
+
+.command {
+    font-size: 30px;
 }
 
 /*-- tile --*/
 .tile {
+    display: inline-block;
     width: 66px;
     height: 90px;
     background-repeat: no-repeat;

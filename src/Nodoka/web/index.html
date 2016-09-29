@@ -1,6 +1,7 @@
 <html>
 <head>
     <title>Saki Play(demo)</title>
+    <!--<link rel="stylesheet" href="css/reset.css"/>-->
     <link rel="stylesheet" href="css/saki.css"/>
     <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="scripts/saki.js"></script>
@@ -39,52 +40,124 @@
         </section>
         <section id="areas">
             <h3>Areas</h3>
-            <section id="area1">
-                <h4>Area1</h4>
-                <ol class="private">
-                    <h5>private</h5>
-                    <li class="tile tile-1m selectable">1m</li>
-                    <li class="tile tile-2m selectable">2m</li>
-                    <li class="tile tile-3m selectable">3m</li>
-                    <li class="tile tile-4m selectable">4m</li>
-                    <li class="tile tile-5m selectable">5m</li>
-                    <li class="tile tile-6m selectable">6m</li>
-                    <li class="tile tile-C selectable">C</li>
-                    <li class="tile tile-C selectable">C</li>
-                </ol>
-                <ol class="declare">
-                    <h5>declare</h5>
-                    <li class="meld">
-                        <ol>
-                            <li class="tile tile-7m">7m</li>
-                            <li class="tile tile-8m">8m</li>
-                            <li class="tile tile-9m">9m</li>
-                        </ol>
-                    </li>
-                    <li class="meld">
-                        <ol>
-                            <li class="tile tile-1p">1p</li>
-                            <li class="tile tile-2p">2p</li>
-                            <li class="tile tile-3p">3p</li>
-                        </ol>
-                    </li>
-                </ol>
-                <ul class="commands">
-                    <h5>commands</h5>
-                    <li class="command"><input type="button" value="discard 1m"/></li>
-                    <li class="command"><input type="button" value="discard 2m"/></li>
-                    <li class="command"><input type="button" value="discard 3m"/></li>
-                </ul>
-            </section>
-            <section id="area2">
-                <h4>Area2</h4>
-            </section>
-            <section id="area3">
-                <h4>Area3</h4>
-            </section>
-            <section id="area4">
-                <h4>Area4</h4>
-            </section>
+            <ul>
+                <li id="area1">
+                    <h4>Area1</h4>
+                    <dl>
+                        <dt>actor</dt>
+                        <dd><span class="tile tile-E">E</span></dd>
+                        <dt>point</dt>
+                        <dd>20000</dd>
+                        <dt>isReach</dt>
+                        <dd>true</dd>
+                        <dt>discard</dt>
+                        <dd>
+                            <ol class="discard">
+                                <li><span class="tile tile-7m">7m</span></li>
+                                <li><span class="tile tile-8m">8m</span></li>
+                                <li><span class="tile tile-9m">9m</span></li>
+                                <li><span class="tile tile-7m">7m</span></li>
+                                <li><span class="tile tile-8m">8m</span></li>
+                                <li><span class="tile tile-9m">9m</span></li>
+                                <li><span class="tile tile-7m">7m</span></li>
+                                <li><span class="tile tile-8m">8m</span></li>
+                                <li><span class="tile tile-9m">9m</span></li>
+                                <li><span class="tile tile-7m">7m</span></li>
+                                <li><span class="tile tile-8m">8m</span></li>
+                                <li><span class="tile tile-9m">9m</span></li>
+                                <li><span class="tile tile-7m">7m</span></li>
+                                <li><span class="tile tile-8m">8m</span></li>
+                                <li><span class="tile tile-9m">9m</span></li>
+                                <li><span class="tile tile-7m">7m</span></li>
+                                <li><span class="tile tile-8m">8m</span></li>
+                                <li><span class="tile tile-9m">9m</span></li>
+                            </ol>
+                        </dd>
+                        <dt>private</dt>
+                        <dd>
+                            <ol class="private">
+                                <li><span class="tile tile-1m selectable">1m</span></li>
+                                <li><span class="tile tile-1m selectable">1m</span></li>
+                                <li><span class="tile tile-2m selectable">2m</span></li>
+                                <li><span class="tile tile-2m selectable">2m</span></li>
+                                <li><span class="tile tile-3m selectable">3m</span></li>
+                                <li><span class="tile tile-3m selectable">3m</span></li>
+                                <li><span class="tile tile-4m selectable">4m</span></li>
+                                <li><span class="tile tile-4m selectable">4m</span></li>
+                                <li><span class="tile tile-5m selectable">5m</span></li>
+                                <li><span class="tile tile-5m selectable">5m</span></li>
+                                <li><span class="tile tile-6m selectable">6m</span></li>
+                                <li><span class="tile tile-6m selectable">6m</span></li>
+                                <li><span class="tile tile-C selectable">C</span></li>
+                                <li><span class="tile tile-C selectable">C</span></li>
+                            </ol>
+                        </dd>
+                        <dt>melded</dt>
+                        <dd>
+                            <ol class="melded">
+                                <li>
+                                    <ol class="meld">
+                                        <li><span class="tile tile-7m">7m</span></li>
+                                        <li><span class="tile tile-8m">8m</span></li>
+                                        <li><span class="tile tile-9m">9m</span></li>
+                                    </ol>
+                                </li>
+                                <li>
+                                    <ol class="meld">
+                                        <li><span class="tile tile-1p">1p</span></li>
+                                        <li><span class="tile tile-2p">2p</span></li>
+                                        <li><span class="tile tile-3p">3p</span></li>
+                                    </ol>
+                                </li>
+                                <li>
+                                    <ol class="meld">
+                                        <li><span class="tile tile-1p">1p</span></li>
+                                        <li><span class="tile tile-2p">2p</span></li>
+                                        <li><span class="tile tile-3p">3p</span></li>
+                                    </ol>
+                                </li>
+                                <li>
+                                    <ol class="meld">
+                                        <li><span class="tile tile-1p">1p</span></li>
+                                        <li><span class="tile tile-2p">2p</span></li>
+                                        <li><span class="tile tile-3p">3p</span></li>
+                                    </ol>
+                                </li>
+                            </ol>
+                        </dd>
+                        <dt>commands</dt>
+                        <dd>
+                            <ul class="commands">
+                                <li><input class="command" type="button" value="discard 1m"/></li>
+                                <li><input class="command" type="button" value="discard 2m"/></li>
+                                <li><input class="command" type="button" value="discard 3m"/></li>
+                                <li><input class="command" type="button" value="discard 4m"/></li>
+                                <li><input class="command" type="button" value="discard 5m"/></li>
+                                <li><input class="command" type="button" value="discard 6m"/></li>
+                                <li><input class="command" type="button" value="discard 1m"/></li>
+                                <li><input class="command" type="button" value="discard 2m"/></li>
+                                <li><input class="command" type="button" value="discard 3m"/></li>
+                                <li><input class="command" type="button" value="discard 4m"/></li>
+                                <li><input class="command" type="button" value="discard 5m"/></li>
+                                <li><input class="command" type="button" value="discard 6m"/></li>
+                                <li><input class="command" type="button" value="discard 1m"/></li>
+                                <li><input class="command" type="button" value="discard 2m"/></li>
+                                <li><input class="command" type="button" value="discard 3m"/></li>
+                                <li><input class="command" type="button" value="discard 4m"/></li>
+                                <li><input class="command" type="button" value="discard 5m"/></li>
+                                <li><input class="command" type="button" value="discard 6m"/></li>
+                                <li><input class="command" type="button" value="discard 1m"/></li>
+                                <li><input class="command" type="button" value="discard 2m"/></li>
+                                <li><input class="command" type="button" value="discard 3m"/></li>
+                                <li><input class="command" type="button" value="discard 4m"/></li>
+                            </ul>
+                        </dd>
+                    </dl>
+                </li>
+                <li id="area2"><h4>Area2</h4></li>
+                <li id="area3"><h4>Area3</h4></li>
+                <li id="area4"><h4>Area4</h4></li>
+            </ul>
         </section>
     </article>
 </main>

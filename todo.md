@@ -966,6 +966,7 @@ rush 84 UI areas
 
 - [x] html: standard semantic 1h
 - [x] css: private, declare 2h
+- [x] html&css: area 1h
 - [ ] css: commands
 
 - [x] js: Saki.Game 1.3h

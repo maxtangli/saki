@@ -56,12 +56,12 @@ class RoundSerializer extends Singleton {
 
             $areas[] = [
                 'actor' => $actor->__toString(),
+                'point' => $area->getPoint(),
+                'isReach' => $area->getRiichiStatus()->isRiichi(),
                 'discard' => $area->getDiscard()->toArray(Utils::getToStringCallback()),
                 'public' => $hand->getPublic()->toTileList()->orderByTileID()->toArray(Utils::getToStringCallback()),
                 'target' => $hand->getTarget()->exist() ? $hand->getTarget()->getTile()->toFormatString(true) : null,
                 'melded' => $hand->getMelded()->toArray(Utils::getToStringCallback()),
-                'isReach' => $area->getRiichiStatus()->isRiichi(),
-                'point' => $area->getPoint(),
                 'commands' => $commandProvider->getExecutableList($actor)->toArray(Utils::getToStringCallback()),
             ];
         }
