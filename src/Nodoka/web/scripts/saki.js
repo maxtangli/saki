@@ -1,12 +1,7 @@
 var Saki = {
     VERSION: '0.0.1',
-    bind: function (object, method) {
-        return function () {
-            method.apply(object, arguments);
-        };
-    },
     debug: function (message) {
-        console.log(message + ' ' + jQuery.type(message) + ' ' + new Date().getMilliseconds());
+        console.log(message + ' ' + $.type(message) + ' ' + new Date().getMilliseconds());
     },
     css: function (on) {
         if (on) {
@@ -20,14 +15,14 @@ var Saki = {
 Saki.Game = function (view) {
     this.url = 'ws://ec2-52-198-24-187.ap-northeast-1.compute.amazonaws.com:8080/';
     this.conn = null;
-    this.view = view; // Requires init(), render()
+    this.view = view; // View: init(), render(), error()
 };
 Saki.Game.prototype = {
     open: function () {
         if (this.conn === null) {
             this.conn = new WebSocket(this.url);
-            this.conn.onopen = Saki.bind(this, this.onopen);
-            this.conn.onmessage = Saki.bind(this, this.onmessage);
+            this.conn.onopen = $.proxy(this.onopen, this);
+            this.conn.onmessage = $.proxy(this.onmessage, this);
             this.conn.onerror; // todo
             this.conn.onclose; // todo
         } else {
@@ -72,13 +67,96 @@ Saki.DemoView.prototype = {
     render: function (jsonData) {
         Saki.debug('view.render()');
 
-        var publicData = jsonData.areas[0].public;
-        var hand = $('#area1 .hand');
-        // hand.html(publicData.toString());
-        // todo
+        var areaData = jsonData.areas[0];
+        var area = $('#area1');
+
+        area
+            .find('.actorContainer')
+            .empty().append(this.actor(areaData.actor)).end()
+            .find('.pointContainer')
+            .empty().append(this.point(areaData.point)).end()
+            .find('.isReachContainer')
+            .empty().append(this.isReach(areaData.isReach)).end()
+            .find('.discardContainer')
+            .empty().append(this.discard(areaData.discard)).end()
+            .find('.publicContainer')
+            .empty().append(this.public(areaData.public)).end()
+            .find('.meldedContainer')
+            .empty().append(this.melded(areaData.melded)).end()
+            .find('.commandsContainer')
+            .empty().append(this.commands(areaData.commands)).end()
     },
     error: function (jsonData) {
-    }
+    },
+    tile: function (tileData) {
+        // <span class="tile tile-7m">7m</span>
+        return $('<span></span>')
+            .attr('class', 'tile tile-' + tileData)
+            .html(tileData);
+    },
+    tileLi: function (tileData) {
+        return this.tile(tileData)
+            .wrap('<li></li>')
+            .parent();
+        // return $('<li></li>')
+        //     .append(this.tile(tileData));
+    },
+    actor: function (tileData) {
+        return this.tile(tileData);
+    },
+    point: function (pointData) {
+        return pointData;
+    },
+    isReach: function (isReach) {
+        return isReach ? 'true' : 'false';
+    },
+    discard: function (tilesData) {
+        return $('<ol class="discard"></ol>')
+            .append(
+                tilesData.map($.proxy(this.tileLi, this))
+            );
+    },
+    public: function (tilesData) {
+        return $('<ol class="public"></ol>')
+            .append(
+                tilesData.map($.proxy(this.tileLi, this))
+            );
+    },
+    meld: function (meldData) {
+        return $('<ol class="meld"></ol>')
+            .append(
+                meldData.map($.proxy(this.tileLi, this))
+            );
+    },
+    meldLi: function (meldData) {
+        return $('<li></li>')
+            .append(this.meld(meldData));
+    },
+    melded: function (meldsData) {
+        return $('<ol class="melded"></ol>')
+            .append(
+                meldsData.map($.proxy(this.meldLi, this))
+            );
+    },
+    command: function (commandData) {
+        // <input class="command" type="button" value="discard 7m"/>
+        return $('<input/>')
+            .attr({
+                class: 'command',
+                type: 'button',
+                value: commandData
+            });
+    },
+    commandLi: function (commandData) {
+        return $('<li></li>')
+            .append(this.command(commandData));
+    },
+    commands: function (commandsData) {
+        return $('<ol class="commands"></ol>')
+            .append(
+                commandsData.map($.proxy(this.commandLi, this))
+            );
+    },
 };
 Saki.DemoView.prototype.constructor = Saki.DemoView;
 

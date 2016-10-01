@@ -3,7 +3,9 @@
     <title>Saki Play(demo)</title>
     <!--<link rel="stylesheet" href="css/reset.css"/>-->
     <link rel="stylesheet" href="css/saki.css"/>
-    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.1.1.js"
+            integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA=" crossorigin="anonymous"></script>
+    <script src="scripts/sprintf/sprintf.js"></script>
     <script src="scripts/saki.js"></script>
 </head>
 <body>
@@ -45,112 +47,53 @@
                     <h4>Area1</h4>
                     <dl>
                         <dt>actor</dt>
-                        <dd><span class="tile tile-E">E</span></dd>
-                        <dt>point</dt>
-                        <dd>20000</dd>
-                        <dt>isReach</dt>
-                        <dd>true</dd>
-                        <dt>discard</dt>
-                        <dd>
-                            <ol class="discard">
-                                <li><span class="tile tile-7m">7m</span></li>
-                                <li><span class="tile tile-8m">8m</span></li>
-                                <li><span class="tile tile-9m">9m</span></li>
-                                <li><span class="tile tile-7m">7m</span></li>
-                                <li><span class="tile tile-8m">8m</span></li>
-                                <li><span class="tile tile-9m">9m</span></li>
-                                <li><span class="tile tile-7m">7m</span></li>
-                                <li><span class="tile tile-8m">8m</span></li>
-                                <li><span class="tile tile-9m">9m</span></li>
-                                <li><span class="tile tile-7m">7m</span></li>
-                                <li><span class="tile tile-8m">8m</span></li>
-                                <li><span class="tile tile-9m">9m</span></li>
-                                <li><span class="tile tile-7m">7m</span></li>
-                                <li><span class="tile tile-8m">8m</span></li>
-                                <li><span class="tile tile-9m">9m</span></li>
-                                <li><span class="tile tile-7m">7m</span></li>
-                                <li><span class="tile tile-8m">8m</span></li>
-                                <li><span class="tile tile-9m">9m</span></li>
-                            </ol>
+                        <dd class="actorContainer">
+                            <!--<span class="tile tile-E">E</span>-->
                         </dd>
-                        <dt>private</dt>
-                        <dd>
-                            <ol class="private">
-                                <li><span class="tile tile-1m selectable">1m</span></li>
-                                <li><span class="tile tile-1m selectable">1m</span></li>
-                                <li><span class="tile tile-2m selectable">2m</span></li>
-                                <li><span class="tile tile-2m selectable">2m</span></li>
-                                <li><span class="tile tile-3m selectable">3m</span></li>
-                                <li><span class="tile tile-3m selectable">3m</span></li>
-                                <li><span class="tile tile-4m selectable">4m</span></li>
-                                <li><span class="tile tile-4m selectable">4m</span></li>
-                                <li><span class="tile tile-5m selectable">5m</span></li>
-                                <li><span class="tile tile-5m selectable">5m</span></li>
-                                <li><span class="tile tile-6m selectable">6m</span></li>
-                                <li><span class="tile tile-6m selectable">6m</span></li>
-                                <li><span class="tile tile-C selectable">C</span></li>
-                                <li><span class="tile tile-C selectable">C</span></li>
-                            </ol>
+                        <dt>point</dt>
+                        <dd class="pointContainer">
+                            <!--20000-->
+                        </dd>
+                        <dt>isReach</dt>
+                        <dd class="isReachContainer">
+                            <!--true-->
+                        </dd>
+                        <dt>discard</dt>
+                        <dd class="discardContainer">
+                            <!--<ol class="discard">-->
+                            <!--<li><span class="tile tile-7m">7m</span></li>-->
+                            <!--<li><span class="tile tile-8m">8m</span></li>-->
+                            <!--</ol>-->
+                        </dd>
+                        <dt>public</dt>
+                        <dd class="publicContainer">
+                            <!--<ol class="public">-->
+                            <!--<li><span class="tile tile-1m selectable">1m</span></li>-->
+                            <!--<li><span class="tile tile-1m selectable">1m</span></li>-->
+                            <!--</ol>-->
+                        </dd>
+                        <dt>target</dt>
+                        <dd class="targetContainer">
+                            <!--<span class="tile tile-C selectable">C</span>-->
                         </dd>
                         <dt>melded</dt>
-                        <dd>
-                            <ol class="melded">
-                                <li>
-                                    <ol class="meld">
-                                        <li><span class="tile tile-7m">7m</span></li>
-                                        <li><span class="tile tile-8m">8m</span></li>
-                                        <li><span class="tile tile-9m">9m</span></li>
-                                    </ol>
-                                </li>
-                                <li>
-                                    <ol class="meld">
-                                        <li><span class="tile tile-1p">1p</span></li>
-                                        <li><span class="tile tile-2p">2p</span></li>
-                                        <li><span class="tile tile-3p">3p</span></li>
-                                    </ol>
-                                </li>
-                                <li>
-                                    <ol class="meld">
-                                        <li><span class="tile tile-1p">1p</span></li>
-                                        <li><span class="tile tile-2p">2p</span></li>
-                                        <li><span class="tile tile-3p">3p</span></li>
-                                    </ol>
-                                </li>
-                                <li>
-                                    <ol class="meld">
-                                        <li><span class="tile tile-1p">1p</span></li>
-                                        <li><span class="tile tile-2p">2p</span></li>
-                                        <li><span class="tile tile-3p">3p</span></li>
-                                    </ol>
-                                </li>
-                            </ol>
+                        <dd class="meldedContainer">
+                            <!--<ol class="melded">-->
+                            <!--<li>-->
+                            <!--<ol class="meld">-->
+                            <!--<li><span class="tile tile-7m">7m</span></li>-->
+                            <!--<li><span class="tile tile-8m">8m</span></li>-->
+                            <!--<li><span class="tile tile-9m">9m</span></li>-->
+                            <!--</ol>-->
+                            <!--</li>-->
+                            <!--</ol>-->
                         </dd>
                         <dt>commands</dt>
-                        <dd>
-                            <ul class="commands">
-                                <li><input class="command" type="button" value="discard 1m"/></li>
-                                <li><input class="command" type="button" value="discard 2m"/></li>
-                                <li><input class="command" type="button" value="discard 3m"/></li>
-                                <li><input class="command" type="button" value="discard 4m"/></li>
-                                <li><input class="command" type="button" value="discard 5m"/></li>
-                                <li><input class="command" type="button" value="discard 6m"/></li>
-                                <li><input class="command" type="button" value="discard 1m"/></li>
-                                <li><input class="command" type="button" value="discard 2m"/></li>
-                                <li><input class="command" type="button" value="discard 3m"/></li>
-                                <li><input class="command" type="button" value="discard 4m"/></li>
-                                <li><input class="command" type="button" value="discard 5m"/></li>
-                                <li><input class="command" type="button" value="discard 6m"/></li>
-                                <li><input class="command" type="button" value="discard 1m"/></li>
-                                <li><input class="command" type="button" value="discard 2m"/></li>
-                                <li><input class="command" type="button" value="discard 3m"/></li>
-                                <li><input class="command" type="button" value="discard 4m"/></li>
-                                <li><input class="command" type="button" value="discard 5m"/></li>
-                                <li><input class="command" type="button" value="discard 6m"/></li>
-                                <li><input class="command" type="button" value="discard 1m"/></li>
-                                <li><input class="command" type="button" value="discard 2m"/></li>
-                                <li><input class="command" type="button" value="discard 3m"/></li>
-                                <li><input class="command" type="button" value="discard 4m"/></li>
-                            </ul>
+                        <dd class="commandsContainer">
+                            <!--<ul class="commands">-->
+                            <!--<li><input class="command" type="button" value="discard 1m"/></li>-->
+                            <!--<li><input class="command" type="button" value="discard 2m"/></li>-->
+                            <!--</ul>-->
                         </dd>
                     </dl>
                 </li>

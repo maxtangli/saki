@@ -7,7 +7,6 @@
 }
 
 /*-- area --*/
-
 .discard {
     padding-left: 0px;
 }
@@ -16,11 +15,11 @@
     display: inline-block;
 }
 
-.private {
+.public {
     padding-left: 0px;
 }
 
-.private li {
+.public li {
     display: inline-block;
 }
 
