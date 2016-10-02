@@ -6,9 +6,28 @@
     opacity: .5;
 }
 
-/*-- area --*/
+/*-- areas --*/
+.areaContainer dl dd {
+    display: inline;
+    margin: 0;
+}
+
+.areaContainer dl dd:after {
+    display: block;
+    content: '';
+}
+
+.areaContainer dl dt {
+    display: inline-block;
+    min-width: 100px;
+}
+
+.areaContainer ol {
+    display: inline-block;
+}
+
 .discard {
-    padding-left: 0px;
+    padding-left: 0;
 }
 
 .discard li {
@@ -16,7 +35,7 @@
 }
 
 .public {
-    padding-left: 0px;
+    padding-left: 0;
 }
 
 .public li {
@@ -24,7 +43,7 @@
 }
 
 .melded {
-    padding-left: 0px;
+    padding-left: 0;
 }
 
 .melded li {
@@ -32,12 +51,12 @@
 }
 
 .meld {
-    padding-left: 0px;
+    padding-left: 0;
     padding-right: 33px;
 }
 
 .commands {
-    padding-left: 0px;
+    padding-left: 0;
 }
 
 .commands li {
@@ -45,15 +64,16 @@
 }
 
 .command {
-    font-size: 30px;
+    font-size: 10px;
 }
 
 /*-- tile --*/
 .tile {
     display: inline-block;
-    width: 66px;
-    height: 90px;
+    width: 33px;
+    height: 45px;
     background-repeat: no-repeat;
+    background-size: 33px 45px;
     color: transparent; /* hidden text */
 }
 
@@ -204,6 +224,3 @@
 .tile-F {
     background-image: url("images/F.png");
 }
-
-
-

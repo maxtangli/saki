@@ -965,16 +965,15 @@ rush 84 UI areas
 - [x] plan contents 0.5h
 
 - [x] html: standard semantic 1h
-- [x] js: Saki.Game 1.8h
+- [x] js: Saki.Game&View 2h
 
 - [x] css: private, declare 2h
 - [x] html&css: area 1h
-- [ ] css: commands
+- [x] js: areas 3.3h
 
-- [x] js: area 2.5h
+- [ ] css: dt, dd 0.2h
+- [ ] css: commands
 - [ ] js: jQuery array to ol 0.5h
-- [ ] js: areas
-- [ ] js: command send
 
 rush UI result
 

@@ -5,6 +5,7 @@ use Saki\Tile\Tile;
 use Saki\Tile\TileList;
 use Saki\Util\Immutable;
 use Saki\Util\ReadonlyArrayList;
+use Saki\Util\Utils;
 use Saki\Win\Waiting\WaitingType;
 
 /**
@@ -135,6 +136,13 @@ class Meld extends TileList implements Immutable {
      */
     function __toString() {
         return $this->toSortedString(true);
+    }
+
+    /**
+     * @return string[]
+     */
+    function toTileStringArray() {
+        return $this->toArray(Utils::getToStringCallback());
     }
 
     /**

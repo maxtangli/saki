@@ -48,6 +48,16 @@ class MeldList extends ArrayList {
     }
 
     /**
+     * @return string[][]
+     */
+    function toTileStringArrayArray() {
+        $meldToStringArray = function (Meld $meld) {
+            return $meld->toTileStringArray();
+        };
+        return $this->toArray($meldToStringArray);
+    }
+
+    /**
      * @return TileList
      */
     function toTileList() {

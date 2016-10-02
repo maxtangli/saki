@@ -11,95 +11,107 @@
 <body>
 <header>
     <h1>Play</h1>
-    <input type="button" value="css off" id="cssSwitcher"/>
+    <section>
+        <h2>Debug</h2>
+        <input type="button" value="css off" id="debug_cssSwitch"/>
+        <input type="button" value="init" id="debug_init"/>
+    </section>
 </header>
 <main>
     <article>
         <header>
             <h2>Current Play</h2>
-            <nav>
-                <h3>Contents</h3>
-                <ul>
-                    <li><a href="#room">Room</a></li>
-                    <li><a href="#round">Round</a></li>
-                    <li>
-                        <a href="#areas">Areas</a>
-                        <ul>
-                            <li><a href="#area1">Area1</a></li>
-                            <li><a href="#area2">Area2</a></li>
-                            <li><a href="#area3">Area3</a></li>
-                            <li><a href="#area4">Area4</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </nav>
         </header>
-        <section id="room">
-            <h3>Room</h3>
-        </section>
         <section id="round">
             <h3>Round</h3>
         </section>
-        <section id="areas">
+        <section id="areas" class="areasContainer">
             <h3>Areas</h3>
             <ul>
-                <li id="area1">
-                    <h4>Area1</h4>
+                <li id="area1" class="areaContainer">
+                    <h4>area1</h4>
                     <dl>
                         <dt>actor</dt>
-                        <dd class="actorContainer">
-                            <!--<span class="tile tile-E">E</span>-->
-                        </dd>
+                        <dd class="actorContainer"></dd>
                         <dt>point</dt>
-                        <dd class="pointContainer">
-                            <!--20000-->
-                        </dd>
+                        <dd class="pointContainer"></dd>
                         <dt>isReach</dt>
-                        <dd class="isReachContainer">
-                            <!--true-->
-                        </dd>
+                        <dd class="isReachContainer"></dd>
                         <dt>discard</dt>
-                        <dd class="discardContainer">
-                            <!--<ol class="discard">-->
-                            <!--<li><span class="tile tile-7m">7m</span></li>-->
-                            <!--<li><span class="tile tile-8m">8m</span></li>-->
-                            <!--</ol>-->
-                        </dd>
+                        <dd class="discardContainer"></dd>
                         <dt>public</dt>
-                        <dd class="publicContainer">
-                            <!--<ol class="public">-->
-                            <!--<li><span class="tile tile-1m selectable">1m</span></li>-->
-                            <!--<li><span class="tile tile-1m selectable">1m</span></li>-->
-                            <!--</ol>-->
-                        </dd>
+                        <dd class="publicContainer"></dd>
                         <dt>target</dt>
-                        <dd class="targetContainer">
-                            <!--<span class="tile tile-C selectable">C</span>-->
-                        </dd>
+                        <dd class="targetContainer"></dd>
                         <dt>melded</dt>
-                        <dd class="meldedContainer">
-                            <!--<ol class="melded">-->
-                            <!--<li>-->
-                            <!--<ol class="meld">-->
-                            <!--<li><span class="tile tile-7m">7m</span></li>-->
-                            <!--<li><span class="tile tile-8m">8m</span></li>-->
-                            <!--<li><span class="tile tile-9m">9m</span></li>-->
-                            <!--</ol>-->
-                            <!--</li>-->
-                            <!--</ol>-->
-                        </dd>
+                        <dd class="meldedContainer"></dd>
                         <dt>commands</dt>
-                        <dd class="commandsContainer">
-                            <!--<ul class="commands">-->
-                            <!--<li><input class="command" type="button" value="discard 1m"/></li>-->
-                            <!--<li><input class="command" type="button" value="discard 2m"/></li>-->
-                            <!--</ul>-->
-                        </dd>
+                        <dd class="commandsContainer"></dd>
                     </dl>
                 </li>
-                <li id="area2"><h4>Area2</h4></li>
-                <li id="area3"><h4>Area3</h4></li>
-                <li id="area4"><h4>Area4</h4></li>
+                <li id="area2" class="areaContainer">
+                    <h4>area2</h4>
+                    <dl>
+                        <dt>actor</dt>
+                        <dd class="actorContainer"></dd>
+                        <dt>point</dt>
+                        <dd class="pointContainer"></dd>
+                        <dt>isReach</dt>
+                        <dd class="isReachContainer"></dd>
+                        <dt>discard</dt>
+                        <dd class="discardContainer"></dd>
+                        <dt>public</dt>
+                        <dd class="publicContainer"></dd>
+                        <dt>target</dt>
+                        <dd class="targetContainer"></dd>
+                        <dt>melded</dt>
+                        <dd class="meldedContainer"></dd>
+                        <dt>commands</dt>
+                        <dd class="commandsContainer"></dd>
+                    </dl>
+                </li>
+                <li id="area3" class="areaContainer">
+                    <h4>area3</h4>
+                    <dl>
+                        <dt>actor</dt>
+                        <dd class="actorContainer"></dd>
+                        <dt>point</dt>
+                        <dd class="pointContainer"></dd>
+                        <dt>isReach</dt>
+                        <dd class="isReachContainer"></dd>
+                        <dt>discard</dt>
+                        <dd class="discardContainer"></dd>
+                        <dt>public</dt>
+                        <dd class="publicContainer"></dd>
+                        <dt>target</dt>
+                        <dd class="targetContainer"></dd>
+                        <dt>melded</dt>
+                        <dd class="meldedContainer"></dd>
+                        <dt>commands</dt>
+                        <dd class="commandsContainer"></dd>
+                    </dl>
+                </li>
+                <li id="area4" class="areaContainer">
+                    <h4>area4</h4>
+                    <dl>
+                        <dt>actor</dt>
+                        <dd class="actorContainer"></dd>
+                        <dt>point</dt>
+                        <dd class="pointContainer"></dd>
+                        <dt>isReach</dt>
+                        <dd class="isReachContainer"></dd>
+                        <dt>discard</dt>
+                        <dd class="discardContainer"></dd>
+                        <dt>public</dt>
+                        <dd class="publicContainer"></dd>
+                        <dt>target</dt>
+                        <dd class="targetContainer"></dd>
+                        <dt>melded</dt>
+                        <dd class="meldedContainer"></dd>
+                        <dt>commands</dt>
+                        <dd class="commandsContainer"></dd>
+                    </dl>
+                </li>
             </ul>
         </section>
     </article>

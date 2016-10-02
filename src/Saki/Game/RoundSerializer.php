@@ -61,7 +61,7 @@ class RoundSerializer extends Singleton {
                 'discard' => $area->getDiscard()->toArray(Utils::getToStringCallback()),
                 'public' => $hand->getPublic()->toTileList()->orderByTileID()->toArray(Utils::getToStringCallback()),
                 'target' => $hand->getTarget()->exist() ? $hand->getTarget()->getTile()->toFormatString(true) : null,
-                'melded' => $hand->getMelded()->toArray(Utils::getToStringCallback()),
+                'melded' => $hand->getMelded()->toTileStringArrayArray(),
                 'commands' => $commandProvider->getExecutableList($actor)->toArray(Utils::getToStringCallback()),
             ];
         }
