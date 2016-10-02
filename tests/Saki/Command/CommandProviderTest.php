@@ -91,6 +91,10 @@ class CommandProviderTest extends \SakiTestCase {
             ],
             [
                 ['tsumo E'],
+                true, 'E', 'mockHand E 119m19p19sESWNCPF',
+            ],
+            [
+                ['tsumo E'],
                 false, 'E', 'mockHand E 123456789m12345s',
             ],
             // ConcealedKong

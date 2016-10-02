@@ -13,8 +13,8 @@ var Saki = {
 };
 
 Saki.Game = function () {
-    this.url = 'ws://ec2-52-198-24-187.ap-northeast-1.compute.amazonaws.com:8080/';
-    // this.url = 'ws://localhost:8080/';
+    // this.url = 'ws://ec2-52-198-24-187.ap-northeast-1.compute.amazonaws.com:8080/';
+    this.url = 'ws://localhost:8080/';
     this.conn = null;
     this.oninit = this.onupdate = this.onerror = function () {
     };
@@ -196,8 +196,8 @@ Saki.DemoView.prototype.constructor = Saki.DemoView;
         var view = new Saki.DemoView(game);
         game.open();
 
-        $('#debug_init').click(function () {
-            game.send('init');
+        $('.command').click(function () {
+            game.send(this.value);
         });
     });
 

@@ -960,7 +960,7 @@ rush 83 UI: smart device UI, hand, tileSet 3.7h
 - [x] hand prototype 0.7h
 - [x] tileSet 0.6h
 
-rush 84 UI areas
+rush 84 DemoUI areas
 
 - [x] plan contents 0.5h
 
@@ -975,11 +975,15 @@ rush 84 UI areas
 - [ ] css: commands
 - [ ] js: jQuery array to ol 0.5h
 
-rush UI result
+rush DemoUI result
 
 - [ ] round data
 - [ ] winReport
 - [ ] result
+
+rush fix
+
+- [x] bug:thirteen orphan tsumo not works 0.2h
 
 rush integrate PublicCommandBuffer ?5h?
 

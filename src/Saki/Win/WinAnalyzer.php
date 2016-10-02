@@ -5,6 +5,7 @@ use Saki\Meld\MeldList;
 use Saki\Meld\MeldListAnalyzer;
 use Saki\Meld\PairMeldType;
 use Saki\Meld\RunMeldType;
+use Saki\Meld\ThirteenOrphanMeldType;
 use Saki\Meld\TripleMeldType;
 use Saki\Tile\Tile;
 use Saki\Tile\TileList;
@@ -41,6 +42,7 @@ class WinAnalyzer {
             RunMeldType::create(),
             TripleMeldType::create(),
             PairMeldType::create(),
+            ThirteenOrphanMeldType::create(),
         ];
         $this->handMeldListAnalyzer = new MeldListAnalyzer($handMeldTypes);
     }

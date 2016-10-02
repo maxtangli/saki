@@ -5,6 +5,7 @@ use Saki\Game\PrevailingWind;
 use Saki\Game\SeatWind;
 use Saki\Meld\MeldList;
 use Saki\Tile\Tile;
+use Saki\Win\WinState;
 use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\Fan1\AfterAKongWinYaku;
 use Saki\Win\Yaku\Fan1\AllSimplesYaku;
@@ -563,5 +564,13 @@ class YakuTest extends \SakiTestCase {
 
         // failed if declared
         // failed if not first turn
+    }
+
+    function testThirteenOrphanTsumo() {
+        $round = $this->getInitRound();
+        $round->process('mockHand E 119m19p19sESWNCPF');
+
+        $winReport = $round->getWinReport(SeatWind::createEast());
+        $this->assertEquals(WinState::create(WinState::WIN_BY_SELF), $winReport->getWinState());
     }
 }
