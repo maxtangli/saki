@@ -960,7 +960,7 @@ rush 83 UI: smart device UI, hand, tileSet 3.7h
 - [x] hand prototype 0.7h
 - [x] tileSet 0.6h
 
-rush 84 DemoUI areas
+rush 84 DemoUI areas 10.6h
 
 - [x] plan contents 0.5h
 
@@ -971,9 +971,8 @@ rush 84 DemoUI areas
 - [x] html&css: area 1h
 - [x] js: areas 3.3h
 
-- [ ] css: dt, dd 0.2h
-- [ ] css: commands
-- [ ] js: jQuery array to ol 0.5h
+- [x] css: dt, dd 0.5h
+- [x] refactor: js 0.3h
 
 rush DemoUI result
 

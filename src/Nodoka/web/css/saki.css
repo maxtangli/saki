@@ -7,20 +7,20 @@
 }
 
 /*-- areas --*/
+.areaContainer dl dt {
+    display: inline-block;
+    min-width: 80px;
+}
+
 .areaContainer dl dd {
-    display: inline;
+    display: inline-block;
     margin: 0;
 }
 
-.areaContainer dl dd:after {
-    display: block;
-    content: '';
-}
-
-.areaContainer dl dt {
-    display: inline-block;
-    min-width: 100px;
-}
+/*.areaContainer dl dd:after {*/
+    /*display: block;*/
+    /*content: '';*/
+/*}*/
 
 .areaContainer ol {
     display: inline-block;

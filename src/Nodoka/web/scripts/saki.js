@@ -76,26 +76,23 @@ Saki.DemoView.prototype = {
     render: function (jsonData) {
         Saki.debug('view.render()');
 
+        var areaKeys = [
+            'actor', 'point', 'isReach', 
+            'discard',
+            'public','target','melded',
+            'commands'
+        ];
+
         var areasData = jsonData.areas;
         for (var i = 0; i < areasData.length; ++i) {
             var areaData = areasData[i];
-            $('#area' + (i + 1))
-                .find('.actorContainer')
-                .empty().append(this.actor(areaData.actor)).end()
-                .find('.pointContainer')
-                .empty().append(this.point(areaData.point)).end()
-                .find('.isReachContainer')
-                .empty().append(this.isReach(areaData.isReach)).end()
-                .find('.discardContainer')
-                .empty().append(this.discard(areaData.discard)).end()
-                .find('.publicContainer')
-                .empty().append(this.public(areaData.public)).end()
-                .find('.targetContainer')
-                .empty().append(this.target(areaData.target)).end()
-                .find('.meldedContainer')
-                .empty().append(this.melded(areaData.melded)).end()
-                .find('.commandsContainer')
-                .empty().append(this.commands(areaData.commands)).end()
+            var area = $('#area' + ((i + 1)));
+            for (var j = 0; j < areaKeys.length; ++j) {
+                var key = areaKeys[j];
+                var selector = '.' + key + 'Container';
+                var html = this[key](areaData[key]);
+                area.find(selector).empty().append(html);
+            }
         }
     },
     error: function (jsonData) {
