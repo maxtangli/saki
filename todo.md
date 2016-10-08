@@ -984,6 +984,8 @@ rush DemoUI result
 rush fix
 
 - [x] bug:thirteen orphan tsumo not works 0.2h
+- [ ] refactor: add error message for invalid command 1h
+- [ ] bug: invalid discard after pung sometimes
 
 rush integrate PublicCommandBuffer ?5h?
 

@@ -94,9 +94,21 @@ abstract class PlayerCommand extends Command {
     //region override Command
     protected function executableImpl(Round $round) {
         $actorArea = $this->getActorArea();
-        return $this->matchPhase($round, $actorArea)
-        && $this->matchActor($round, $actorArea)
-        && $this->matchOther($round, $actorArea);
+
+        $matches = [
+            [$this, 'matchPhase'],
+            [$this, 'matchActor'],
+            [$this, 'matchOther'],
+        ];
+        foreach ($matches as $match) {
+            $matchResult = call_user_func($match, $round, $actorArea);
+            if ($matchResult !== true) {
+                $name = $match[1];
+                return new InvalidCommandException($this, "$name failed");
+            }
+        }
+
+        return true;
     }
 
     protected function executeImpl(Round $round) {

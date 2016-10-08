@@ -1,6 +1,7 @@
 <?php
 namespace Saki\Command;
 
+use Doctrine\Instantiator\Exception\InvalidArgumentException;
 use Saki\Command\ParamDeclaration\ParamDeclaration;
 use Saki\Game\Round;
 use Saki\Util\Utils;
@@ -49,7 +50,7 @@ class CommandParser {
     function nameToClass(string $name) {
         $commands = $this->getNameToClassMap();
         if (!(array_key_exists($name, $commands))) {
-            throw new InvalidCommandException(
+            throw new InvalidArgumentException(
                 sprintf('Command name[%s] not existed.', $name)
             );
         }

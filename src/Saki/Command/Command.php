@@ -94,10 +94,9 @@ abstract class Command {
     function execute() {
         $executable = $this->executableImpl($this->getRound());
         if ($executable !== true) {
-            $e = $executable instanceof \Exception ? $executable : new InvalidCommandException(
-                sprintf('Bad method call of [%s()] on not executable command[%s].'
-                    , __FUNCTION__, $this->__toString())
-            );
+            $e = $executable instanceof \Exception
+                ? $executable
+                : new InvalidCommandException($this->__toString(), 'not executable');
             throw $e;
         }
 
@@ -107,7 +106,7 @@ abstract class Command {
     //region subclass hooks
     /**
      * @param Round $round
-     * @return bool
+     * @return bool|InvalidCommandException
      */
     abstract protected function executableImpl(Round $round);
 

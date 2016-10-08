@@ -187,11 +187,11 @@ class Round {
             ->parseLine($scriptLine);
         if ($requireActor) {
             if (!$command instanceof PlayerCommand) {
-                throw new InvalidCommandException('Invalid command: not PlayerCommand.');
+                throw new InvalidCommandException($scriptLine, 'not PlayerCommand.');
             }
 
             if (!$command->getActor() == $requireActor) {
-                throw new InvalidCommandException('Invalid command: not actor.');
+                throw new InvalidCommandException($scriptLine, 'not actor.');
             }
         }
         $command->execute();
