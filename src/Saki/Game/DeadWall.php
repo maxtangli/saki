@@ -77,7 +77,7 @@ class DeadWall {
     function getOpenedUraDoraIndicators() {
         return $this->uraDoraOpened ? array_slice($this->uraDoraIndicators, 0, $this->openedDoraIndicatorCount) : [];
     }
-    
+
     function getOpenedUraDoraIndicatorList() {
         return new TileList($this->getOpenedUraDoraIndicators());
     }
@@ -117,13 +117,19 @@ class DeadWall {
     function getRemainTileCount() {
         return $this->tileList->count();
     }
-    
+
+    /**
+     * @return int
+     */
+    function getRemainReplacementCount() {
+        return $this->getRemainTileCount() - 10;
+    }
+
     /**
      * @return bool
      */
     function isAbleDrawReplacement() {
-        $remainReplacementCount = $this->tileList->count() - 10;
-        return $remainReplacementCount > 0;
+        return $this->getRemainReplacementCount() > 0;
     }
 
     protected function assertAbleDrawReplacement() {

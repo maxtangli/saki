@@ -6,23 +6,69 @@
     opacity: .5;
 }
 
-/*-- areas --*/
-.areaContainer dl dt {
-    display: inline-block;
-    min-width: 80px;
+/*-- round --*/
+
+.wall {
+    padding-left: 0;
 }
 
-.areaContainer dl dd {
+.wall > li {
+    display: inline-block;
+}
+
+.stack {
+    display: inline-block;
+    position: relative;
+    padding-left: 0;
+}
+
+.stack-top {
+    display: inline-block;
+}
+
+.stack-bottom {
+    display: inline-block;
+    position: absolute;
+    top: 5px;
+    z-index: -1;
+}
+
+/*-- areas --*/
+/*#area1 {*/
+/*transform: rotate(180deg);*/
+/*}*/
+/*#area2 {*/
+/*transform: rotate(90deg);*/
+/*}*/
+/*#area3 {*/
+/*}*/
+/*#area4 {*/
+/*transform: rotate(-90deg);*/
+/*}*/
+
+.areaContainer > dl > dt {
+    display: inline-block;
+}
+
+.actorTitle, .discardTitle, .publicTitle, .commandsTitle {
+    min-width: 70px;
+}
+
+.pointTitle, .isReachTitle {
+    min-width: 70px;
+}
+
+.areaContainer > dl > dd {
     display: inline-block;
     margin: 0;
 }
 
-/*.areaContainer dl dd:after {*/
-    /*display: block;*/
-    /*content: '';*/
+/*.areaContainer >dl >dd:after {*/
+/*display: block;*/
+/*content: '';*/
 /*}*/
 
-.areaContainer ol {
+.areaContainer > ol {
     display: inline-block;
 }
 
@@ -30,7 +76,7 @@
     padding-left: 0;
 }
 
-.discard li {
+.discard > li {
     display: inline-block;
 }
 
@@ -38,7 +84,7 @@
     padding-left: 0;
 }
 
-.public li {
+.public > li {
     display: inline-block;
 }
 
@@ -46,20 +92,24 @@
     padding-left: 0;
 }
 
-.melded li {
+.melded > li {
     display: inline-block;
+    margin-right: 33px;
 }
 
 .meld {
-    padding-left: 0;
-    padding-right: 33px;
+    padding: 0;
+}
+
+.meld > li {
+    display: inline-block;
 }
 
 .commands {
     padding-left: 0;
 }
 
-.commands li {
+.commands > li {
     display: inline-block;
 }
 
@@ -223,4 +273,15 @@
 
 .tile-F {
     background-image: url("images/F.png");
+}
+
+.tile-O {
+    /*hidden*/
+    background-image: url("images/O.png");
+}
+
+.tile-X {
+    /*empty*/
+    background-image: url("images/X.png");
+    opacity: 0;
 }

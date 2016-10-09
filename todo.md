@@ -974,9 +974,15 @@ rush 84 DemoUI areas 10.6h
 - [x] css: dt, dd 0.5h
 - [x] refactor: js 0.3h
 
+rush 85 DemoUI round
+
+- [x] reference page: 0.8h
+- [x] css: stack, wall 1.4h
+- [ ] js: wall
+- [ ] info
+
 rush DemoUI result
 
-- [ ] round data
 - [ ] winReport
 - [ ] result
 
