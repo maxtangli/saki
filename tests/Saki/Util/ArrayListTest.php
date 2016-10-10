@@ -62,7 +62,7 @@ class ArrayListTest extends \SakiTestCase {
             [[0, 1, 2, 0], [0, 0, 0]],
         ];
     }
-    
+
     function testGetMinMax() {
         $a = [0, 1, 2, 3, 4];
         $obj = new ArrayList($a);
@@ -119,6 +119,26 @@ class ArrayListTest extends \SakiTestCase {
         $this->assertEquals([-1, 0, 1, 2, 3], $obj->toArray());
         $obj->insertLast([4, 5]);
         $this->assertEquals([-1, 0, 1, 2, 3, 4, 5], $obj->toArray());
+    }
+
+    /**
+     * @dataProvider fillToCountProvider
+     */
+    function testFillToCount($expected, $a, $value, $newCount) {
+        $this->assertEquals($expected, (new ArrayList($a))->fillToCount($value, $newCount)->toArray());
+    }
+
+    function fillToCountProvider() {
+        return [
+            [[], [], 0, 0],
+            [[0], [], 0, 1],
+            [[0, 0], [], 0, 2],
+
+            [[1], [1], 0, 0],
+            [[1], [1], 0, 1],
+            [[1, 0], [1], 0, 2],
+            [[1, 0, 0], [1], 0, 3],
+        ];
     }
 
     function testOrderBy() {
@@ -202,5 +222,42 @@ class ArrayListTest extends \SakiTestCase {
 
         $this->assertEquals([4, 3], $obj->getLastMany(2));
         $this->assertEquals([0, 1, 2], $obj->removeLast(2)->toArray());
+    }
+
+    /**
+     * @dataProvider takeProvider
+     */
+    function testTake($expected, $a, $indexFrom, $n) {
+        $this->assertEquals($expected, (new ArrayList($a))->take($indexFrom, $n)->toArray());
+    }
+
+    function takeProvider() {
+        return [
+            [[], [], 0, 0],
+            [[0, 1, 2], [0, 1, 2], 0, 3],
+            [[1, 2], [0, 1, 2], 1, 2],
+            [[2], [0, 1, 2], 2, 1],
+            [[], [0, 1, 2], 3, 0],
+        ];
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     * @dataProvider takeExceptionProvider
+     */
+    function testTakeException($a, $indexFrom, $n) {
+        (new ArrayList($a))->take($indexFrom, $n);
+    }
+
+    function takeExceptionProvider() {
+        return [
+            [[], 0, 1],
+            [[], 0, -1],
+            [[0, 1, 2], 0, -1],
+            [[0, 1, 2], 0, 4],
+            [[0, 1, 2], 1, 3],
+            [[0, 1, 2], 2, 2],
+            [[0, 1, 2], 3, 1],
+        ];
     }
 }

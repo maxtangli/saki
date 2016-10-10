@@ -20,6 +20,7 @@ class RoundSerializer extends Singleton {
             'prevailingWind' => $prevailing->getStatus()->getPrevailingWind()->__toString(),
             'prevailingWindTurn' => $prevailing->getStatus()->getPrevailingWindTurn(),
             'seatWindTurn' => $prevailing->getSeatWindTurn(),
+            'wall' => $r->getWall()->toJsonArray(),
             'phase' => $phase->__toString(),
             'result' => null,
             'winReports' => [],
@@ -40,13 +41,6 @@ class RoundSerializer extends Singleton {
                 $round['winReports'] = $result->getWinReportList()->toArray($toWinReportJson);
             }
         }
-
-        $w = $r->getWall();
-        $wall = [
-            'remainTileCount' => $w->getRemainTileCount(),
-            'indicators' => $w->getDeadWall()->getIndicatorList()->toArray(Utils::getToStringCallback()),
-            'uraIndicators' => $w->getDeadWall()->getUraIndicatorList()->toArray(Utils::getToStringCallback()),
-        ];
 
         $areas = [];
         /** @var Area $area */
@@ -69,7 +63,6 @@ class RoundSerializer extends Singleton {
         $a = [
             'result' => 'ok',
             'round' => $round,
-            'wall' => $wall,
             'areas' => $areas,
         ];
 

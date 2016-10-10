@@ -76,14 +76,17 @@ Saki.DemoView.prototype = {
     render: function (jsonData) {
         Saki.debug('view.render()');
 
+        var wall = jsonData.round.wall;
+        $('.remainTileCountContainer').html(wall.remainTileCount);
+        $('.deadWallContainer').html(this.deadWall(wall.stacks));
+
         var areaKeys = [
-            'actor', 'point', 'isReach', 
+            'actor', 'point', 'isReach',
             'discard',
-            'public','target','melded',
+            'public', 'target', 'melded',
             'commands'
         ];
-
-        var areasData = jsonData.areas;
+        var areasData = jsonData['areas'];
         for (var i = 0; i < areasData.length; ++i) {
             var areaData = areasData[i];
             var area = $('#area' + ((i + 1)));
@@ -91,21 +94,14 @@ Saki.DemoView.prototype = {
                 var key = areaKeys[j];
                 var selector = '.' + key + 'Container';
                 var html = this[key](areaData[key]);
-                area.find(selector).empty().append(html);
+                area.find(selector).html(html);
             }
         }
     },
     error: function (jsonData) {
     },
-    tile: function (tileData) {
-        // <span class="tile tile-7m">7m</span>
-        return $('<span></span>')
-            .attr('class', 'tile tile-' + tileData)
-            .html(tileData);
-    },
-    tileLi: function (tileData) {
-        return $('<li></li>')
-            .append(this.tile(tileData));
+    remainTileCount: function (remainTileCountData) {
+        return remainTileCountData;
     },
     actor: function (tileData) {
         return tileData;
@@ -131,22 +127,6 @@ Saki.DemoView.prototype = {
     target: function (tileData) {
         return tileData ? this.tile(tileData) : '';
     },
-    meld: function (meldData) {
-        return $('<ol class="meld"></ol>')
-            .append(
-                meldData.map($.proxy(this.tileLi, this))
-            );
-    },
-    meldLi: function (meldData) {
-        return $('<li></li>')
-            .append(this.meld(meldData));
-    },
-    melded: function (meldedData) {
-        return $('<ol class="melded"></ol>')
-            .append(
-                meldedData.map($.proxy(this.meldLi, this))
-            );
-    },
     command: function (commandData) {
         // <input class="command" type="button" value="discard 7m"/>
         var send = $.proxy(this.game.send, this.game);
@@ -171,6 +151,54 @@ Saki.DemoView.prototype = {
             .append(
                 commandsData.map($.proxy(this.commandLi, this))
             );
+    },
+    tile: function (tileData) {
+        // <span class="tile tile-7m">7m</span>
+        return $('<span></span>')
+            .attr('class', 'tile tile-' + tileData)
+            .html(tileData);
+    },
+    tileLi: function (tileData) {
+        return $('<li></li>')
+            .append(this.tile(tileData));
+    },
+    meld: function (meldData) {
+        return $('<ol class="meld"></ol>')
+            .append(
+                meldData.map($.proxy(this.tileLi, this))
+            );
+    },
+    meldLi: function (meldData) {
+        return $('<li></li>')
+            .append(this.meld(meldData));
+    },
+    melded: function (meldedData) {
+        return $('<ol class="melded"></ol>')
+            .append(
+                meldedData.map($.proxy(this.meldLi, this))
+            );
+    },
+    stack: function (stackData) {
+        var stackTop = $('<li class="stack-top"></li>')
+            .append(this.tile(stackData[0]));
+        var stackBottom = $('<li class="stack-bottom"></li>')
+            .append(this.tile(stackData[1]));
+        return $('<ol class="stack"></ol>')
+            .append(stackTop)
+            .append(stackBottom);
+    },
+    stackLi: function (stackData) {
+        return $('<li></li>')
+            .append(this.stack(stackData));
+    },
+    wall: function (stacksData) {
+        return $('<ol class="wall"></ol>')
+            .append(
+                stacksData.map($.proxy(this.stackLi, this))
+            );
+    },
+    deadWall: function (deadWallData) {
+        return this.wall(deadWallData);
     },
 };
 Saki.DemoView.prototype.constructor = Saki.DemoView;

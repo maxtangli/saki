@@ -61,6 +61,11 @@ class PhpTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals([1, 2, 3], $obj->getA()); // array will pass by value
     }
 
+    function testArraySlice() {
+        $this->assertEquals([], array_slice([0, 1, 2], 0, 0));
+        $this->assertEquals([], array_slice([0, 1, 2], 3, 1));
+    }
+
     function testArraySplice() {
         $a = [1, 0, 1, 2, 3];
         array_splice($a, 0, 1);

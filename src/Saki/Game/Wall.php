@@ -63,6 +63,15 @@ class Wall {
     }
 
     /**
+     * @return array
+     */
+    function toJsonArray() {
+        $a = $this->getDeadWall()->toJsonArray();
+        $a['remainTileCount'] = $this->getRemainTileCount();
+        return $a;
+    }
+
+    /**
      * @param Tile $tile
      */
     function debugSetNextDrawTile(Tile $tile) {

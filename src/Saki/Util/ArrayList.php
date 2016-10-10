@@ -140,12 +140,9 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
     }
 
     function offsetSet($offset, $value) {
-        if (Utils::inRange($offset, 0, $this->count())) {
-            $this->innerArray[$offset] = $value;
-            return $this;
-        } else {
-            throw new \InvalidArgumentException("Invalid \$offset[$offset] for ArrayList \$this[$this].");
-        }
+        $this->assertInsertPosition($offset);
+        $this->innerArray[$offset] = $value;
+        return $this;
     }
 
     function offsetUnset($offset) {
@@ -290,11 +287,7 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
      */
     function getSingle(callable $predicate = null) {
         if ($predicate === null) {
-            if ($this->count() != 1) {
-                throw new \BadMethodCallException(
-                    sprintf('Bad method call of getSingle($predicate) on [%s], 0 matches.', $this)
-                );
-            }
+            $this->assertSingle();
             return $this->innerArray[0];
         }
 
@@ -616,10 +609,7 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
      */
     function insert($valueOrValues, int $pos) {
         $this->assertWritable();
-
-        if (!Utils::inRange($pos, 0, $this->count())) {
-            throw new \InvalidArgumentException();
-        }
+        $this->assertInsertPosition($pos);
 
         $values = $this->util_boxing($valueOrValues);
         array_splice($this->innerArray, $pos, 0, $values); // array_splice() will rearrange integer-keys
@@ -640,6 +630,18 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
      */
     function insertLast($valueOrValues) {
         return $this->insert($valueOrValues, $this->count());
+    }
+
+    /**
+     * @param $value
+     * @param int $newCount
+     * @return $this
+     */
+    function fillToCount($value, int $newCount) {
+        $count = $this->count();
+        $nTodo = max(0, $newCount - $count);
+        $values = array_fill($count, $nTodo, $value);
+        return $this->insertLast($values);
     }
 
     /**
@@ -782,19 +784,21 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
      * @param int $indexFrom
      * @param int|null $n
      * @return $this
+     * @throws \InvalidArgumentException if failed to shrink $this->count() to $n.
      */
     function take(int $indexFrom, int $n = null) {
         $this->assertWritable();
+
         $takeCount = $n ?? $this->count() - $indexFrom;
-        if ($takeCount == 0) {
-            return $this->removeAll();
+        $result = array_slice($this->innerArray, $indexFrom, $takeCount);
+        if (count($result) != $takeCount) {
+            throw new \InvalidArgumentException(
+                sprintf('Failed to take from $indexFrom[%s] by $takeCount[%s], count($result)[%s].',
+                    $indexFrom, $takeCount, count($result))
+            );
         }
 
-        $indexTo = $indexFrom + $takeCount - 1;
-        if (!$this->indexesExist([$indexFrom, $indexTo])) {
-            throw new \InvalidArgumentException();
-        }
-        $this->innerArray = array_slice($this->innerArray, $indexFrom, $takeCount);
+        $this->innerArray = $result;
         return $this;
     }
 
@@ -869,6 +873,36 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
         return function ($v1, $v2) use ($comparator) {
             return -$comparator($v1, $v2);
         };
+    }
+
+    /**
+     * @param int $n
+     */
+    protected function assertGetPosition(int $n) {
+        if (!Utils::inRange($n, 0, $this->count() - 1)) {
+            throw new \InvalidArgumentException(
+                sprintf('Invalid get position $n[%s].', $n)
+            );
+        }
+    }
+
+    /**
+     * @param int $n
+     */
+    protected function assertInsertPosition(int $n) {
+        if (!Utils::inRange($n, 0, $this->count())) {
+            throw new \InvalidArgumentException(
+                sprintf('Invalid insert position $n[%s].', $n)
+            );
+        }
+    }
+
+    protected function assertSingle() {
+        if ($this->count() != 1) {
+            throw new \InvalidArgumentException(
+                'Failed to assert $this->count() == 1.'
+            );
+        }
     }
     //endregion
 }

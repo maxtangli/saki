@@ -979,8 +979,11 @@ rush 85 DemoUI round
 - [x] reference page: 0.8h
 - [x] css: stack, wall 1.4h
 
-- [x] refactor: DeadWall.getIndicators 0.5h
-- [ ] json,js: deadWall
+- [x] refactor: DeadWall.getIndicators 0.6h
+- [x] refactor: ArrayList 0.4h
+- [x] json, js: deadWall 0.8h
+- [ ] bug: not displayed well when wall html too long 0.5h
+
 - [ ] js: round info
 
 rush DemoUI result
@@ -988,9 +991,11 @@ rush DemoUI result
 - [ ] winReport
 - [ ] result
 
-rush fix
+rush bug fix
 
 - [x] bug:thirteen orphan tsumo not works 0.2h
+- [ ] bug:executable commands after riichi
+
 - [ ] refactor: add error message for invalid command 1h
 - [ ] bug: invalid discard after pung sometimes
 
