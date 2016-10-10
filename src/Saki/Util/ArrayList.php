@@ -786,6 +786,10 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
     function take(int $indexFrom, int $n = null) {
         $this->assertWritable();
         $takeCount = $n ?? $this->count() - $indexFrom;
+        if ($takeCount == 0) {
+            return $this->removeAll();
+        }
+
         $indexTo = $indexFrom + $takeCount - 1;
         if (!$this->indexesExist([$indexFrom, $indexTo])) {
             throw new \InvalidArgumentException();

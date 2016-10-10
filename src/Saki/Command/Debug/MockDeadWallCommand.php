@@ -28,7 +28,7 @@ class MockDeadWallCommand extends Command {
     /**
      * @return int
      */
-    function getOpenedDoraIndicatorCount() {
+    function getOpenedIndicatorCount() {
         return $this->getParam(1);
     }
 
@@ -54,7 +54,7 @@ class MockDeadWallCommand extends Command {
 
     protected function executeImpl(Round $round) {
         $this->getDeadWall()->reset(
-            $this->getTileList(), $this->getOpenedDoraIndicatorCount(), $this->getUraDoraOpened()
+            $this->getTileList(), $this->getOpenedIndicatorCount(), $this->getUraDoraOpened()
         );
     }
     //endregion

@@ -765,7 +765,7 @@ rush 67 refactor etc 4h
 - [x] clean Target flow 1.1h
 - [x] test Claim,Open 0.8h
 
-- [x] add DoraIndicators handling and test 0.2h
+- [x] add Indicators handling and test 0.2h
 
 - [x] refactor etc. 0.7h
 
@@ -978,8 +978,10 @@ rush 85 DemoUI round
 
 - [x] reference page: 0.8h
 - [x] css: stack, wall 1.4h
-- [ ] js: wall
-- [ ] info
+
+- [x] refactor: DeadWall.getIndicators 0.5h
+- [ ] json,js: deadWall
+- [ ] js: round info
 
 rush DemoUI result
 

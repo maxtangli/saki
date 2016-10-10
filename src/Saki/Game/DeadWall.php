@@ -10,15 +10,15 @@ use Saki\Tile\TileList;
 class DeadWall {
     /**
      * replacement * 4
-     * 0 2 | 4 6 8 10 12 <- doraIndicator    * 5
-     * 1 3 | 5 7 9 11 13 <- uraDoraIndicator * 5
+     * 0 2 | 4 6 8 10 12 <- indicator    * 5
+     * 1 3 | 5 7 9 11 13 <- uraIndicator * 5
      */
     /** @var  TileList */
     private $tileList;
-    private $doraIndicators;
-    private $openedDoraIndicatorCount;
-    private $uraDoraIndicators;
-    private $uraDoraOpened;
+    private $indicatorCandidates;
+    private $uraIndicatorCandidates;
+    private $indicatorCount;
+    private $uraIndicatorOpened;
 
     /**
      * @param TileList $tileList
@@ -29,20 +29,20 @@ class DeadWall {
 
     /**
      * @param TileList $tileList
-     * @param int $openedDoraIndicatorCount
-     * @param bool $uraDoraOpened
+     * @param int $indicatorCount
+     * @param bool $uraIndicatorOpened
      */
-    function reset(TileList $tileList, int $openedDoraIndicatorCount = 1, bool $uraDoraOpened = false) {
+    function reset(TileList $tileList, int $indicatorCount = 1, bool $uraIndicatorOpened = false) {
         if (count($tileList) != 14) {
             throw new \InvalidArgumentException(
                 sprintf('Invalid $tileList[%s].', $tileList)
             );
         }
         $this->tileList = $tileList;
-        $this->doraIndicators = [$tileList[4], $tileList[6], $tileList[8], $tileList[10], $tileList[12]];
-        $this->uraDoraIndicators = [$tileList[5], $tileList[7], $tileList[9], $tileList[11], $tileList[13]];
-        $this->openedDoraIndicatorCount = $openedDoraIndicatorCount;
-        $this->uraDoraOpened = $uraDoraOpened;
+        $this->indicatorCandidates = [$tileList[4], $tileList[6], $tileList[8], $tileList[10], $tileList[12]];
+        $this->uraIndicatorCandidates = [$tileList[5], $tileList[7], $tileList[9], $tileList[11], $tileList[13]];
+        $this->indicatorCount = $indicatorCount;
+        $this->uraIndicatorOpened = $uraIndicatorOpened;
     }
 
     /**
@@ -53,62 +53,18 @@ class DeadWall {
     }
 
     /**
+     * @return array
+     */
+    function toJsonArray() {
+        return []; // todo
+    }
+
+    /**
      * @param Tile $tile
      */
-    function debugSetNextDrawReplacement(Tile $tile) {
+    function debugSetNextReplacement(Tile $tile) {
         $this->assertAbleDrawReplacement();
         $this->tileList->replaceAt(0, $tile);
-    }
-
-    /**
-     * @return Tile[]
-     */
-    function getOpenedDoraIndicators() {
-        return array_slice($this->doraIndicators, 0, $this->openedDoraIndicatorCount);
-    }
-
-    function getOpenedDoraIndicatorList() {
-        return new TileList($this->getOpenedDoraIndicators());
-    }
-    
-    /**
-     * @return Tile[]
-     */
-    function getOpenedUraDoraIndicators() {
-        return $this->uraDoraOpened ? array_slice($this->uraDoraIndicators, 0, $this->openedDoraIndicatorCount) : [];
-    }
-
-    function getOpenedUraDoraIndicatorList() {
-        return new TileList($this->getOpenedUraDoraIndicators());
-    }
-
-    /**
-     * @param int $n
-     */
-    function openDoraIndicator(int $n = 1) {
-        $valid = $this->openedDoraIndicatorCount + $n <= 5;
-        if (!$valid) {
-            throw new \InvalidArgumentException();
-        }
-        $this->openedDoraIndicatorCount += $n;
-    }
-
-    function openUraDoraIndicator() {
-        $this->uraDoraOpened = true;
-    }
-
-    /**
-     * @return Tile
-     */
-    function drawReplacement() {
-        $this->assertAbleDrawReplacement();
-
-        $tile = $this->tileList->getFirst();
-        $this->tileList->removeFirst();
-
-        $this->openDoraIndicator();
-
-        return $tile;
     }
 
     /**
@@ -126,6 +82,57 @@ class DeadWall {
     }
 
     /**
+     * @return int
+     */
+    function getIndicatorCount() {
+        return $this->indicatorCount;
+    }
+
+    /**
+     * @return bool
+     */
+    function uraIndicatorOpened() {
+        return $this->uraIndicatorOpened;
+    }
+
+    /**
+     * @return int
+     */
+    function getUraIndicatorCount() {
+        return $this->uraIndicatorOpened() ? $this->getIndicatorCount() : 0;
+    }
+
+    /**
+     * @return TileList
+     */
+    function getIndicatorList() {
+        return (new TileList($this->indicatorCandidates))
+            ->take(0, $this->indicatorCount);
+    }
+
+    /**
+     * @return TileList
+     */
+    function getUraIndicatorList() {
+        return (new TileList($this->uraIndicatorCandidates))
+            ->take(0, $this->getUraIndicatorCount());
+    }
+
+    /**
+     * @return Tile
+     */
+    function drawReplacement() {
+        $this->assertAbleDrawReplacement();
+
+        $tile = $this->tileList->getFirst();
+        $this->tileList->removeFirst();
+
+        $this->openIndicator();
+
+        return $tile;
+    }
+
+    /**
      * @return bool
      */
     function isAbleDrawReplacement() {
@@ -136,5 +143,20 @@ class DeadWall {
         if (!$this->isAbleDrawReplacement()) {
             throw new \InvalidArgumentException('not drawable');
         }
+    }
+
+    /**
+     * @param int $n
+     */
+    function openIndicator(int $n = 1) {
+        $valid = $this->indicatorCount + $n <= 5;
+        if (!$valid) {
+            throw new \InvalidArgumentException();
+        }
+        $this->indicatorCount += $n;
+    }
+
+    function openUraIndicators() {
+        $this->uraIndicatorOpened = true;
     }
 }

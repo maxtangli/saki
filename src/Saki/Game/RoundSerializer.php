@@ -9,7 +9,7 @@ use Saki\Win\WinReport;
  * @package Saki\Game
  */
 class RoundSerializer extends Singleton {
-    function toArray(Round $r) {
+    function toJsonArray(Round $r) {
         $commandProvider = $r->getProcessor()->getProvider();
 
         $prevailing = $r->getPrevailing();
@@ -44,8 +44,8 @@ class RoundSerializer extends Singleton {
         $w = $r->getWall();
         $wall = [
             'remainTileCount' => $w->getRemainTileCount(),
-            'doraIndicators' => $w->getDeadWall()->getOpenedDoraIndicatorList()->toArray(Utils::getToStringCallback()),
-            'uraDoraIndicators' => $w->getDeadWall()->getOpenedUraDoraIndicatorList()->toArray(Utils::getToStringCallback()),
+            'indicators' => $w->getDeadWall()->getIndicatorList()->toArray(Utils::getToStringCallback()),
+            'uraIndicators' => $w->getDeadWall()->getUraIndicatorList()->toArray(Utils::getToStringCallback()),
         ];
 
         $areas = [];
@@ -81,7 +81,7 @@ class RoundSerializer extends Singleton {
      * @return string
      */
     function toString(Round $round) {
-        return implode("\n", $this->toArray($round));
+        return implode("\n", $this->toJsonArray($round));
     }
     
     /**
@@ -89,6 +89,6 @@ class RoundSerializer extends Singleton {
      * @return string
      */
     function toJson(Round $round) {
-        return json_encode($this->toArray($round));
+        return json_encode($this->toJsonArray($round));
     }
 }

@@ -106,7 +106,7 @@
 - 山牌，Wall
 - 王牌，DeadWall
 
-- 宝牌指示牌，DoraIndicator：
+- 宝牌指示牌，Indicator：
 - 宝牌，Dora：
 - 里宝牌，*UraDora：
 - 赤宝牌，*RedDora：

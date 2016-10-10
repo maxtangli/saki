@@ -37,7 +37,7 @@ class MockNextReplaceCommand extends Command {
     }
 
     protected function executeImpl(Round $round) {
-        $this->getDeadWall()->debugSetNextDrawReplacement($this->getMockTile());
+        $this->getDeadWall()->debugSetNextReplacement($this->getMockTile());
     }
     //endregion
 }

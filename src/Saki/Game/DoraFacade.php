@@ -18,17 +18,17 @@ class DoraFacade {
     }
 
     /**
-     * @return Tile[]
+     * @return TileList
      */
-    function getOpenedDoraIndicators() {
-        return $this->deadWall->getOpenedDoraIndicators();
+    function getIndicatorList() {
+        return $this->deadWall->getIndicatorList();
     }
 
     /**
-     * @return Tile[]
+     * @return TileList
      */
-    function getOpenedUraDoraIndicators() {
-        return $this->deadWall->getOpenedUraDoraIndicators();
+    function getUraIndicatorList() {
+        return $this->deadWall->getUraIndicatorList();
     }
 
     /**
@@ -36,7 +36,7 @@ class DoraFacade {
      * @return int
      */
     function getTileDoraFan(Tile $tile) {
-        return $this->getTileDoraFanImpl($tile, $this->getOpenedDoraIndicators());
+        return $this->getTileDoraFanImpl($tile, $this->getIndicatorList());
     }
 
     /**
@@ -44,23 +44,19 @@ class DoraFacade {
      * @return int
      */
     function getTileUraDoraFan(Tile $tile) {
-        return $this->getTileDoraFanImpl($tile, $this->getOpenedUraDoraIndicators());
+        return $this->getTileDoraFanImpl($tile, $this->getUraIndicatorList());
     }
 
     /**
      * @param Tile $tile
-     * @param array $openedIndicators
+     * @param TileList $indicatorList
      * @return int
      */
-    protected function getTileDoraFanImpl(Tile $tile, array $openedIndicators) {
-        $count = 0;
-        /** @var Tile $doraIndicator */
-        foreach ($openedIndicators as $doraIndicator) {
-            if ($tile == $doraIndicator->getNextTile(1)) {
-                ++$count;
-            }
-        }
-        return $count;
+    protected function getTileDoraFanImpl(Tile $tile, TileList $indicatorList) {
+        $toDoraCount = function (Tile $indicator) use ($tile) {
+            return $tile == $indicator->getNextTile(1) ? 1 : 0;
+        };
+        return $indicatorList->getSum($toDoraCount);
     }
 
     /**
@@ -123,10 +119,6 @@ class DoraFacade {
             throw new \InvalidArgumentException();
         }
 
-        $count = 0;
-        foreach ($complete as $tile) {
-            $count += $getDoraFanCallback($tile);
-        }
-        return $count;
+        return $complete->getSum($getDoraFanCallback);
     }
 }
