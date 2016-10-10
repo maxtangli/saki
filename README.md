@@ -8,16 +8,14 @@ function   | progress | remark
 ---------- | -------- | ------
 rule logic | 95%      | PHP7, PHPUnit
 network    | 10%      | Racket(PHP WebSocket library)
-UI         | 1%       | jQuery Mobile
-DB         | 0%       | Redis
+UI         | 1%       | HTML＆CSS＆JavaScript
+DB         | 0%       | KVS
 src reading| 0%       | read open source mahjong projects to improve
 release    | 0%       | wish to achieve in 2016
 
-## demo usage
+## demo
 
 See a demo hosted in [AWS EC2](http://ec2-52-198-24-187.ap-northeast-1.compute.amazonaws.com/).
-
-![demo UI screen shot by 2016-07-09](https://github.com/maxtangli/saki/blob/master/reference/Nodoka_dev.png)
 
 ## reference
 

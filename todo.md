@@ -982,6 +982,7 @@ rush 85 DemoUI round
 - [x] refactor: DeadWall.getIndicators 0.6h
 - [x] refactor: ArrayList 0.4h
 - [x] json, js: deadWall 0.8h
+- [x] hosting: update 0.5h
 - [ ] bug: not displayed well when wall html too long 0.5h
 
 - [ ] js: round info
