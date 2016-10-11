@@ -150,6 +150,11 @@ class Claim implements Immutable {
             return false;
         }
 
+        // chow, pong, kong commands require not riichi
+        if ($area->getRiichiStatus()->isRiichi()) {
+            return false;
+        }
+
         // chow commands require SwapCalling.executable
         // note: seems not good to place here
         $swapCalling = $round->getRule()->getSwapCalling();

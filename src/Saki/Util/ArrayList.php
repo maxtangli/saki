@@ -16,7 +16,6 @@ namespace Saki\Util;
  *
  * callbacks (NOTE: seems much more faster to use getKEY for comparator and equal)
  * - $accumulator: mixed, v => mixed
- * - $comparator: v1,v2 => -1,0,1
  * - $equal: v1,v2 => bool
  * - $predicate: v => bool
  * - $selector: v => mixed
@@ -422,42 +421,34 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
     }
 
     /**
-     * @param callable|null $comparator
+     * @param callable|null $selector
      * @return mixed
+     * @throws \InvalidArgumentException If empty.
      */
-    function getMax(callable $comparator = null) {
-        if ($this->count() == 0) {
-            throw new \InvalidArgumentException();
-        }
-
-        if ($comparator === null) {
-            return max($this->innerArray);
+    function getMin(callable $selector = null) {
+        $this->assertNotEmpty();
+        if ($selector === null) {
+            return min($this->innerArray);
         } else {
-            $max = $this->innerArray[0];
-            foreach ($this->innerArray as $v) {
-                $max = $comparator($v, $max) > 0 ? $v : $max;
-            }
-            return $max;
+            $keys = array_map($selector, $this->innerArray);
+            $i = array_search(min($keys), $keys);
+            return $this->innerArray[$i];
         }
     }
 
     /**
-     * @param callable|null $comparator
+     * @param callable|null $selector
      * @return mixed
+     * @throws \InvalidArgumentException If empty.
      */
-    function getMin(callable $comparator = null) {
-        if ($this->count() == 0) {
-            throw new \InvalidArgumentException();
-        }
-
-        if ($comparator === null) {
-            return min($this->innerArray);
+    function getMax(callable $selector = null) {
+        $this->assertNotEmpty();
+        if ($selector === null) {
+            return max($this->innerArray);
         } else {
-            $min = $this->innerArray[0];
-            foreach ($this->innerArray as $v) {
-                $min = $comparator($v, $min) < 0 ? $v : $min;
-            }
-            return $min;
+            $keys = array_map($selector, $this->innerArray);
+            $i = array_search(max($keys), $keys);
+            return $this->innerArray[$i];
         }
     }
 
@@ -466,15 +457,8 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
      * @return int
      */
     function getSum(callable $selector = null) {
-        if ($selector === null) {
-            return array_sum($this->innerArray);
-        } else {
-            $sum = 0;
-            foreach ($this->innerArray as $v) {
-                $sum += $selector($v);
-            }
-            return $sum;
-        }
+        $values = $selector === null ? $this->innerArray : array_map($selector, $this->innerArray);
+        return array_sum($values);
     }
     //endregion
 
@@ -813,29 +797,21 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
     }
 
     /**
-     * @param callable|null $comparator
+     * @param callable|null $selector
      * @return $this For empty $this, nothing happen.
      */
-    function orderByAscending(callable $comparator = null) {
-        $this->assertWritable();
-        if ($comparator === null) {
+    function orderByAscending(callable $selector = null) {
+        if ($selector === null) {
             sort($this->innerArray);
         } else {
-            usort($this->innerArray, $comparator);
-        }
-        return $this;
-    }
+            $sortKeys = $this->toArray($selector);
+            asort($sortKeys);
+            $sortedIndexes = array_keys($sortKeys);
 
-    /**
-     * @param callable|null $comparator
-     * @return $this For empty $this, nothing happen.
-     */
-    function orderByDescending(callable $comparator = null) {
-        $this->assertWritable();
-        if ($comparator === null) {
-            rsort($this->innerArray);
-        } else {
-            usort($this->innerArray, $this->util_revertComparator($comparator));
+            $indexToValue = function ($i) {
+                return $this->innerArray[$i];
+            };
+            $this->innerArray = array_map($indexToValue, $sortedIndexes);
         }
         return $this;
     }
@@ -866,16 +842,6 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
     }
 
     /**
-     * @param callable $comparator
-     * @return \Closure
-     */
-    protected function util_revertComparator(callable $comparator) {
-        return function ($v1, $v2) use ($comparator) {
-            return -$comparator($v1, $v2);
-        };
-    }
-
-    /**
      * @param int $n
      */
     protected function assertGetPosition(int $n) {
@@ -901,6 +867,14 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
         if ($this->count() != 1) {
             throw new \InvalidArgumentException(
                 'Failed to assert $this->count() == 1.'
+            );
+        }
+    }
+
+    protected function assertNotEmpty() {
+        if ($this->isEmpty()) {
+            throw new \InvalidArgumentException(
+                'Failed to assert not empty.'
             );
         }
     }

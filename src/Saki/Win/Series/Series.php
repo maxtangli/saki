@@ -55,6 +55,6 @@ class Series extends Enum {
         };
         return $hand->getPrivateMeldList()
             ->toArrayList($toWaitingType)
-            ->getMax(WaitingType::getComparator());
+            ->getMax(WaitingType::getPrioritySelector());
     }
 }

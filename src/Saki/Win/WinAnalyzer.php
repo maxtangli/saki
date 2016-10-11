@@ -109,7 +109,7 @@ class WinAnalyzer {
          */
 
         /** @var WinSubReport $targetSubResult */
-        $targetSubResult = $subResultList->getMax(WinSubReport::getComparator());
+        $targetSubResult = $subResultList->getMax(WinSubReport::getPrioritySelector());
 
         $finalYakuList = $targetSubResult->getYakuItemList();
         $finalFu = $targetSubResult->getFu();

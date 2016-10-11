@@ -3,6 +3,7 @@ namespace Saki\Win;
 
 use Saki\Game\SeatWind;
 use Saki\Util\Comparable;
+use Saki\Util\ComparablePriority;
 use Saki\Win\Point\FanAndFu;
 use Saki\Win\Point\PointLevel;
 use Saki\Win\Point\PointTable;
@@ -14,25 +15,13 @@ use Saki\Win\Yaku\YakuItemList;
  */
 class WinSubReport {
     //region Comparable impl
-    use Comparable;
+    use ComparablePriority;
 
-    /**
-     * @param WinSubReport $other
-     * @return bool
-     */
-    function compareTo($other) {
-        $winStateDiff = $this->getWinState()->compareTo($other->getWinState());
-        if ($winStateDiff != 0) {
-            return $winStateDiff;
-        }
-
-        $yakuCountDiff = $this->getFan() <=> $other->getFan();
-        if ($yakuCountDiff != 0) {
-            return $yakuCountDiff;
-        }
-
-        $fuDiff = $this->getFu() <=> $other->getFu();
-        return $fuDiff;
+    function getPriority() {
+        // assert fu < 1000, fan < 1000
+        return $this->getWinState()->getPriority() * 1000 * 1000
+        + $this->getFan() * 1000
+        + $this->getFu();
     }
     //endregion
 

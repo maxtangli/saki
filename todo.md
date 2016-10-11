@@ -987,6 +987,15 @@ rush 85 DemoUI round
 
 - [ ] js: round info
 
+rush optimize analyzePrivate
+
+- [x] optimize ArrayList.sort: replace comparator by sortKeySelector 1h // 10 times faster for tileSet sort, though not affect test cases
+- [x] refactor ArrayList.getMin,getMax: remove Comparator 0.5h // not for optimization but for clean design
+
+- [ ] optimize ArrayList.getIndex
+
+- [ ] optimize analyzePrivate
+
 rush DemoUI result
 
 - [ ] winReport
@@ -995,7 +1004,7 @@ rush DemoUI result
 rush bug fix
 
 - [x] bug:thirteen orphan tsumo not works 0.2h
-- [ ] bug:executable commands after riichi
+- [x] bug:executable commands after riichi
 
 - [ ] refactor: add error message for invalid command 1h
 - [ ] bug: invalid discard after pung sometimes

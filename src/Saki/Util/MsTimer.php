@@ -30,11 +30,24 @@ class MsTimer extends Singleton {
 
     /**
      * @param callable $f
+     * @param int $nTodo
      * @return float
      */
-    function measure(callable $f) {
+    function measure(callable $f, int $nTodo = 1) {
         $this->restart();
-        $f();
+        while ($nTodo-- > 0) $f();
         return $this->restart();
+    }
+
+    function measureAverage(callable $f, int $nTodo) {
+        return $this->measure($f, $nTodo) / $nTodo;
+    }
+
+    function vs(callable $origin, callable $optimize) {
+        $nTodo = 100;
+        $originAverage = $this->measureAverage($origin, $nTodo);
+        $optimizeAverage = $this->measureAverage($optimize, $nTodo);
+        $improvementRatio = $optimizeAverage / $originAverage;
+        return sprintf('%.3fms => %.3fms, %.2f.', $originAverage, $optimizeAverage, $improvementRatio);
     }
 }

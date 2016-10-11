@@ -66,14 +66,20 @@ class PointList extends ArrayList implements Immutable {
      * @return PointList
      */
     function toOrderByRank() {
-        return $this->getCopy()->orderByAscending(PointItem::getComparator());
+        $getPointItemRank = function (PointItem $pointItem) {
+            return $pointItem->getRank();
+        };
+        return $this->getCopy()->orderByAscending($getPointItemRank);
     }
 
     /**
      * @return PointList
      */
     function toOrderBySeatWind() {
-        return $this->getCopy()->orderByAscending(PointItem::getComparatorBySeatWind());
+        $getPointItemSeatWind = function (PointItem $pointItem) {
+            return $pointItem->getSeatWind();
+        };
+        return $this->getCopy()->orderByAscending($getPointItemSeatWind);
     }
 
     /**
@@ -114,11 +120,15 @@ class PointList extends ArrayList implements Immutable {
      * @return ArrayList
      */
     protected function getTopItemList() {
+        $getPointItemRank = function (PointItem $pointItem) {
+            return $pointItem->getRank();
+        };
         /** @var PointItem $maxItem */
-        $maxItem = $this->getMin(PointItem::getComparator());
+        $maxItem = $this->getMin($getPointItemRank);
         $maxPoint = $maxItem->getPoint();
-        return $this->toArrayList()->where(function (PointItem $item) use ($maxPoint) {
+        $isMaxPoint = function (PointItem $item) use ($maxPoint) {
             return $item->getPoint() == $maxPoint;
-        });
+        };
+        return $this->toArrayList()->where($isMaxPoint);
     }
 }

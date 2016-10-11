@@ -8,27 +8,6 @@ use Saki\Util\Immutable;
  * @package Saki\Game
  */
 class PointItem implements Immutable {
-    //region Comparable impl
-    use Comparable; // design note: do not use ComparableSequence to avoid confusion.
-
-    /**
-     * @param PointItem $other
-     * @return bool
-     */
-    function compareTo($other) {
-        return $this->getRank() <=> $other->getRank();
-    }
-    //endregion
-
-    /**
-     * @return \Closure
-     */
-    static function getComparatorBySeatWind() {
-        return function (PointItem $v1, PointItem $v2) {
-            return $v1->getSeatWind()->compareTo($v2->getSeatWind());
-        };
-    }
-
     private $seatWind;
     private $point;
     private $rank;

@@ -323,7 +323,10 @@ class TileList extends ArrayList {
      * @return $this
      */
     function orderByTileID() {
-        return $this->orderByAscending(Tile::getComparator());
+        $selector = function (Tile $tile) {
+            return $tile->getPriority();
+        };
+        return $this->orderByAscending($selector);
     }
     //endregion
 }
