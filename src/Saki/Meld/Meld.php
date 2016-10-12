@@ -126,7 +126,8 @@ class Meld extends TileList implements Immutable {
      * @return bool
      */
     function equalTo(Meld $other, bool $compareConcealed, bool $compareIsRedDora = false) {
-        return $this->toTileList()->isSequenceEqual($other->toTileList(), Tile::getEqual($compareIsRedDora))
+        return $this->toTileList()
+            ->isSequenceEqual($other->toTileList(), Tile::getEqual($compareIsRedDora))
         && $this->meldType == $other->meldType
         && (!$compareConcealed || $this->concealed == $other->concealed);
     }

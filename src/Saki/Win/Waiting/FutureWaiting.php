@@ -18,7 +18,7 @@ class FutureWaiting implements Immutable {
      */
     function __construct(Tile $discard, TileList $waiting) {
         $this->discard = $discard;
-        $this->waiting = $waiting->getCopy()->orderByTileID()->lock();
+        $this->waiting = $waiting->getCopy()->orderByTileID();
     }
 
     /**
@@ -32,6 +32,6 @@ class FutureWaiting implements Immutable {
      * @return TileList
      */
     function getWaiting() {
-        return $this->waiting;
+        return $this->waiting->getCopy();
     }
 }

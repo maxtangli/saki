@@ -987,14 +987,19 @@ rush 85 DemoUI round
 
 - [ ] js: round info
 
+rush refactor ArrayList
+
+- [x] optimize sort: replace comparator by sortKeySelector 1h // 10 times faster for tileSet sort, though not affect test cases
+- [x] refactor getMin,getMax: remove Comparator 0.5h // not for optimization but for clean design
+- [x] etc 1.3h
+- [x] remove lock, unlock 0.1h
+
+- [x] replace distinct.equal by compareKeySelector 0.6h
+- [x] replace getIndex,remove.equal by compareKeySelector 0.5h
+- [ ] replace indexExist.equal, valueExist.equal by compareKeySelector
+- [ ] simplify red tile, red meld?
+
 rush optimize analyzePrivate
-
-- [x] optimize ArrayList.sort: replace comparator by sortKeySelector 1h // 10 times faster for tileSet sort, though not affect test cases
-- [x] refactor ArrayList.getMin,getMax: remove Comparator 0.5h // not for optimization but for clean design
-
-- [ ] optimize ArrayList.getIndex
-
-- [ ] optimize analyzePrivate
 
 rush DemoUI result
 

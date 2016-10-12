@@ -27,14 +27,14 @@ class DrawAnalyzer {
      * @param Draw[] $drawSet A set of Draw used in a game where lower index means higher priority.
      */
     function __construct(array $drawSet) {
-        $this->drawList = (new ArrayList($drawSet))->lock();
+        $this->drawList = new ArrayList($drawSet);
     }
 
     /**
      * @return ArrayList An ArrayList of Draw used in a game.
      */
     function getDrawList() {
-        return $this->drawList;
+        return $this->drawList->getCopy();
     }
 
     /**

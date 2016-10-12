@@ -17,14 +17,14 @@ class SeriesAnalyzer extends Singleton {
      * @param Series[] $seriesArray
      */
     function __construct(array $seriesArray) {
-        $this->seriesList = (new ArrayList($seriesArray))->lock();
+        $this->seriesList = new ArrayList($seriesArray);
     }
 
     /**
      * @return ArrayList
      */
     function getSeriesList() {
-        return $this->seriesList;
+        return $this->seriesList->getCopy();
     }
 
     /**

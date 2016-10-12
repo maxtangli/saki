@@ -18,7 +18,7 @@ class Tile implements Immutable {
     }
 
     //endregion
-
+    
     /**
      * syntactic sugar.
      * @param bool $compareIsRedDora

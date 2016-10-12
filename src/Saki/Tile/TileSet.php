@@ -42,7 +42,7 @@ class TileSet extends TileList {
         };
 
         $list = $this->toArrayList()
-            ->distinct(Tile::getEqual(true));
+            ->distinct(Tile::getPrioritySelector());
 
         $a = array_combine($list->toArray($toString), $list->toArray($toPriority));
 

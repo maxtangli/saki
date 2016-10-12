@@ -30,8 +30,8 @@ class Hand implements Immutable {
      * @param Target $target
      */
     function __construct(TileList $public, MeldList $melded, Target $target) {
-        $this->public = $public->getCopy()->lock();
-        $this->melded = $melded->getCopy()->lock();
+        $this->public = $public->getCopy();
+        $this->melded = $melded->getCopy();
         $this->target = $target;
 
         if (!$this->isPublicComplete()) {
@@ -101,7 +101,7 @@ class Hand implements Immutable {
      * @return TileList
      */
     function getPublic() {
-        return $this->public;
+        return $this->public->getCopy();
     }
 
     /**
@@ -117,15 +117,14 @@ class Hand implements Immutable {
     function getPrivate() {
         $targetTile = $this->getTarget()->getTile(); // validate exist
         return $this->getPublic()->getCopy()
-            ->insertLast($targetTile)
-            ->lock();
+            ->insertLast($targetTile);
     }
 
     /**
      * @return MeldList
      */
     function getMelded() {
-        return $this->melded;
+        return $this->melded->getCopy();
     }
 
     /**
@@ -157,8 +156,7 @@ class Hand implements Immutable {
      */
     function getComplete() {
         return $this->getPrivate()->getCopy()// validate complete
-        ->concat($this->getMelded()->toTileList())
-            ->lock();
+        ->concat($this->getMelded()->toTileList());
     }
 
     /**

@@ -15,6 +15,9 @@ class ArrayListTest extends \SakiTestCase {
         }
         $this->assertEquals(array_fill(0, count($a), -1), $obj->toArray());
         $this->assertEquals(count($a), count($obj));
+
+        $obj[] = -1;
+        $this->assertEquals(count($a) + 1, count($obj));
     }
 
     function testIndex() {

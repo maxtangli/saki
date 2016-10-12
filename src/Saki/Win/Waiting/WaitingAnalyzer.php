@@ -99,10 +99,11 @@ class WaitingAnalyzer {
         $futureWaitingList = new FutureWaitingList();
 
         // discard each tile and test if remained public has waiting
-        $uniqueTileList = $private->getCopy()->distinct(Tile::getEqual(true));
+        $uniqueTileList = $private->getCopy()
+            ->distinct(Tile::getPrioritySelector());
         $public = new TileList();
         foreach ($uniqueTileList as $discard) {
-            $public->fromSelect($private)->remove($discard, Tile::getEqual(true));
+            $public->fromSelect($private)->remove($discard, Tile::getPrioritySelector());
             $waiting = $this->analyzePublic($public, $melded);
             if ($waiting->count() > 0) {
                 $futureWaiting = new FutureWaiting($discard, $waiting);

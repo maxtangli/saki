@@ -41,7 +41,7 @@ class ExtendKongCommand extends PrivateCommand {
             };
             return $private->toArrayList()
                 ->where(Utils::toPredicate($tile))
-                ->distinct(Tile::getEqual(true))// handle red
+                ->distinct(Tile::getPrioritySelector())// handle red
                 ->select($toParams);
         };
         $otherParamsList = (new ArrayList())

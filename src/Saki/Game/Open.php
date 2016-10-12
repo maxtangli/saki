@@ -83,7 +83,7 @@ class Open implements Immutable {
         $isDiscard = $this->isDiscard();
 
         $newPublic = $hand->getPrivate()->getCopy()
-            ->remove($tile, Tile::getEqual(true)); // handle red
+            ->remove($tile, Tile::getPrioritySelector()); // handle red
         $newMelded = $hand->getMelded();
         $newTarget = Target::createNull();
         $newHand = new Hand($newPublic, $newMelded, $newTarget);

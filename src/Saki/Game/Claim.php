@@ -194,7 +194,7 @@ class Claim implements Immutable {
         $hand = $area->getHand();
 
         $newPrivateOrPublic = $hand->getPrivate()->getCopy()
-            ->remove($this->getFromTiles(), Tile::getEqual(true));
+            ->remove($this->getFromTiles(), Tile::getPrioritySelector());
         if ($newPrivateOrPublic->getSize()->isPrivate()) {
             $newTargetTile = $newPrivateOrPublic->getLast();
             $newPublic = $newPrivateOrPublic->getCopy()->removeLast();

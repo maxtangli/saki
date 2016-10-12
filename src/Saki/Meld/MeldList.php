@@ -187,18 +187,14 @@ class MeldList extends ArrayList {
      */
     function isDoubleChow(bool $isTwoDoubleChow) {
         $this->assertCompletePrivateHandCount();
-
         $requiredDoubleChowCount = $isTwoDoubleChow ? 2 : 1;
 
         $runMeldList = $this->toFiltered([RunMeldType::create()]);
-        $keySelector = function (Meld $runMeld) {
+        $getRunKey = function (Meld $runMeld) {
             $considerConcealed = false;
             return $runMeld->toSortedString($considerConcealed);
         };
-        $counts = $runMeldList->getCounts($keySelector); // ['123s' => 2 ...]
-        $doubleChowCount = (new ArrayList(array_values($counts)))->getCount(function (int $n) {
-            return $n >= 2;
-        });
+        $doubleChowCount = count($runMeldList->getCounts($getRunKey, 2));
 
         return $doubleChowCount >= $requiredDoubleChowCount;
     }
