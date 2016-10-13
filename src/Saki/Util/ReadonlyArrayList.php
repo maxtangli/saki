@@ -2,5 +2,5 @@
 namespace Saki\Util;
 
 trait ReadonlyArrayList {
-    private $isReadonly = true;
+    private $readonly = true;
 }

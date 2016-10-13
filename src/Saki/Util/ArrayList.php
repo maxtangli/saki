@@ -14,8 +14,7 @@ namespace Saki\Util;
  * - support object-style and clean array operations.
  * - support readonly
  *
- * callbacks (NOTE: seems much more faster to use getKEY for equal)
- * - $equal: v1,v2 => bool
+ * callbacks
  * - $predicate: v => bool
  * - $selector: v => mixed
  *
@@ -62,7 +61,7 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
      * @return array
      */
     function toArray(callable $selector = null) {
-        return $selector ? array_map($selector, $this->a) : $this->a;
+        return is_null($selector) ? $this->a : array_map($selector, $this->a);
     }
 
     /**
@@ -76,19 +75,8 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
     //endregion
 
     //region readonly
-    /**
-     * @return bool
-     */
-    function isReadonly() {
-        return isset($this->isReadonly) && $this->isReadonly;
-    }
-
-    /**
-     * Assert not readonly. Called before write operations of ArrayList.
-     * Note that sub class is not required to call this, since its write operations rely on ArrayList ones.
-     */
     protected function assertWritable() {
-        if ($this->isReadonly()) {
+        if (isset($this->readonly) && $this->readonly) {
             throw new \LogicException(
                 sprintf('%s[%s] is not writable.', static::class, $this->__toString())
             );
@@ -196,13 +184,13 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
     //region value properties and getters
     /**
      * @param mixed|array $valueOrValues
-     * @param callable $equal
+     * @param callable $selector
      * @return bool whether values exist or not.
      *              For duplicated values, return true unless duplicated-count ones exist.
      */
-    function valueExist($valueOrValues, callable $equal = null) {
+    function valueExist($valueOrValues, callable $selector = null) {
         try {
-            $this->getIndex($valueOrValues, $equal);
+            $this->getIndex($valueOrValues, $selector);
         } catch (\InvalidArgumentException $e) {
             return false;
         }
@@ -212,76 +200,18 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
     /**
      * @param mixed|array $valueOrValues
      * @param callable $selector
-     * @return bool whether values exist or not.
-     *              For duplicated values, return true unless duplicated-count ones exist.
-     */
-    function valueExistNew($valueOrValues, callable $selector = null) {
-        try {
-            $this->getIndexNew($valueOrValues, $selector);
-        } catch (\InvalidArgumentException $e) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * @param mixed|array $valueOrValues
-     * @param callable $equal
      * @return int|int[] indexes of values.
      *                   For duplicated values, multiple unique indexes are returned.
      */
-    function getIndex($valueOrValues, callable $equal = null) {
-        $targetValues = $this->util_boxing($valueOrValues);
-        $foundIndexes = [];
-
-        foreach ($this->a as $index => $v) {
-            $foundTargetKey = false;
-            if (is_null($equal)) {
-                $foundTargetKey = array_search($v, $targetValues);
-            } else {
-                foreach ($targetValues as $targetKey => $targetValue) {
-                    if ($equal($v, $targetValue)) {
-                        $foundTargetKey = $targetKey;
-                        break;
-                    }
-                }
-            }
-
-            if ($foundTargetKey !== false) {
-                $foundIndexes[$foundTargetKey] = $index;
-                unset($targetValues[$foundTargetKey]);
-            }
-        }
-
-        $allFound = empty($targetValues);
-        if (!$allFound) {
-            throw new \InvalidArgumentException(
-                sprintf('Failed to find $targetValues[%s]', implode($targetValues))
-            );
-        }
-
-        ksort($foundIndexes);
-
-        return $this->util_unboxing($foundIndexes, is_array($valueOrValues));
-    }
-
-    /**
-     * @param mixed|array $valueOrValues
-     * @param callable $selector
-     * @return int|int[] indexes of values.
-     *                   For duplicated values, multiple unique indexes are returned.
-     */
-    function getIndexNew($valueOrValues, callable $selector = null) {
+    function getIndex($valueOrValues, callable $selector = null) {
         $values = $this->util_boxing($valueOrValues);
 
+        $foundIndexes = [];
         $base = is_null($selector) ? $this->a : array_map($selector, $this->a);
         $targets = is_null($selector) ? $values : array_map($selector, $values);
-        $foundIndexes = [];
         foreach ($targets as $target) {
             $index = array_search($target, $base);
-            if ($index === false) {
-                throw new \InvalidArgumentException();
-            }
+            if ($index === false) break;
 
             $foundIndexes[] = $index;
             unset($base[$index]);
@@ -289,10 +219,13 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
 
         $allFound = count($foundIndexes) == count($targets);
         if (!$allFound) {
-            throw new \InvalidArgumentException();
+            throw new \InvalidArgumentException(
+                sprintf('Failed to find $values[%s] by $targets[%s]'
+                    , implode(',', $values), implode(',', $targets))
+            );
         }
 
-        return $foundIndexes;
+        return $this->util_unboxing($foundIndexes, is_array($valueOrValues));
     }
 
     /**
@@ -385,26 +318,6 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
 
     /**
      * @param ArrayList $other
-     * @param callable $equal
-     * @return bool
-     */
-    function isSequenceEqual(ArrayList $other, callable $equal = null) {
-        if (is_null($equal)) {
-            return $this->a == $other->a;
-        }
-
-        foreach ($this->a as $i => $v1) {
-            $v2 = $other[$i];
-            if (!$equal($v1, $v2)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * @param ArrayList $other
      * @return bool
      */
     function isSequenceSameCount(ArrayList $other) {
@@ -484,22 +397,12 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
     //endregion
 
     /**
-     * @param callable|null $selector
+     * Two elements are considered equal if and only if (string) $elem1 === (string) $elem2.
      * @return $this
      */
-    function distinct(callable $selector = null) {
+    function distinct() {
         $this->assertWritable();
-
-        if (is_null($selector)) {
-            $this->a = array_values(array_unique($this->a));
-            return $this;
-        }
-
-        $compareKeys = array_map($selector, $this->a);
-        $compareKeys = array_unique($compareKeys);
-        $newIndexes = array_keys($compareKeys);
-
-        $this->a = array_map([$this, 'offsetGet'], $newIndexes);
+        $this->a = array_values(array_unique($this->a));
         return $this;
     }
 
@@ -521,14 +424,12 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
      */
     function fromSelectMany(ArrayList $list, callable $arrayOrArrayListSelector) {
         $this->assertWritable();
-
         $arrayOrArrayLists = array_map($arrayOrArrayListSelector, $list->a);
-        $result = [];
-        foreach ($arrayOrArrayLists as $v) {
+        $merge = function (array $result, $v) {
             $vArray = is_array($v) ? $v : $v->toArray();
-            $result = array_merge($result, $vArray);
-        }
-        $this->a = $result;
+            return array_merge($result, $vArray);
+        };
+        $this->a = array_reduce($arrayOrArrayLists, $merge, []);
         return $this;
     }
 
@@ -668,7 +569,7 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
      * @return $this
      */
     function remove($valueOrValues, callable $selector = null) {
-        return $this->removeAt($this->getIndexNew($valueOrValues, $selector)); // validate
+        return $this->removeAt($this->getIndex($valueOrValues, $selector)); // validate
     }
 
     /**
@@ -843,11 +744,12 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
      * @return mixed|array
      */
     protected function util_unboxing(array $values, bool $originIsArray) {
-        $valid = $originIsArray || count($values) == 1;
-        if (!$valid) {
+        if ($originIsArray) return $values;
+
+        if (count($values) != 1) {
             throw new \InvalidArgumentException();
         }
-        return $originIsArray ? $values : $values[0];
+        return $values[0];
     }
 
     /**

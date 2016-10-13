@@ -7,25 +7,19 @@ class TileTest extends \SakiTestCase {
     function testCompare() {
         $normal5m = Tile::fromString('5m');
         $red5m = Tile::fromString('0m');
+
         $this->assertEquals(1, $red5m->compareTo($normal5m));
         $this->assertEquals(-1, $normal5m->compareTo($red5m));
 
         $f = Tile::getComparator();
         $this->assertEquals(1, $f($red5m, $normal5m));
         $this->assertEquals(-1, $f($normal5m, $red5m));
-    }
 
-    function testEqual() {
-        $t5m = Tile::fromString('5m');
-        $t0m = Tile::fromString('0m');
-        $this->assertFalse($t0m->equalTo($t5m, true));
-        $this->assertTrue($t0m->equalTo($t5m, false));
+        $this->assertTrue($normal5m == $red5m);
+        $this->assertFalse($normal5m === $red5m);
 
-        $f = Tile::getEqual(true);
-        $this->assertFalse($f($t0m, $t5m));
-
-        $f = Tile::getEqual(false);
-        $this->assertTrue($f($t0m, $t5m));
+        $a = [$normal5m, $red5m, $normal5m, $red5m];
+        $this->assertEquals([$normal5m, $red5m], array_unique([$normal5m, $red5m, $normal5m, $red5m]));
     }
 
     function testOverall() {

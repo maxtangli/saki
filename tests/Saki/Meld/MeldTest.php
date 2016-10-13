@@ -51,36 +51,6 @@ class MeldTest extends \SakiTestCase {
         $this->assertTrue($meld->isConcealed());
     }
 
-    function testEquals() {
-        $mNotConcealed = Meld::fromString('123s');
-        $mNotConcealed2 = Meld::fromString('123s');
-        $this->assertTrue($mNotConcealed == $mNotConcealed2);
-        $this->assertTrue($mNotConcealed->equalTo($mNotConcealed2, true));
-        $this->assertTrue($mNotConcealed->equalTo($mNotConcealed2, false));
-
-        $mConcealed = Meld::fromString('(123s)');
-        $this->assertFalse($mNotConcealed == $mConcealed);
-        $this->assertFalse($mNotConcealed->equalTo($mConcealed, true));
-        $this->assertTrue($mNotConcealed->equalTo($mConcealed, false));
-
-        // array
-        $meldArray = new ArrayList([$mNotConcealed]);
-        $this->assertTrue($meldArray->valueExist($mNotConcealed));
-        $this->assertTrue($meldArray->valueExist($mNotConcealed, Meld::getEqual(true)));
-        $this->assertTrue($meldArray->valueExist($mNotConcealed, Meld::getEqual(false)));
-
-        $this->assertFalse($meldArray->valueExist($mConcealed));
-        $this->assertFalse($meldArray->valueExist($mConcealed, Meld::getEqual(true)));
-        $this->assertTrue($meldArray->valueExist($mConcealed, Meld::getEqual(false)));
-
-        // compareIsRedDora
-        $m1 = Meld::fromString('555m');
-        $m2 = Meld::fromString('550m');
-        $this->assertEquals($m1, $m2);
-        $this->assertTrue($m1->equalTo($m2, true, false));
-        $this->assertFalse($m1->equalTo($m2, true, true));
-    }
-
     function testAddKong() {
         // canExtendKong
         $meld = Meld::fromString('111m');

@@ -31,7 +31,7 @@ abstract class PublicClaimCommand extends PublicCommand {
 
         $exist = function (TileList $params) use ($public) {
             // handle red
-            return $public->valueExist($params->toArray(), Tile::getEqual(true));
+            return $public->valueExist($params->toArray(), Tile::getPrioritySelector());
         };
         $otherParamsListRaw = static::getOtherParamsListImpl($targetTile->toNotRed());
         if (!$otherParamsListRaw instanceof ArrayList) {

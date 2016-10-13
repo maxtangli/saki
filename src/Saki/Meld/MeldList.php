@@ -210,7 +210,7 @@ class MeldList extends ArrayList {
             [Meld::fromString('123s'), Meld::fromString('456s'), Meld::fromString('789s')],
         ]);
         $existInThis = function (array $targetMelds) {
-            return $this->valueExist($targetMelds, Meld::getEqual(false));
+            return $this->valueExist($targetMelds, Meld::getCompareKeySelector(false));
         };
         return $targetMeldsList->any($existInThis);
     }
@@ -286,7 +286,7 @@ class MeldList extends ArrayList {
         $isValueMeld = function (Meld $tripleOrQuad) use ($valueTile) {
             /** @var Tile $firstTile */
             $firstTile = $tripleOrQuad[0];
-            return $firstTile->equalTo($valueTile, false);
+            return $firstTile == $valueTile;
         };
         return $tripleOrQuadList->any($isValueMeld);
     }

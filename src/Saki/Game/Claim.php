@@ -173,8 +173,8 @@ class Claim implements Immutable {
         }
 
         // able to create meld
-        $validHand = $hand->getPrivate()->valueExist($this->getFromTiles(), Tile::getEqual(true)) // handle red
-            && $hand->getMelded()->valueExist($this->getFromMeldedOrNull() ?? [], Meld::getEqual(true, true)); // handle red
+        $validHand = $hand->getPrivate()->valueExist($this->getFromTiles(), Tile::getPrioritySelector()) // handle red
+            && $hand->getMelded()->valueExist($this->getFromMeldedOrNull() ?? [], Meld::getCompareKeySelector(true, true)); // handle red
         if (!$validHand) {
             return false;
         }

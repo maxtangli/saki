@@ -72,10 +72,10 @@ class MeldListTest extends \SakiTestCase {
         $meldList = MeldList::fromString('123m,456m,789m,111m,EE');
 
         $this->assertTrue($meldList->valueExist(Meld::fromString('123m')));
-        $this->assertTrue($meldList->valueExist(Meld::fromString('123m'), Meld::getEqual(false)));
+        $this->assertTrue($meldList->valueExist(Meld::fromString('123m'), Meld::getCompareKeySelector(false)));
 
-        $this->assertTrue($meldList->valueExist([Meld::fromString('123m'), Meld::fromString('456m')], Meld::getEqual(false)));
-        $this->assertTrue($meldList->valueExist([Meld::fromString('123m'), Meld::fromString('456m'), Meld::fromString('789m')], Meld::getEqual(false)));
+        $this->assertTrue($meldList->valueExist([Meld::fromString('123m'), Meld::fromString('456m')], Meld::getCompareKeySelector(false)));
+        $this->assertTrue($meldList->valueExist([Meld::fromString('123m'), Meld::fromString('456m'), Meld::fromString('789m')], Meld::getCompareKeySelector(false)));
 
         $this->assertTrue($meldList->isPureStraight());
 
@@ -84,10 +84,10 @@ class MeldListTest extends \SakiTestCase {
         $meldList = MeldList::fromString('(123m),456m,789m,111m,EE');
 
         $this->assertFalse($meldList->valueExist(Meld::fromString('123m')));
-        $this->assertTrue($meldList->valueExist(Meld::fromString('123m'), Meld::getEqual(false)));
+        $this->assertTrue($meldList->valueExist(Meld::fromString('123m'), Meld::getCompareKeySelector(false)));
 
-        $this->assertTrue($meldList->valueExist([Meld::fromString('123m'), Meld::fromString('456m')], Meld::getEqual(false)));
-        $this->assertTrue($meldList->valueExist([Meld::fromString('123m'), Meld::fromString('456m'), Meld::fromString('789m')], Meld::getEqual(false)));
+        $this->assertTrue($meldList->valueExist([Meld::fromString('123m'), Meld::fromString('456m')], Meld::getCompareKeySelector(false)));
+        $this->assertTrue($meldList->valueExist([Meld::fromString('123m'), Meld::fromString('456m'), Meld::fromString('789m')], Meld::getCompareKeySelector(false)));
 
         $this->assertTrue($meldList->isPureStraight());
     }

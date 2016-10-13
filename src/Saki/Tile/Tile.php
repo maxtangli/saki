@@ -7,6 +7,10 @@ use Saki\Util\Immutable;
 use Saki\Util\Utils;
 
 /**
+ * compare
+ * - ==         :ignore   red
+ * - ===        :consider red
+ * - toString() :consider red
  * @package Saki\Tile
  */
 class Tile implements Immutable {
@@ -16,17 +20,19 @@ class Tile implements Immutable {
     function getPriority() {
         return self::$priorities[$this->__toString()];
     }
-
     //endregion
-    
-    /**
-     * syntactic sugar.
-     * @param bool $compareIsRedDora
-     * @return \Closure
-     */
-    static function getEqual(bool $compareIsRedDora) {
-        return function (Tile $a, Tile $b) use ($compareIsRedDora) {
-            return $a->equalTo($b, $compareIsRedDora);
+
+    function getIgnoreRedPriority() {
+        return floor($this->getPriority() / 10) * 10;
+    }
+
+    static function getIgnoreRedPrioritySelector() {
+        /**
+         * @param Tile $v
+         * @return int
+         */
+        return function ($v) {
+            return $v->getIgnoreRedPriority();
         };
     }
 
@@ -99,17 +105,6 @@ class Tile implements Immutable {
     }
 
     /**
-     * @param Tile $other
-     * @param bool $compareIsRedDora
-     * @return bool
-     */
-    function equalTo(Tile $other, bool $compareIsRedDora) {
-        return $this->tileType == $other->tileType
-        && $this->number == $other->number
-        && (!$compareIsRedDora || $this->isRedDora() == $other->isRedDora());
-    }
-
-    /**
      * @return string
      */
     function __toString() {
@@ -158,7 +153,7 @@ class Tile implements Immutable {
      */
     function getNumber() {
         if (!$this->tileType->isSuit()) {
-            throw new \LogicException('getNumber() is not supported on non-suit tile.');
+            throw new \BadMethodCallException('getNumber() is not supported on non-suit tile.');
         }
         return $this->number;
     }

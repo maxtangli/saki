@@ -62,10 +62,10 @@ class Open implements Immutable {
 
         // valid tile
         if ($area->getRiichiStatus()->isRiichi()) {
-            return $this->getTile()->equalTo($targetTile, true);
+            return $this->getTile() === $targetTile;
         } else {
             $private = $area->getHand()->getPrivate();
-            return $private->valueExist($this->getTile(), Tile::getEqual(true)); // handle red
+            return $private->valueExist($this->getTile(), Tile::getPrioritySelector()); // handle red
         }
     }
 

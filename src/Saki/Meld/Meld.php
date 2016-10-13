@@ -67,14 +67,13 @@ class Meld extends TileList implements Immutable {
     }
 
     /**
-     * syntactic sugar.
      * @param bool $compareConcealed
      * @param bool $compareIsRedDora
      * @return \Closure
      */
-    static function getEqual(bool $compareConcealed, bool $compareIsRedDora = false) {
-        return function (Meld $a, Meld $b) use ($compareConcealed, $compareIsRedDora) {
-            return $a->equalTo($b, $compareConcealed, $compareIsRedDora);
+    static function getCompareKeySelector(bool $compareConcealed, bool $compareIsRedDora = false) {
+        return function (Meld $meld) use ($compareConcealed, $compareIsRedDora) {
+            return $meld->getCompareKey($compareConcealed, $compareIsRedDora);
         };
     }
 
@@ -120,16 +119,17 @@ class Meld extends TileList implements Immutable {
     }
 
     /**
-     * @param Meld $other
      * @param bool $compareConcealed
      * @param bool $compareIsRedDora
-     * @return bool
+     * @return string
      */
-    function equalTo(Meld $other, bool $compareConcealed, bool $compareIsRedDora = false) {
-        return $this->toTileList()
-            ->isSequenceEqual($other->toTileList(), Tile::getEqual($compareIsRedDora))
-        && $this->meldType == $other->meldType
-        && (!$compareConcealed || $this->concealed == $other->concealed);
+    function getCompareKey(bool $compareConcealed, bool $compareIsRedDora = false) {
+        $concealedKey = $compareConcealed ? ($this->isConcealed() ? 'true' : 'false') : 'skip';
+        $getTileKey = $compareIsRedDora ? Tile::getPrioritySelector() : Tile::getIgnoreRedPrioritySelector();
+        $compareKey = $this->toArrayList($getTileKey)
+            ->insertLast($concealedKey)
+            ->toFormatString(',');
+        return $compareKey;
     }
 
     /**
