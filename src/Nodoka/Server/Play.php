@@ -18,12 +18,12 @@ class Play implements MessageComponentInterface {
         // Store the new connection to send messages to later
         $this->clients->attach($conn);
 
-        echo "New connection! ({$conn->resourceId}).\n";
+        $this->log("New connection! ({$conn->resourceId})");
         $conn->send($this->round->toJson());
     }
 
     function onMessage(ConnectionInterface $from, $msg) {
-        echo sprintf('Connection %d send: %s.' . "\n", $from->resourceId, $msg);
+        $this->log(sprintf('Connection %d send: %s.' . "\n", $from->resourceId, $msg));
 
         // prepare
         $round = $this->round;
@@ -36,8 +36,8 @@ class Play implements MessageComponentInterface {
         $data = $round->toJson();
 
         $receiverCount = count($this->clients) - 1;
-        echo sprintf('Sending data "%s" to %d other connections.' . "\n",
-            $data, $receiverCount);
+        $this->log(sprintf('Sending data "%s" to %d other connections.',
+            $data, $receiverCount));
 
         foreach ($this->clients as $client) {
             $client->send($data);
@@ -48,11 +48,11 @@ class Play implements MessageComponentInterface {
         // The connection is closed, remove it, as we can no longer send it messages
         $this->clients->detach($conn);
 
-        echo "Connection {$conn->resourceId} has disconnected.\n";
+        $this->log("Connection {$conn->resourceId} has disconnected.");
     }
 
     function onError(ConnectionInterface $conn, \Exception $e) {
-        echo "An error has occurred: {$e->getMessage()}.\n";
+        $this->log("An error has occurred: {$e->getMessage()}.");
 
         $a = [
             'result' => 'error',
@@ -60,7 +60,10 @@ class Play implements MessageComponentInterface {
         ];
         $json = json_encode($a);
         $conn->send($json);
-
 //        $conn->close();
+    }
+
+    function log($line) {
+        echo date('[Y-m-d h:m:s]') . $line . "\n";
     }
 }

@@ -3,13 +3,6 @@ var Saki = {
     debug: function (message) {
         console.log(message + ' ' + $.type(message) + ' ' + new Date().getMilliseconds());
     },
-    css: function (on) {
-        if (on) {
-            $('link[rel="stylesheet"]').removeAttr('disabled');
-        } else {
-            $('link[rel="stylesheet"]').attr('disabled', 'disabled');
-        }
-    }
 };
 
 Saki.Game = function () {
@@ -81,7 +74,7 @@ Saki.DemoView.prototype = {
         $('.deadWallContainer').html(this.deadWall(wall.stacks));
 
         var areaKeys = [
-            'actor', 'point', 'isReach',
+            'actor', 'point',
             'discard',
             'public', 'target', 'melded',
             'commands'
@@ -108,9 +101,6 @@ Saki.DemoView.prototype = {
     },
     point: function (pointData) {
         return pointData;
-    },
-    isReach: function (isReach) {
-        return isReach ? 'true' : 'false';
     },
     discard: function (tilesData) {
         return $('<ol class="discard"></ol>')
@@ -206,16 +196,6 @@ Saki.DemoView.prototype.constructor = Saki.DemoView;
 // execute
 (function () {
     $(document).ready(function () {
-        var cssSwitch = (function () {
-            var on = true;
-            return function () {
-                on = !on;
-                Saki.css(on);
-                $(this).val(on ? 'css off' : 'css on');
-            };
-        })();
-        $('#debug_cssSwitch').click(cssSwitch);
-
         Saki.debug('$(document).ready');
         var game = new Saki.Game();
         var view = new Saki.DemoView(game);

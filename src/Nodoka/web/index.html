@@ -14,7 +14,6 @@
     <h1>Play</h1>
     <section>
         <h2>Debug</h2>
-        <input type="button" value="css off" id="debug_cssSwitch"/>
         <input class="command" type="button" value="init"/>
         <input class="command" type="button" value="mockHand E 123456789m12344p"/>
         <input class="command" type="button" value="mockHand E 119m19p19sESWNCPF"/>
@@ -34,106 +33,62 @@
                 <dd class="deadWallContainer"></dd>
             </dl>
         </section>
-        <section id="areas" class="areasContainer">
-            <h3>Areas</h3>
-            <ul>
-                <li id="area1" class="areaContainer">
-                    <h4>area1</h4>
-                    <dl>
-                        <dt class="actorTitle">actor</dt>
-                        <dd class="actorContainer"></dd>
-                        <dt class="pointTitle">point</dt>
-                        <dd class="pointContainer"></dd>
-                        <dt class="isReachTitle">isReach</dt>
-                        <dd class="isReachContainer"></dd>
-                        <br/>
-                        <dt class="discardTitle">discard</dt>
-                        <dd class="discardContainer"></dd>
-                        <br/>
-                        <dt class="publicTitle">public</dt>
-                        <dd class="publicContainer"></dd>
-                        <dt class="targetTitle">target</dt>
-                        <dd class="targetContainer"></dd>
-                        <dt class="meldedTitle">melded</dt>
-                        <dd class="meldedContainer"></dd>
-                        <br/>
-                        <dt class="commandsTitle">commands</dt>
-                        <dd class="commandsContainer"></dd>
-                    </dl>
-                </li>
-                <li id="area2" class="areaContainer">
-                    <h4>area2</h4>
-                    <dl>
-                        <dt class="actorTitle">actor</dt>
-                        <dd class="actorContainer"></dd>
-                        <dt class="pointTitle">point</dt>
-                        <dd class="pointContainer"></dd>
-                        <dt class="isReachTitle">isReach</dt>
-                        <dd class="isReachContainer"></dd>
-                        <br/>
-                        <dt class="discardTitle">discard</dt>
-                        <dd class="discardContainer"></dd>
-                        <br/>
-                        <dt class="publicTitle">public</dt>
-                        <dd class="publicContainer"></dd>
-                        <dt class="targetTitle">target</dt>
-                        <dd class="targetContainer"></dd>
-                        <dt class="meldedTitle">melded</dt>
-                        <dd class="meldedContainer"></dd>
-                        <br/>
-                        <dt class="commandsTitle">commands</dt>
-                        <dd class="commandsContainer"></dd>
-                    </dl>
-                </li>
-                <li id="area3" class="areaContainer">
-                    <h4>area3</h4>
-                    <dl>
-                        <dt class="actorTitle">actor</dt>
-                        <dd class="actorContainer"></dd>
-                        <dt class="pointTitle">point</dt>
-                        <dd class="pointContainer"></dd>
-                        <dt class="isReachTitle">isReach</dt>
-                        <dd class="isReachContainer"></dd>
-                        <br/>
-                        <dt class="discardTitle">discard</dt>
-                        <dd class="discardContainer"></dd>
-                        <br/>
-                        <dt class="publicTitle">public</dt>
-                        <dd class="publicContainer"></dd>
-                        <dt class="targetTitle">target</dt>
-                        <dd class="targetContainer"></dd>
-                        <dt class="meldedTitle">melded</dt>
-                        <dd class="meldedContainer"></dd>
-                        <br/>
-                        <dt class="commandsTitle">commands</dt>
-                        <dd class="commandsContainer"></dd>
-                    </dl>
-                </li>
-                <li id="area4" class="areaContainer">
-                    <h4>area4</h4>
-                    <dl>
-                        <dt class="actorTitle">actor</dt>
-                        <dd class="actorContainer"></dd>
-                        <dt class="pointTitle">point</dt>
-                        <dd class="pointContainer"></dd>
-                        <dt class="isReachTitle">isReach</dt>
-                        <dd class="isReachContainer"></dd>
-                        <br/>
-                        <dt class="discardTitle">discard</dt>
-                        <dd class="discardContainer"></dd>
-                        <br/>
-                        <dt class="publicTitle">public</dt>
-                        <dd class="publicContainer"></dd>
-                        <dt class="targetTitle">target</dt>
-                        <dd class="targetContainer"></dd>
-                        <dt class="meldedTitle">melded</dt>
-                        <dd class="meldedContainer"></dd>
-                        <br/>
-                        <dt class="commandsTitle">commands</dt>
-                        <dd class="commandsContainer"></dd>
-                    </dl>
-                </li>
-            </ul>
+        <section id="areas" class="areas">
+            <section id="area1" class="area area-next">
+                <div class="playerContainer">
+                    <span class="actorContainer"></span>
+                    <span class="pointContainer"></span>
+                    <span class="isReachContainer"></span>
+                </div>
+                <div class="discardContainer"></div>
+                <div class="commandsContainer"></div>
+                <div class="handContainer">
+                    <div class="publicContainer"></div>
+                    <div class="targetContainer"></div>
+                    <div class="meldedContainer"></div>
+                </div>
+            </section>
+            <section id="area2" class="area area-towards">
+                <div class="playerContainer">
+                    <span class="actorContainer"></span>
+                    <span class="pointContainer"></span>
+                    <span class="isReachContainer"></span>
+                </div>
+                <div class="discardContainer"></div>
+                <div class="commandsContainer"></div>
+                <div class="handContainer">
+                    <div class="publicContainer"></div>
+                    <div class="targetContainer"></div>
+                    <div class="meldedContainer"></div>
+                </div>
+            </section>
+            <section id="area3" class="area area-prev">
+                <div class="playerContainer">
+                    <span class="actorContainer"></span>
+                    <span class="pointContainer"></span>
+                </div>
+                <div class="discardContainer"></div>
+                <div class="commandsContainer"></div>
+                <div class="handContainer">
+                    <div class="publicContainer"></div>
+                    <div class="targetContainer"></div>
+                    <div class="meldedContainer"></div>
+                </div>
+            </section>
+            <section id="area4" class="area area-self">
+                <div class="playerContainer">
+                    <span class="actorContainer"></span>
+                    <span class="pointContainer"></span>
+                    <span class="isReachContainer"></span>
+                </div>
+                <div class="discardContainer"></div>
+                <div class="commandsContainer"></div>
+                <div class="handContainer">
+                    <div class="publicContainer"></div>
+                    <div class="targetContainer"></div>
+                    <div class="meldedContainer"></div>
+                </div>
+            </section>
         </section>
     </article>
 </main>

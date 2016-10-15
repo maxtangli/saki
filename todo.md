@@ -20,8 +20,9 @@ rush 61-65 | 17.1h
 rush 66-70 | 22.9h
 rush 71-75 | 15.7h
 rush 76-80 | 23.4h
-rush 81-85 | ing
-     total |364.9h + ing
+rush 81-85 | 28.2h
+rush 86-90 | ing
+     total |393.1h + ing
 
 ## rush history
 
@@ -974,7 +975,7 @@ rush 84 DemoUI areas 10.6h
 - [x] css: dt, dd 0.5h
 - [x] refactor: js 0.3h
 
-rush 85 DemoUI round
+rush 85 DemoUI round 4.5h
 
 - [x] reference page: 0.8h
 - [x] css: stack, wall 1.4h
@@ -983,9 +984,6 @@ rush 85 DemoUI round
 - [x] refactor: ArrayList 0.4h
 - [x] json, js: deadWall 0.8h
 - [x] hosting: update 0.5h
-- [ ] bug: not displayed well when wall html too long 0.5h
-
-- [ ] js: round info
 
 rush 86 refactor ArrayList 5.3h
 
@@ -999,7 +997,15 @@ rush 86 refactor ArrayList 5.3h
 - [x] replace indexExist.equal, valueExist.equal by compareKeySelector 0.5h
 - [x] simplify red tile compare 0.6h
 
-rush optimize analyzePrivate
+rush 87 DemoUI round
+
+- [x] css: areas redesign 1.1h
+- [x] css: areas rotation view 1h
+- [x] css: tenhou view 1.9h
+- [ ] css: precise tenhou view
+
+- [ ] screen resolution
+- [ ] bug: not displayed well when wall html too long 0.5h
 
 rush DemoUI result
 
