@@ -36,59 +36,61 @@
 
 .areas {
     background-color: grey;
+    height: 680px; /* =hand.width + hand.height */
     position: relative;
-    height: 600px;
 }
 
 .area-next {
     position: absolute;
-    left: 300px;
+    left: 380px; /* = hand.width + hand.height - area.height */
     top: 0px;
     transform-origin: top left;
-    transform: rotate(-90deg) translate(-530px);
+    transform: rotate(-90deg) translate(-610px); /* = -hand.width */
 }
 
 .area-towards {
     position: absolute;
     left: 0px;
     top: 0px;
-    transform-origin: 265px 150px;
+    transform-origin: 305px 150px; /* = hand.width / 2, area.height / 2 */
     transform: rotate(180deg);
 }
 
 .area-prev {
     position: absolute;
     left: 0px;
-    top: 70px;
-    transform-origin: 150px 150px;
+    top: 70px; /* = hand.height */
+    transform-origin: 150px 150px; /* = area.height / 2, area.height / 2 */
     transform: rotate(90deg);
 }
 
 .area-self {
     position: absolute;
-    top: 300px;
-    left: 70px;
+    left: 70px; /* = hand.height */
+    top: 380px; /* = (hand.width + hand.height) / 2 */
 }
 
 /*-- area --*/
 .area {
     /*background-color: #999999;*/
-    width: 530px;
+    /* NOT set width, command button may be unclickable since override */
     height: 300px;
 }
 
 .playerContainer {
-    background-color: #333333;
-    width: auto;
-    height: 20px;
+    background-color: #FFFF00;
+    width: 110px;
+    height: 30px;
     position: absolute;
-    left: 220px;
-    top: 10px;
+    left: 230px;
+    top: 0;
+    line-height: 30px;
 }
 
 .discardContainer {
     background-color: #FF0000;
-    height: 150px;
+    width: 210px; /* = 5 * tile.width + tile.height */
+    height: 150px; /* >= 3 * tile.height */
     position: absolute;
     left: 200px;
     top: 30px;
@@ -96,6 +98,7 @@
 
 .commandsContainer {
     background-color: #00FF00;
+    width: 490px;/* = hand.width - left - hand.height */
     height: 50px;
     position: absolute;
     left: 50px;
@@ -104,6 +107,7 @@
 
 .handContainer {
     background-color: #0000FF;
+    width: 610px;
     height: 70px;
     position: absolute;
     left: 0px;
@@ -133,7 +137,7 @@
 }
 
 .command {
-
+    
 }
 
 /*-- hand --*/

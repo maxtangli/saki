@@ -997,14 +997,21 @@ rush 86 refactor ArrayList 5.3h
 - [x] replace indexExist.equal, valueExist.equal by compareKeySelector 0.5h
 - [x] simplify red tile compare 0.6h
 
-rush 87 DemoUI round
+rush 87 DemoUI areas renew 4.2h
 
-- [x] css: areas redesign 1.1h
+- [x] css: areas renew 1.1h
 - [x] css: areas rotation view 1h
-- [x] css: tenhou view 1.9h
-- [ ] css: precise tenhou view
+- [x] css: areas tenhou view 1.9h
+- [x] css: areas precise tenhou view 1.2h
 
-- [ ] screen resolution
+rush 88 DemoUI round
+
+- [ ] css: round
+
+- [ ] refactor: remove useless semantic html
+
+- [ ] php: player's wall view
+- [ ] css: wall
 - [ ] bug: not displayed well when wall html too long 0.5h
 
 rush DemoUI result
