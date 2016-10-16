@@ -7,7 +7,7 @@ progress
 function   | progress | remark
 ---------- | -------- | ------
 rule logic | 95%      | PHP7, PHPUnit
-network    | 10%      | WebSocket supported by [Ratchet, a PHP library](socketo.me/).
+network    | 10%      | WebSocket supported by [Ratchet, a PHP library](http://socketo.me/).
 UI         | 10%      | HTML＆CSS＆JavaScript
 DB         | 0%       | KVS
 src reading| 0%       | read open source mahjong projects to improve
