@@ -1004,13 +1004,25 @@ rush 87 DemoUI areas renew 4.2h
 - [x] css: areas tenhou view 1.9h
 - [x] css: areas precise tenhou view 1.2h
 
-rush 88 DemoUI round
+rush 88 bug fix 2.1h
+
+- [x] bug:thirteen orphan tsumo not works 0.2h
+- [x] bug:executable commands after riichi
+
+- [x] refactor: add error message for invalid command 1h
+- [x] bug: invalid discard after chow 0.5h // Open.valid wrongly use $targetTile, which should be $tile
+- [x] bug: assertPrivate($seatWind) not works 0.2h
+- [x] bug: discardCommand.executable failed to consider swapCalling 0.2h
+
+rush 89 DemoUI round
 
 - [x] css&js refactor: remove useless semantic html 0.7h
-- [ ] css: actor
 
-- [ ] css: round
+- [x] css: actor 0.3h
+- [ ] css: round 0.4h
+
 - [ ] css: target
+- [ ] css: meld align from right to left
 
 - [ ] php: player's wall view
 - [ ] css: wall
@@ -1021,15 +1033,15 @@ rush DemoUI result
 - [ ] winReport
 - [ ] result
 
-rush bug fix
+rush DemoUI actions
 
-- [x] bug:thirteen orphan tsumo not works 0.2h
-- [x] bug:executable commands after riichi
+- [ ] discard
+- [ ] riichi
+- [ ] claim
 
-- [ ] refactor: add error message for invalid command 1h
-- [x] bug: invalid discard after chow 0.5h // Open.valid wrongly use $targetTile, which should be $tile
-- [x] bug: assertPrivate($seatWind) not works 0.2h
-- [x] bug: discardCommand.executable failed to consider swapCalling 0.2h
+rush command exception
+
+- [ ] add error message for invalid command
 
 rush integrate PublicCommandBuffer ?5h?
 

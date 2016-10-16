@@ -6,8 +6,8 @@ var Saki = {
 };
 
 Saki.Game = function () {
-    // this.url = 'ws://ec2-52-198-24-187.ap-northeast-1.compute.amazonaws.com:8080/';
-    this.url = 'ws://localhost:8080/';
+    var isLocal = (window.location.href.search("localhost") != -1);
+    this.url = isLocal ? 'ws://localhost:8080/' : 'ws://saki.ninja:8080/';
     this.conn = null;
     this.oninit = this.onupdate = this.onerror = function () {
     };
@@ -98,7 +98,8 @@ Saki.DemoView.prototype = {
     },
     /*-- actor --*/
     actor: function (tileData) {
-        return tileData;
+        return this.tile(tileData)
+            .addClass('tile-indicator');
     },
     point: function (pointData) {
         return pointData;

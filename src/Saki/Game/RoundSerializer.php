@@ -20,6 +20,7 @@ class RoundSerializer extends Singleton {
             'prevailingWind' => $prevailing->getStatus()->getPrevailingWind()->__toString(),
             'prevailingWindTurn' => $prevailing->getStatus()->getPrevailingWindTurn(),
             'seatWindTurn' => $prevailing->getSeatWindTurn(),
+            'pointSticks' => $r->getRiichiHolder()->getRiichiPointsSticks(),
             'wall' => $r->getWall()->toJsonArray(),
             'phase' => $phase->__toString(),
             'result' => null,

@@ -300,6 +300,7 @@
 - 番数，Fan：
 - 符数，Minipoint，*Fu：
 - 点数，Point：
+- 点棒，Stick：
 - 基本点
 
 ## 基本点的计算

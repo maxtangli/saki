@@ -42,6 +42,13 @@ class RiichiHolder {
     }
 
     /**
+     * @return int
+     */
+    function getRiichiPointsSticks() {
+        return intval($this->getRiichiPoints() / 1000);
+    }
+
+    /**
      * @param SeatWind $seatWind
      * @return RiichiStatus
      */
