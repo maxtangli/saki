@@ -98,11 +98,15 @@ class RoundTest extends \SakiTestCase {
     function testDiscardSwapCalling() {
         $round = $this->getInitRound();
         $round->process(
-            'mockHand E 1s; discard E 1s',
-            'mockHand S 1234s; chow S 23s'
+            'mockHand E 2s; discard E 2s',
+            'mockHand S 234506s; chow S 34s'
         );
-        $this->assertNotExecutable('discard S 1s');
-        $this->assertNotExecutable('discard S 4s');
+        // swap calling
+        $this->assertNotExecutable('discard S 2s');
+        $this->assertNotExecutable('discard S 5s');
+        $this->assertNotExecutable('discard S 0s');
+        // continue
+        $this->assertExecutable('discard S 6s');
     }
 
     function testReach() {
@@ -118,9 +122,12 @@ class RoundTest extends \SakiTestCase {
             'mockHand S 450m12346789p13s; chow S 4m0m'
         );
 
+        $this->assertPrivate('S');
         $this->assertHasClaim($claimTurn);
         $this->assertCurrentTurnChanged('S', $claimTurn);
         $this->assertHand('5m12346789p13s', '340m', '3s');
+
+        $this->assertExecutable('discard S 5m');
     }
 
     function testChowRequireNext() {
@@ -155,9 +162,12 @@ class RoundTest extends \SakiTestCase {
             'mockHand W 550m12346789p13s; pung W 5m0m'
         );
 
+        $this->assertPrivate('W');
         $this->assertHasClaim($claimTurn);
         $this->assertCurrentTurnChanged('W', $claimTurn);
         $this->assertHand('12346789p13s5m', '550m', '5m'); // todo should not be 5m but 3s
+
+        $this->assertExecutable('discard W 5m');
     }
 
     function testKong() {
@@ -169,9 +179,12 @@ class RoundTest extends \SakiTestCase {
             'mockNextReplace 1p; mockHand W 550m23456789p13s; kong W 5m5m0m'
         );
 
+        $this->assertPrivate('W');
         $this->assertHasClaim($claimTurn);
         $this->assertCurrentTurnChanged('W', $claimTurn);
         $this->assertHand('23456789p13s1p', '5550m', '1p');
+
+        $this->assertExecutable('discard W 5p');
     }
 
     function testConcealedKong() {
@@ -180,9 +193,12 @@ class RoundTest extends \SakiTestCase {
         $claimTurn = $round->getTurn();
         $round->process('mockNextReplace 1p; mockHand E 5550m23456789p13s; concealedKong E 5m5m5m0m');
 
+        $this->assertPrivate('E');
         $this->assertHasClaim($claimTurn);
         $this->assertCurrentTurnNotChanged($claimTurn);
         $this->assertHand('23456789p13s1p', '(5550m)', '1p');
+
+        $this->assertExecutable('discard E 5p');
     }
 
     function testExtendKong() {
@@ -204,10 +220,12 @@ class RoundTest extends \SakiTestCase {
 
         // leave robQuad phase and enter private phase
         $round->process('passAll');
-        $this->assertPrivate('E');
+        $this->assertPrivate('S');
         $this->assertHasClaim($claimTurn);
         $this->assertCurrentTurnNotChanged($claimTurn);
         $this->assertHand('23456789p13s1p', '5500m', '1p'); // todo right order of Meld?
+
+        $this->assertExecutable('discard S 5p');
     }
 
     // todo test not kong able

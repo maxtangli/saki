@@ -16,16 +16,16 @@ class SwapCalling implements Immutable {
     private $allow;
 
     /**
-     * @param bool $allow
+     * @param bool $allowSwapCalling
      */
-    function __construct(bool $allow) {
-        $this->allow = $allow;
+    function __construct(bool $allowSwapCalling) {
+        $this->allow = $allowSwapCalling;
     }
 
     /**
      * @return boolean
      */
-    function allow() {
+    function allowSwapCalling() {
         return $this->allow;
     }
 
@@ -40,7 +40,7 @@ class SwapCalling implements Immutable {
             throw new \InvalidArgumentException();
         }
 
-        if ($this->allow()) {
+        if ($this->allowSwapCalling()) {
             return true;
         }
 
@@ -60,7 +60,7 @@ class SwapCalling implements Immutable {
      * @return bool
      */
     function allowOpen(PrivatePhaseState $privatePhaseState, Tile $tile) {
-        if ($this->allow()) {
+        if ($this->allowSwapCalling()) {
             return true;
         }
 

@@ -1,6 +1,7 @@
 <?php
 namespace Saki\Game;
 
+use Saki\Command\InvalidCommandException;
 use Saki\Tile\Tile;
 use Saki\Util\Immutable;
 
@@ -56,16 +57,19 @@ class Open implements Immutable {
         $swapCalling = $round->getRule()->getSwapCalling();
         $phaseState = $round->getPhaseState();
         $targetTile = $area->getHand()->getTarget()->getTile();
-        if (!$swapCalling->allowOpen($phaseState, $targetTile)) {
+        $tile = $this->getTile();
+
+        if (!$swapCalling->allowOpen($phaseState, $tile)) {
+//            throw new InvalidCommandException('', 'swap calling not allow open');
             return false;
         }
 
         // valid tile
         if ($area->getRiichiStatus()->isRiichi()) {
-            return $this->getTile() === $targetTile;
+            return $tile === $targetTile;
         } else {
             $private = $area->getHand()->getPrivate();
-            return $private->valueExist($this->getTile(), Tile::getPrioritySelector()); // handle red
+            return $private->valueExist($tile, Tile::getPrioritySelector()); // handle red
         }
     }
 

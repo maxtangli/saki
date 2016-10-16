@@ -181,15 +181,15 @@ class SakiTestCase extends \PHPUnit_Framework_TestCase {
         $this->assertPhaseImpl(Phase::OVER_PHASE);
     }
     
-    private function assertPhaseImpl(int $phaseValue, string $currentSeatWind = null) {
+    private function assertPhaseImpl(int $phaseValue, string $expectedCurrentSeatWind = null) {
         $round = $this->getCurrentRound();
 
         $currentPhase = $round->getPhaseState()->getPhase();
         $this->assertEquals(Phase::create($phaseValue), $currentPhase);
 
-        if ($currentSeatWind !== null) {
+        if ($expectedCurrentSeatWind !== null) {
             $currentSeatWind = $round->getCurrentSeatWind();
-            $this->assertEquals(SeatWind::fromString($currentSeatWind), $currentSeatWind);
+            $this->assertEquals(SeatWind::fromString($expectedCurrentSeatWind), $currentSeatWind);
         }
     }
 

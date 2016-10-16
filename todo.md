@@ -1008,7 +1008,7 @@ rush 88 DemoUI round
 
 - [ ] css: round
 
-- [ ] refactor: remove useless semantic html
+- [ ] refactor: remove useless semantic html 0.2h
 
 - [ ] php: player's wall view
 - [ ] css: wall
@@ -1025,7 +1025,8 @@ rush bug fix
 - [x] bug:executable commands after riichi
 
 - [ ] refactor: add error message for invalid command 1h
-- [ ] bug: invalid discard after pung sometimes
+- [x] bug: invalid discard after chow 0.5h // Open.valid wrongly use $targetTile, which should be $tile
+- [x] bug: assertPrivate($seatWind) not works 0.2h
 
 rush integrate PublicCommandBuffer ?5h?
 
@@ -1059,7 +1060,7 @@ rush optimize WaitingAnalyzer: step2
 rush large scale refactoring
 
 - [ ] red dora design
-- [ ] Claim design
+- [ ] Open, Claim design
 - [ ] toNextPhase design
 
 refactor process
