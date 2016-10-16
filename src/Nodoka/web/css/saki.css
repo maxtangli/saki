@@ -7,33 +7,7 @@
 }
 
 /*-- round --*/
-.wall {
-    padding-left: 0;
-}
-
-.wall > li {
-    display: inline-block;
-}
-
-.stack {
-    display: inline-block;
-    position: relative;
-    padding-left: 0;
-}
-
-.stack-top {
-    display: inline-block;
-}
-
-.stack-bottom {
-    display: inline-block;
-    position: absolute;
-    top: 5px;
-    z-index: -1;
-}
-
 /*-- areas --*/
-
 .areas {
     background-color: grey;
     height: 680px; /* =hand.width + hand.height */
@@ -90,7 +64,7 @@
 .discardContainer {
     background-color: #FF0000;
     width: 210px; /* = 5 * tile.width + tile.height */
-    height: 150px; /* >= 3 * tile.height */
+    height: 135px; /* >= 3 * tile.height */
     position: absolute;
     left: 200px;
     top: 30px;
@@ -98,11 +72,11 @@
 
 .commandsContainer {
     background-color: #00FF00;
-    width: 490px;/* = hand.width - left - hand.height */
-    height: 50px;
+    width: 475px; /* = hand.width - left - hand.height */
+    height: 65px;
     position: absolute;
-    left: 50px;
-    top: 180px;
+    left: 65px;
+    top: 165px;
 }
 
 .handContainer {
@@ -114,62 +88,55 @@
     top: 230px;
 }
 
-/*-- player --*/
-/*-- discard --*/
-.discard {
-    padding-left: 0;
-    margin: 0;
-    height: 90px;
-}
-
-.discard > li {
-    display: inline-block;
-}
-
-/*-- commands --*/
-.commands {
-    padding-left: 0;
-    margin: 0;
-}
-
-.commands > li {
-    display: inline-block;
-}
-
-.command {
-    
-}
-
-/*-- hand --*/
 .publicContainer, .targetContainer, .meldedContainer {
     display: inline-block;
 }
 
-.public {
-    padding-left: 0;
-    margin: 0;
+/*-- player --*/
+
+/*-- discard --*/
+.discard {
 }
 
-.public > li {
+/*-- commands --*/
+.commands {
+}
+
+.command {
+}
+/*-- wall --*/
+.wall {
+}
+
+.stack {
     display: inline-block;
+    position: relative;
+}
+
+.stack .tile:nth-child(1) {
+    display: inline-block;
+}
+
+.stack .tile:nth-child(2) {
+    display: inline-block;
+    position: absolute;
+    top: 5px;
+    left: 0;
+    z-index: -1;
+}
+
+/*-- hand --*/
+.public {
 }
 
 .melded {
-    padding-left: 0;
-    margin: 0;
 }
 
-.melded > li {
-    display: inline-block;
+.melded > .meld {
     margin-right: 33px;
 }
 
 .meld {
-    padding: 0;
-}
-
-.meld > li {
-    display: inline-block;
 }
 
 /*-- tile --*/

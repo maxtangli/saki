@@ -1,21 +1,21 @@
 # saki
 
-Goal: A japanese-mahjong game server + browser client.
+goal: A japanese-mahjong game server + browser client.
 
-Develop progress
+progress
 
 function   | progress | remark
 ---------- | -------- | ------
 rule logic | 95%      | PHP7, PHPUnit
-network    | 10%      | Racket(PHP WebSocket library)
-UI         | 1%       | HTML＆CSS＆JavaScript
+network    | 10%      | WebSocket supported by [Ratchet, a PHP library](socketo.me/).
+UI         | 10%      | HTML＆CSS＆JavaScript
 DB         | 0%       | KVS
 src reading| 0%       | read open source mahjong projects to improve
-release    | 0%       | wish to achieve in 2016
+release    | 0%       | expected to achieve in 2016
 
 ## demo
 
-See a demo hosted in [AWS EC2](http://ec2-52-198-24-187.ap-northeast-1.compute.amazonaws.com/).
+See a demo hosted in [AWS](http://saki.ninja/).
 
 ## reference
 

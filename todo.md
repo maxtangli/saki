@@ -1006,9 +1006,11 @@ rush 87 DemoUI areas renew 4.2h
 
 rush 88 DemoUI round
 
-- [ ] css: round
+- [x] css&js refactor: remove useless semantic html 0.7h
+- [ ] css: actor
 
-- [ ] refactor: remove useless semantic html 0.3h
+- [ ] css: round
+- [ ] css: target
 
 - [ ] php: player's wall view
 - [ ] css: wall
