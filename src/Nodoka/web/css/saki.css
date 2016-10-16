@@ -97,6 +97,7 @@
     position: absolute;
     left: 65px;
     top: 165px;
+    z-index: 1; /* todo remove */
 }
 
 .handContainer {

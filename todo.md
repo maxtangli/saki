@@ -1013,6 +1013,7 @@ rush 88 bug fix 2.1h
 - [x] bug: invalid discard after chow 0.5h // Open.valid wrongly use $targetTile, which should be $tile
 - [x] bug: assertPrivate($seatWind) not works 0.2h
 - [x] bug: discardCommand.executable failed to consider swapCalling 0.2h
+- [x] bug: riichiCommand candidate when already riichi
 
 rush 89 DemoUI round
 
@@ -1020,6 +1021,8 @@ rush 89 DemoUI round
 
 - [x] css: actor 0.3h
 - [ ] css: round 0.4h
+
+rush
 
 - [ ] css: target
 - [ ] css: meld align from right to left
