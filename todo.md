@@ -1008,7 +1008,7 @@ rush 88 DemoUI round
 
 - [ ] css: round
 
-- [ ] refactor: remove useless semantic html 0.2h
+- [ ] refactor: remove useless semantic html 0.3h
 
 - [ ] php: player's wall view
 - [ ] css: wall
@@ -1027,6 +1027,7 @@ rush bug fix
 - [ ] refactor: add error message for invalid command 1h
 - [x] bug: invalid discard after chow 0.5h // Open.valid wrongly use $targetTile, which should be $tile
 - [x] bug: assertPrivate($seatWind) not works 0.2h
+- [x] bug: discardCommand.executable failed to consider swapCalling 0.2h
 
 rush integrate PublicCommandBuffer ?5h?
 

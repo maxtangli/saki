@@ -8,15 +8,15 @@ use Saki\Tile\Tile;
  */
 class Riichi extends Open {
     //region override Open
-    function __construct(SeatWind $actor, Tile $tile) {
-        parent::__construct($actor, $tile, true);
+    function __construct(SeatWind $actor, Tile $openTile) {
+        parent::__construct($actor, $openTile, true);
     }
 
     function valid(Area $area) {
         $waitingAnalyzer = $area->getRound()->getRule()
             ->getWinAnalyzer()->getWaitingAnalyzer();
         $hand = $area->getHand();
-        list($private, $melded, $tile) = [$hand->getPrivate(), $hand->getMelded(), $this->getTile()];
+        list($private, $melded, $tile) = [$hand->getPrivate(), $hand->getMelded(), $this->getOpenTile()];
 
         return parent::valid($area)
         && $area->getHand()->isConcealed()

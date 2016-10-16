@@ -70,6 +70,12 @@ class CommandProviderTest extends \SakiTestCase {
                 ['discard E 1m', 'discard E 5m', 'discard E 0m', 'discard E 9m', 'discard E 6p'],
                 true, 'E', 'mockHand E 111155509999m66p',
             ],
+            // Discard, swap calling
+            [
+                ['discard S 2s', 'discard S 5s'],
+                false, 'S', 'mockHand E 2s; discard E 2s; mockHand S 234506s; chow S 34s',
+            ],
+
             // Riichi slow+0.6s todo
 //            [
 //                ['riichi E 1s', 'riichi E 2s', 'riichi E 4s', 'riichi E 5s'],

@@ -10,18 +10,18 @@ use Saki\Util\Immutable;
  */
 class Open implements Immutable {
     private $actor;
-    private $tile;
+    private $openTile;
     private $isDiscard;
 
     /**
      * @param SeatWind $actor
-     * @param Tile $tile
+     * @param Tile $openTile
      * @param bool $isDiscard
      */
     function __construct(SeatWind $actor,
-                         Tile $tile, bool $isDiscard) {
+                         Tile $openTile, bool $isDiscard) {
         $this->actor = $actor;
-        $this->tile = $tile;
+        $this->openTile = $openTile;
         $this->isDiscard = $isDiscard;
     }
 
@@ -35,8 +35,8 @@ class Open implements Immutable {
     /**
      * @return Tile
      */
-    function getTile() {
-        return $this->tile;
+    function getOpenTile() {
+        return $this->openTile;
     }
 
     /**
@@ -56,20 +56,19 @@ class Open implements Immutable {
         $round = $area->getRound();
         $swapCalling = $round->getRule()->getSwapCalling();
         $phaseState = $round->getPhaseState();
-        $targetTile = $area->getHand()->getTarget()->getTile();
-        $tile = $this->getTile();
-
-        if (!$swapCalling->allowOpen($phaseState, $tile)) {
+        $openTile = $this->getOpenTile();
+        if (!$swapCalling->allowOpen($phaseState, $openTile)) {
 //            throw new InvalidCommandException('', 'swap calling not allow open');
             return false;
         }
 
         // valid tile
         if ($area->getRiichiStatus()->isRiichi()) {
-            return $tile === $targetTile;
+            $targetTile = $area->getHand()->getTarget()->getTile();
+            return $openTile === $targetTile;
         } else {
             $private = $area->getHand()->getPrivate();
-            return $private->valueExist($tile, Tile::getPrioritySelector()); // handle red
+            return $private->valueExist($openTile, Tile::getPrioritySelector()); // handle red
         }
     }
 
@@ -80,21 +79,19 @@ class Open implements Immutable {
         if (!$this->valid($area)) {
             throw new \InvalidArgumentException();
         }
+        $openTile = $this->getOpenTile();
 
-        $round = $area->getRound();
         $hand = $area->getHand();
-        $tile = $this->getTile();
-        $isDiscard = $this->isDiscard();
-
-        $newPublic = $hand->getPrivate()->getCopy()
-            ->remove($tile, Tile::getPrioritySelector()); // handle red
+        $newPublic = $hand->getPrivate()
+            ->remove($openTile, Tile::getPrioritySelector()); // handle red
         $newMelded = $hand->getMelded();
         $newTarget = Target::createNull();
         $newHand = new Hand($newPublic, $newMelded, $newTarget);
 
         $area->setHand($newHand);
 
+        $round = $area->getRound();
         $round->getOpenHistory()
-            ->record(new OpenRecord($round->getTurn(), $tile, $isDiscard));
+            ->record(new OpenRecord($round->getTurn(), $openTile, $this->isDiscard()));
     }
 }
