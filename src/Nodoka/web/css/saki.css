@@ -13,6 +13,16 @@
     position: relative;
 }
 
+.log { /* debug */
+    width: 100%;
+    height: 400px;
+    margin-top: 10px;
+}
+
+.resultContainer {
+    white-space: pre-line;
+}
+
 .round {
     background-color: #FF00FF;
     width: 80px;
@@ -125,6 +135,7 @@
 
 .command {
 }
+
 /*-- wall --*/
 .wall {
 }

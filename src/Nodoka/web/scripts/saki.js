@@ -27,6 +27,11 @@ Saki.Game.prototype = {
     send: function (command) {
         if (this.conn !== null) {
             this.conn.send(command);
+
+            // todo move to view
+            var log = $('.log');
+            var msg = '---send---\n' + command + "\n";
+            log.val(log.val() + msg);
         } else {
             throw new Error('Connection not ready.')
         }
@@ -45,6 +50,11 @@ Saki.Game.prototype = {
     onmessage: function (message) {
         var jsonString = message.data;
         var jsonData = JSON.parse(jsonString);
+
+        // todo move to view
+        var log = $('.log');
+        var msg = '---receive---\n' + jsonString + "\n";
+        log.val(log.val() + msg);
 
         if (jsonData.result !== 'ok') {
             this.onerror(jsonData);
@@ -69,9 +79,25 @@ Saki.DemoView.prototype = {
     render: function (jsonData) {
         Saki.debug('view.render()');
 
+        // todo clean code
+        var roundData = jsonData.round;
+        $('.prevailingWindContainer').html(this.actor(roundData.prevailingWind));
+        $('.prevailingWindTurnContainer').html(roundData.prevailingWindTurn);
+        $('.seatWindTurnContainer').html(roundData.seatWindTurn);
+        $('.pointSticksContainer').html(roundData.pointSticks);
+
         var wall = jsonData.round.wall;
         $('.remainTileCountContainer').html(wall.remainTileCount);
         $('.deadWallContainer').html(this.deadWall(wall.stacks));
+
+        if (roundData.result !== null) {
+            var report = roundData.winReports[0];
+            var result = [report.actor, report.fan + ' fan', report.fu + ' fu'].join(',')
+                + '\n' + report.yakuItems.join('\n');
+            $('.resultContainer').text(result);
+        } else {
+            $('.resultContainer').text('none');
+        }
 
         var that = this;
         var keys = [

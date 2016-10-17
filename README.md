@@ -15,7 +15,7 @@ release    | 0%       | expected to achieve in 2016
 
 ## demo
 
-See a demo hosted in [AWS](http://saki.ninja/).
+See a demo(network 10%, UI 10%) hosted in [AWS](http://saki.ninja/).
 
 ## reference
 

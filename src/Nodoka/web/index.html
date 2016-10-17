@@ -11,90 +11,85 @@
 </head>
 <body>
 <header>
-    <h1>Play</h1>
+    <h1>Saki Play(10% demo)</h1>
+</header>
+<main>
+    <section id="round">
+        <dl>
+            <dt class="deadWallTitle">dead wall</dt>
+            <dd class="deadWallContainer"></dd>
+            <dt class="resultTitle">round result</dt>
+            <dd class="resultContainer"></dd>
+        </dl>
+    </section>
+    <section id="areas" class="areas">
+        <section class="round">
+            <span class="prevailingWindContainer">東</span>
+            <span class="prevailingWindTurnContainer">x</span>局
+            <span class="seatWindTurnContainer">x</span>本場<br/>
+            <span class="pointSticksContainer">x</span>場棒
+            <span class="remainTileCountContainer"></span>残牌
+        </section>
+        <section id="area1" class="area area-next">
+            <div class="playerContainer">
+                <span class="actorContainer"></span>
+                <span class="pointContainer"></span>
+            </div>
+            <div class="discardContainer"></div>
+            <div class="commandsContainer"></div>
+            <div class="handContainer">
+                <div class="publicContainer"></div>
+                <div class="targetContainer"></div>
+                <div class="meldedContainer"></div>
+            </div>
+        </section>
+        <section id="area2" class="area area-towards">
+            <div class="playerContainer">
+                <span class="actorContainer"></span>
+                <span class="pointContainer"></span>
+            </div>
+            <div class="discardContainer"></div>
+            <div class="commandsContainer"></div>
+            <div class="handContainer">
+                <div class="publicContainer"></div>
+                <div class="targetContainer"></div>
+                <div class="meldedContainer"></div>
+            </div>
+        </section>
+        <section id="area3" class="area area-prev">
+            <div class="playerContainer">
+                <span class="actorContainer"></span>
+                <span class="pointContainer"></span>
+            </div>
+            <div class="discardContainer"></div>
+            <div class="commandsContainer"></div>
+            <div class="handContainer">
+                <div class="publicContainer"></div>
+                <div class="targetContainer"></div>
+                <div class="meldedContainer"></div>
+            </div>
+        </section>
+        <section id="area4" class="area area-self">
+            <div class="playerContainer">
+                <span class="actorContainer"></span>
+                <span class="pointContainer"></span>
+            </div>
+            <div class="discardContainer"></div>
+            <div class="commandsContainer"></div>
+            <div class="handContainer">
+                <div class="publicContainer"></div>
+                <div class="targetContainer"></div>
+                <div class="meldedContainer"></div>
+            </div>
+        </section>
+    </section>
     <section>
         <h2>Debug</h2>
         <input class="command" type="button" value="init"/>
         <input class="command" type="button" value="mockHand E 123456789m12344p"/>
-        <input class="command" type="button" value="mockHand E 119m19p19sESWNCPF"/>
+        <input class="command" type="button" value="mockHand E 119m19p19sESWNCPF"/><br/>
+        <textarea class="log"></textarea>
     </section>
-</header>
-<main>
-    <article>
-        <header>
-            <h2>Current Play</h2>
-        </header>
-        <section id="round">
-            <h3>Round</h3>
-            <dl>
-                <dt class="remainTileCountTitle">remain tile count</dt>
-                <dd class="remainTileCountContainer"></dd>
-                <dt class="deadWallTitle">dead wall</dt>
-                <dd class="deadWallContainer"></dd>
-            </dl>
-        </section>
-        <section id="areas" class="areas">
-            <section class="round">
-                <span class="prevailingWindContainer">東</span>
-                <span class="prevailingWindTurnContainer">x局</span>
-                <span class="seatWindTurnContainer">x本場</span><br/>
-                <span class="pointSticksContainer">x場棒</span>
-                <span class="remainTileCountContainer"></span>残牌
-            </section>
-            <section id="area1" class="area area-next">
-                <div class="playerContainer">
-                    <span class="actorContainer"></span>
-                    <span class="pointContainer"></span>
-                </div>
-                <div class="discardContainer"></div>
-                <div class="commandsContainer"></div>
-                <div class="handContainer">
-                    <div class="publicContainer"></div>
-                    <div class="targetContainer"></div>
-                    <div class="meldedContainer"></div>
-                </div>
-            </section>
-            <section id="area2" class="area area-towards">
-                <div class="playerContainer">
-                    <span class="actorContainer"></span>
-                    <span class="pointContainer"></span>
-                </div>
-                <div class="discardContainer"></div>
-                <div class="commandsContainer"></div>
-                <div class="handContainer">
-                    <div class="publicContainer"></div>
-                    <div class="targetContainer"></div>
-                    <div class="meldedContainer"></div>
-                </div>
-            </section>
-            <section id="area3" class="area area-prev">
-                <div class="playerContainer">
-                    <span class="actorContainer"></span>
-                    <span class="pointContainer"></span>
-                </div>
-                <div class="discardContainer"></div>
-                <div class="commandsContainer"></div>
-                <div class="handContainer">
-                    <div class="publicContainer"></div>
-                    <div class="targetContainer"></div>
-                    <div class="meldedContainer"></div>
-                </div>
-            </section>
-            <section id="area4" class="area area-self">
-                <div class="playerContainer">
-                    <span class="actorContainer"></span>
-                    <span class="pointContainer"></span>
-                </div>
-                <div class="discardContainer"></div>
-                <div class="commandsContainer"></div>
-                <div class="handContainer">
-                    <div class="publicContainer"></div>
-                    <div class="targetContainer"></div>
-                    <div class="meldedContainer"></div>
-                </div>
-            </section>
-        </section>
-    </article>
 </main>
 <footer>
     <p>
