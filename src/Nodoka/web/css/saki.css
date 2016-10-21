@@ -7,8 +7,14 @@
 }
 
 /*-- areas --*/
+body {
+    width: 680px;
+    margin: 0 auto; /* align center */
+}
+
 .areas {
     background-color: grey;
+    width: 680px;
     height: 680px; /* = hand.width + hand.height */
     position: relative;
 }
@@ -23,13 +29,32 @@
     white-space: pre-line;
 }
 
-.round {
+.round { /* todo: better align way */
     background-color: #FF00FF;
     width: 80px;
     height: 80px;
     position: absolute;
     left: 300px; /* = area.height */
     top: 300px; /* = area.height */
+}
+
+.prevailingWindContainer {
+    margin-left: 16px;
+}
+
+.prevailingWindTurnContainer{
+}
+
+.seatWindTurnContainer {
+    margin-left: 16px;
+}
+
+.pointSticksContainer {
+    margin-left: 16px;
+}
+
+.remainTileCountContainer {
+    margin-left: 16px;
 }
 
 .area-next {

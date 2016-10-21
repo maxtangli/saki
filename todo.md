@@ -1006,8 +1006,8 @@ rush 87 DemoUI areas renew 4.2h
 
 rush 88 bug fix 2.1h
 
-- [x] bug:thirteen orphan tsumo not works 0.2h
-- [x] bug:executable commands after riichi
+- [x] bug: thirteen orphan tsumo not works 0.2h
+- [x] bug: executable commands after riichi
 
 - [x] refactor: add error message for invalid command 1h
 - [x] bug: invalid discard after chow 0.5h // Open.valid wrongly use $targetTile, which should be $tile
@@ -1015,16 +1015,14 @@ rush 88 bug fix 2.1h
 - [x] bug: discardCommand.executable failed to consider swapCalling 0.2h
 - [x] bug: riichiCommand candidate when already riichi
 
-rush 89 DemoUI round
+rush 89 DemoUI round 3.2h
 
 - [x] css&js refactor: remove useless semantic html 0.7h
+- [x] add log 0.5h // scroll bar failed...
 
 - [x] css: actor 0.3h
-- [ ] css: round 0.8h
-
-rush debug
-
-- [x] add log 0.5h // scroll bar failed...
+- [x] css: round 1.5h // margin-left seems not a good center way
+- [x] css: view width adapt screen 0.2h
 
 rush
 
@@ -1032,8 +1030,7 @@ rush
 - [ ] css: meld align from right to left
 
 - [ ] php: player's wall view
-- [ ] css: wall
-- [ ] bug: not displayed well when wall html too long 0.5h
+- [ ] css: wall 0.5h
 
 rush DemoUI result
 

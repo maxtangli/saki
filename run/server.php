@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__ . '/../bootstrap.php';
 
 use Nodoka\Server\Play;
 use Ratchet\Http\HttpServer;
