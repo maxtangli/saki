@@ -1024,14 +1024,16 @@ rush 89 DemoUI round 3.2h
 - [x] css: round 1.5h // margin-left seems not a good center way
 - [x] css: view width adapt screen 0.2h
 
-rush mock player = random AI
+rush 90 area relation
 
-- [ ] analyze 0.9h
-
+- [x] analyze 0.9h
 - [x] refactor: remove PlayerList, Player 0.2h
 - [x] php,js: area.relation 1h
 
-- [ ] test toJson
+- [x] refactor: Play 0.4h
+- [x] assign a unique wind to each client 1.6h
+
+rush mock player
 
 - [ ] mock client?
 

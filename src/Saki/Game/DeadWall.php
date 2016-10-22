@@ -60,7 +60,7 @@ class DeadWall {
     /**
      * @return array
      */
-    function toJsonArray() {
+    function toJson() {
         $a = array_fill(0, $this->getRemainReplacementCount(), 'O');
         $replacements = (new ArrayList($a))
             ->fillToCount('X', 4)

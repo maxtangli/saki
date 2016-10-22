@@ -9,7 +9,12 @@ use Saki\Win\WinReport;
  * @package Saki\Game
  */
 class RoundSerializer extends Singleton {
-    function toJsonArray(Round $r) {
+    /**
+     * @param Round $r
+     * @param SeatWind|null $viewer
+     * @return array
+     */
+    function toJson(Round $r, SeatWind $viewer = null) {
         $commandProvider = $r->getProcessor()->getProvider();
 
         $prevailing = $r->getPrevailing();
@@ -20,10 +25,8 @@ class RoundSerializer extends Singleton {
             'prevailingWindTurn' => $prevailing->getStatus()->getPrevailingWindTurn(),
             'seatWindTurn' => $prevailing->getSeatWindTurn(),
             'pointSticks' => $r->getRiichiHolder()->getRiichiPointsSticks(),
-            'wall' => $r->getWall()->toJsonArray(),
+            'wall' => $r->getWall()->toJson(),
             'phase' => $phase->__toString(),
-            'result' => null,
-            'winReports' => [],
         ];
 
         if ($phase->isOver()) {
@@ -40,15 +43,21 @@ class RoundSerializer extends Singleton {
                 };
                 $round['winReports'] = $result->getWinReportList()->toArray($toWinReportJson);
             }
+        } else {
+            $round['result'] = null;
+            $round['winReports'] = [];
         }
 
-        $toAreaJsonArray = function (Area $area) use($commandProvider) {
-            $a = $area->toJsonArray();
+        $toArea = function (Area $area) use($viewer, $commandProvider) {
+            $a = $area->toJson($viewer);
             $a['commands'] = $commandProvider->getExecutableList($area->getSeatWind())
                 ->toArray(Utils::getToStringCallback());
             return $a;
         };
-        $areas = $r->getAreaList()->toArray($toAreaJsonArray);
+        $toRelation = function (Area $area) use($viewer) {
+            return $area->getSeatWind()->toRelation($viewer);
+        };
+        $areas = $r->getAreaList()->toArray($toArea, $toRelation);
 
         $a = [
             'result' => 'ok',
@@ -61,17 +70,10 @@ class RoundSerializer extends Singleton {
 
     /**
      * @param Round $round
+     * @param SeatWind $viewer
      * @return string
      */
-    function toString(Round $round) {
-        return implode("\n", $this->toJsonArray($round));
-    }
-    
-    /**
-     * @param Round $round
-     * @return string
-     */
-    function toJson(Round $round) {
-        return json_encode($this->toJsonArray($round));
+    function toString(Round $round, SeatWind $viewer = null) {
+        return implode("\n", $this->toJson($round, $viewer));
     }
 }

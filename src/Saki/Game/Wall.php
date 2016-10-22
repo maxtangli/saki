@@ -65,8 +65,8 @@ class Wall {
     /**
      * @return array
      */
-    function toJsonArray() {
-        $a = $this->getDeadWall()->toJsonArray();
+    function toJson() {
+        $a = $this->getDeadWall()->toJson();
         $a['remainTileCount'] = $this->getRemainTileCount();
         return $a;
     }

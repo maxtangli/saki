@@ -81,10 +81,11 @@ class Round {
     }
 
     /**
-     * @return string
+     * @param SeatWind $viewer
+     * @return array
      */
-    function toJson() {
-        return RoundSerializer::create()->toJson($this);
+    function toJson(SeatWind $viewer = null) {
+        return RoundSerializer::create()->toJson($this, $viewer);
     }
 
     /**

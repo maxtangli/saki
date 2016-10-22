@@ -39,7 +39,7 @@ class Area {
      * @param SeatWind $viewer
      * @return array
      */
-    function toJsonArray(SeatWind $viewer = null) {
+    function toJson(SeatWind $viewer = null) {
         $actor = $this->getSeatWind();
         $hand = $this->getHand();
         $a = [
@@ -53,7 +53,6 @@ class Area {
                 ? $hand->getTarget()->getTile()->toFormatString(true) : null,
             'melded' => $hand->getMelded()->toTileStringArrayArray(),
         ];
-
         return $a;
     }
 

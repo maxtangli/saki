@@ -58,10 +58,18 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
 
     /**
      * @param callable|null $selector
+     * @param callable $keySelector
      * @return array
      */
-    function toArray(callable $selector = null) {
-        return is_null($selector) ? $this->a : array_map($selector, $this->a);
+    function toArray(callable $selector = null, callable $keySelector = null) {
+        $values = is_null($selector) ? $this->a : array_map($selector, $this->a);
+
+        if (is_null($keySelector)) {
+            return $values;
+        }
+
+        $keys = array_map($keySelector, $this->a);
+        return array_combine($keys, $values);
     }
 
     /**
@@ -147,7 +155,11 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
      * @param $default
      * @return mixed
      */
-    function getFirstOrDefault(callable $predicate, $default) {
+    function getFirstOrDefault(callable $predicate = null, $default = null) {
+        if (is_null($predicate)) {
+            return !$this->isEmpty() ? $this->getFirst() : $default;
+        }
+
         foreach ($this->a as $v) {
             if ($predicate($v)) {
                 return $v;

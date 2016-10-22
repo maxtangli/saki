@@ -48,7 +48,15 @@ class SakiTestCase extends \PHPUnit_Framework_TestCase {
             static::assertFalse($actual, $message);
         }
     }
-    
+
+    /**
+     * @param string $expected
+     * @param SeatWind $actual
+     */
+    static function assertSeatWind(string $expected, SeatWind $actual) {
+        static::assertEquals(SeatWind::fromString($expected), $actual);
+    }
+
     /**
      * @param string $expected
      * @param ArrayList $arrayList

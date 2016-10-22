@@ -3,66 +3,149 @@ namespace Nodoka\Server;
 
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
+use Saki\Game\PlayerType;
 use Saki\Game\Round;
+use Saki\Game\SeatWind;
 
+/**
+ * @package Nodoka\Server
+ */
 class Play implements MessageComponentInterface {
-    protected $clients;
+    private $logEnable;
     private $round;
+    private $viewerManager;
+    protected $clients;
 
     function __construct() {
-        $this->clients = new \SplObjectStorage;
+        $this->logEnable = true;
         $this->round = new Round();
+        $this->viewerManager = new ViewerManager($this->round->getRule()->getPlayerType());
+        $this->clients = new \SplObjectStorage;
     }
 
-    function onOpen(ConnectionInterface $client) {
-        $this->log("Connection {$client->resourceId} created.");
-        $this->clients->attach($client);
+    function logOff() {
+        $this->logEnable = false;
+    }
 
-        $data = $this->round->toJson();
+    /**
+     * @param string $line
+     */
+    private function log(string $line) {
+        if ($this->logEnable) {
+            echo date('[Y-m-d h:m:s]') . $line . "\n";
+        }
+    }
+
+    /**
+     * @param SeatWind $viewer
+     * @return array
+     */
+    private function getRoundJson(SeatWind $viewer = null) {
+        return $this->round->toJson($viewer);
+    }
+
+    /**
+     * @param ConnectionInterface $client
+     * @return SeatWind $viewer
+     */
+    private function add(ConnectionInterface $client) {
+        $viewer = $this->viewerManager->register();
+        $this->clients->attach($client, $viewer);
+        return $viewer;
+    }
+
+    /**
+     * @param ConnectionInterface $client
+     */
+    private function remove(ConnectionInterface $client) {
+        $viewer = $this->clients[$client];
+        $this->clients->detach($client);
+        $this->viewerManager->unRegister($viewer);
+    }
+
+    /**
+     * @param ConnectionInterface $client
+     * @return SeatWind $viewer
+     */
+    function getViewer(ConnectionInterface $client) {
+        return $this->clients[$client];
+    }
+
+    /**
+     * @param ConnectionInterface $client
+     * @param array $json
+     */
+    private function send(ConnectionInterface $client, array $json) {
+        $data = json_encode($json);
         $this->log("Sending data to connection {$client->resourceId}: {$data}.");
         $client->send($data);
     }
 
-    function onMessage(ConnectionInterface $from, $msg) {
-        $this->log("Connection {$from->resourceId} message: {$msg}.\n");
+    /**
+     * @param ConnectionInterface $client
+     */
+    function onOpen(ConnectionInterface $client) {
+        $this->log("Connection {$client->resourceId} opened.");
+        $viewer = $this->add($client);
+        $this->send($client, $this->getRoundJson($viewer));
+    }
 
-        // prepare
-        $round = $this->round;
-        $commandLine = $msg;
+    /**
+     * @param ConnectionInterface $client
+     * @param string $message
+     */
+    function onMessage(ConnectionInterface $client, $message) {
+        $this->log("Connection {$client->resourceId} message: {$message}.\n");
 
         // execute, for invalid command throw e
-        $round->processLine($commandLine); // todo validate actor
+        $commandLine = $message;
+        $this->round->processLine($commandLine); // todo validate actor
 
         // send newest game state to all players
-        $data = $round->toJson();
-
-        $receiverCount = count($this->clients);
-        $this->log("Sending data to {$receiverCount} connections: {$data}.");
-
         foreach ($this->clients as $client) {
-            $client->send($data);
+            $viewer = $this->getViewer($client);
+            $json = $this->getRoundJson($viewer);
+            $this->send($client, $json);
         }
     }
 
+    /**
+     * @param ConnectionInterface $client
+     */
     function onClose(ConnectionInterface $client) {
-        $this->log("Connection {$client->resourceId} disconnected.");
-
-        $this->clients->detach($client);
+        $this->log("Connection {$client->resourceId} closed.");
+        $this->remove($client);
     }
 
+    /**
+     * @param ConnectionInterface $client
+     * @param \Exception $e
+     */
     function onError(ConnectionInterface $client, \Exception $e) {
-        $this->log("Connection {$client->resourceId} occurred an error: {$e->getMessage()}.");
-
-        $a = [
+        $this->log("Connection {$client->resourceId} error: {$e->getMessage()}.");
+        $error = [
             'result' => 'error',
             'message' => $e->getMessage(),
         ];
-        $json = json_encode($a);
-        $client->send($json);
-//        $client->close();
+        $this->send($client, $error);
     }
-    
-    function log($line) {
-        echo date('[Y-m-d h:m:s]') . $line . "\n";
+}
+
+class ViewerManager {
+    private $remainSeatWindList;
+
+    function __construct(PlayerType $playerType) {
+        $this->remainSeatWindList = $playerType->getSeatWindList();
+    }
+
+    function register() {
+        $viewer = $this->remainSeatWindList->getFirst(null, SeatWind::createEast());
+        $this->remainSeatWindList->removeFirst();
+        return $viewer;
+    }
+
+    // assume no duplicate
+    function unRegister(SeatWind $viewer) {
+        $this->remainSeatWindList->insertLast($viewer)->orderByAscending();
     }
 }
