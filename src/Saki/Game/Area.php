@@ -4,12 +4,11 @@ namespace Saki\Game;
 use Saki\Tile\TileList;
 
 /**
- * A roundly reset area own by a player.
  * @package Saki\Game
  */
 class Area {
     // immutable
-    private $player;
+    private $initialSeatWind;
     // shared variable
     private $round;
     // game variable
@@ -18,14 +17,14 @@ class Area {
     private $handHolder;
 
     /**
-     * @param Player $player
+     * @param SeatWind $initialSeatWind
      * @param Round $round
      */
-    function __construct(Player $player, Round $round) {
-        $this->player = $player;
+    function __construct(SeatWind $initialSeatWind, Round $round) {
+        $this->initialSeatWind = $initialSeatWind;
         $this->round = $round;
-        $this->seatWind = $player->getInitialSeatWind();
-        $this->handHolder = new HandHolder($round->getTargetHolder(), $player->getInitialSeatWind());
+        $this->seatWind = $initialSeatWind;
+        $this->handHolder = new HandHolder($round->getTargetHolder(), $initialSeatWind);
     }
 
     /**
@@ -52,10 +51,10 @@ class Area {
     }
 
     /**
-     * @return Player
+     * @return SeatWind
      */
-    function getPlayer() {
-        return $this->player;
+    function getInitialSeatWind() {
+        return $this->initialSeatWind;
     }
 
     /**

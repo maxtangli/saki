@@ -44,7 +44,6 @@ class Round {
 
     function __construct() {
         $rule = new Rule();
-        $playerList = new PlayerList($rule->getPlayerType(), $rule->getScoreStrategy()->getPointSetting()->getInitialPoint());
 
         // immutable
         $this->rule = $rule;
@@ -52,7 +51,7 @@ class Round {
 
         // variable
         $this->prevailing = Prevailing::createFirst($rule->getPrevailingContext());
-        $this->riichiHolder = new RiichiHolder($playerList->getPlayerType());
+        $this->riichiHolder = new RiichiHolder($rule->getPlayerType());
         $this->pointHolder = new PointHolder($rule->getScoreStrategy()->getPointSetting());
 
         // round variable
@@ -64,10 +63,10 @@ class Round {
         $this->targetHolder = new TargetHolder();
 
         // variable
-        $toArea = function (Player $player) {
-            return new Area($player, $this);
+        $toArea = function (SeatWind $initialSeatWind) {
+            return new Area($initialSeatWind, $this);
         };
-        $this->areaList = $playerList->toArrayList($toArea);
+        $this->areaList = $rule->getPlayerType()->getSeatWindList($toArea);
 
         // to private phase
         $this->toNextPhase();
@@ -119,9 +118,7 @@ class Round {
      * @param PrevailingStatus $prevailingStatus
      */
     function debugInit(PrevailingStatus $prevailingStatus) {
-        $nextDealerInitialSeatWind = $this->getInitialSeatWindArea(
-            $prevailingStatus->getInitialSeatWindOfDealer()
-        )->getPlayer()->getInitialSeatWind();
+        $nextDealerInitialSeatWind = $prevailingStatus->getInitialSeatWindOfDealer();
         $nextDealerArea = $this->getInitialSeatWindArea($nextDealerInitialSeatWind);
         $nextDealerSeatWind = $nextDealerArea->getSeatWind();
 
@@ -228,7 +225,7 @@ class Round {
      */
     function getInitialSeatWindArea(SeatWind $initialSeatWind) {
         $isInitialSeatWind = function (Area $area) use ($initialSeatWind) {
-            return $area->getPlayer()->getInitialSeatWind() == $initialSeatWind;
+            return $area->getInitialSeatWind() == $initialSeatWind;
         };
         return $this->areaList->getSingle($isInitialSeatWind);
     }

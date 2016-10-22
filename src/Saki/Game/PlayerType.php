@@ -12,10 +12,12 @@ class PlayerType extends Enum {
     const FOUR = 4;
 
     /**
+     * @param callable $selector
      * @return \Saki\Util\ArrayList
      */
-    function getSeatWindList() {
-        return SeatWind::createList($this->getValue());
+    function getSeatWindList(callable $selector = null) {
+        return SeatWind::createList($this->getValue())
+            ->toArrayList($selector);
     }
 
     /**

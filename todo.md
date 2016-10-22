@@ -1024,13 +1024,22 @@ rush 89 DemoUI round 3.2h
 - [x] css: round 1.5h // margin-left seems not a good center way
 - [x] css: view width adapt screen 0.2h
 
-rush
+rush mock player = random AI
 
-- [ ] css: target
-- [ ] css: meld align from right to left
+- [ ] analyze 0.9h
+- [x] refactor: remove PlayerList, Player 0.2h
+
+- [ ] mock client?
+
+rush Wall view
 
 - [ ] php: player's wall view
 - [ ] css: wall 0.5h
+
+rush hand view
+
+- [ ] css: target
+- [ ] css: meld align from right to left
 
 rush DemoUI result
 

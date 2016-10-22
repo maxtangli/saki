@@ -241,7 +241,7 @@ class RoundTest extends \SakiTestCase {
         // test toNextRound
         $round->toNextRound();
         $this->assertPrivate();
-        $this->assertEquals(SeatWind::createEast(), $round->getDealerArea()->getPlayer()->getInitialSeatWind());
+        $this->assertEquals(SeatWind::createEast(), $round->getDealerArea()->getInitialSeatWind());
     }
 
     function testRon() {
