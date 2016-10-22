@@ -16,7 +16,6 @@ class RoundSerializer extends Singleton {
         $phase = $r->getPhase();
         $round = [
             'isGameOver' => $r->isGameOver(),
-            'prevailing' => $prevailing->__toString(),
             'prevailingWind' => $prevailing->getStatus()->getPrevailingWind()->__toString(),
             'prevailingWindTurn' => $prevailing->getStatus()->getPrevailingWindTurn(),
             'seatWindTurn' => $prevailing->getSeatWindTurn(),
@@ -43,23 +42,13 @@ class RoundSerializer extends Singleton {
             }
         }
 
-        $areas = [];
-        /** @var Area $area */
-        foreach ($r->getAreaList() as $area) {
-            $hand = $area->getHand();
-            $actor = $area->getSeatWind();
-
-            $areas[] = [
-                'actor' => $actor->__toString(),
-                'point' => $area->getPoint(),
-                'isReach' => $area->getRiichiStatus()->isRiichi(),
-                'discard' => $area->getDiscard()->toArray(Utils::getToStringCallback()),
-                'public' => $hand->getPublic()->toTileList()->orderByTileID()->toArray(Utils::getToStringCallback()),
-                'target' => $hand->getTarget()->exist() ? $hand->getTarget()->getTile()->toFormatString(true) : null,
-                'melded' => $hand->getMelded()->toTileStringArrayArray(),
-                'commands' => $commandProvider->getExecutableList($actor)->toArray(Utils::getToStringCallback()),
-            ];
-        }
+        $toAreaJsonArray = function (Area $area) use($commandProvider) {
+            $a = $area->toJsonArray();
+            $a['commands'] = $commandProvider->getExecutableList($area->getSeatWind())
+                ->toArray(Utils::getToStringCallback());
+            return $a;
+        };
+        $areas = $r->getAreaList()->toArray($toAreaJsonArray);
 
         $a = [
             'result' => 'ok',

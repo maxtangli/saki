@@ -2,6 +2,7 @@
 namespace Saki\Game;
 
 use Saki\Tile\Tile;
+use Saki\Util\Utils;
 
 /**
  * Wind indicator for player.
@@ -26,6 +27,16 @@ class SeatWind extends IndicatorWind {
      */
     function toRolled(bool $keepDealer) {
         return $keepDealer ? $this : $this->toNext(-1);
+    }
+
+    /**
+     * @param SeatWind $viewer
+     * @return string
+     */
+    function toRelation(SeatWind $viewer) {
+        $a = ['self', 'next', 'towards', 'prev'];
+        $i = $viewer->getNormalizedOffsetTo($this, 4);
+        return $a[$i];
     }
 
     /**

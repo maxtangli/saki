@@ -27,9 +27,7 @@ class SeatWindTest extends \SakiTestCase {
          * W
          * N
          */
-        list($e, $s, $w, $n) = [
-            SeatWind::createEast(), SeatWind::createSouth(), SeatWind::createWest(), SeatWind::createNorth()
-        ];
+        list($e, $s, $w, $n) = SeatWind::createList(4)->toArray();
         return [
             [$e, $e, $e],
             [$n, $e, $s],
@@ -40,5 +38,36 @@ class SeatWindTest extends \SakiTestCase {
 
     function testToNext() {
         $this->assertEquals(SeatWind::createWest(), SeatWind::createEast()->toNext(2));
+    }
+
+    /**
+     * @param string $expected
+     * @param SeatWind $seatWind
+     * @param SeatWind $viewer
+     * @dataProvider provideToRelation
+     */
+    function testToRelation(string $expected, SeatWind $seatWind, SeatWind $viewer) {
+        $actual = $seatWind->toRelation($viewer);
+        $this->assertEquals($expected, $actual);
+    }
+
+    function provideToRelation() {
+        /**  viewer
+         *   E S W N
+         * E self prev towa next
+         * S next self prev towa
+         * W towa next self prev
+         * N prev towa next self
+         */
+        list($e, $s, $w, $n) = SeatWind::createList(4)->toArray();
+        return [
+            ['self', $e, $e],
+            ['prev', $e, $s],
+            ['towards', $e, $w],
+            ['next', $e, $n],
+            ['next', $s, $e],
+            ['towards', $w, $e],
+            ['prev', $n, $e],
+        ];
     }
 }

@@ -1027,7 +1027,11 @@ rush 89 DemoUI round 3.2h
 rush mock player = random AI
 
 - [ ] analyze 0.9h
+
 - [x] refactor: remove PlayerList, Player 0.2h
+- [x] php,js: area.relation 1h
+
+- [ ] test toJson
 
 - [ ] mock client?
 

@@ -108,7 +108,7 @@ Saki.DemoView.prototype = {
         ];
         var areasData = jsonData['areas'];
         $.each(jsonData['areas'], function (i, areaData) {
-            var area = $('#area' + ((i + 1)));
+            var area = $('.area-' + areaData.relation);
             $.each(keys, function (noUse, key) {
                 var selector = '.' + key + 'Container';
                 var html = that[key](areaData[key]);

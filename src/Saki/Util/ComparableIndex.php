@@ -24,6 +24,15 @@ trait ComparableIndex {
     }
 
     /**
+     * @param ComparableIndex $other
+     * @param int $n
+     * @return int
+     */
+    function getNormalizedOffsetTo($other, int $n) {
+        return Utils::normalizedMod($this->getOffsetTo($other), $n);
+    }
+
+    /**
      * @param int $index
      * @return static
      */
