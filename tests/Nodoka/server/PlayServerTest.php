@@ -1,23 +1,22 @@
 <?php
 
 use Nodoka\Server\NullClient;
-use Nodoka\Server\Play;
+use Nodoka\Server\PlayServer;
 
-class PlayTest extends \SakiTestCase {
+class PlayServerTest extends \SakiTestCase {
     /**
-     * @var Play
+     * @var PlayServer
      */
-    private $play;
+    private $playServer;
 
     protected function setUp() {
         parent::setUp();
-        $play = new Play();
-        $play->logOff();
-        $this->play = $play;
+        $this->playServer = new PlayServer();
+        $this->playServer->setLogEnable(false);
     }
 
     function testViewerAssign() {
-        $play = $this->play;
+        $play = $this->playServer;
 
         // initial
         $client1 = new NullClient();
@@ -26,15 +25,15 @@ class PlayTest extends \SakiTestCase {
 
         $client2 = new NullClient();
         $play->onOpen($client2);
-        $this->assertViewer('S', $client2);
+        $this->assertViewer('E', $client2);
 
         $client3 = new NullClient();
         $play->onOpen($client3);
-        $this->assertViewer('W', $client3);
+        $this->assertViewer('E', $client3);
 
         $client4 = new NullClient();
         $play->onOpen($client4);
-        $this->assertViewer('N', $client4);
+        $this->assertViewer('E', $client4);
 
         // reallocate in wind order after close
         $play->onClose($client3);
@@ -42,17 +41,14 @@ class PlayTest extends \SakiTestCase {
 
         $client2 = new NullClient();
         $play->onOpen($client2);
-        $this->assertViewer('S', $client2);
+        $this->assertViewer('E', $client2);
 
         $client3 = new NullClient();
         $play->onOpen($client3);
-        $this->assertViewer('W', $client3);
+        $this->assertViewer('E', $client3);
     }
 
     private function assertViewer(string $expected, NullClient $client) {
-        $actual = $this->play->getViewer($client);
-        $this->assertSeatWind($expected, $actual);
-
         $json = $client->getLastReceived();
         $jsonSelfActor = $json->areas->self->actor;
         $this->assertEquals($expected, $jsonSelfActor);

@@ -11,15 +11,15 @@ use Saki\Win\WinReport;
  */
 class RoundSerializer {
     private $round;
-    private $privilege;
+    private $role;
 
     /**
      * @param Round $round
-     * @param Privilege $privilege
+     * @param Role $role
      */
-    function __construct(Round $round, Privilege $privilege) {
+    function __construct(Round $round, Role $role) {
         $this->round = $round;
-        $this->privilege = $privilege;
+        $this->role = $role;
     }
 
     /**
@@ -30,10 +30,10 @@ class RoundSerializer {
     }
 
     /**
-     * @return Privilege
+     * @return Role
      */
-    function getPrivilege() {
-        return $this->privilege;
+    function getRole() {
+        return $this->role;
     }
 
     /**
@@ -72,9 +72,8 @@ class RoundSerializer {
      */
     function toAreasJson() {
         $areaList = $this->getRound()->getAreaList();
-        $privilege = $this->getPrivilege();
-        $toRelation = function (Area $area) use ($privilege) {
-            return $privilege->getRelation($area->getSeatWind());
+        $toRelation = function (Area $area) {
+            return $this->getRole()->getRelation($area->getSeatWind());
         };
         return $areaList->toArray([$this, 'toAreaJson'], $toRelation);
     }
@@ -88,7 +87,7 @@ class RoundSerializer {
         $hand = $area->getHand();
         $commandProvider = $this->getRound()->getProcessor()->getProvider();
         $a = [
-            'relation' => $this->getPrivilege()->getRelation($actor),
+            'relation' => $this->getRole()->getRelation($actor),
             'actor' => $actor->__toString(),
             'point' => $area->getPoint(),
             'isReach' => $area->getRiichiStatus()->isRiichi(),

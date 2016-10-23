@@ -1,13 +1,13 @@
 <?php
 
 use Saki\Game\SeatWind;
-use Saki\Play\Privilege;
+use Saki\Play\Role;
 use Saki\Play\RoundSerializer;
 
 class RoundSerializerTest extends \SakiTestCase {
     function testJson() {
         $round = $this->getInitRound();
-        $privilege = Privilege::createPlayer(SeatWind::createEast());
+        $privilege = Role::createPlayer(SeatWind::createEast());
         $serializer = new RoundSerializer($round, $privilege);
 
 

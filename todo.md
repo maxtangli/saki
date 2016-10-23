@@ -1039,7 +1039,7 @@ rush 91 mock player
 - [x] refactor: introduce Privilege to replace $viewer 0.7h
 - [x] refactor: move xx.toJson logic into RoundSerializer 1h
 
-- [ ] refactor: connection owned data
+- [x] refactor: introduce Play to wrap connection owned data 0.4h
 
 - [ ] mock client?
 

@@ -6,13 +6,13 @@ use Saki\Game\SeatWind;
 /**
  * @package Saki\Play
  */
-class Privilege {
+class Role {
     private $viewer;
     private $isPlayer;
 
     /**
      * @param SeatWind $self
-     * @return Privilege
+     * @return Role
      */
     static function createPlayer(SeatWind $self) {
         return new self($self, true);
@@ -20,7 +20,7 @@ class Privilege {
 
     /**
      * @param SeatWind $self
-     * @return Privilege
+     * @return Role
      */
     static function createViewer(SeatWind $self) {
         return new self($self, false);
