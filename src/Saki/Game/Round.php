@@ -77,15 +77,7 @@ class Round {
      * @return string
      */
     function __toString() {
-        return RoundSerializer::create()->toString($this);
-    }
-
-    /**
-     * @param SeatWind $viewer
-     * @return array
-     */
-    function toJson(SeatWind $viewer = null) {
-        return RoundSerializer::create()->toJson($this, $viewer);
+        return 'Round._toString(): todo.';
     }
 
     /**
@@ -378,7 +370,7 @@ class Round {
         return $this->getTurn()->isFirstCircle()
         && !$this->getClaimHistory()->hasClaim($fromTurn);
     }
-    
+
     /**
      * @return bool
      */
@@ -386,9 +378,9 @@ class Round {
         /** @var OverPhaseState $phaseState */
         $phaseState = $this->phaseState;
         return $phaseState->getPhase()->isOver()
-            && $phaseState->isGameOver($this);
+        && $phaseState->isGameOver($this);
     }
-    
+
     // todo move into OverPhase?
     function toNextRound() {
         /** @var OverPhaseState $overPhaseState */

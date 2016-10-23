@@ -21,8 +21,9 @@ rush 66-70 | 22.9h
 rush 71-75 | 15.7h
 rush 76-80 | 23.4h
 rush 81-85 | 28.2h
-rush 86-90 | ing
-     total |393.1h + ing
+rush 86-90 | 11.9h
+rush 91-95 | ing
+     total |412.0h + ing
 
 ## rush history
 
@@ -1024,7 +1025,7 @@ rush 89 DemoUI round 3.2h
 - [x] css: round 1.5h // margin-left seems not a good center way
 - [x] css: view width adapt screen 0.2h
 
-rush 90 area relation
+rush 90 area relation 4.1h
 
 - [x] analyze 0.9h
 - [x] refactor: remove PlayerList, Player 0.2h
@@ -1033,7 +1034,12 @@ rush 90 area relation
 - [x] refactor: Play 0.4h
 - [x] assign a unique wind to each client 1.6h
 
-rush mock player
+rush 91 mock player
+
+- [x] refactor: introduce Privilege to replace $viewer 0.7h
+- [x] refactor: move xx.toJson logic into RoundSerializer 1h
+
+- [ ] refactor: connection owned data
 
 - [ ] mock client?
 

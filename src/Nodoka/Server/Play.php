@@ -6,6 +6,8 @@ use Ratchet\MessageComponentInterface;
 use Saki\Game\PlayerType;
 use Saki\Game\Round;
 use Saki\Game\SeatWind;
+use Saki\Play\Privilege;
+use Saki\Play\RoundSerializer;
 
 /**
  * @package Nodoka\Server
@@ -41,7 +43,9 @@ class Play implements MessageComponentInterface {
      * @return array
      */
     private function getRoundJson(SeatWind $viewer = null) {
-        return $this->round->toJson($viewer);
+        $privilege = Privilege::createPlayer($viewer);
+        $serializer = new RoundSerializer($this->round, $privilege);
+        return $serializer->toAllJson();
     }
 
     /**

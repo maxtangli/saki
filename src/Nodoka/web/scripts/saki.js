@@ -56,7 +56,7 @@ Saki.Game.prototype = {
         var msg = '---receive---\n' + jsonString + "\n";
         log.val(log.val() + msg);
 
-        if (jsonData.result !== 'ok') {
+        if (jsonData.response !== 'ok') {
             this.onerror(jsonData);
             return;
         }
@@ -90,11 +90,12 @@ Saki.DemoView.prototype = {
         $('.remainTileCountContainer').html(wall.remainTileCount);
         $('.deadWallContainer').html(this.deadWall(wall.stacks));
 
-        if (roundData.result !== null) {
-            var report = roundData.winReports[0];
-            var result = [report.actor, report.fan + ' fan', report.fu + ' fu'].join(',')
+        var result = jsonData.result;
+        if (result.isRoundOver) {
+            var report = result.winReports[0];
+            var resultText = [report.actor, report.fan + ' fan', report.fu + ' fu'].join(',')
                 + '\n' + report.yakuItems.join('\n');
-            $('.resultContainer').text(result);
+            $('.resultContainer').text(resultText);
         } else {
             $('.resultContainer').text('none');
         }

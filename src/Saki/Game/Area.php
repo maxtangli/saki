@@ -2,7 +2,6 @@
 namespace Saki\Game;
 
 use Saki\Tile\TileList;
-use Saki\Util\Utils;
 
 /**
  * @package Saki\Game
@@ -33,27 +32,6 @@ class Area {
      */
     function __toString() {
         return sprintf('actor[%s],%s', $this->getSeatWind(), $this->getHand());
-    }
-
-    /**
-     * @param SeatWind $viewer
-     * @return array
-     */
-    function toJson(SeatWind $viewer = null) {
-        $actor = $this->getSeatWind();
-        $hand = $this->getHand();
-        $a = [
-            'relation' => $actor->toRelation($viewer ?? SeatWind::createEast()),
-            'actor' => $actor->__toString(),
-            'point' => $this->getPoint(),
-            'isReach' => $this->getRiichiStatus()->isRiichi(),
-            'discard' => $this->getDiscard()->toArray(Utils::getToStringCallback()),
-            'public' => $hand->getPublic()->toTileList()->orderByTileID()->toArray(Utils::getToStringCallback()),
-            'target' => $hand->getTarget()->exist()
-                ? $hand->getTarget()->getTile()->toFormatString(true) : null,
-            'melded' => $hand->getMelded()->toTileStringArrayArray(),
-        ];
-        return $a;
     }
 
     /**
@@ -104,15 +82,15 @@ class Area {
      * @return bool
      */
     function isPrivateActor() {
-        return $this->getRound()->getPhase()->isPrivate() 
-            && $this->isCurrentSeatWind();
+        return $this->getRound()->getPhase()->isPrivate()
+        && $this->isCurrentSeatWind();
     }
-    
+
     /**
      * @return bool
      */
     function isPublicActor() {
-        return $this->getRound()->getPhase()->isPublic() 
+        return $this->getRound()->getPhase()->isPublic()
         && !$this->isCurrentSeatWind();
     }
 
