@@ -36,6 +36,14 @@ class Role {
     }
 
     /**
+     * @return string
+     */
+    function __toString() {
+        $prefix = $this->isPlayer() ? 'player' : 'viewer';
+        return $prefix . ':' . $this->getViewer();
+    }
+
+    /**
      * @return SeatWind
      */
     function getViewer() {
@@ -69,7 +77,7 @@ class Role {
      * @param SeatWind $seatWind
      * @return bool
      */
-    function mayViewPrivate(SeatWind $seatWind) {
+    function mayViewHand(SeatWind $seatWind) {
         return $this->isPlayer() ? $this->isViewer($seatWind) : true;
     }
 

@@ -15,5 +15,5 @@ $server = IoServer::factory(
     8080
 );
 
-echo "server run.\n";
+echo "Wild Nodoka appeared!\n";
 $server->run();

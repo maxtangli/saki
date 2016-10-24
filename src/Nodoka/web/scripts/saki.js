@@ -172,7 +172,7 @@ Saki.DemoView.prototype = {
             .append(tilesData.map(this.tile));
     },
     target: function (tileData) {
-        return tileData ? this.tile(tileData) : '';
+        return this.tile(tileData);
     },
     melded: function (meldedData) {
         return $('<span class="melded"></span>')

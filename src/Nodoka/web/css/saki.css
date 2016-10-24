@@ -119,6 +119,15 @@ body {
     line-height: 30px;
 }
 
+.profileContainer {
+    background-color: #00FFFF;
+    width: 135px;
+    height: 65px;
+    position: absolute;
+    left: 65px;
+    top: 100px;
+}
+
 .discardContainer {
     background-color: #FF0000;
     width: 210px; /* = 5 * tile.width + tile.height */

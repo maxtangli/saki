@@ -63,6 +63,14 @@ class Target {
         return $this->tile !== null;
     }
 
+    /**
+     * @param SeatWind $seatWind
+     * @return bool
+     */
+    function existAndIsCreator(SeatWind $seatWind) {
+        return $this->exist() && $this->isCreator($seatWind);
+    }
+
     protected function assertExist() {
         if (!$this->exist()) {
             throw new \BadMethodCallException('Bad method call on null Target.');
@@ -118,10 +126,18 @@ class Target {
      * @param SeatWind $seatWind
      * @return bool
      */
+    function isCreator(SeatWind $seatWind) {
+        $this->assertExist();
+        return $this->getCreator() == $seatWind;
+    }
+
+    /**
+     * @param SeatWind $seatWind
+     * @return bool
+     */
     function isOwner(SeatWind $seatWind) {
         $this->assertExist();
-        $isCreator = $this->getCreator() == $seatWind;
-        $isOwner = $isCreator == $this->getType()->isOwnByCreator();
-        return $isOwner;
+        return $this->isCreator($seatWind)
+        == $this->getType()->isOwnByCreator();
     }
 }

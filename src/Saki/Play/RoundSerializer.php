@@ -83,27 +83,43 @@ class RoundSerializer {
      * @return array
      */
     function toAreaJson(Area $area) {
+        $role = $this->getRole();
         $actor = $area->getSeatWind();
         $hand = $area->getHand();
         $commandProvider = $this->getRound()->getProcessor()->getProvider();
+
+        if ($role->mayViewHand($actor)) {
+            $public = $hand->getPublic()
+                ->orderByTileID()
+                ->toArray(Utils::getToStringCallback());
+            $target = $hand->getTarget()->existAndIsCreator($actor)
+                ? $hand->getTarget()->getTile()->__toString()
+                : 'X';
+        } else {
+            $public = array_fill(0, $hand->getPublic()->count(), 'O');
+            $target = $hand->getTarget()->existAndIsCreator($actor)
+                ? 'O'
+                : 'X';
+        }
+
+        if ($role->mayExecute($actor)) {
+            $commands = $commandProvider->getExecutableList($area->getSeatWind())
+                ->toArray(Utils::getToStringCallback());
+        } else {
+            $commands = [];
+        }
+
         $a = [
-            'relation' => $this->getRole()->getRelation($actor),
+            'relation' => $role->getRelation($actor),
             'actor' => $actor->__toString(),
             'point' => $area->getPoint(),
             'isReach' => $area->getRiichiStatus()->isRiichi(),
             'discard' => $area->getDiscard()->toArray(Utils::getToStringCallback()),
-            'public' => $hand->getPublic()->toTileList()->orderByTileID()->toArray(Utils::getToStringCallback()),
-            'target' => $hand->getTarget()->exist()
-                ? $hand->getTarget()->getTile()->toFormatString(true) : null,
+            'public' => $public,
+            'target' => $target,
             'melded' => $hand->getMelded()->toTileStringArrayArray(),
+            'commands' => $commands,
         ];
-
-        if ($this->getRole()->mayExecute($actor)) {
-            $a['commands'] = $commandProvider->getExecutableList($area->getSeatWind())
-                ->toArray(Utils::getToStringCallback());
-        } else {
-            $a['commands'] = [];
-        }
 
         return $a;
     }

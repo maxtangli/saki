@@ -56,7 +56,7 @@ class PlayServerTest extends \SakiTestCase {
         $play->onOpen($client6);
         $this->assertViewer('E', $client6);
 
-        // private
+        // viewer no see commands
         $this->assertCommands(true, $client1);
         $this->assertCommands(false, $client5);
         $this->assertCommands(false, $client6);

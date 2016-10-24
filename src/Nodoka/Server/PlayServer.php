@@ -57,24 +57,27 @@ class PlayServer implements MessageComponentInterface {
         $conn->send($data);
     }
 
+    private function notifyAll() {
+        $play = $this->getPlay();
+        foreach ($play->getUserKeys() as $conn) {
+            $this->send($conn, $play->getJson($conn));
+        }
+    }
+
     //region MessageComponentInterface impl
     function onOpen(ConnectionInterface $conn) {
         $this->log("Connection {$conn->resourceId} opened.");
-
-        $play = $this->getPlay();
-        $play->join($conn);
-        $this->send($conn, $play->getJson($conn));
+        $this->getPlay()->join($conn);
+        $this->notifyAll();
     }
 
     function onClose(ConnectionInterface $conn) {
         $this->log("Connection {$conn->resourceId} closed.");
-
-        $this->getPlay()->leave($conn);
+        $this->notifyAll();
     }
 
     function onError(ConnectionInterface $conn, \Exception $e) {
         $this->log("Connection {$conn->resourceId} error: {$e->getMessage()}.");
-
         $error = [
             'result' => 'error',
             'message' => $e->getMessage(),
@@ -84,16 +87,8 @@ class PlayServer implements MessageComponentInterface {
 
     function onMessage(ConnectionInterface $from, $msg) {
         $this->log("Connection {$from->resourceId} message: {$msg}.\n");
-
-        $play = $this->getPlay();
-
-        // execute, for invalid command throw e
-        $play->tryExecute($from, $msg);
-
-        // send newest round json to all players
-        foreach ($play->getUserKeys() as $conn) {
-            $this->send($conn, $play->getJson($conn));
-        }
+        $this->getPlay()->tryExecute($from, $msg);
+        $this->notifyAll();
     }
     //endregion
 }

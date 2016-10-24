@@ -1034,7 +1034,7 @@ rush 90 area relation 4.1h
 - [x] refactor: Play 0.4h
 - [x] assign a unique wind to each client 1.6h
 
-rush 91 mock player
+rush 91 conn role manage 3.6h
 
 - [x] refactor: introduce Privilege to replace $viewer 0.7h
 - [x] refactor: move xx.toJson logic into RoundSerializer 1h
@@ -1045,8 +1045,13 @@ rush 91 mock player
 - [x] RoleManager 0.5h
 - [x] Viewer no see commands 0.3h
 
-- [ ] html: conn info.
+- [x] Viewer no see hand 0.5h
 
+rush
+
+- [ ] bug: conn not closed after browser tab closed
+
+- [ ] view: conn info 0.2h
 - [ ] mock client?
 
 rush actions view
