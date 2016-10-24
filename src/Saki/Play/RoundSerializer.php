@@ -96,12 +96,21 @@ class RoundSerializer {
             'target' => $hand->getTarget()->exist()
                 ? $hand->getTarget()->getTile()->toFormatString(true) : null,
             'melded' => $hand->getMelded()->toTileStringArrayArray(),
-            'commands' => $commandProvider->getExecutableList($area->getSeatWind())
-                ->toArray(Utils::getToStringCallback())
         ];
+
+        if ($this->getRole()->mayExecute($actor)) {
+            $a['commands'] = $commandProvider->getExecutableList($area->getSeatWind())
+                ->toArray(Utils::getToStringCallback());
+        } else {
+            $a['commands'] = [];
+        }
+
         return $a;
     }
 
+    /**
+     * @return array
+     */
     function toResultJson() {
         $round = $this->getRound();
 
@@ -126,6 +135,10 @@ class RoundSerializer {
         return $a;
     }
 
+    /**
+     * @param WinReport $winReport
+     * @return array
+     */
     function toWinReportJson(WinReport $winReport) {
         $a = [
             'actor' => $winReport->getActor()->__toString(),

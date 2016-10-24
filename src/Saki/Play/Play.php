@@ -8,11 +8,14 @@ use Saki\Game\Round;
  */
 class Play {
     private $round;
-    private $userSerializers;
+    private $participants;
+    private $roleManager;
 
     function __construct() {
-        $this->round = new Round();
-        $this->userSerializers = new \SplObjectStorage();
+        $round = new Round();
+        $this->round = $round;
+        $this->participants = new \SplObjectStorage();
+        $this->roleManager = new RoleManager($round->getRule()->getPlayerType());
     }
 
     /**
@@ -25,40 +28,36 @@ class Play {
     /**
      * @return array [$userKey, ...]
      */
-    function getRegisters() {
-        return iterator_to_array($this->userSerializers);
+    function getUserKeys() {
+        return iterator_to_array($this->participants);
+    }
+
+    /**
+     * @param $userKey
+     * @return Participant
+     */
+    function getParticipant($userKey) {
+        return $this->participants[$userKey];
     }
 
     /**
      * @param $userKey
      * @param Role $role
      */
-    function register($userKey, Role $role) {
-        $serializer = new RoundSerializer($this->getRound(), $role);
-        $this->userSerializers[$userKey] = $serializer;
+    function join($userKey, Role $role = null) {
+        $actualRole = $this->roleManager->assign($role);
+        $serializer = new RoundSerializer($this->getRound(), $actualRole);
+        $participant = new Participant($userKey, $actualRole, $serializer);
+        $this->participants[$userKey] = $participant;
     }
 
     /**
      * @param $userKey
      */
-    function unRegister($userKey) {
-        unset($this->userSerializers[$userKey]);
-    }
-
-    /**
-     * @param $userKey
-     * @return RoundSerializer
-     */
-    private function getSerializer($userKey) {
-        return $this->userSerializers[$userKey];
-    }
-
-    /**
-     * @param $userKey
-     * @return Role
-     */
-    private function getRole($userKey) {
-        return $this->getSerializer($userKey)->getRole();
+    function leave($userKey) {
+        $participant = $this->getParticipant($userKey);
+        unset($this->participants[$userKey]);
+        $this->roleManager->recycle($participant->getRole());
     }
 
     /**
@@ -66,7 +65,9 @@ class Play {
      * @return array
      */
     function getJson($userKey) {
-        return $this->getSerializer($userKey)->toAllJson();
+        return $this->getParticipant($userKey)
+            ->getRoundSerializer()
+            ->toAllJson();
     }
 
     /**

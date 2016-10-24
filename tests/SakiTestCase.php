@@ -50,6 +50,19 @@ class SakiTestCase extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @param bool $exist
+     * @param $actual
+     * @param string $message
+     */
+    static function assertExist(bool $exist, $actual, $message = '') {
+        if ($exist) {
+            static::assertNotEmpty($actual, $message);
+        } else {
+            static::assertEmpty($actual, $message);
+        }
+    }
+
+    /**
      * @param string $expected
      * @param SeatWind $actual
      */

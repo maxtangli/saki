@@ -1040,8 +1040,25 @@ rush 91 mock player
 - [x] refactor: move xx.toJson logic into RoundSerializer 1h
 
 - [x] refactor: introduce Play to wrap connection owned data 0.4h
+- [x] refactor: introduce Participant 0.2h
+
+- [x] RoleManager 0.5h
+- [x] Viewer no see commands 0.3h
+
+- [ ] html: conn info.
 
 - [ ] mock client?
+
+rush actions view
+
+- [ ] discard
+- [ ] riichi
+- [ ] claim
+
+rush result view
+
+- [ ] winReport
+- [ ] result
 
 rush Wall view
 
@@ -1053,16 +1070,9 @@ rush hand view
 - [ ] css: target
 - [ ] css: meld align from right to left
 
-rush DemoUI result
 
-- [ ] winReport
-- [ ] result
 
-rush DemoUI actions
 
-- [ ] discard
-- [ ] riichi
-- [ ] claim
 
 rush command exception
 

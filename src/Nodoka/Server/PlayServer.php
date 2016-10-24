@@ -3,9 +3,7 @@ namespace Nodoka\Server;
 
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
-use Saki\Game\SeatWind;
 use Saki\Play\Play;
-use Saki\Play\Role;
 
 /**
  * @package Nodoka\Server
@@ -55,7 +53,7 @@ class PlayServer implements MessageComponentInterface {
      */
     private function send(ConnectionInterface $conn, array $json) {
         $data = json_encode($json);
-        $this->log("Sending data to connection {$conn->resourceId}: {$data}.");
+        $this->log("Connection {$conn->resourceId} sending: {$data}.");
         $conn->send($data);
     }
 
@@ -64,14 +62,14 @@ class PlayServer implements MessageComponentInterface {
         $this->log("Connection {$conn->resourceId} opened.");
 
         $play = $this->getPlay();
-        $play->register($conn, Role::createPlayer(SeatWind::createEast())); // todo
+        $play->join($conn);
         $this->send($conn, $play->getJson($conn));
     }
 
     function onClose(ConnectionInterface $conn) {
         $this->log("Connection {$conn->resourceId} closed.");
 
-        $this->getPlay()->unRegister($conn);
+        $this->getPlay()->leave($conn);
     }
 
     function onError(ConnectionInterface $conn, \Exception $e) {
@@ -93,7 +91,7 @@ class PlayServer implements MessageComponentInterface {
         $play->tryExecute($from, $msg);
 
         // send newest round json to all players
-        foreach ($play->getRegisters() as $conn) {
+        foreach ($play->getUserKeys() as $conn) {
             $this->send($conn, $play->getJson($conn));
         }
     }
