@@ -6,9 +6,21 @@ use Ratchet\ConnectionInterface;
 /**
  * @package Nodoka\Server
  */
-class NullClient implements ConnectionInterface {
-    private $lastReceived = [];
-    public $resourceId = 'null-client';
+class LocalClient implements ConnectionInterface {
+    private $lastReceived;
+    public $resourceId;
+
+    function __construct() {
+        $this->lastReceived = '';
+        $this->resourceId = 'local-' . spl_object_hash($this);
+    }
+
+    /**
+     * @return string
+     */
+    function __toString() {
+        return $this->resourceId;
+    }
 
     /**
      * @return array
@@ -24,6 +36,7 @@ class NullClient implements ConnectionInterface {
         $this->lastReceived = $lastReceived;
     }
 
+    //region ConnectionInterface impl
     /**
      * Send data to the connection
      * @param  string $data
@@ -39,4 +52,5 @@ class NullClient implements ConnectionInterface {
     function close() {
         // do nothing
     }
+    //endregion
 }

@@ -27,6 +27,18 @@ class RoleManager {
     }
 
     /**
+     * @return SeatWind|false
+     */
+    function getRemainPlayerWind() {
+        foreach ($this->playerWindCounts as $key => $count) {
+            if ($count == 0) {
+                return SeatWind::fromString($key);
+            }
+        }
+        return false;
+    }
+
+    /**
      * @param SeatWind $seatWind
      */
     private function registPlayerWind(SeatWind $seatWind) {
@@ -70,14 +82,14 @@ class RoleManager {
      * @return Role
      */
     function assignRemain() {
-        foreach ($this->playerWindCounts as $seatWindString => $count) {
-            if ($count == 0) {
-                $seatWind = SeatWind::fromString($seatWindString);
-                $this->registPlayerWind($seatWind);
-                return Role::createPlayer($seatWind);
-            }
+        $seatWind = $this->getRemainPlayerWind();
+
+        if ($seatWind === false) {
+            return Role::createViewer(SeatWind::createEast());
         }
-        return Role::createViewer(SeatWind::createEast());
+
+        $this->registPlayerWind($seatWind);
+        return Role::createPlayer($seatWind);
     }
 
     /**

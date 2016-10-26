@@ -21,6 +21,14 @@ class Participant {
     }
 
     /**
+     * @return string
+     */
+    function __toString() {
+        $id = $this->getUserKey()->resourceID; // todo better wrap
+        return $id . ',' . $this->getRole();
+    }
+
+    /**
      * @return mixed
      */
     function getUserKey() {

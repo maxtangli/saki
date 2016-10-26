@@ -54,6 +54,7 @@ class PlayServer implements MessageComponentInterface {
     private function send(ConnectionInterface $conn, array $json) {
         $data = json_encode($json);
         $this->log("Connection {$conn->resourceId} sending: {$data}.");
+
         $conn->send($data);
     }
 
@@ -64,20 +65,47 @@ class PlayServer implements MessageComponentInterface {
         }
     }
 
+    private function fillAIClients() {
+        $nTodo = 4; // for debug, prefer fast impl to accurate solution
+        while($nTodo-- > 0) {
+            $this->getPlay()->join(new AIClient());
+        }
+    }
+
+    private function clearAIClients() {
+        $play = $this->getPlay();
+        $clients = $play->getUserKeys();
+        foreach ($clients as $client) {
+            if ($client instanceof AIClient) {
+                $play->leave($client);
+            }
+        }
+    }
+
     //region MessageComponentInterface impl
     function onOpen(ConnectionInterface $conn) {
         $this->log("Connection {$conn->resourceId} opened.");
+
+        $this->clearAIClients();
         $this->getPlay()->join($conn);
+        $this->fillAIClients();
+
         $this->notifyAll();
     }
 
     function onClose(ConnectionInterface $conn) {
         $this->log("Connection {$conn->resourceId} closed.");
+
+        $this->clearAIClients();
+        $this->getPlay()->leave($conn);
+        $this->fillAIClients();
+
         $this->notifyAll();
     }
 
     function onError(ConnectionInterface $conn, \Exception $e) {
         $this->log("Connection {$conn->resourceId} error: {$e->getMessage()}.");
+
         $error = [
             'result' => 'error',
             'message' => $e->getMessage(),
@@ -87,7 +115,10 @@ class PlayServer implements MessageComponentInterface {
 
     function onMessage(ConnectionInterface $from, $msg) {
         $this->log("Connection {$from->resourceId} message: {$msg}.\n");
+
+        // try execute, jump to onError if command invalid
         $this->getPlay()->tryExecute($from, $msg);
+
         $this->notifyAll();
     }
     //endregion

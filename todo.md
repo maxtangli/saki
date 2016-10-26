@@ -1034,7 +1034,7 @@ rush 90 area relation 4.1h
 - [x] refactor: Play 0.4h
 - [x] assign a unique wind to each client 1.6h
 
-rush 91 conn role manage 3.6h
+rush 91 conn role manage 3.7h
 
 - [x] refactor: introduce Privilege to replace $viewer 0.7h
 - [x] refactor: move xx.toJson logic into RoundSerializer 1h
@@ -1042,17 +1042,26 @@ rush 91 conn role manage 3.6h
 - [x] refactor: introduce Play to wrap connection owned data 0.4h
 - [x] refactor: introduce Participant 0.2h
 
-- [x] RoleManager 0.5h
+- [x] RoleManager 0.7h
 - [x] Viewer no see commands 0.3h
 
 - [x] Viewer no see hand 0.5h
+- [x] bug: conn not closed after browser tab closed 0.1h
 
-rush
+rush 92 AI-lv0: random execute
 
-- [ ] bug: conn not closed after browser tab closed
+- [x] analyze 0.4h
+- [x] AIClient assign 0.1h
 
-- [ ] view: conn info 0.2h
-- [ ] mock client?
+- [ ] view: conn info 0.6h
+
+E area: resourceID.role
+
+init: >=1 player => assign remain seatWind to local clients
+      0 player => remove all local clients
+
+player join => remove all local clients => join => init
+player leave => init
 
 rush actions view
 
@@ -1074,10 +1083,6 @@ rush hand view
 
 - [ ] css: target
 - [ ] css: meld align from right to left
-
-
-
-
 
 rush command exception
 

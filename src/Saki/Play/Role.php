@@ -40,7 +40,7 @@ class Role {
      */
     function __toString() {
         $prefix = $this->isPlayer() ? 'player' : 'viewer';
-        return $prefix . ':' . $this->getViewer();
+        return $prefix . '-' . $this->getViewer();
     }
 
     /**

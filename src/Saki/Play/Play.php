@@ -2,6 +2,7 @@
 namespace Saki\Play;
 
 use Saki\Game\Round;
+use Saki\Game\SeatWind;
 
 /**
  * @package Saki\Play
@@ -30,6 +31,18 @@ class Play {
      */
     function getUserKeys() {
         return iterator_to_array($this->participants);
+    }
+
+    /**
+     * @param SeatWind $viewer
+     * @return Participant[]
+     */
+    function getParticipants(SeatWind $viewer = null) {
+        $participants = array_map([$this, 'getParticipant'], $this->getUserKeys());
+        $matchSeatWind = function (Participant $participant) use ($viewer) {
+            return $participant->getRole()->getViewer() == $viewer;
+        };
+        return array_values(array_filter($participants, $matchSeatWind));
     }
 
     /**
