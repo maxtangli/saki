@@ -1,5 +1,5 @@
 <?php
-namespace Saki\Tile;
+namespace Saki\Game\Tile;
 
 use Saki\Util\Enum;
 use Saki\Util\Utils;

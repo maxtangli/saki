@@ -2,8 +2,8 @@
 namespace Saki\Win\Draw;
 
 use Saki\Game\Area;
+use Saki\Game\Meld\QuadMeldType;
 use Saki\Game\Round;
-use Saki\Meld\QuadMeldType;
 use Saki\Win\Result\AbortiveDrawResult;
 use Saki\Win\Result\ResultType;
 

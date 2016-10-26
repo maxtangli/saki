@@ -3,9 +3,8 @@ namespace Saki\Command\Debug;
 
 use Saki\Command\Command;
 use Saki\Command\ParamDeclaration\IntParamDeclaration;
-use Saki\Command\ParamDeclaration\TileParamDeclaration;
 use Saki\Game\Round;
-use Saki\Tile\Tile;
+use Saki\Game\Tile\Tile;
 
 /**
  * @package Saki\Command\Debug

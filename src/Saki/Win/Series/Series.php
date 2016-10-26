@@ -1,9 +1,9 @@
 <?php
 namespace Saki\Win\Series;
 
+use Saki\Game\Meld\Meld;
+use Saki\Game\Meld\MeldList;
 use Saki\Game\SubHand;
-use Saki\Meld\Meld;
-use Saki\Meld\MeldList;
 use Saki\Util\Enum;
 use Saki\Win\Waiting\WaitingType;
 

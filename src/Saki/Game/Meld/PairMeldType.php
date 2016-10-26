@@ -1,43 +1,43 @@
 <?php
-namespace Saki\Meld;
+namespace Saki\Game\Meld;
 
-use Saki\Tile\Tile;
-use Saki\Tile\TileList;
+use Saki\Game\Tile\Tile;
+use Saki\Game\Tile\TileList;
 use Saki\Win\Waiting\WaitingType;
 
 /**
- * @package Saki\Meld
+ * @package Saki\Game\Meld
  */
-class WeakPairMeldType extends WeakMeldType {
+class PairMeldType extends WeakMeldType {
     //region MeldType impl
     function getTileCount() {
-        return 1;
+        return 2;
     }
 
     protected function validFaces(TileList $validCountTileList) {
-        return true;
+        return $validCountTileList[0] == $validCountTileList[1];
     }
 
     protected function getPossibleTileLists(Tile $firstTile) {
         return $this->getPossibleTileListsImplByRepeat($firstTile);
     }
+
+    function getTargetMeldType() {
+        return TripleMeldType::create();
+    }
     //endregion
 
     //region WeakMeldType impl
-    function getTargetMeldType() {
-        return PairMeldType::create();
-    }
-
     protected function getWaitingImpl(TileList $validMeldTileList) {
         return new TileList([$validMeldTileList[0]]);
     }
 
     protected function getWaitingTypeImpl(TileList $validMeldTileList) {
-        return WaitingType::create(WaitingType::PAIR_WAITING);
+        return WaitingType::create(WaitingType::TRIPLE_WAITING);
     }
 
     function getWinSetType() {
-        return WinSetType::create(WinSetType::PURE_WEAK);
+        return WinSetType::create(WinSetType::PAIR);
     }
     //endregion
 }

@@ -1,10 +1,10 @@
 <?php
-namespace Saki\Tile;
+namespace Saki\Game\Tile;
 
 use Saki\Util\ReadonlyArrayList;
 
 /**
- * @package Saki\Tile
+ * @package Saki\Game\Tile
  */
 class TileSet extends TileList {
     use ReadonlyArrayList;

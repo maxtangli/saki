@@ -3,6 +3,7 @@ namespace Saki\Win;
 
 use Saki\Game\Area;
 use Saki\Game\Hand;
+use Saki\Game\Meld\MeldList;
 use Saki\Game\OpenHistory;
 use Saki\Game\Phase;
 use Saki\Game\PrevailingWind;
@@ -10,9 +11,8 @@ use Saki\Game\RiichiStatus;
 use Saki\Game\Round;
 use Saki\Game\SeatWind;
 use Saki\Game\Target;
+use Saki\Game\Tile\TileList;
 use Saki\Game\Wall;
-use Saki\Meld\MeldList;
-use Saki\Tile\TileList;
 
 /**
  * @package Saki\Win

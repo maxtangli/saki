@@ -6,11 +6,11 @@ use Saki\Command\ParamDeclaration\TileListParamDeclaration;
 use Saki\Command\PrivateCommand;
 use Saki\Game\Area;
 use Saki\Game\Claim;
+use Saki\Game\Meld\QuadMeldType;
 use Saki\Game\Round;
 use Saki\Game\SeatWind;
-use Saki\Meld\QuadMeldType;
-use Saki\Tile\Tile;
-use Saki\Tile\TileList;
+use Saki\Game\Tile\Tile;
+use Saki\Game\Tile\TileList;
 use Saki\Util\ArrayList;
 
 /**

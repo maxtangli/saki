@@ -1,10 +1,10 @@
 <?php
 
+use Saki\Game\Meld\MeldList;
 use Saki\Game\PrevailingStatus;
 use Saki\Game\PrevailingWind;
 use Saki\Game\SeatWind;
-use Saki\Meld\MeldList;
-use Saki\Tile\Tile;
+use Saki\Game\Tile\Tile;
 use Saki\Win\WinState;
 use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\Fan1\AfterAKongWinYaku;

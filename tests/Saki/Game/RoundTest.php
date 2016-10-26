@@ -1,10 +1,9 @@
 <?php
 
-use Saki\Command\PrivateCommand\ConcealedKongCommand;
 use Saki\Game\Phase;
 use Saki\Game\SeatWind;
-use Saki\Tile\Tile;
-use Saki\Tile\TileList;
+use Saki\Game\Tile\Tile;
+use Saki\Game\Tile\TileList;
 use Saki\Win\Result\ResultType;
 
 class RoundTest extends \SakiTestCase {

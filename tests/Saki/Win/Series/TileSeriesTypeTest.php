@@ -1,11 +1,11 @@
 <?php
 
+use Saki\Game\Meld\MeldList;
 use Saki\Game\SeatWind;
 use Saki\Game\SubHand;
 use Saki\Game\Target;
 use Saki\Game\TargetType;
-use Saki\Meld\MeldList;
-use Saki\Tile\Tile;
+use Saki\Game\Tile\Tile;
 use Saki\Win\Series\Series;
 use Saki\Win\Waiting\WaitingType;
 

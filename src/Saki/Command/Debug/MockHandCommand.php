@@ -7,7 +7,7 @@ use Saki\Command\PlayerCommand;
 use Saki\Game\Area;
 use Saki\Game\Round;
 use Saki\Game\SeatWind;
-use Saki\Tile\TileList;
+use Saki\Game\Tile\TileList;
 use Saki\Util\ArrayList;
 
 /**

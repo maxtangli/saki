@@ -1,7 +1,7 @@
 <?php
 namespace Saki\Command\ParamDeclaration;
 
-use Saki\Tile\Tile;
+use Saki\Game\Tile\Tile;
 
 /**
  * @package Saki\Command\ParamDeclaration

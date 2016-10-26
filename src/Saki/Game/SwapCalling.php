@@ -1,11 +1,11 @@
 <?php
 namespace Saki\Game;
 
-use Saki\Meld\Meld;
-use Saki\Meld\WeakRunMeldType;
-use Saki\Phase\PrivatePhaseState;
-use Saki\Tile\Tile;
-use Saki\Tile\TileList;
+use Saki\Game\Meld\Meld;
+use Saki\Game\Meld\WeakRunMeldType;
+use Saki\Game\Phase\PrivatePhaseState;
+use Saki\Game\Tile\Tile;
+use Saki\Game\Tile\TileList;
 use Saki\Util\Immutable;
 
 /**

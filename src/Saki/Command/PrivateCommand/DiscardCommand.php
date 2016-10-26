@@ -8,7 +8,7 @@ use Saki\Game\Area;
 use Saki\Game\Open;
 use Saki\Game\Round;
 use Saki\Game\SeatWind;
-use Saki\Tile\Tile;
+use Saki\Game\Tile\Tile;
 
 /**
  * @package Saki\Command\PrivateCommand

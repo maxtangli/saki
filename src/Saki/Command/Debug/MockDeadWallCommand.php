@@ -6,7 +6,7 @@ use Saki\Command\ParamDeclaration\BoolParamDeclaration;
 use Saki\Command\ParamDeclaration\IntParamDeclaration;
 use Saki\Command\ParamDeclaration\TileListParamDeclaration;
 use Saki\Game\Round;
-use Saki\Tile\TileList;
+use Saki\Game\Tile\TileList;
 
 /**
  * @package Saki\Command\Debug

@@ -1,13 +1,12 @@
 <?php
 
-use Saki\Meld\Meld;
-use Saki\Meld\PairMeldType;
-use Saki\Meld\QuadMeldType;
-use Saki\Meld\ThirteenOrphanMeldType;
-use Saki\Meld\WeakThirteenOrphanMeldType;
-use Saki\Tile\Tile;
-use Saki\Tile\TileList;
-use Saki\Util\ArrayList;
+use Saki\Game\Meld\Meld;
+use Saki\Game\Meld\PairMeldType;
+use Saki\Game\Meld\QuadMeldType;
+use Saki\Game\Meld\ThirteenOrphanMeldType;
+use Saki\Game\Meld\WeakThirteenOrphanMeldType;
+use Saki\Game\Tile\Tile;
+use Saki\Game\Tile\TileList;
 
 class MeldTest extends \SakiTestCase {
     function testCreate() {

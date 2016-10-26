@@ -3,8 +3,8 @@
 use Saki\Game\OpenHistory;
 use Saki\Game\OpenRecord;
 use Saki\Game\SeatWind;
+use Saki\Game\Tile\Tile;
 use Saki\Game\Turn;
-use Saki\Tile\Tile;
 
 class OpenHistoryTest extends \SakiTestCase {
     /** @var  OpenHistory */

@@ -1,7 +1,7 @@
 <?php
 namespace Saki\Win\Fu;
 
-use Saki\Meld\Meld;
+use Saki\Game\Meld\Meld;
 
 /**
  * @package Saki\Win\Fu

@@ -1,8 +1,7 @@
 <?php
 namespace Saki\Game;
 
-use Saki\Tile\Tile;
-use Saki\Util\Utils;
+use Saki\Game\Tile\Tile;
 
 /**
  * Wind indicator for player.

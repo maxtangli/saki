@@ -1,12 +1,12 @@
 <?php
-namespace Saki\Meld;
+namespace Saki\Game\Meld;
 
-use Saki\Tile\Tile;
-use Saki\Tile\TileList;
+use Saki\Game\Tile\Tile;
+use Saki\Game\Tile\TileList;
 use Saki\Util\ArrayList;
 
 /**
- * @package Saki\Meld
+ * @package Saki\Game\Meld
  */
 class RunMeldType extends MeldType {
     //region MeldType impl

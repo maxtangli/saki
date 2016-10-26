@@ -1,14 +1,14 @@
 <?php
 
-namespace Saki\Meld;
+namespace Saki\Game\Meld;
 
-use Saki\Tile\TileList;
+use Saki\Game\Tile\TileList;
 use Saki\Win\Waiting\WaitingType;
 
 /**
  * The MeldType which can be converted to target MeldType by adding 1 tile.
  * Used in: WaitingAnalyzer.
- * @package Saki\Meld
+ * @package Saki\Game\Meld
  */
 abstract class WeakMeldType extends MeldType {
     //region MeldType override

@@ -1,7 +1,7 @@
 <?php
 
-use Saki\Tile\Tile;
-use Saki\Tile\TileType;
+use Saki\Game\Tile\Tile;
+use Saki\Game\Tile\TileType;
 
 class TileTest extends \SakiTestCase {
     function testCompare() {

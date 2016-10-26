@@ -2,12 +2,11 @@
 namespace Saki\Command\PublicCommand;
 
 use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
-use Saki\Command\PrivateCommand;
 use Saki\Command\PublicCommand;
 use Saki\Game\Area;
+use Saki\Game\Phase\OverPhaseState;
 use Saki\Game\Round;
 use Saki\Game\SeatWind;
-use Saki\Phase\OverPhaseState;
 use Saki\Util\ArrayList;
 use Saki\Win\Result\WinResult;
 use Saki\Win\Result\WinResultInput;

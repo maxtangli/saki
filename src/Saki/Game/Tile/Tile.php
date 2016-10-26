@@ -1,6 +1,6 @@
 <?php
 
-namespace Saki\Tile;
+namespace Saki\Game\Tile;
 
 use Saki\Util\ComparablePriority;
 use Saki\Util\Immutable;
@@ -11,7 +11,7 @@ use Saki\Util\Utils;
  * - ==         :ignore   red
  * - ===        :consider red
  * - toString() :consider red
- * @package Saki\Tile
+ * @package Saki\Game\Tile
  */
 class Tile implements Immutable {
     use ComparablePriority;

@@ -1,11 +1,11 @@
 <?php
-namespace Saki\Phase;
+namespace Saki\Game\Phase;
 
 use Saki\Game\Phase;
 use Saki\Game\Round;
 
 /**
- * @package Saki\Phase
+ * @package Saki\Game\Phase
  */
 abstract class PhaseState {
     private $customNextState;

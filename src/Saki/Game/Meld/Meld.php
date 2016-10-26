@@ -1,8 +1,8 @@
 <?php
-namespace Saki\Meld;
+namespace Saki\Game\Meld;
 
-use Saki\Tile\Tile;
-use Saki\Tile\TileList;
+use Saki\Game\Tile\Tile;
+use Saki\Game\Tile\TileList;
 use Saki\Util\Immutable;
 use Saki\Util\ReadonlyArrayList;
 use Saki\Util\Utils;
@@ -10,7 +10,7 @@ use Saki\Win\Waiting\WaitingType;
 
 /**
  * A not empty TileList under one MeldType.
- * @package Saki\Meld
+ * @package Saki\Game\Meld
  */
 class Meld extends TileList implements Immutable {
     use ReadonlyArrayList;

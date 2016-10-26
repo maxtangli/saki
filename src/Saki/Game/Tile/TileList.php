@@ -1,10 +1,10 @@
 <?php
-namespace Saki\Tile;
+namespace Saki\Game\Tile;
 
 use Saki\Util\ArrayList;
 
 /**
- * @package Saki\Tile
+ * @package Saki\Game\Tile
  */
 class TileList extends ArrayList {
     //region factory

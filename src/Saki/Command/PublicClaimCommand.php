@@ -3,16 +3,14 @@ namespace Saki\Command;
 
 use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\ParamDeclaration\TileListParamDeclaration;
-use Saki\Command\PublicCommand;
 use Saki\Game\Area;
 use Saki\Game\Claim;
+use Saki\Game\Meld\MeldType;
+use Saki\Game\Phase\PrivatePhaseState;
 use Saki\Game\Round;
 use Saki\Game\SeatWind;
-use Saki\Meld\MeldType;
-use Saki\Meld\QuadMeldType;
-use Saki\Phase\PrivatePhaseState;
-use Saki\Tile\Tile;
-use Saki\Tile\TileList;
+use Saki\Game\Tile\Tile;
+use Saki\Game\Tile\TileList;
 use Saki\Util\ArrayList;
 
 /**

@@ -1,7 +1,7 @@
 <?php
 namespace Saki\Game;
 
-use Saki\Tile\TileSet;
+use Saki\Game\Tile\TileSet;
 use Saki\Util\Immutable;
 use Saki\Win\Draw\DrawAnalyzer;
 use Saki\Win\Score\CompositeScoreStrategy;

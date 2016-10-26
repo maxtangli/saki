@@ -1,7 +1,7 @@
 <?php
 namespace Saki\Command\ParamDeclaration;
 
-use Saki\Meld\Meld;
+use Saki\Game\Meld\Meld;
 
 /**
  * @package Saki\Command\ParamDeclaration

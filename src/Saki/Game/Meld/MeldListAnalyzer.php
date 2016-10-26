@@ -1,13 +1,13 @@
 <?php
 
-namespace Saki\Meld;
+namespace Saki\Game\Meld;
 
-use Saki\Tile\TileList;
+use Saki\Game\Tile\TileList;
 use Saki\Util\ArrayList;
 
 /**
  * Analyze all possible meld combinations for a given TileList and conditions.
- * @package Saki\Meld
+ * @package Saki\Game\Meld
  */
 class MeldListAnalyzer {
     private $meldTypes;

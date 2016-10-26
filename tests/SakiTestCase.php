@@ -1,14 +1,12 @@
 <?php
 
 use Saki\Game\Phase;
-use Saki\Game\PointItem;
 use Saki\Game\PrevailingStatus;
 use Saki\Game\Round;
 use Saki\Game\SeatWind;
+use Saki\Game\Tile\Tile;
 use Saki\Game\Turn;
-use Saki\Tile\Tile;
 use Saki\Util\ArrayList;
-use Saki\Win\Point\PointList;
 use Saki\Win\Result\ResultType;
 
 class SakiTestCase extends \PHPUnit_Framework_TestCase {

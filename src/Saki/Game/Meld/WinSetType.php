@@ -1,10 +1,10 @@
 <?php
-namespace Saki\Meld;
+namespace Saki\Game\Meld;
 
 use Saki\Util\Enum;
 
 /**
- * @package Saki\Meld
+ * @package Saki\Game\Meld
  */
 class WinSetType extends Enum {
     const HAND_WIN_SET = 1;

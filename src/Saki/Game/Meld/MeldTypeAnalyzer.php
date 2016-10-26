@@ -1,12 +1,12 @@
 <?php
 
-namespace Saki\Meld;
+namespace Saki\Game\Meld;
 
-use Saki\Tile\TileList;
+use Saki\Game\Tile\TileList;
 
 /**
  * Analyze given TileList's MeldType in preset MeldType set.
- * @package Saki\Meld
+ * @package Saki\Game\Meld
  */
 class MeldTypeAnalyzer {
     private $candidateMeldTypes;

@@ -1,5 +1,5 @@
 <?php
-namespace Saki\Phase;
+namespace Saki\Game\Phase;
 
 use Saki\Game\Claim;
 use Saki\Game\Phase;
@@ -8,7 +8,7 @@ use Saki\Game\SeatWind;
 use Saki\Game\Target;
 
 /**
- * @package Saki\Phase
+ * @package Saki\Game\Phase
  */
 class PublicPhaseState extends PhaseState {
     /**

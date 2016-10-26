@@ -1,8 +1,7 @@
 <?php
 namespace Saki\Game;
 
-use Saki\Command\InvalidCommandException;
-use Saki\Tile\Tile;
+use Saki\Game\Tile\Tile;
 use Saki\Util\Immutable;
 
 /**

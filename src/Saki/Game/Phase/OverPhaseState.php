@@ -1,5 +1,5 @@
 <?php
-namespace Saki\Phase;
+namespace Saki\Game\Phase;
 
 use Saki\Game\Phase;
 use Saki\Game\Round;
@@ -8,7 +8,7 @@ use Saki\Win\Result\Result;
 use Saki\Win\Result\WinResult;
 
 /**
- * @package Saki\Phase
+ * @package Saki\Game\Phase
  */
 class OverPhaseState extends PhaseState {
     private $result;

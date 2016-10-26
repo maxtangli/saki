@@ -2,7 +2,7 @@
 
 namespace Saki\Game;
 
-use Saki\Tile\TileList;
+use Saki\Game\Tile\TileList;
 use Saki\Util\ArrayList;
 
 /**

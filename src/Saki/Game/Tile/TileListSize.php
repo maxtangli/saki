@@ -1,9 +1,9 @@
 <?php
 
-namespace Saki\Tile;
+namespace Saki\Game\Tile;
 
 /**
- * @package Saki\Tile
+ * @package Saki\Game\Tile
  */
 class TileListSize {
     private $count;

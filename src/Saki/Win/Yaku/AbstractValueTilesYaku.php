@@ -1,7 +1,7 @@
 <?php
 namespace Saki\Win\Yaku;
 
-use Saki\Tile\Tile;
+use Saki\Game\Tile\Tile;
 use Saki\Win\WinSubTarget;
 
 /**

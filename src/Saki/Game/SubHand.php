@@ -1,7 +1,7 @@
 <?php
 namespace Saki\Game;
 
-use Saki\Meld\MeldList;
+use Saki\Game\Meld\MeldList;
 
 /**
  * A Hand specified by a private MeldList.

@@ -1,8 +1,8 @@
 <?php
 
-use Saki\Tile\Tile;
-use Saki\Tile\TileList;
-use Saki\Tile\TileType;
+use Saki\Game\Tile\Tile;
+use Saki\Game\Tile\TileList;
+use Saki\Game\Tile\TileType;
 use Saki\Util\Utils;
 
 class TileListTest extends \SakiTestCase {

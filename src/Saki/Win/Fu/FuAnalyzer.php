@@ -1,9 +1,9 @@
 <?php
 namespace Saki\Win\Fu;
 
-use Saki\Meld\Meld;
-use Saki\Meld\MeldList;
-use Saki\Tile\Tile;
+use Saki\Game\Meld\Meld;
+use Saki\Game\Meld\MeldList;
+use Saki\Game\Tile\Tile;
 use Saki\Util\Singleton;
 use Saki\Win\Waiting\WaitingType;
 use Saki\Win\Yaku\Fan1\PinfuYaku;

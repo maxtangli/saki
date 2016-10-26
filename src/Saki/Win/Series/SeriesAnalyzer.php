@@ -2,7 +2,7 @@
 
 namespace Saki\Win\Series;
 
-use Saki\Meld\MeldList;
+use Saki\Game\Meld\MeldList;
 use Saki\Util\ArrayList;
 use Saki\Util\Singleton;
 

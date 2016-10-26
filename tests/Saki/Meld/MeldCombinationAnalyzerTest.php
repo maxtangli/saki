@@ -1,12 +1,12 @@
 <?php
 
-use Saki\Meld\Meld;
-use Saki\Meld\MeldListAnalyzer;
-use Saki\Meld\PairMeldType;
-use Saki\Meld\QuadMeldType;
-use Saki\Meld\RunMeldType;
-use Saki\Meld\TripleMeldType;
-use Saki\Tile\TileList;
+use Saki\Game\Meld\Meld;
+use Saki\Game\Meld\MeldListAnalyzer;
+use Saki\Game\Meld\PairMeldType;
+use Saki\Game\Meld\QuadMeldType;
+use Saki\Game\Meld\RunMeldType;
+use Saki\Game\Meld\TripleMeldType;
+use Saki\Game\Tile\TileList;
 use Saki\Util\Utils;
 
 class MeldListAnalyzerTest extends \SakiTestCase {

@@ -1,7 +1,7 @@
 <?php
 
-use Saki\Meld\Meld;
-use Saki\Meld\MeldList;
+use Saki\Game\Meld\Meld;
+use Saki\Game\Meld\MeldList;
 use Saki\Util\ArrayList;
 
 class MeldListTest extends \SakiTestCase {
@@ -38,8 +38,8 @@ class MeldListTest extends \SakiTestCase {
 
     function testTileExist() {
         $meldList = MeldList::fromString('123m,123s,EE');
-        $this->assertTrue($meldList->tileExist(\Saki\Tile\Tile::fromString('2s')));
-        $this->assertFalse($meldList->tileExist(\Saki\Tile\Tile::fromString('4s')));
+        $this->assertTrue($meldList->tileExist(\Saki\Game\Tile\Tile::fromString('2s')));
+        $this->assertFalse($meldList->tileExist(\Saki\Game\Tile\Tile::fromString('4s')));
     }
 
     function testSeries() {

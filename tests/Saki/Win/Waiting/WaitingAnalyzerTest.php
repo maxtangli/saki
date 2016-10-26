@@ -1,7 +1,7 @@
 <?php
 
-use Saki\Meld\MeldList;
-use Saki\Tile\TileList;
+use Saki\Game\Meld\MeldList;
+use Saki\Game\Tile\TileList;
 
 class WaitingAnalyzerTest extends \SakiTestCase {
     /**

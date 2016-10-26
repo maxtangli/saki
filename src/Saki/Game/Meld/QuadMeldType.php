@@ -1,11 +1,11 @@
 <?php
-namespace Saki\Meld;
+namespace Saki\Game\Meld;
 
-use Saki\Tile\Tile;
-use Saki\Tile\TileList;
+use Saki\Game\Tile\Tile;
+use Saki\Game\Tile\TileList;
 
 /**
- * @package Saki\Meld
+ * @package Saki\Game\Meld
  */
 class QuadMeldType extends MeldType {
     //region MeldType impl

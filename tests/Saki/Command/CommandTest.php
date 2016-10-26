@@ -2,12 +2,10 @@
 
 use Saki\Command\Debug\MockHandCommand;
 use Saki\Command\PrivateCommand\DiscardCommand;
-use Saki\Command\PrivateCommand\TsumoCommand;
-use Saki\Command\PublicCommand\RonCommand;
 use Saki\Command\PublicCommandBuffer;
 use Saki\Game\Phase;
 use Saki\Game\SeatWind;
-use Saki\Tile\Tile;
+use Saki\Game\Tile\Tile;
 
 class CommandTest extends \SakiTestCase {
     function testIsDebug() {

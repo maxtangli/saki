@@ -1,14 +1,14 @@
 <?php
 namespace Saki\Win;
 
-use Saki\Meld\MeldList;
-use Saki\Meld\MeldListAnalyzer;
-use Saki\Meld\PairMeldType;
-use Saki\Meld\RunMeldType;
-use Saki\Meld\ThirteenOrphanMeldType;
-use Saki\Meld\TripleMeldType;
-use Saki\Tile\Tile;
-use Saki\Tile\TileList;
+use Saki\Game\Meld\MeldList;
+use Saki\Game\Meld\MeldListAnalyzer;
+use Saki\Game\Meld\PairMeldType;
+use Saki\Game\Meld\RunMeldType;
+use Saki\Game\Meld\ThirteenOrphanMeldType;
+use Saki\Game\Meld\TripleMeldType;
+use Saki\Game\Tile\Tile;
+use Saki\Game\Tile\TileList;
 use Saki\Util\ArrayList;
 use Saki\Win\Fu\FuAnalyzer;
 use Saki\Win\Fu\FuTarget;

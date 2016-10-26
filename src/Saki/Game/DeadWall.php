@@ -1,8 +1,8 @@
 <?php
 namespace Saki\Game;
 
-use Saki\Tile\Tile;
-use Saki\Tile\TileList;
+use Saki\Game\Tile\Tile;
+use Saki\Game\Tile\TileList;
 use Saki\Util\ArrayList;
 use Saki\Util\Utils;
 

@@ -2,9 +2,9 @@
 
 namespace Saki\Game;
 
-use Saki\Meld\MeldList;
-use Saki\Tile\Tile;
-use Saki\Tile\TileList;
+use Saki\Game\Meld\MeldList;
+use Saki\Game\Tile\Tile;
+use Saki\Game\Tile\TileList;
 use Saki\Util\Immutable;
 
 /**

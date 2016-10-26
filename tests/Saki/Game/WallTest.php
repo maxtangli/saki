@@ -1,9 +1,9 @@
 <?php
 
+use Saki\Game\Tile\Tile;
+use Saki\Game\Tile\TileList;
+use Saki\Game\Tile\TileSet;
 use Saki\Game\Wall;
-use Saki\Tile\Tile;
-use Saki\Tile\TileList;
-use Saki\Tile\TileSet;
 
 class WallTest extends \SakiTestCase {
     function testAll() {

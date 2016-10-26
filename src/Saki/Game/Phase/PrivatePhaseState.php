@@ -1,5 +1,5 @@
 <?php
-namespace Saki\Phase;
+namespace Saki\Game\Phase;
 
 use Saki\Game\Claim;
 use Saki\Game\Phase;
@@ -9,7 +9,7 @@ use Saki\Game\Target;
 use Saki\Game\TargetType;
 
 /**
- * @package Saki\Phase
+ * @package Saki\Game\Phase
  */
 class PrivatePhaseState extends PhaseState {
     private $actor;

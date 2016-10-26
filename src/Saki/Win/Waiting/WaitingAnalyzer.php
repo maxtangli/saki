@@ -1,17 +1,17 @@
 <?php
 namespace Saki\Win\Waiting;
 
-use Saki\Meld\Meld;
-use Saki\Meld\MeldList;
-use Saki\Meld\MeldListAnalyzer;
-use Saki\Meld\PairMeldType;
-use Saki\Meld\RunMeldType;
-use Saki\Meld\TripleMeldType;
-use Saki\Meld\WeakPairMeldType;
-use Saki\Meld\WeakRunMeldType;
-use Saki\Meld\WeakThirteenOrphanMeldType;
-use Saki\Tile\Tile;
-use Saki\Tile\TileList;
+use Saki\Game\Meld\Meld;
+use Saki\Game\Meld\MeldList;
+use Saki\Game\Meld\MeldListAnalyzer;
+use Saki\Game\Meld\PairMeldType;
+use Saki\Game\Meld\RunMeldType;
+use Saki\Game\Meld\TripleMeldType;
+use Saki\Game\Meld\WeakPairMeldType;
+use Saki\Game\Meld\WeakRunMeldType;
+use Saki\Game\Meld\WeakThirteenOrphanMeldType;
+use Saki\Game\Tile\Tile;
+use Saki\Game\Tile\TileList;
 use Saki\Win\Series\SeriesAnalyzer;
 
 /**

@@ -1,9 +1,9 @@
 <?php
 namespace Saki\Game;
 
-use Saki\Meld\Meld;
-use Saki\Meld\MeldType;
-use Saki\Tile\Tile;
+use Saki\Game\Meld\Meld;
+use Saki\Game\Meld\MeldType;
+use Saki\Game\Tile\Tile;
 use Saki\Util\Immutable;
 
 /**

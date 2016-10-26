@@ -2,7 +2,7 @@
 namespace Saki\Win\Yaku;
 
 use Saki\Game\DoraFacade;
-use Saki\Tile\TileList;
+use Saki\Game\Tile\TileList;
 use Saki\Win\WinSubTarget;
 
 /**

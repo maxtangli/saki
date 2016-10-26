@@ -1,11 +1,11 @@
 <?php
-namespace Saki\Phase;
+namespace Saki\Game\Phase;
 
 use Saki\Game\Phase;
 use Saki\Game\Round;
 
 /**
- * @package Saki\Phase
+ * @package Saki\Game\Phase
  */
 class NullPhaseState extends PhaseState {
     //region PhaseState impl

@@ -1,12 +1,10 @@
 <?php
 namespace Saki\Command\PublicCommand;
 
-use Saki\Command\PrivateCommand;
 use Saki\Command\PublicClaimCommand;
-use Saki\Command\PublicCommand;
-use Saki\Meld\QuadMeldType;
-use Saki\Tile\Tile;
-use Saki\Tile\TileList;
+use Saki\Game\Meld\QuadMeldType;
+use Saki\Game\Tile\Tile;
+use Saki\Game\Tile\TileList;
 use Saki\Util\ArrayList;
 
 /**

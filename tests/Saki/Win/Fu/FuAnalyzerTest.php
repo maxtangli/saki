@@ -1,8 +1,8 @@
 <?php
 
-use Saki\Meld\MeldList;
-use Saki\Tile\Tile;
-use Saki\Tile\TileList;
+use Saki\Game\Meld\MeldList;
+use Saki\Game\Tile\Tile;
+use Saki\Game\Tile\TileList;
 use Saki\Win\Fu\FuAnalyzer;
 use Saki\Win\Fu\FuTarget;
 use Saki\Win\Waiting\WaitingType;

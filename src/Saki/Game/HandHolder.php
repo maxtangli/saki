@@ -1,8 +1,8 @@
 <?php
 namespace Saki\Game;
 
-use Saki\Meld\MeldList;
-use Saki\Tile\TileList;
+use Saki\Game\Meld\MeldList;
+use Saki\Game\Tile\TileList;
 
 /**
  * @package Saki\Game

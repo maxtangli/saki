@@ -1,10 +1,10 @@
 <?php
 namespace Saki\Win;
 
+use Saki\Game\Meld\MeldList;
 use Saki\Game\Round;
 use Saki\Game\SeatWind;
 use Saki\Game\SubHand;
-use Saki\Meld\MeldList;
 
 /**
  * @package Saki\Win

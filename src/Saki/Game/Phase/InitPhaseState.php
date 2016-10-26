@@ -1,12 +1,12 @@
 <?php
-namespace Saki\Phase;
+namespace Saki\Game\Phase;
 
 use Saki\Game\Phase;
 use Saki\Game\Round;
 use Saki\Game\SeatWind;
 
 /**
- * @package Saki\Phase
+ * @package Saki\Game\Phase
  */
 class InitPhaseState extends PhaseState {
     //region PhaseState impl
