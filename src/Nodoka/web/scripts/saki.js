@@ -92,13 +92,19 @@ Saki.DemoView.prototype = {
 
         var result = jsonData.result;
         if (result.isRoundOver) {
-            var report = result.winReports[0];
-            var resultText = [report.actor, report.fan + ' fan', report.fu + ' fu'].join(',')
-                + '\n' + report.yakuItems.join('\n');
-            $('.resultContainer').text(resultText);
+            if (result.winReports.length > 0) {
+                var report = result.winReports[0];
+                var resultText =
+                    result.result
+                    + '\n' + [report.actor, report.fan + ' fan', report.fu + ' fu'].join(',')
+                    + '\n' + report.yakuItems.join('\n');
+            } else {
+                var resultText = result.result;
+            }
         } else {
-            $('.resultContainer').text('none');
+            var resultText = 'none';
         }
+        $('.resultContainer').text(resultText);
 
         var that = this;
         var keys = [

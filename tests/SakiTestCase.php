@@ -196,8 +196,14 @@ class SakiTestCase extends \PHPUnit_Framework_TestCase {
         $this->assertPhaseImpl(Phase::PUBLIC_PHASE, $currentSeatWind);
     }
 
-    function assertOver() {
+    function assertOver(int $resultTypeValue = null) {
         $this->assertPhaseImpl(Phase::OVER_PHASE);
+
+        if (isset($resultTypeValue)) {
+            $expected = ResultType::create($resultTypeValue);
+            $actual = $this->getCurrentRound()->getPhaseState()->getResult()->getResultType();
+            $this->assertEquals($expected, $actual);
+        }
     }
     
     private function assertPhaseImpl(int $phaseValue, string $expectedCurrentSeatWind = null) {
@@ -210,12 +216,6 @@ class SakiTestCase extends \PHPUnit_Framework_TestCase {
             $currentSeatWind = $round->getCurrentSeatWind();
             $this->assertEquals(SeatWind::fromString($expectedCurrentSeatWind), $currentSeatWind);
         }
-    }
-
-    function assertResultType(int $resultTypeValue) {
-        $expected = ResultType::create($resultTypeValue);
-        $actual = $this->getCurrentRound()->getPhaseState()->getResult()->getResultType();
-        $this->assertEquals($expected, $actual);
     }
     //endregion
 }

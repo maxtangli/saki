@@ -80,7 +80,7 @@ rush 5 round flow: private phase 14.5h
 
 - [x] PrivatePhase: execute command and to next turn
 - [x] RoundCommand toString()/fromString()
-- [x] bug: InfiniteIterator buggy with session
+- [x] bug fix: InfiniteIterator buggy with session
 - [x] refactor: least RoundCommand to KISS
 - [x] Player toString()/fromString()
 - [x] child commands fromString()
@@ -99,7 +99,7 @@ rush 7 phase flow 6.5h
 - [x] public phase: chow 0.5h
 - [x] refactor Round to support test for chow 0.5h
 - [x] public phase: pon/kong 0.5h
-- [x] bug: turn calculate 1.0h
+- [x] bug fix: turn calculate 1.0h
 
 rush 8 refactor ArrayLikeObject 6h
 
@@ -143,7 +143,7 @@ rush 12 win flow 5.8h
 - [x] use-case analyze 2.2h
 
 - [x] remove TurnManager into PlayerList 0.5h
-- [x] bug: not drawn. cause; PlayerList sharable -> unsharable 0.7h
+- [x] bug fix: not drawn. cause; PlayerList sharable -> unsharable 0.7h
 - [x] adapt Round with PlayerList 0.3h
 
 - [x] private phase: win on self 0.8h
@@ -154,7 +154,7 @@ rush 13 point table 4.6h
 - [x] point table 3.3h
 - [x] analyze 0.6h
 - [x] refactor PlayerList 0.4h
-- [x] bug: Result.getOriginPoint() 0.3h
+- [x] bug fix: Result.getOriginPoint() 0.3h
 
 rush 14 next round 1.4h
 
@@ -176,7 +176,7 @@ rush 16 game over fix 2.1h
 
 - [x] isLastRound() 0.6h
 - [x] refactor: move PlayerList into RoundData 1.1h
-- [x] bug: PlayerList 0.4h
+- [x] bug fix: PlayerList 0.4h
 
 rush 17 win issues 1.6h
 
@@ -194,7 +194,7 @@ rush 18 refactor 5h
 - [x] refactor: Areas 0.5h
 - [x] refactor: PrevailingWindData 1.5h
 - [x] refactor: accumulatedRiichiCount, remove unnecessary methods in Round&RoundData. 0.8h
-- [x] bug: getTopPlayer() is wrong when same point top players exist 0.2h
+- [x] bug fix: getTopPlayer() is wrong when same point top players exist 0.2h
 
 rush 19 WinAnalyzer issues 8.2h
 
@@ -222,8 +222,8 @@ rush 21 refactor tons, fix bugs 8h
 
 rush 22 fix getMeldCompositions() 1.5h
 
-- [x] bug: getMeldCompositions() won't count for 112233s like tiles 1.3h
-- [x] bug: MeldCompositionAnalyzer: exposed 0.2h
+- [x] bug fix: getMeldCompositions() won't count for 112233s like tiles 1.3h
+- [x] bug fix: MeldCompositionAnalyzer: exposed 0.2h
 
 rush 23 WinAnalyzer: furiten 14.7h
 
@@ -270,8 +270,8 @@ rush 26 all yaku: simple ones 12.6h
 - [x] refactor: merge private/publicTargetTile 1.1h
 - [x] test fan1 yakus 1h
 - [x] test fan2 yakus 1.3h
-- [x] bug: Meld.isXXXWinSet() 0.4h
-- [x] bug: FullStraight 1h // Meld.equals issues; forget to write return for
+- [x] bug fix: Meld.isXXXWinSet() 0.4h
+- [x] bug fix: FullStraight 1h // Meld.equals issues; forget to write return for
 - [x] test fan3,fan6 yakus 0.2h
 - [x] test yakuman/yakuman2 yakus 0.3h
 
@@ -308,7 +308,7 @@ rush 29 all yaku: reach concerned 2.8h
 - [x] Turn 0.4h
 - [x] YakuSet 0.6h // batch is not necessary and too much labour here
 - [x] test reach, doubleRiichi 0.4h
-- [x] bug: wrongly turn into over phase after pass N's public phase 0.1h // It's not a bug but test case results in FourWindDraw!
+- [x] bug fix: wrongly turn into over phase after pass N's public phase 0.1h // It's not a bug but test case results in FourWindDraw!
 - [x] FirstTurnWinYaku 0.5h
 - [x] test FirstTurnWinYaku 0.2h // wrongly written pastTurn <= 0, should be pastTurn < = 1
 
@@ -380,7 +380,7 @@ rush 36 optimize tests: => 1s 2.3h
 
 - [x] optimize: new Round().drawInit 1.8h // ArrayLikeObject.pop() 5ms -> 1ms by simplify, Wall().draw 66ms -> 3ms by fix wrongly use of TileSortedList
 - [x] optimize: new RoundData() 0.5h // TileSet extends TileSortedList -> extends TileList
-- [x] bug: Timer not accurate since echo()'s time cost
+- [x] bug fix: Timer not accurate since echo()'s time cost
 
 rush 37 introduce commands: first step 7.5h
 
@@ -688,7 +688,7 @@ rush 60 refactor Result 10.1h
 - [x] test PointTableItem 0.6h // so happy to write clever test!
 
 - [x] rewrite WinResult: part2 1.2h
-- [x] bug: failed to consider ceil issues when Tsumo! 0.5h// so terrible ...
+- [x] bug fix: failed to consider ceil issues when Tsumo! 0.5h// so terrible ...
 - [x] introduce terminals: tsumo, ron.
 - [x] test and refactor WinResult 1.1h
 
@@ -748,7 +748,7 @@ rush 66 refactor Areas 9.1h
 
 - [x] refactor openHistory 0.5h
 - [x] refactor Area.claim 1h
-- [x] bug: recordClaim in private phase used wrong Turn // 0.5h
+- [x] bug fix: recordClaim in private phase used wrong Turn // 0.5h
 - [x] introduce Open 0.4h
 - [x] merge claim operations 1.9h
 
@@ -808,7 +808,7 @@ rush 71 CommandProvider 2.3h
 
 rush 72 waitingAnalyzer bug 2.5h
 
-- [x] bug: waitingAnalyzer for special TileList 0.7h
+- [x] bug fix: waitingAnalyzer for special TileList 0.7h
 - [x] waitingAnalyzer: thirteen orphan case 0.4h
 - [x] WeakThirteenOrphanMeld 1.1h
 - [x] speed up WeakThirteenOrphanMeld 0.2h
@@ -892,11 +892,11 @@ rush 77 etc 4.6h
 - [x] simulator ing: 1.3h
 
 - [x] debug command: init, toNext
-- [x] bug: kong command should be invalid if not drawReplacementAble 0.6h
-- [x] bug: chow condition of next seatWind 0.3h
-- [x] bug: discard condition when riichi 0.2h
+- [x] bug fix: kong command should be invalid if not drawReplacementAble 0.6h
+- [x] bug fix: chow condition of next seatWind 0.3h
+- [x] bug fix: discard condition when riichi 0.2h
 - [x] add WinReport for WinResult 0.4h
-- [x] bug: target should exist in OverPhase 0.2h
+- [x] bug fix: target should exist in OverPhase 0.2h
 
 - [x] refactor: PlayerCommand.matchPhase, matchActor should be static 0.1h
 
@@ -1005,14 +1005,14 @@ rush 87 DemoUI areas renew 4.2h
 
 rush 88 bug fix 2.1h
 
-- [x] bug: thirteen orphan tsumo not works 0.2h
-- [x] bug: executable commands after riichi
+- [x] bug fix: thirteen orphan tsumo not works 0.2h
+- [x] bug fix: executable commands after riichi
 
 - [x] refactor: add error message for invalid command 1h
-- [x] bug: invalid discard after chow 0.5h // Open.valid wrongly use $targetTile, which should be $tile
-- [x] bug: assertPrivate($seatWind) not works 0.2h
-- [x] bug: discardCommand.executable failed to consider swapCalling 0.2h
-- [x] bug: riichiCommand candidate when already riichi
+- [x] bug fix: invalid discard after chow 0.5h // Open.valid wrongly use $targetTile, which should be $tile
+- [x] bug fix: assertPrivate($seatWind) not works 0.2h
+- [x] bug fix: discardCommand.executable failed to consider swapCalling 0.2h
+- [x] bug fix: riichiCommand candidate when already riichi
 
 rush 89 DemoUI round 3.2h
 
@@ -1044,7 +1044,7 @@ rush 91 conn role manage 3.7h
 - [x] Viewer no see commands 0.3h
 
 - [x] Viewer no see hand 0.5h
-- [x] bug: conn not closed after browser tab closed 0.1h
+- [x] bug fix: conn not closed after browser tab closed 0.1h
 
 rush 92 AI-lv0: random execute
 
@@ -1064,6 +1064,10 @@ player leave => init
 rush room
 
 - [ ] analyze 0.7h
+
+rush bug fix
+
+- [x] bug fix: over phase.draw view not handled 0.3h
 
 rush user
 

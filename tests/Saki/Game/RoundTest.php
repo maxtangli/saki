@@ -248,7 +248,7 @@ class RoundTest extends \SakiTestCase {
             'mockHand E 4s; discard E 4s',
             'mockHand S 123m456m789m23s55s; ron S'
         );
-        $this->assertResultType(ResultType::WIN_BY_OTHER);
+        $this->assertOver(ResultType::WIN_BY_OTHER);
     }
 
     function testMultiRon() {
@@ -277,7 +277,7 @@ class RoundTest extends \SakiTestCase {
             'mockHand W 1111s1m; concealedKong W 1s1s1s1s; discard W 1m; passAll',
             'mockHand N 1111s1m; concealedKong N 1s1s1s1s; discard N 1m; passAll'
         );
-        $this->assertResultType(ResultType::FOUR_KONG_DRAW);
+        $this->assertOver(ResultType::FOUR_KONG_DRAW);
     }
 
     function testFourKongDrawByExtendKong() {
@@ -289,7 +289,7 @@ class RoundTest extends \SakiTestCase {
             'mockHand N 1111s1m; concealedKong N 1s1s1s1s; discard N 1m',
             'mockHand E 111m1p; pung E 1m1m; extendKong E 1m 111m; passAll; discard E 1p; passAll'
         );
-        $this->assertResultType(ResultType::FOUR_KONG_DRAW);
+        $this->assertOver(ResultType::FOUR_KONG_DRAW);
     }
 
     function testFourKongDrawByKong() {
@@ -303,7 +303,7 @@ class RoundTest extends \SakiTestCase {
         $this->assertPrivate();
 
         $round->process('discard E 1m; passAll');
-        $this->assertResultType(ResultType::FOUR_KONG_DRAW);
+        $this->assertOver(ResultType::FOUR_KONG_DRAW);
     }
 
     function testNineNineDraw() {
@@ -313,7 +313,10 @@ class RoundTest extends \SakiTestCase {
         $this->assertTrue($validTileList->isNineKindsOfTermOrHonour());
 
         $round->process('mockHand E 19m19p15559sESWNC; nineNineDraw E');
-        $this->assertResultType(ResultType::NINE_NINE_DRAW);
+        $this->assertOver(ResultType::NINE_NINE_DRAW);
+
+        $round->process('toNextRound');
+        $this->assertPrivate();
     }
 
     function testExhaustiveDraw() {
@@ -321,7 +324,7 @@ class RoundTest extends \SakiTestCase {
         for ($phase = $round->getPhaseState()->getPhase(); $phase != Phase::createOver(); $phase = $round->getPhaseState()->getPhase()) {
             $round->process('skip 1');
         }
-        $this->assertResultType(ResultType::EXHAUSTIVE_DRAW);
+        $this->assertOver(ResultType::EXHAUSTIVE_DRAW);
     }
 
     // comment out since slow 230ms todo
@@ -344,7 +347,7 @@ class RoundTest extends \SakiTestCase {
             'mockHand W E; discard W E; passAll',
             'mockHand N E; discard N E; passAll'
         );
-        $this->assertResultType(ResultType::FOUR_WIND_DRAW);
+        $this->assertOver(ResultType::FOUR_WIND_DRAW);
     }
     //endregion
 }
