@@ -1,5 +1,3 @@
-
-
 ## rush statistics
 
 rush       | hours
@@ -1063,9 +1061,23 @@ init: >=1 player => assign remain seatWind to local clients
 player join => remove all local clients => join => init
 player leave => init
 
+rush room
+
+- [ ] analyze 0.7h
+
+rush user
+
+- [ ] register: email, nickname, password.
+- [ ] login: allow at most 1 websocket connection.
+- [ ] logout:
+
+rush actions view: discard
+
+- [ ] json
+- [ ] js&css
+
 rush actions view
 
-- [ ] discard
 - [ ] riichi
 - [ ] claim
 
