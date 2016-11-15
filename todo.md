@@ -1046,28 +1046,24 @@ rush 91 conn role manage 3.7h
 - [x] Viewer no see hand 0.5h
 - [x] bug fix: conn not closed after browser tab closed 0.1h
 
-rush 92 AI-lv0: random execute
+rush 92 mock client 2.5h
 
 - [x] analyze 0.4h
 - [x] AIClient assign 0.1h
 
-- [ ] view: conn info 0.6h
+- [x] analyze 0.6h
+- [x] refactor: ArrayList.toGroup 0.2h
+- [x] view: conn info 0.9h
 
-E area: resourceID.role
+- [x] bug fix: over phase.draw view not handled 0.3h
 
-init: >=1 player => assign remain seatWind to local clients
-      0 player => remove all local clients
+rush 93 AI-lv0: random execute
 
-player join => remove all local clients => join => init
-player leave => init
+- [ ] analyze
 
 rush room
 
 - [ ] analyze 0.7h
-
-rush bug fix
-
-- [x] bug fix: over phase.draw view not handled 0.3h
 
 rush user
 

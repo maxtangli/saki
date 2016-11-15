@@ -1,6 +1,6 @@
 <?php
 
-use Nodoka\Server\LocalClient;
+use Nodoka\Server\MockClient;
 use Nodoka\Server\PlayServer;
 
 class PlayServerTest extends \SakiTestCase {
@@ -19,19 +19,19 @@ class PlayServerTest extends \SakiTestCase {
         $play = $this->playServer;
 
         // initial
-        $client1 = new LocalClient();
+        $client1 = new MockClient();
         $play->onOpen($client1);
         $this->assertViewer('E', $client1);
 
-        $client2 = new LocalClient();
+        $client2 = new MockClient();
         $play->onOpen($client2);
         $this->assertViewer('S', $client2);
 
-        $client3 = new LocalClient();
+        $client3 = new MockClient();
         $play->onOpen($client3);
         $this->assertViewer('W', $client3);
 
-        $client4 = new LocalClient();
+        $client4 = new MockClient();
         $play->onOpen($client4);
         $this->assertViewer('N', $client4);
 
@@ -39,20 +39,20 @@ class PlayServerTest extends \SakiTestCase {
         $play->onClose($client3);
         $play->onClose($client2);
 
-        $client2 = new LocalClient();
+        $client2 = new MockClient();
         $play->onOpen($client2);
         $this->assertViewer('S', $client2);
 
-        $client3 = new LocalClient();
+        $client3 = new MockClient();
         $play->onOpen($client3);
         $this->assertViewer('W', $client3);
 
         // viewer assigned if four player joined
-        $client5 = new LocalClient();
+        $client5 = new MockClient();
         $play->onOpen($client5);
         $this->assertViewer('E', $client5);
 
-        $client6 = new LocalClient();
+        $client6 = new MockClient();
         $play->onOpen($client6);
         $this->assertViewer('E', $client6);
 
@@ -64,15 +64,21 @@ class PlayServerTest extends \SakiTestCase {
         // todo player no see other's public, target
     }
 
-    private function assertViewer(string $expected, LocalClient $client) {
+    private function assertViewer(string $expected, MockClient $client) {
+        // todo
+
         $json = $client->getLastReceived();
-        $jsonSelfActor = $json->areas->self->actor;
+        $jsonSelfActor = $json->relations->self;
         $this->assertEquals($expected, $jsonSelfActor);
+
+        $jsonSelfAreaActor = $json->areas->$jsonSelfActor->actor;
+        $this->assertEquals($expected, $jsonSelfAreaActor);
     }
 
-    private function assertCommands(bool $exist, LocalClient $client) {
+    private function assertCommands(bool $exist, MockClient $client) {
         $json = $client->getLastReceived();
-        $jsonCommands = $json->areas->self->commands;
+        $actor = $json->relations->self;
+        $jsonCommands = $json->areas->$actor->commands;
         $this->assertExist($exist, $jsonCommands);
     }
 }

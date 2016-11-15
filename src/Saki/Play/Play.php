@@ -3,6 +3,8 @@ namespace Saki\Play;
 
 use Saki\Game\Round;
 use Saki\Game\SeatWind;
+use Saki\Util\ArrayList;
+use Saki\Util\Utils;
 
 /**
  * @package Saki\Play
@@ -35,14 +37,18 @@ class Play {
 
     /**
      * @param SeatWind $viewer
-     * @return Participant[]
+     * @return ArrayList
      */
-    function getParticipants(SeatWind $viewer = null) {
-        $participants = array_map([$this, 'getParticipant'], $this->getUserKeys());
-        $matchSeatWind = function (Participant $participant) use ($viewer) {
-            return $participant->getRole()->getViewer() == $viewer;
-        };
-        return array_values(array_filter($participants, $matchSeatWind));
+    function getParticipantList(SeatWind $viewer = null) {
+        $participantList = (new ArrayList($this->getUserKeys()))
+            ->select([$this, 'getParticipant']);
+        if (isset($viewer)) {
+            $matchSeatWind = function (Participant $participant) use ($viewer) {
+                return $participant->getRole()->getViewer() == $viewer;
+            };
+            $participantList->where($matchSeatWind);
+        }
+        return $participantList;
     }
 
     /**
@@ -78,9 +84,22 @@ class Play {
      * @return array
      */
     function getJson($userKey) {
-        return $this->getParticipant($userKey)
+        $roundJson = $this->getParticipant($userKey)
             ->getRoundSerializer()
             ->toAllJson();
+
+        // temp
+        $keySelector = function (Participant $participant) {
+            return $participant->getRole()->getViewer()->__toString();
+        };
+        $groups = $this->getParticipantList()->toGroups($keySelector);
+        /** @var ArrayList $group */
+        foreach ($groups as $key => $group) {
+            $group = $group->toArray(Utils::getToStringCallback());
+            $roundJson['areas'][$key]['participants'] = $group;
+            $roundJson['areas'][$key]['profile'] = $group;
+        }
+        return $roundJson;
     }
 
     /**

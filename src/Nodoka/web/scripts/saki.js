@@ -109,7 +109,7 @@ Saki.DemoView.prototype = {
         var that = this;
         var keys = [
             'actor', 'point',
-            'discard',
+            'discard', 'profile',
             'public', 'target', 'melded',
             'commands'
         ];
@@ -141,6 +141,10 @@ Saki.DemoView.prototype = {
     discard: function (tilesData) {
         return $('<div class="discard"></div>')
             .append(tilesData.map(this.tile));
+    },
+    /*-- profile --*/
+    profile: function (profileData) {
+        return profileData.join('<br/>'); // todo remove temp
     },
     /*-- commands --*/
     commands: function (commandsData) {

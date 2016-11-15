@@ -24,7 +24,7 @@ class Participant {
      * @return string
      */
     function __toString() {
-        $id = $this->getUserKey()->resourceID; // todo better wrap
+        $id = $this->getUserKey()->resourceId; // todo better wrap
         return $id . ',' . $this->getRole();
     }
 

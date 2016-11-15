@@ -21,9 +21,10 @@ class CommandParser {
         $this->round = $round;
 
         // note: validation ignored
-        $names = $commandSet->toArray(function ($class) {
+        $getClassName = function ($class) {
             return $class::getName();
-        });
+        };
+        $names = $commandSet->toArray($getClassName);
         $classes = $commandSet->toArray();
         $this->nameToClassMap = array_combine($names, $classes);
     }

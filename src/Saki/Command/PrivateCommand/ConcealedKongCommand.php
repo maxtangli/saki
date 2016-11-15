@@ -30,12 +30,9 @@ class ConcealedKongCommand extends PrivateCommand {
         $groupFilter = function (ArrayList $group) {
             return $group->count() == 4;
         };
-        $tileGroupList = (new ArrayList())->fromGroupBy($private, $keySelect, $groupFilter);
+        $tileGroups = $private->toGroups($keySelect, $groupFilter);
 
-        $toArray = function (ArrayList $list) {
-            return [new TileList($list->toArray())];
-        };
-        $otherParamsList = $tileGroupList->select($toArray);
+        $otherParamsList = new ArrayList($tileGroups);
         return static::createMany($round, $actor, $otherParamsList, true); // validate drawReplacementAble
     }
     //endregion

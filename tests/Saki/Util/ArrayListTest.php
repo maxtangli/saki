@@ -73,13 +73,16 @@ class ArrayListTest extends \SakiTestCase {
         $this->assertEquals(4, $obj->getMax());
     }
 
-    function testFromGroupBy() {
+    function testToGroup() {
         $source = new ArrayList([1, 2, 2, 3, 3, 3]);
-        $actual = (new ArrayList())->fromGroupBy($source, function ($v) {
+        $actual = $source->toGroups(function ($v) {
             return $v;
         });
-        $expected = [new ArrayList([1]), new ArrayList([2, 2]), new ArrayList([3, 3, 3])];
-        $this->assertEquals($expected, $actual->toArray());
+        $expected = [
+            1 => new ArrayList([1]),
+            2 => new ArrayList([2, 2]),
+            3 => new ArrayList([3, 3, 3])];
+        $this->assertEquals($expected, $actual);
     }
 
     /**

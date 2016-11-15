@@ -4,5 +4,5 @@ namespace Nodoka\Server;
 /**
  * @package Nodoka\Server
  */
-class AIClient extends LocalClient {
+class AIClient extends MockClient {
 }

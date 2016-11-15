@@ -65,9 +65,18 @@ class PlayServer implements MessageComponentInterface {
         }
     }
 
+    /*
+    E area: resourceID.role
+        init: >=1 player => assign remain seatWind to local clients
+              0 player => remove all local clients
+
+        player join => remove all local clients => join => init
+        player leave => init
+    */
+
     private function fillAIClients() {
         $nTodo = 4; // for debug, prefer fast impl to accurate solution
-        while($nTodo-- > 0) {
+        while ($nTodo-- > 0) {
             $this->getPlay()->join(new AIClient());
         }
     }

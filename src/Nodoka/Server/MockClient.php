@@ -6,13 +6,21 @@ use Ratchet\ConnectionInterface;
 /**
  * @package Nodoka\Server
  */
-class LocalClient implements ConnectionInterface {
+class MockClient implements ConnectionInterface {
+    /**
+     * @return int
+     */
+    private static function generateResourceId() {
+        static $nextId = 1;
+        return 'mock-' . $nextId++;
+    }
+
     private $lastReceived;
     public $resourceId;
 
     function __construct() {
         $this->lastReceived = '';
-        $this->resourceId = 'local-' . spl_object_hash($this);
+        $this->resourceId = static::generateResourceId();
     }
 
     /**

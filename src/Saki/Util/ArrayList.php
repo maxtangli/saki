@@ -58,18 +58,43 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
 
     /**
      * @param callable|null $selector
-     * @param callable $keySelector
      * @return array
      */
-    function toArray(callable $selector = null, callable $keySelector = null) {
-        $values = is_null($selector) ? $this->a : array_map($selector, $this->a);
+    function toArray(callable $selector = null) {
+        return is_null($selector) ? $this->a : array_map($selector, $this->a);
+    }
 
-        if (is_null($keySelector)) {
-            return $values;
+    /**
+     * @param callable $keySelector
+     * @param callable $selector
+     * @return array
+     */
+    function toMap(callable $keySelector, callable $selector) {
+        $keys = array_map($keySelector, $this->a);
+        $values = $this->toArray($selector);
+        return array_combine($keys, $values);
+    }
+
+    /**
+     * @param callable $keySelector
+     * @param callable $groupFilter
+     * @return array
+     */
+    function toGroups(callable $keySelector, callable $groupFilter = null) {
+        $register = function (array &$m, $k, $v) {
+            $m[$k] = $m[$k] ?? new static();
+            $m[$k]->insertLast($v);
+        };
+        $map = [];
+        foreach ($this->a as $v) {
+            $k = $keySelector($v);
+            $register($map, $k, $v);
         }
 
-        $keys = array_map($keySelector, $this->a);
-        return array_combine($keys, $values);
+        if (isset($groupFilter)) {
+            $map = array_filter($map);
+        }
+        return $map;
     }
 
     /**
@@ -408,6 +433,7 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
     }
     //endregion
 
+    //region operations
     /**
      * Two elements are considered equal if and only if (string) $elem1 === (string) $elem2.
      * @return $this
@@ -442,49 +468,6 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
             return array_merge($result, $vArray);
         };
         $this->a = array_reduce($arrayOrArrayLists, $merge, []);
-        return $this;
-    }
-
-    /**
-     * @param ArrayList $list
-     * @param callable $keySelector
-     * @param callable $groupFilter
-     * @return $this
-     */
-    function fromGroupBy(ArrayList $list, callable $keySelector, callable $groupFilter = null) {
-        $m = [];
-        $register = function (array &$m, $k, $v) {
-            $m[$k] = $m[$k] ?? new ArrayList();
-            $m[$k]->insertLast($v);
-        };
-        foreach ($list as $v) {
-            $k = $keySelector($v);
-            $register($m, $k, $v);
-        }
-
-        $this->a = array_values($m);
-        if (isset($groupFilter)) {
-            $this->where($groupFilter);
-        }
-        return $this;
-    }
-
-    /**
-     * @param ArrayList $list
-     * @param callable $resultSelector
-     * @return $this
-     */
-    function fromCombination(ArrayList $list, callable $resultSelector) {
-        $this->assertWritable();
-        $a = [];
-        foreach ($list->a as $k1 => $v1) {
-            foreach ($list->a as $k2 => $v2) {
-                if ($k1 != $k2) {
-                    $a[] = $resultSelector($v1, $v2);
-                }
-            }
-        }
-        $this->a = $a;
         return $this;
     }
 

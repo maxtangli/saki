@@ -44,6 +44,7 @@ class RoundSerializer {
             'response' => 'ok',
             'round' => $this->toRoundJson(),
             'areas' => $this->toAreasJson(),
+            'relations' => $this->toRelationsJson(),
             'result' => $this->toResultJson(),
         ];
         return $a;
@@ -68,14 +69,28 @@ class RoundSerializer {
     }
 
     /**
-     * @return array ['self' => $selfAreaJson, 'next' => $nextAreaJson ...]
+     * @return array [$areaE, $areaS, $areaW, $areaN]
      */
     function toAreasJson() {
+        $areaList = $this->getRound()->getAreaList();
+        $toSeatWind = function (Area $area) {
+            return $area->getSeatWind()->__toString();
+        };
+        return $areaList->toMap($toSeatWind, [$this, 'toAreaJson']);
+    }
+
+    /**
+     * @return array e.x. ['prev' => 'E', 'self' => 'S', 'next' => 'W', 'towards' => 'N']
+     */
+    function toRelationsJson() {
         $areaList = $this->getRound()->getAreaList();
         $toRelation = function (Area $area) {
             return $this->getRole()->getRelation($area->getSeatWind());
         };
-        return $areaList->toArray([$this, 'toAreaJson'], $toRelation);
+        $toSeatWind = function (Area $area) {
+            return $area->getSeatWind()->__toString();
+        };
+        return $areaList->toMap($toRelation, $toSeatWind);
     }
 
     /**
