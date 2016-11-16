@@ -1060,69 +1060,33 @@ rush 92 mock client 2.5h
 rush 93 AI-lv0: random execute
 
 - [ ] analyze
+- [ ] command list per user
+- [ ] AI execute random command
 
-rush room
+rush integrate PublicCommandBuffer
 
-- [ ] analyze 0.7h
-
-rush user
-
-- [ ] register: email, nickname, password.
-- [ ] login: allow at most 1 websocket connection.
-- [ ] logout:
-
-rush actions view: discard
-
-- [ ] json
-- [ ] js&css
-
-rush actions view
-
-- [ ] riichi
-- [ ] claim
-
-rush result view
-
-- [ ] winReport
-- [ ] result
+- [ ] integrate PublicCommandBuffer
 
 rush Wall view
 
 - [ ] php: player's wall view
 - [ ] css: wall 0.5h
 
-rush hand view
-
-- [ ] css: target
-- [ ] css: meld align from right to left
+rush meld view
 
 rush command exception
 
 - [ ] add error message for invalid command
 
-rush integrate PublicCommandBuffer ?5h?
-
-- [ ] integrate PublicCommandBuffer
-
-rush multiple ron ?5h?
+rush multiple ron
 
 - [ ] multiple ron flow
 
 rush toward 100% rules!
 
-- [ ] 流局满贯 ?5h?
-- [ ] 包牌 ?5h?
-- [ ] game over rule confirm & tests ?5h?
-- [ ] meld display style ?5h?
-
-rush multiple-player ?30h?
-
-- [ ] room?
-
-rush least DB ?10h?
-
-- [ ] which nosql?
-- [ ] save user win/lose/draw statistics
+- [ ] 流局满贯
+- [ ] 包牌
+- [ ] game over rule confirm & tests
 
 rush optimize WaitingAnalyzer: step2
 
@@ -1134,6 +1098,14 @@ rush large scale refactoring
 - [ ] red dora design
 - [ ] Open, Claim design
 - [ ] toNextPhase design
+
+rush room
+
+- [ ] analyze 0.7h
+
+- [ ] register: email, nickname, password.
+- [ ] login: allow at most 1 websocket connection.
+- [ ] logout:?
 
 refactor process
 
