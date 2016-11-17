@@ -3,6 +3,8 @@ namespace Nodoka\Server;
 
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
+use Saki\Command\PrivateCommand\DiscardCommand;
+use Saki\Play\Participant;
 use Saki\Play\Play;
 
 /**
@@ -126,10 +128,27 @@ class PlayServer implements MessageComponentInterface {
         $this->log("Connection {$from->resourceId} message: {$msg}.\n");
 
         // try execute, jump to onError if command invalid
-        $this->getPlay()->tryExecute($from, $msg);
+        $play = $this->getPlay();
+        $play->tryExecute($from, $msg);
 
-        // todo
-
+        // todo refactor temp solution
+        // if current actor is private and is AI, execute discard
+        $round = $play->getRound();
+        if ($round->getPhase()->isPrivate()) {
+            $actor = $round->getCurrentSeatWind();
+            /** @var Participant $participant */
+            $participant = $play->getParticipantList($actor, true)->getSingle();
+            $isAI = $participant->getUserKey() instanceof AIClient;
+            if ($isAI) {
+                $executableList = $round->getProcessor()->getProvider()->getExecutableList($actor);
+                foreach ($executableList as $executable) {
+                    if ($executable instanceof DiscardCommand) {
+                        $executable->execute();
+                        break;
+                    }
+                }
+            }
+        }
 
         $this->notifyAll();
     }

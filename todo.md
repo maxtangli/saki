@@ -1059,9 +1059,9 @@ rush 92 mock client 2.5h
 
 rush 93 AI-lv0: random execute
 
-- [ ] analyze
-- [ ] command list per user
-- [ ] AI execute random command
+- [x] analyze 0.3h
+- [x] AI execute random private 0.3h
+- [ ] AI execute random public
 
 rush integrate PublicCommandBuffer
 

@@ -37,17 +37,19 @@ class Play {
 
     /**
      * @param SeatWind $viewer
+     * @param bool $isPlayer
      * @return ArrayList
      */
-    function getParticipantList(SeatWind $viewer = null) {
+    function getParticipantList(SeatWind $viewer = null, bool $isPlayer = null) {
+        $match = function (Participant $participant) use ($viewer, $isPlayer) {
+            $role = $participant->getRole();
+            $matchViewer = is_null($viewer) || $role->isViewer($viewer);
+            $matchPlayer = is_null($isPlayer) || $role->isPlayer() === $isPlayer;
+            return $matchViewer && $matchPlayer;
+        };
         $participantList = (new ArrayList($this->getUserKeys()))
-            ->select([$this, 'getParticipant']);
-        if (isset($viewer)) {
-            $matchSeatWind = function (Participant $participant) use ($viewer) {
-                return $participant->getRole()->getViewer() == $viewer;
-            };
-            $participantList->where($matchSeatWind);
-        }
+            ->select([$this, 'getParticipant'])
+            ->where($match);
         return $participantList;
     }
 
