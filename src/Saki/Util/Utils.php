@@ -72,6 +72,16 @@ class Utils {
     }
 
     /**
+     * @param $class
+     * @return \Closure
+     */
+    static function toClassPredicate($class) {
+        return function ($v) use($class) {
+            return $v instanceof $class;
+        };
+    }
+
+    /**
      * @param callable $selector
      * @return \Closure
      */

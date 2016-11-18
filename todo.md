@@ -1057,11 +1057,11 @@ rush 92 mock client 2.5h
 
 - [x] bug fix: over phase.draw view not handled 0.3h
 
-rush 93 AI-lv0: random execute
+rush 93 AI-lv0: random execute 1h
 
 - [x] analyze 0.3h
 - [x] AI execute random private 0.3h
-- [ ] AI execute random public
+- [x] AI execute random public 0.4h
 
 rush integrate PublicCommandBuffer
 

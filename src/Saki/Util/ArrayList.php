@@ -216,6 +216,15 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
         $count = $this->count();
         return $this->getValuesAt(range($count - 1, $count - $n)); // validate
     }
+
+    /**
+     * @return mixed
+     */
+    function getRandom() {
+        $this->assertNotEmpty();
+        $index = mt_rand(0, $this->count() - 1);
+        return $this->offsetGet($index);
+    }
     //endregion
 
     //region value properties and getters

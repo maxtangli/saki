@@ -3,9 +3,11 @@ namespace Nodoka\Server;
 
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
+use Saki\Command\Command;
 use Saki\Command\PrivateCommand\DiscardCommand;
 use Saki\Play\Participant;
 use Saki\Play\Play;
+use Saki\Util\Utils;
 
 /**
  * @package Nodoka\Server
@@ -132,22 +134,36 @@ class PlayServer implements MessageComponentInterface {
         $play->tryExecute($from, $msg);
 
         // todo refactor temp solution
-        // if current actor is private and is AI, execute discard
-        $round = $play->getRound();
-        if ($round->getPhase()->isPrivate()) {
-            $actor = $round->getCurrentSeatWind();
-            /** @var Participant $participant */
-            $participant = $play->getParticipantList($actor, true)->getSingle();
-            $isAI = $participant->getUserKey() instanceof AIClient;
-            if ($isAI) {
-                $executableList = $round->getProcessor()->getProvider()->getExecutableList($actor);
-                foreach ($executableList as $executable) {
-                    if ($executable instanceof DiscardCommand) {
-                        $executable->execute();
-                        break;
-                    }
+        while (true) {
+            $round = $play->getRound();
+            $currentActor = $round->getCurrentSeatWind();
+
+            if ($round->getPhase()->isPrivate()) {
+                // if private phase and current actor is AI, execute discard
+                /** @var Participant $currentParticipant */
+                $currentParticipant = $play->getParticipantList($currentActor, true, true)->getSingle();
+                if ($currentParticipant->isAI()) {
+                    $discardList = $round->getProcessor()->getProvider()
+                        ->getExecutableList($currentActor)
+                        ->where(Utils::toClassPredicate(DiscardCommand::class));
+                    /** @var Command $discard */
+                    $discard = $discardList->getRandom();
+                    $discard->execute();
+                    continue;
+                }
+            } elseif ($round->getPhase()->isPublic()) {
+                // if public phase and public actors are all AI, execute passAll
+                $publicParticipantList = $play->getParticipantList($currentActor, false, true);
+                $isAI = function (Participant $participant) {
+                    return $participant->isAI();
+                };
+                if ($publicParticipantList->all($isAI)) {
+                    $round->processLine('passAll');
+                    continue;
                 }
             }
+
+            break;
         }
 
         $this->notifyAll();
