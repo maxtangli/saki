@@ -1065,9 +1065,12 @@ rush 93 AI-lv0: random execute 1h
 
 rush integrate PublicCommandBuffer
 
-- [ ] PublicCommandDecider 1.3h
+- [x] PublicCommandDecider 1.3h
+- [x] add PassCommand 0.8h
+- [x] test
+
+- [ ] integrate PublicCommand
 - [ ] test
-- [ ] integrate
 
 rush Wall view
 

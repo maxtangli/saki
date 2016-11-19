@@ -203,7 +203,19 @@
 
 ## 公共阶段的指令优先级
 
-荣和>碰=大明杠>吃>pass
+setAble actor, command
+1. buffer.actor is empty
+2. candidate is null, or command>candidate
+
+priority: 荣和>碰=大明杠>吃>pass
+
+set actor,command
+- if pass: buffer.actor=command
+- otherwise: clear buffer, buffer.actor=command, candidate = command
+
+if buffer.full
+- if all pass，return passAll
+- otherwise, return candidate
 
 # 流局的判定
 

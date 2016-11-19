@@ -20,6 +20,7 @@ use Saki\Command\PrivateCommand\RiichiCommand;
 use Saki\Command\PrivateCommand\TsumoCommand;
 use Saki\Command\PublicCommand\ChowCommand;
 use Saki\Command\PublicCommand\KongCommand;
+use Saki\Command\PublicCommand\PassCommand;
 use Saki\Command\PublicCommand\PungCommand;
 use Saki\Command\PublicCommand\RonCommand;
 use Saki\Util\ArrayList;
@@ -48,6 +49,7 @@ class CommandSet extends ArrayList {
                 ChowCommand::class,
                 PungCommand::class,
                 KongCommand::class,
+                PassCommand::class,
                 RonCommand::class,
                 // debug
                 InitCommand::class,

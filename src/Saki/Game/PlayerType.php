@@ -12,6 +12,13 @@ class PlayerType extends Enum {
     const FOUR = 4;
 
     /**
+     * @return int
+     */
+    function getPublicPhaseValue() {
+        return $this->getValue() - 1;
+    }
+
+    /**
      * @param callable $selector
      * @return \Saki\Util\ArrayList
      */

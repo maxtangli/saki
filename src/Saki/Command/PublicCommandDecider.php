@@ -2,9 +2,9 @@
 
 namespace Saki\Command;
 
-use Saki\Command\Debug\PassAllCommand;
 use Saki\Command\PublicCommand\ChowCommand;
 use Saki\Command\PublicCommand\KongCommand;
+use Saki\Command\PublicCommand\PassCommand;
 use Saki\Command\PublicCommand\PungCommand;
 use Saki\Command\PublicCommand\RonCommand;
 use Saki\Game\PlayerType;
@@ -13,15 +13,20 @@ use Saki\Game\PlayerType;
  * @package Saki\Command
  */
 class PublicCommandDecider {
+    // immutable
     private $priorityManager;
+    private $commandParser;
+    // variable
     private $buffer;
     private $candidate;
 
     /**
      * @param PlayerType $playerType
+     * @param CommandParser $commandParser
      */
-    function __construct(PlayerType $playerType) {
+    function __construct(PlayerType $playerType, CommandParser $commandParser) {
         $this->priorityManager = new PublicCommandPriorityManager();
+        $this->commandParser = $commandParser;
         $this->buffer = new PublicCommandBuffer($playerType);
         $this->candidate = null;
     }
@@ -39,13 +44,20 @@ class PublicCommandDecider {
     }
 
     /**
-     * @return null
+     * @return PublicCommand
      */
     function getDecided() {
         if (!$this->decided()) {
             throw new \InvalidArgumentException();
         }
-        return $this->candidate;
+        return $this->candidate ?? $this->createPassAll();
+    }
+
+    /**
+     * @return PublicCommand
+     */
+    private function createPassAll() {
+        return $this->commandParser->parseLine('passAll');
     }
 
     /**
@@ -57,7 +69,7 @@ class PublicCommandDecider {
             return false;
         }
 
-        if ($publicCommand instanceof PassAllCommand) {
+        if ($publicCommand instanceof PassCommand) {
             return true;
         }
 
@@ -72,11 +84,12 @@ class PublicCommandDecider {
             throw new \InvalidArgumentException();
         }
 
-        $this->buffer->set($publicCommand);
-
         if ($this->betterCandidate($publicCommand)) {
+            $this->buffer->clear();
             $this->candidate = $publicCommand;
         }
+
+        $this->buffer->set($publicCommand);
     }
 
     /**
@@ -84,12 +97,20 @@ class PublicCommandDecider {
      * @return bool
      */
     private function betterCandidate(PublicCommand $publicCommand) {
+        if ($publicCommand instanceof PassCommand) {
+            return false;
+        }
+
         return is_null($this->candidate)
             ? true
             : $this->priorityManager->comparePriority($publicCommand, $this->candidate) == 1;
     }
 }
 
+/**
+ * inner class of PublicCommandDecider.
+ * @package Saki\Command
+ */
 class PublicCommandPriorityManager {
     private $priorityMap;
 
@@ -99,7 +120,6 @@ class PublicCommandPriorityManager {
             KongCommand::class => 3,
             PungCommand::class => 3,
             ChowCommand::class => 2,
-            PassAllCommand::class => 1,
         ];
     }
 
@@ -125,6 +145,10 @@ class PublicCommandPriorityManager {
     }
 }
 
+/**
+ * inner class of PublicCommandDecider.
+ * @package Saki\Command
+ */
 class PublicCommandBuffer {
     private $playerType;
     private $buffer;
@@ -161,7 +185,7 @@ class PublicCommandBuffer {
      * @return bool
      */
     function full() {
-        return count($this->buffer) == $this->playerType->getValue();
+        return count($this->buffer) == $this->playerType->getPublicPhaseValue();
     }
 
     function clear() {
