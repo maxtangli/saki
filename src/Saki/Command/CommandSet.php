@@ -2,16 +2,16 @@
 
 namespace Saki\Command;
 
-use Saki\Command\Debug\InitCommand;
-use Saki\Command\Debug\MockDeadWallCommand;
-use Saki\Command\Debug\MockHandCommand;
-use Saki\Command\Debug\MockNextDrawCommand;
-use Saki\Command\Debug\MockNextReplaceCommand;
-use Saki\Command\Debug\MockWallRemainCommand;
-use Saki\Command\Debug\PassAllCommand;
-use Saki\Command\Debug\SkipCommand;
-use Saki\Command\Debug\SkipToCommand;
-use Saki\Command\Debug\ToNextRoundCommand;
+use Saki\Command\DebugCommand\InitCommand;
+use Saki\Command\DebugCommand\MockDeadWallCommand;
+use Saki\Command\DebugCommand\MockHandCommand;
+use Saki\Command\DebugCommand\MockNextDrawCommand;
+use Saki\Command\DebugCommand\MockNextReplaceCommand;
+use Saki\Command\DebugCommand\MockWallRemainCommand;
+use Saki\Command\DebugCommand\PassAllCommand;
+use Saki\Command\DebugCommand\SkipCommand;
+use Saki\Command\DebugCommand\SkipToCommand;
+use Saki\Command\DebugCommand\ToNextRoundCommand;
 use Saki\Command\PrivateCommand\ConcealedKongCommand;
 use Saki\Command\PrivateCommand\DiscardCommand;
 use Saki\Command\PrivateCommand\ExtendKongCommand;

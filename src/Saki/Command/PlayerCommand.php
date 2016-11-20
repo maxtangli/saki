@@ -22,6 +22,7 @@ abstract class PlayerCommand extends Command {
     abstract static function getOtherParamsListRaw(Round $round, SeatWind $actor, Area $actorArea);
     //endregion
 
+    //region constructor, getter
     /**
      * @param Round $round
      * @param SeatWind $actor
@@ -38,7 +39,6 @@ abstract class PlayerCommand extends Command {
         return $validPhase && $isPhaseActor;
     }
 
-    //region constructor, getter
     /**
      * @param Round $round
      * @param array $params
@@ -66,7 +66,7 @@ abstract class PlayerCommand extends Command {
     }
     //endregion
 
-    //region override Command
+    //region Command impl
     final protected function executableImpl(Round $round) {
         if (!static::matchPhaseAndActor($round, $this->getActor())) {
             return false;
@@ -83,22 +83,26 @@ abstract class PlayerCommand extends Command {
         return $this->executablePlayerImpl($round, $this->getActorArea());
     }
 
-    protected function executeImpl(Round $round) {
-        return $this->executePlayerImpl($round, $this->getActorArea());
+    final protected function executeImpl(Round $round) {
+        if ($round->getPhase()->isPublic()) {
+            $decider = $round->getPhaseState()->getCommandDecider($round);
 
-        $decider = $round->getPhaseState()->getPublicCommandDecider($round);
-
-        if ($decider->allowSubmit($this)) {
-            $decider->submit($this);
-        }
-
-        if ($decider->decided()) {
-            if ($decider->isDecidedCommand($this)) {
-                $decider->clear();
-                return $this->executePlayerImpl($round, $this->getActorArea());
-            } else {
-                $decider->getDecided()->execute();
+            if ($decider->allowSubmit($this)) {
+                $decider->submit($this);
             }
+
+            if ($decider->decided()) {
+                if ($decider->isDecidedCommand($this)) {
+                    $decider->clear();
+                    return $this->executePlayerImpl($round, $this->getActorArea());
+                } else {
+                    return $decider->getDecided()->execute();
+                }
+            } else {
+                // do nothing
+            }
+        } else {
+            return $this->executePlayerImpl($round, $this->getActorArea());
         }
     }
     //endregion

@@ -1,5 +1,5 @@
 <?php
-namespace Saki\Command\Debug;
+namespace Saki\Command\DebugCommand;
 
 use Saki\Command\Command;
 

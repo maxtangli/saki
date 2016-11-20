@@ -1063,7 +1063,7 @@ rush 93 AI-lv0: random execute 1h
 - [x] AI execute random private 0.3h
 - [x] AI execute random public 0.4h
 
-rush refactor Command
+rush 94 refactor Command 2.2h
 
 - [x] refactor: DebugCommand 0.2h
 
@@ -1077,17 +1077,21 @@ rush refactor Command
 
 - [x] refactor: remove PlayerCommand.matchXXX() 0.3h
 
-- [ ] introduce Validation 1.1h
+- [x] refactor: remove CommandArgumentException 0.2h
 
-rush integrate PublicCommandBuffer
+rush 95 integrate PublicCommandBuffer
 
 - [x] PublicCommandDecider 1.3h
 - [x] add PassCommand 0.8h
 - [x] test
 
-- [x] integrate PublicCommand 1.2h
+- [x] integrate PublicCommand 1.4h
 - [ ] adapt provider, AI
 - [ ] test
+
+rush refactor: introduce Validator
+
+- [ ] Validator 1.1h
 
 rush Wall view
 
@@ -1096,13 +1100,7 @@ rush Wall view
 
 rush meld view
 
-rush command exception
-
-- [ ] add error message for invalid command
-
 rush multiple ron
-
-- [ ] multiple ron flow
 
 rush toward 100% rules!
 

@@ -1,6 +1,6 @@
 <?php
 
-use Saki\Command\Debug\MockHandCommand;
+use Saki\Command\DebugCommand\MockHandCommand;
 use Saki\Command\PrivateCommand\DiscardCommand;
 use Saki\Command\BufferCommandDecider;
 use Saki\Game\Phase;

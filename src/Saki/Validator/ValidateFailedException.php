@@ -4,5 +4,5 @@ namespace Saki\Validation;
 /**
  * @package Saki\Validation
  */
-class ValidateException extends \Exception {
+class ValidateFailedException extends \Exception {
 }

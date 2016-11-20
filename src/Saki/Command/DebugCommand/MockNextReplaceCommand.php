@@ -1,5 +1,5 @@
 <?php
-namespace Saki\Command\Debug;
+namespace Saki\Command\DebugCommand;
 
 use Saki\Command\Command;
 use Saki\Command\ParamDeclaration\TileParamDeclaration;
@@ -9,7 +9,7 @@ use Saki\Game\Tile\Tile;
 /**
  * @package Saki\Command\Debug
  */
-class MockNextDrawCommand extends DebugCommand {
+class MockNextReplaceCommand extends DebugCommand {
     //region Command impl
     static function getParamDeclarations() {
         return [TileParamDeclaration::class];
@@ -24,19 +24,20 @@ class MockNextDrawCommand extends DebugCommand {
     }
 
     /**
-     * @return \Saki\Game\Wall
+     * @return \Saki\Game\DeadWall
      */
-    protected function getWall() {
-        return $this->getRound()->getWall();
+    protected function getDeadWall() {
+        return $this->getRound()
+            ->getWall()->getDeadWall();
     }
 
     //region Command impl
     protected function executableImpl(Round $round) {
-        return $this->getWall()->getRemainTileCount() > 0;
+        return $this->getDeadWall()->isAbleDrawReplacement();
     }
 
     protected function executeImpl(Round $round) {
-        $this->getWall()->debugSetNextDrawTile($this->getMockTile());
+        $this->getDeadWall()->debugSetNextReplacement($this->getMockTile());
     }
     //endregion
 }

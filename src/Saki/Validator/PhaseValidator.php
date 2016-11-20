@@ -9,7 +9,7 @@ use Saki\Util\Enum;
 /**
  * @package Saki\Validation
  */
-class PhaseValidation extends Validation {
+class PhaseValidator extends Validator {
     private $type;
 
     function __construct(PhaseValidationType $phaseValidationType) {
@@ -21,7 +21,7 @@ class PhaseValidation extends Validation {
         $phase = $round->getPhase();
         $type = $this->type;
         if (!$type->valid($phase)) {
-            throw new ValidateException(
+            throw new ValidateFailedException(
                 "Failed asserting phase matches, expected[{$type->getValidPhases()}] but actual[$phase]."
             );
         }

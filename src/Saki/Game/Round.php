@@ -1,10 +1,10 @@
 <?php
 namespace Saki\Game;
 
+use Doctrine\Instantiator\Exception\InvalidArgumentException;
 use Saki\Command\Command;
 use Saki\Command\CommandProcessor;
 use Saki\Command\CommandSet;
-use Saki\Command\InvalidCommandException;
 use Saki\Command\PlayerCommand;
 use Saki\Game\Meld\MeldList;
 use Saki\Game\Phase\NullPhaseState;
@@ -41,6 +41,8 @@ class Round {
     private $openHistory;
     private $claimHistory;
     private $targetHolder;
+    // todo remove temp debug
+    public $enableDecider = false;
 
     function __construct() {
         $rule = new Rule();
@@ -170,18 +172,18 @@ class Round {
      * @param string $scriptLine
      * @param SeatWind|null $requireActor
      * @return Command
-     * @throws InvalidCommandException
+     * @throws InvalidArgumentException
      */
     function processLine(string $scriptLine, SeatWind $requireActor = null) {
         $command = $this->getProcessor()->getParser()
             ->parseLine($scriptLine);
         if ($requireActor) {
             if (!$command instanceof PlayerCommand) {
-                throw new InvalidCommandException($scriptLine, 'not PlayerCommand.');
+                throw new \InvalidArgumentException('not PlayerCommand.');
             }
 
             if (!$command->getActor() == $requireActor) {
-                throw new InvalidCommandException($scriptLine, 'not actor.');
+                throw new \InvalidArgumentException('not actor.');
             }
         }
         $command->execute();

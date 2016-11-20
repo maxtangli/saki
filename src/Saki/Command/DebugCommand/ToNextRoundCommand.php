@@ -1,13 +1,14 @@
 <?php
-namespace Saki\Command\Debug;
+namespace Saki\Command\DebugCommand;
 
 use Saki\Command\Command;
+use Saki\Game\PrevailingStatus;
 use Saki\Game\Round;
 
 /**
  * @package Saki\Command\Debug
  */
-class PassAllCommand extends DebugCommand {
+class ToNextRoundCommand extends DebugCommand {
     //region Command impl
     static function getParamDeclarations() {
         return [];
@@ -16,11 +17,12 @@ class PassAllCommand extends DebugCommand {
 
     //region Command impl
     protected function executableImpl(Round $round) {
-        return $round->getPhase()->isPublic();
+        return $round->getPhase()->isOver()
+            && !$round->getPhaseState()->isGameOver($round);
     }
 
     protected function executeImpl(Round $round) {
-        $round->toNextPhase();
+        $round->toNextRound();
     }
     //endregion
 }

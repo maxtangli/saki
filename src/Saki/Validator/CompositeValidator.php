@@ -6,20 +6,20 @@ use Saki\Game\Round;
 /**
  * @package Saki\Validation
  */
-class CompositeValidation extends Validation {
+class CompositeValidator extends Validator {
     private $validations;
 
     /**
-     * @param Validation[] $validations
+     * @param Validator[] $validations
      */
     function __construct(array $validations) {
         $this->validations = $validations;
     }
 
     /**
-     * @param Validation $validation
+     * @param Validator $validation
      */
-    function add(Validation $validation) {
+    function add(Validator $validation) {
         array_push($this->validations, $validation);
     }
 

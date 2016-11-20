@@ -9,14 +9,6 @@ use Saki\Util\Utils;
  * @package Saki\Command
  */
 abstract class Command {
-    /**
-     * @return string
-     */
-    static function getName() {
-        // Saki\Command\DiscardCommand -> discard
-        return lcfirst(Utils::strLastPart(get_called_class(), 'Command'));
-    }
-
     //region subclass hooks
     /**
      * @return ParamDeclaration[]
@@ -25,8 +17,15 @@ abstract class Command {
         // since abstract static function not allowed
         throw new \BadMethodCallException('Unimplemented static::getParamDeclarations().');
     }
-
     //endregion
+
+    /**
+     * @return string
+     */
+    static function getName() {
+        // Saki\Command\DiscardCommand -> discard
+        return lcfirst(Utils::strLastPart(get_called_class(), 'Command'));
+    }
 
     private $round;
     private $params = [];
@@ -79,14 +78,14 @@ abstract class Command {
     }
 
     /**
-     * @throws InvalidCommandException
+     * @throws \InvalidArgumentException
      */
     final function execute() {
         $executable = $this->executableImpl($this->getRound());
         if ($executable !== true) {
             $e = $executable instanceof \Exception
                 ? $executable
-                : new InvalidCommandException($this->__toString(), 'not executable');
+                : new \InvalidArgumentException('not executable');
             throw $e;
         }
 
@@ -96,7 +95,7 @@ abstract class Command {
     //region subclass hooks
     /**
      * @param Round $round
-     * @return bool|InvalidCommandException
+     * @return bool|\InvalidArgumentException
      */
     abstract protected function executableImpl(Round $round);
 

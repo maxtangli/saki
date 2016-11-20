@@ -8,7 +8,7 @@ use Saki\Game\Round;
 /**
  * @package Saki\Validation
  */
-abstract class Validation {
+abstract class Validator {
     /**
      * @param Round $round
      * @param Area|null $actorArea
@@ -17,7 +17,7 @@ abstract class Validation {
     function valid(Round $round, Area $actorArea = null) {
         try {
             $this->validate($round, $actorArea);
-        } catch (ValidateException $e) {
+        } catch (ValidateFailedException $e) {
             return false;
         }
         return true;
