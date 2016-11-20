@@ -33,14 +33,6 @@ class CommandProcessor {
     }
 
     /**
-     * @param string $line
-     * @return Command
-     */
-    function create(string $line) {
-        return $this->getParser()->parseLine($line);
-    }
-
-    /**
      * @param string[] ...$scripts
      */
     function process(... $scripts) {

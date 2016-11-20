@@ -29,7 +29,7 @@ class WinTarget {
         $this->round = $round;
         $this->actor = $actor;
 
-        if (!$this->getActorArea()->isActor()) {
+        if (!$this->getActorArea()->isPhaseActor()) {
             throw new \InvalidArgumentException(
                 sprintf('Invalid phase, expect[private or public phase] but given[%s].', $round->getPhase())
             );

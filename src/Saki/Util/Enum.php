@@ -29,6 +29,18 @@ abstract class Enum implements Immutable {
     }
 
     /**
+     * @return static[]
+     */
+    static function createAll() {
+        $values = array_keys(static::getValue2StringMap());
+        $result = [];
+        foreach ($values as $value) {
+            $result[] = static::create($value);
+        }
+        return $result;
+    }
+
+    /**
      * @param string $s
      * @return static
      */
@@ -41,7 +53,7 @@ abstract class Enum implements Immutable {
     }
 
     /**
-     * Impl by factory since Reflection maybe slow.
+     * Impl by factory since Reflection may be slow.
      * @return array A map of values [enumValue => string].
      */
     static function getValue2StringMap() {
@@ -98,7 +110,7 @@ abstract class Enum implements Immutable {
      * @param array $targetValues
      * @return bool
      */
-    protected function isTargetValue(array $targetValues) {
+    protected function inTargetValues(array $targetValues) {
         return in_array($this->getValue(), $targetValues);
     }
 }

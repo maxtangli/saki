@@ -80,6 +80,6 @@ class PointLevel extends Enum {
         $targetValues = [
             self::YAKUMAN, self::W_YAKUMAN, self::MULTI_YAKUMAN
         ];
-        return $this->isTargetValue($targetValues);
+        return $this->inTargetValues($targetValues);
     }
 }

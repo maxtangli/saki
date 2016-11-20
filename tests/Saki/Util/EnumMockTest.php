@@ -47,4 +47,13 @@ class EnumTest extends \SakiTestCase {
         $this->assertInstanceOf('EnumMockClass3', $e);
         $this->assertEquals($e->getValue(), EnumMockClass3::FIELD_2);
     }
+
+    function testCreateAll() {
+        $all = EnumMockClass3::createAll();
+        $expected = [
+            EnumMockClass3::create(EnumMockClass3::FILED_1),
+            EnumMockClass3::create(EnumMockClass3::FIELD_2)
+        ];
+        $this->assertEquals($expected, $all);
+    }
 }

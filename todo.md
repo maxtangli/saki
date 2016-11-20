@@ -1063,13 +1063,23 @@ rush 93 AI-lv0: random execute 1h
 - [x] AI execute random private 0.3h
 - [x] AI execute random public 0.4h
 
+rush refactor Command
+
+- [x] refactor: DebugCommand 0.2h
+
+- [x] analyze PlayerCommand 0.3h
+- [x] refactor: merge matchPhase(), matchActor() into PlayerCommand 0.4h
+
+- [ ] analyze CommandProvider 0.2h
+- [ ] refactor: merge XXCommand.getExecutableList() logic
+
+- [ ] introduce Validation 1.1h
+
 rush integrate PublicCommandBuffer
 
 - [x] PublicCommandDecider 1.3h
 - [x] add PassCommand 0.8h
 - [x] test
-
-- [x] refactor: DebugCommand 0.2h
 
 - [x] integrate PublicCommand 1.2h
 - [ ] adapt provider, AI

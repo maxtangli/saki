@@ -6,9 +6,6 @@ use Saki\Game\Round;
 use Saki\Util\Utils;
 
 /**
- * goal
- * - separate command logic into classes.
- * - provide string-style-command to support tests, remote transfer, replay, etc.
  * @package Saki\Command
  */
 abstract class Command {
@@ -77,14 +74,14 @@ abstract class Command {
     /**
      * @return bool
      */
-    function executable() {
+    final function executable() {
         return $this->executableImpl($this->getRound()) === true;
     }
 
     /**
      * @throws InvalidCommandException
      */
-    function execute() {
+    final function execute() {
         $executable = $this->executableImpl($this->getRound());
         if ($executable !== true) {
             $e = $executable instanceof \Exception

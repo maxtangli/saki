@@ -17,15 +17,27 @@ abstract class PlayerCommand extends Command {
      * @return ArrayList ArrayList of PlayerCommand.
      */
     static function getExecutableList(Round $round, SeatWind $actor) {
-        $actorArea = $round->getArea($actor);
-
-        $validPhaseAndActor = static::matchPhase($round, $actorArea)
-            && static::matchActor($round, $actorArea);
-        if (!$validPhaseAndActor) {
+        if (!static::matchPhaseAndActor($round, $actor)) {
             return new ArrayList();
         }
 
-        return static::getExecutableListImpl($round, $actor, $actorArea);
+        return static::getExecutableListImpl($round, $actor, $round->getArea($actor));
+    }
+
+    /**
+     * @param Round $round
+     * @param SeatWind $actor
+     * @return bool
+     */
+    static function matchPhaseAndActor(Round $round, SeatWind $actor) {
+        $class = get_called_class();
+        $phase = $round->getPhase();
+        $validPhase = (is_subclass_of($class, PrivateCommand::class)  && $phase->isPrivate())
+            || (is_subclass_of($class, PublicCommand::class) && $phase->isPublic());
+
+        $isPhaseActor = $round->getArea($actor)->isPhaseActor();
+
+        return $validPhase && $isPhaseActor;
     }
 
     /**
@@ -51,6 +63,11 @@ abstract class PlayerCommand extends Command {
             return new static($round, $actualParams);
         };
         $commandList = $otherParamsList->toArrayList($toCommand);
+
+        // todo remove
+        if ($validate == false) {
+            throw new \InvalidArgumentException();
+        }
 
         if ($validate) {
             $executable = function (Command $command) {
@@ -93,11 +110,14 @@ abstract class PlayerCommand extends Command {
 
     //region override Command
     protected function executableImpl(Round $round) {
-        $actorArea = $this->getActorArea();
+        if (!static::matchPhaseAndActor($round, $this->getActor())) {
+            return false;
+        }
 
+        $actorArea = $this->getActorArea();
         $matches = [
-            [$this, 'matchPhase'],
-            [$this, 'matchActor'],
+//            [$this, 'matchPhase'],
+//            [$this, 'matchActor'],
             [$this, 'matchOther'],
             [$this, 'matchProvider'],
         ];
@@ -119,20 +139,6 @@ abstract class PlayerCommand extends Command {
     //endregion
 
     //region subclass hooks
-    /**
-     * @param Round $round
-     * @param Area $actorArea
-     * @return bool
-     */
-    abstract static protected function matchPhase(Round $round, Area $actorArea);
-
-    /**
-     * @param Round $round
-     * @param Area $actorArea
-     * @return bool
-     */
-    abstract static protected function matchActor(Round $round, Area $actorArea);
-
     /**
      * @param Round $round
      * @param Area $actorArea

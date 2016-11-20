@@ -162,12 +162,25 @@
 - 抽牌，Draw：
 - 补牌，*DrawReplacement：
 
-Command
-->DebugCommand
-->PlayerCommand
--->PrivateCommand
--->PublicCommand
+Command：支持Command和string的互相转化（ParamDeclaration）；统一执行接口（executable(), execute()）。
+->DebugCommand：目前仅标记Debug。
+->PlayerCommand：提供Actor便利函数；细分执行接口？；候选命令接口（getExecutableList()）。
+-->PrivateCommand：统一实现matchPhase(), matchActor()。
+-->PublicCommand：统一实现matchPhase(), matchActor()，matchProvider()。
 --->PublicClaimCommand
+
+Command.executable()
+- Command要求static::matchPhase()
+- PlayerCommand要求static::matchActor()
+- PlayerCommand::getExecutableList()利用上述两static函数来初步过滤
+
+Command.execute()
+
+PlayerCommand.getExecutableList()
+1. matchPhaseAndActor
+2. abstract getOtherParamsList()
+3. new commands, keep executable ones.
+
 
 个人指令，*PrivateCommand
 - 打牌，Discard：hand -> discard, toPublic

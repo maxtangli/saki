@@ -9,14 +9,6 @@ use Saki\Game\Round;
  */
 abstract class PublicCommand extends PlayerCommand {
     //region PlayerCommand impl
-    protected static function matchPhase(Round $round, Area $actorArea) {
-        return $round->getPhaseState()->getPhase()
-            ->isPublic();
-    }
-
-    protected static function matchActor(Round $round, Area $actorArea) {
-        return !$actorArea->isCurrentSeatWind();
-    }
     //endregion
 
     //region PlayCommand override
@@ -26,6 +18,8 @@ abstract class PublicCommand extends PlayerCommand {
     }
 
     protected function executeImpl(Round $round) {
+        return parent::executeImpl($round);
+
         $decider = $round->getPhaseState()->getPublicCommandDecider($round);
 
         if ($decider->allowSubmit($this)) {

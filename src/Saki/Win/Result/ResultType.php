@@ -28,7 +28,7 @@ class ResultType extends Enum {
      * @return bool
      */
     function isTsumo() {
-        return $this->isTargetValue([
+        return $this->inTargetValues([
             self::WIN_BY_SELF
         ]);
     }
@@ -37,7 +37,7 @@ class ResultType extends Enum {
      * @return bool
      */
     function isRon() {
-        return $this->isTargetValue([
+        return $this->inTargetValues([
             self::WIN_BY_OTHER,
             self::DOUBLE_WIN_BY_OTHER,
             self::TRIPLE_WIN_BY_OTHER
@@ -48,7 +48,7 @@ class ResultType extends Enum {
      * @return bool
      */
     function isMultiRon() {
-        return $this->isTargetValue([
+        return $this->inTargetValues([
             self::DOUBLE_WIN_BY_OTHER,
             self::TRIPLE_WIN_BY_OTHER
         ]);
@@ -65,7 +65,7 @@ class ResultType extends Enum {
      * @return bool
      */
     function isExhaustiveDraw() {
-        return $this->isTargetValue([
+        return $this->inTargetValues([
             self::EXHAUSTIVE_DRAW
         ]);
     }
@@ -74,7 +74,7 @@ class ResultType extends Enum {
      * @return bool
      */
     function isAbortiveDraw() {
-        return $this->isTargetValue([
+        return $this->inTargetValues([
             self::NINE_NINE_DRAW,
             self::FOUR_WIND_DRAW,
             self::FOUR_KONG_DRAW,
