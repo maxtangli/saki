@@ -156,7 +156,7 @@ class Claim implements Immutable {
         }
 
         // chow commands require SwapCalling.executable
-        // note: seems not good to place here
+        // todo note: seems not good to place here
         $swapCalling = $round->getRule()->getSwapCalling();
         $validSwapCalling = !$toMeld->isRun()
             || $swapCalling->allowChow($hand->getPublic(), $hand->getTarget()->getTile(), $toMeld);
@@ -165,7 +165,7 @@ class Claim implements Immutable {
         }
 
         // kong commands require ableDrawReplacement
-        // note: seems not good to place here
+        // todo note: seems not good to place here
         $validDrawReplacementAble = !$toMeld->isQuad()
             || $round->getWall()->getDeadWall()->isAbleDrawReplacement();
         if (!$validDrawReplacementAble) {

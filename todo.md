@@ -1069,7 +1069,8 @@ rush integrate PublicCommandBuffer
 - [x] add PassCommand 0.8h
 - [x] test
 
-- [ ] integrate PublicCommand
+- [x] integrate PublicCommand 1.2h
+- [ ] adapt provider, AI
 - [ ] test
 
 rush Wall view

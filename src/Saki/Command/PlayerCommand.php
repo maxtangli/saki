@@ -99,6 +99,7 @@ abstract class PlayerCommand extends Command {
             [$this, 'matchPhase'],
             [$this, 'matchActor'],
             [$this, 'matchOther'],
+            [$this, 'matchProvider'],
         ];
         foreach ($matches as $match) {
             $matchResult = call_user_func($match, $round, $actorArea);
@@ -122,7 +123,6 @@ abstract class PlayerCommand extends Command {
      * @param Round $round
      * @param Area $actorArea
      * @return bool
-     *
      */
     abstract static protected function matchPhase(Round $round, Area $actorArea);
 
@@ -130,7 +130,6 @@ abstract class PlayerCommand extends Command {
      * @param Round $round
      * @param Area $actorArea
      * @return bool
-     *
      */
     abstract static protected function matchActor(Round $round, Area $actorArea);
 
@@ -138,15 +137,22 @@ abstract class PlayerCommand extends Command {
      * @param Round $round
      * @param Area $actorArea
      * @return bool
-     *
      */
     abstract protected function matchOther(Round $round, Area $actorArea);
 
     /**
      * @param Round $round
      * @param Area $actorArea
+     * @return bool
+     */
+    protected function matchProvider(Round $round, Area $actorArea) {
+        return true;
+    }
+
+    /**
+     * @param Round $round
+     * @param Area $actorArea
      * @return
-     *
      */
     abstract protected function executePlayerImpl(Round $round, Area $actorArea);
     //endregion

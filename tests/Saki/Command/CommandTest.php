@@ -2,7 +2,7 @@
 
 use Saki\Command\Debug\MockHandCommand;
 use Saki\Command\PrivateCommand\DiscardCommand;
-use Saki\Command\PublicCommandDecider;
+use Saki\Command\BufferCommandDecider;
 use Saki\Game\Phase;
 use Saki\Game\SeatWind;
 use Saki\Game\Tile\Tile;
@@ -54,7 +54,7 @@ class CommandTest extends \SakiTestCase {
         $passAll = $parser->parseLine('passAll');
 
         // test passAll
-        $decider = new PublicCommandDecider($round->getRule()->getPlayerType(), $round->getProcessor()->getParser());
+        $decider = new BufferCommandDecider($round->getRule()->getPlayerType(), $round->getProcessor()->getParser());
         $decider->submit($passS);
         $decider->submit($passW);
         $decider->submit($passN);

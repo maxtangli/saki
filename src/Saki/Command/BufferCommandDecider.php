@@ -12,7 +12,7 @@ use Saki\Game\PlayerType;
 /**
  * @package Saki\Command
  */
-class PublicCommandDecider {
+class BufferCommandDecider implements CommandDecider {
     // immutable
     private $priorityManager;
     private $commandParser;
@@ -51,6 +51,15 @@ class PublicCommandDecider {
             throw new \InvalidArgumentException();
         }
         return $this->candidate ?? $this->createPassAll();
+    }
+
+    /**
+     * @param PublicCommand $publicCommand
+     * @return bool
+     */
+    function isDecidedCommand(PublicCommand $publicCommand) {
+        return $this->decided()
+        && $publicCommand == $this->getDecided();
     }
 
     /**

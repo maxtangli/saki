@@ -1,6 +1,8 @@
 <?php
 namespace Saki\Game\Phase;
 
+use Saki\Command\CommandDecider;
+use Saki\Command\MockCommandDecider;
 use Saki\Game\Claim;
 use Saki\Game\Phase;
 use Saki\Game\Round;
@@ -31,6 +33,7 @@ class PublicPhaseState extends PhaseState {
         return new self($allowClaim, $isRobbing);
     }
 
+    private $decider;
     private $allowClaim;
     private $isRobbing;
 
@@ -39,8 +42,21 @@ class PublicPhaseState extends PhaseState {
      * @param bool $isRobbing
      */
     private function __construct(bool $allowClaim, bool $isRobbing) {
+        $this->decider = null;
         $this->allowClaim = $allowClaim;
         $this->isRobbing = $isRobbing;
+    }
+
+    /**
+     * @param Round $round
+     * @return CommandDecider
+     */
+    function getPublicCommandDecider(Round $round) {
+//        $this->decider = $this->decider ?? new PublicCommandDecider(
+//                $round->getRule()->getPlayerType(), $round->getProcessor()->getParser()
+//            );
+        $this->decider = $this->decider ?? new MockCommandDecider();
+        return $this->decider;
     }
 
     /**
@@ -56,7 +72,7 @@ class PublicPhaseState extends PhaseState {
     function isRobbing() {
         return $this->isRobbing;
     }
-    
+
     /**
      * @param Round $round
      * @return bool
@@ -89,7 +105,7 @@ class PublicPhaseState extends PhaseState {
         // set target
         $target = $round->getOpenHistory()->getLastOpen()->toTarget();
         $round->getTargetHolder()->setTarget($target);
-        
+
         // bottom of sea not allow claim
         if ($round->getWall()->isBottomOfTheSea()) {
             $this->allowClaim = false;
