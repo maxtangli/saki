@@ -1,5 +1,6 @@
 <?php
 namespace Saki\Command;
+use Saki\Command\PublicCommand\PublicCommand;
 
 /**
  * @package Saki\Command

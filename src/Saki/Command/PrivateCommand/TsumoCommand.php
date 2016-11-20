@@ -2,7 +2,6 @@
 namespace Saki\Command\PrivateCommand;
 
 use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
-use Saki\Command\PrivateCommand;
 use Saki\Game\Area;
 use Saki\Game\Phase\OverPhaseState;
 use Saki\Game\Round;
@@ -13,7 +12,7 @@ use Saki\Win\Result\WinResultInput;
 use Saki\Win\WinState;
 
 /**
- * @package Saki\Command\PrivateCommand
+ * @package Saki\Command\PrivateCommand\PrivateCommand
  */
 class TsumoCommand extends PrivateCommand {
     //region Command impl
@@ -28,7 +27,7 @@ class TsumoCommand extends PrivateCommand {
     //endregion
 
     //region PrivateCommand impl
-    protected function matchOther(Round $round, Area $actorArea) {
+    protected function executablePlayerImpl(Round $round, Area $actorArea) {
         $winReport = $round->getWinReport($this->getActor());
         return $winReport->getWinState()->getValue() == WinState::WIN_BY_SELF;
     }

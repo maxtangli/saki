@@ -3,7 +3,6 @@ namespace Saki\Command\PrivateCommand;
 
 use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\ParamDeclaration\TileListParamDeclaration;
-use Saki\Command\PrivateCommand;
 use Saki\Game\Area;
 use Saki\Game\Claim;
 use Saki\Game\Meld\QuadMeldType;
@@ -14,7 +13,7 @@ use Saki\Game\Tile\TileList;
 use Saki\Util\ArrayList;
 
 /**
- * @package Saki\Command\PrivateCommand
+ * @package Saki\Command\PrivateCommand\PrivateCommand
  */
 class ConcealedKongCommand extends PrivateCommand {
     //region Command impl
@@ -59,7 +58,7 @@ class ConcealedKongCommand extends PrivateCommand {
     }
 
     //region PrivateCommand impl
-    protected function matchOther(Round $round, Area $actorArea) {
+    protected function executablePlayerImpl(Round $round, Area $actorArea) {
         $validCount = $this->getTileList()->count() == 4;
         return $validCount && $this->getClaim()->valid($actorArea);
     }

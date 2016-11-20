@@ -1,5 +1,5 @@
 <?php
-namespace Saki\Command;
+namespace Saki\Command\PublicCommand;
 
 use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\ParamDeclaration\TileListParamDeclaration;
@@ -14,7 +14,7 @@ use Saki\Game\Tile\TileList;
 use Saki\Util\ArrayList;
 
 /**
- * @package Saki\Command\PublicCommand
+ * @package Saki\Command\PublicCommand\PublicCommand
  */
 abstract class PublicClaimCommand extends PublicCommand {
     //region Command impl
@@ -75,9 +75,9 @@ abstract class PublicClaimCommand extends PublicCommand {
     }
 
     //region PublicCommand impl
-    protected function matchOther(Round $round, Area $actorArea) {
+    protected function executablePlayerImpl(Round $round, Area $actorArea) {
         $validNextSeatWind = !$this->requirePublicNextActor() || $actorArea->isPublicNextActor();
-        $validCount = (1 + $this->getTileList()->count()) 
+        $validCount = (1 + $this->getTileList()->count())
             == $this->getClaimMeldType()->getTileCount();
         return $validNextSeatWind && $validCount && $this->getClaim()->valid($actorArea);
     }
@@ -93,7 +93,7 @@ abstract class PublicClaimCommand extends PublicCommand {
     function requirePublicNextActor() {
         return false;
     }
-    
+
     /**
      * @return MeldType
      */

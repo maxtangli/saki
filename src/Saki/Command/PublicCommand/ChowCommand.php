@@ -1,7 +1,6 @@
 <?php
 namespace Saki\Command\PublicCommand;
 
-use Saki\Command\PublicClaimCommand;
 use Saki\Game\Meld\RunMeldType;
 use Saki\Game\Tile\Tile;
 use Saki\Game\Tile\TileList;
@@ -9,7 +8,7 @@ use Saki\Util\ArrayList;
 use Saki\Util\Utils;
 
 /**
- * @package Saki\Command\PublicCommand
+ * @package Saki\Command\PublicCommand\PublicCommand
  */
 class ChowCommand extends PublicClaimCommand {
     //region PublicClaimCommand impl

@@ -3,7 +3,6 @@ namespace Saki\Command\PrivateCommand;
 
 use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\ParamDeclaration\TileParamDeclaration;
-use Saki\Command\PrivateCommand;
 use Saki\Game\Area;
 use Saki\Game\Open;
 use Saki\Game\Round;
@@ -11,7 +10,7 @@ use Saki\Game\SeatWind;
 use Saki\Game\Tile\Tile;
 
 /**
- * @package Saki\Command\PrivateCommand
+ * @package Saki\Command\PrivateCommand\PrivateCommand
  */
 class DiscardCommand extends PrivateCommand {
     //region Command impl
@@ -43,7 +42,7 @@ class DiscardCommand extends PrivateCommand {
     }
 
     //region PrivateCommand impl
-    protected function matchOther(Round $round, Area $actorArea) {
+    protected function executablePlayerImpl(Round $round, Area $actorArea) {
         return $this->getOpen()->valid($actorArea);
     }
 

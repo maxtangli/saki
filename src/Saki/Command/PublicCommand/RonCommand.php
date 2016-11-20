@@ -2,7 +2,6 @@
 namespace Saki\Command\PublicCommand;
 
 use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
-use Saki\Command\PublicCommand;
 use Saki\Game\Area;
 use Saki\Game\Phase\OverPhaseState;
 use Saki\Game\Round;
@@ -13,7 +12,7 @@ use Saki\Win\Result\WinResultInput;
 use Saki\Win\WinState;
 
 /**
- * @package Saki\Command\PublicCommand
+ * @package Saki\Command\PublicCommand\PublicCommand
  */
 class RonCommand extends PublicCommand {
     //region Command impl
@@ -29,7 +28,7 @@ class RonCommand extends PublicCommand {
     //endregion
 
     //region PublicCommand impl
-    protected function matchOther(Round $round, Area $actorArea) {
+    protected function executablePlayerImpl(Round $round, Area $actorArea) {
         $winReport = $round->getWinReport($this->getActor());
         return $winReport->getWinState()->getValue() == WinState::WIN_BY_OTHER;
     }

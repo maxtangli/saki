@@ -5,6 +5,7 @@ namespace Saki\Command;
 use Saki\Command\PublicCommand\ChowCommand;
 use Saki\Command\PublicCommand\KongCommand;
 use Saki\Command\PublicCommand\PassCommand;
+use Saki\Command\PublicCommand\PublicCommand;
 use Saki\Command\PublicCommand\PungCommand;
 use Saki\Command\PublicCommand\RonCommand;
 use Saki\Game\PlayerType;

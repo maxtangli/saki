@@ -2,14 +2,13 @@
 namespace Saki\Command\PublicCommand;
 
 use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
-use Saki\Command\PublicCommand;
 use Saki\Game\Area;
 use Saki\Game\Round;
 use Saki\Game\SeatWind;
 use Saki\Util\ArrayList;
 
 /**
- * @package Saki\Command\PublicCommand
+ * @package Saki\Command\PublicCommand\PublicCommand
  */
 class PassCommand extends PublicCommand {
     //region Command impl
@@ -24,7 +23,7 @@ class PassCommand extends PublicCommand {
     //endregion
 
     //region PublicCommand impl
-    protected function matchOther(Round $round, Area $actorArea) {
+    protected function executablePlayerImpl(Round $round, Area $actorArea) {
         return true;
     }
 

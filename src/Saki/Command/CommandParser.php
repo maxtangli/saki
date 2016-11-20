@@ -78,7 +78,7 @@ class CommandParser {
         $tokens = Utils::explodeNotEmpty(' ', $line); // 'discard E 1m' => ['discard', 'E','1m']
 
         $name = lcfirst($tokens[0]); // 'Discard'
-        $class = $this->nameToClass($name); // 'Saki\Command\PrivateCommand\DiscardCommand'
+        $class = $this->nameToClass($name); // 'Saki\Command\PrivateCommand\PrivateCommand\DiscardCommand'
 
         $round = $this->getRound();
         $paramDeclarations = $class::getParamDeclarations(); // [SeatWindParam, TileParam]

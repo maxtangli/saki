@@ -2,7 +2,6 @@
 namespace Saki\Command\PrivateCommand;
 
 use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
-use Saki\Command\PrivateCommand;
 use Saki\Game\Area;
 use Saki\Game\Phase\OverPhaseState;
 use Saki\Game\Round;
@@ -12,7 +11,7 @@ use Saki\Win\Result\AbortiveDrawResult;
 use Saki\Win\Result\ResultType;
 
 /**
- * @package Saki\Command\PrivateCommand
+ * @package Saki\Command\PrivateCommand\PrivateCommand
  */
 class NineNineDrawCommand extends PrivateCommand {
     //region Command impl
@@ -27,7 +26,7 @@ class NineNineDrawCommand extends PrivateCommand {
     //endregion
 
     //region PrivateCommand impl
-    protected function matchOther(Round $round, Area $actorArea) {
+    protected function executablePlayerImpl(Round $round, Area $actorArea) {
         return $round->getTurn()->isFirstCircle()
         && !$round->getClaimHistory()->hasClaim()
         && $actorArea->getHand()->getPrivate()->isNineKindsOfTermOrHonour();

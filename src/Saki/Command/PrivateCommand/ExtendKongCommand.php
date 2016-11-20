@@ -4,7 +4,6 @@ namespace Saki\Command\PrivateCommand;
 use Saki\Command\ParamDeclaration\MeldParamDeclaration;
 use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\ParamDeclaration\TileParamDeclaration;
-use Saki\Command\PrivateCommand;
 use Saki\Game\Area;
 use Saki\Game\Claim;
 use Saki\Game\Meld\Meld;
@@ -20,7 +19,7 @@ use Saki\Util\ArrayList;
 use Saki\Util\Utils;
 
 /**
- * @package Saki\Command\PrivateCommand
+ * @package Saki\Command\PrivateCommand\PrivateCommand
  */
 class ExtendKongCommand extends PrivateCommand {
     //region Command impl
@@ -77,7 +76,7 @@ class ExtendKongCommand extends PrivateCommand {
     }
 
     //region PrivateCommand impl
-    protected function matchOther(Round $round, Area $actorArea) {
+    protected function executablePlayerImpl(Round $round, Area $actorArea) {
         return $this->getClaim()->valid($actorArea);
     }
 

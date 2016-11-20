@@ -1,14 +1,13 @@
 <?php
 namespace Saki\Command\PublicCommand;
 
-use Saki\Command\PublicClaimCommand;
 use Saki\Game\Meld\TripleMeldType;
 use Saki\Game\Tile\Tile;
 use Saki\Game\Tile\TileList;
 use Saki\Util\ArrayList;
 
 /**
- * @package Saki\Command\PublicCommand
+ * @package Saki\Command\PublicCommand\PublicCommand
  */
 class PungCommand extends PublicClaimCommand {
     //region PublicClaimCommand impl

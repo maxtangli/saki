@@ -1,6 +1,8 @@
 <?php
 namespace Saki\Command;
 
+use Saki\Command\PublicCommand\PublicCommand;
+
 class MockCommandDecider implements CommandDecider {
     private $candidate;
 

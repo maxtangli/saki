@@ -1,6 +1,8 @@
 <?php
 namespace Saki\Command;
 
+use Saki\Command\PrivateCommand\PrivateCommand;
+use Saki\Command\PublicCommand\PublicCommand;
 use Saki\Game\Area;
 use Saki\Game\Round;
 use Saki\Game\SeatWind;
@@ -65,30 +67,39 @@ abstract class PlayerCommand extends Command {
     //endregion
 
     //region override Command
-    protected function executableImpl(Round $round) {
+    final protected function executableImpl(Round $round) {
         if (!static::matchPhaseAndActor($round, $this->getActor())) {
             return false;
         }
 
-        $actorArea = $this->getActorArea();
-        $matches = [
-            [$this, 'matchOther'],
-            [$this, 'matchProvider'],
-        ];
-        foreach ($matches as $match) {
-            $matchResult = call_user_func($match, $round, $actorArea);
-            if ($matchResult !== true) {
-                $name = $match[1];
-                return new InvalidCommandException($this, "$name failed");
+        if ($round->getPhase()->isPublic()) {
+            $decider = $round->getPhaseState()->getCommandDecider($round);
+            $validDecider = $decider->allowSubmit($this) || $decider->isDecidedCommand($this);
+            if (!$validDecider) {
+                return false;
             }
         }
 
-        return true;
+        return $this->executablePlayerImpl($round, $this->getActorArea());
     }
 
     protected function executeImpl(Round $round) {
-        $actorArea = $this->getActorArea();
-        return $this->executePlayerImpl($round, $actorArea);
+        return $this->executePlayerImpl($round, $this->getActorArea());
+
+        $decider = $round->getPhaseState()->getPublicCommandDecider($round);
+
+        if ($decider->allowSubmit($this)) {
+            $decider->submit($this);
+        }
+
+        if ($decider->decided()) {
+            if ($decider->isDecidedCommand($this)) {
+                $decider->clear();
+                return $this->executePlayerImpl($round, $this->getActorArea());
+            } else {
+                $decider->getDecided()->execute();
+            }
+        }
     }
     //endregion
 
@@ -98,16 +109,7 @@ abstract class PlayerCommand extends Command {
      * @param Area $actorArea
      * @return bool
      */
-    abstract protected function matchOther(Round $round, Area $actorArea);
-
-    /**
-     * @param Round $round
-     * @param Area $actorArea
-     * @return bool
-     */
-    protected function matchProvider(Round $round, Area $actorArea) {
-        return true;
-    }
+    abstract protected function executablePlayerImpl(Round $round, Area $actorArea);
 
     /**
      * @param Round $round

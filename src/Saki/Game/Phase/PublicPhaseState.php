@@ -51,7 +51,7 @@ class PublicPhaseState extends PhaseState {
      * @param Round $round
      * @return CommandDecider
      */
-    function getPublicCommandDecider(Round $round) {
+    function getCommandDecider(Round $round) {
 //        $this->decider = $this->decider ?? new PublicCommandDecider(
 //                $round->getRule()->getPlayerType(), $round->getProcessor()->getParser()
 //            );
