@@ -20,13 +20,6 @@ abstract class Command {
         return lcfirst(Utils::strLastPart(get_called_class(), 'Command'));
     }
 
-    /**
-     * @return bool
-     */
-    static function isDebug() {
-        return strpos(get_called_class(), 'Debug') !== false;
-    }
-
     //region subclass hooks
     /**
      * @return ParamDeclaration[]

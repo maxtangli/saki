@@ -1069,6 +1069,8 @@ rush integrate PublicCommandBuffer
 - [x] add PassCommand 0.8h
 - [x] test
 
+- [x] refactor: DebugCommand 0.2h
+
 - [x] integrate PublicCommand 1.2h
 - [ ] adapt provider, AI
 - [ ] test

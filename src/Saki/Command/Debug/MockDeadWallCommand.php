@@ -11,7 +11,7 @@ use Saki\Game\Tile\TileList;
 /**
  * @package Saki\Command\Debug
  */
-class MockDeadWallCommand extends Command {
+class MockDeadWallCommand extends DebugCommand {
     //region Command impl
     static function getParamDeclarations() {
         return [TileListParamDeclaration::class, IntParamDeclaration::class, BoolParamDeclaration::class];

@@ -156,9 +156,18 @@
 - 进入：1.记录结果，修改分数。
 - 离开：1.进入空阶段。
 
+## 指令类型
+
 系统指令
 - 抽牌，Draw：
 - 补牌，*DrawReplacement：
+
+Command
+->DebugCommand
+->PlayerCommand
+-->PrivateCommand
+-->PublicCommand
+--->PublicClaimCommand
 
 个人指令，*PrivateCommand
 - 打牌，Discard：hand -> discard, toPublic
@@ -309,7 +318,6 @@ if buffer.full
 - 同巡振听，*TemporaryFuriten：玩家的 上一次舍牌回合开始的 任一公开牌记录中含有 任一振听目标牌。注意“同巡”有特殊含义，不是“同一巡目”的意思。
 
 ## 立直
-
 
 ## 点数的种类
 

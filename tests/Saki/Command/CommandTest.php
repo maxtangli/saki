@@ -8,11 +8,6 @@ use Saki\Game\SeatWind;
 use Saki\Game\Tile\Tile;
 
 class CommandTest extends \SakiTestCase {
-    function testIsDebug() {
-        $this->assertFalse(DiscardCommand::isDebug());
-        $this->assertTrue(MockHandCommand::isDebug());
-    }
-
     function testDiscard() {
         $round = $this->getInitRound();
 

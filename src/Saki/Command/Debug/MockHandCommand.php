@@ -3,27 +3,27 @@ namespace Saki\Command\Debug;
 
 use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\ParamDeclaration\TileListParamDeclaration;
-use Saki\Command\PlayerCommand;
 use Saki\Game\Area;
 use Saki\Game\Round;
-use Saki\Game\SeatWind;
 use Saki\Game\Tile\TileList;
-use Saki\Util\ArrayList;
 
 /**
  * @package Saki\Command\Debug
  */
-class MockHandCommand extends PlayerCommand {
+class MockHandCommand extends DebugCommand {
     //region Command impl
     static function getParamDeclarations() {
         return [SeatWindParamDeclaration::class, TileListParamDeclaration::class];
     }
-
-    protected static function getExecutableListImpl(Round $round, SeatWind $actor, Area $actorArea) {
-        return new ArrayList();
-    }
-
     //endregion
+
+    /**
+     * @return Area
+     */
+    function getActorArea() {
+        $actor = $this->getParam(0);
+        return $this->getRound()->getArea($actor);
+    }
 
     /**
      * @return TileList
@@ -32,27 +32,24 @@ class MockHandCommand extends PlayerCommand {
         return $this->getParam(1);
     }
 
-    //region PlayerCommand impl
-    protected static function matchPhase(Round $round, Area $actorArea) {
+    //region Command impl
+    protected function executableImpl(Round $round) {
         // currently Robbing phase mockHand not supported
         // since Target replace maybe complex
         $phase = $round->getPhase();
-        return $phase->isPrivate()
+        $matchPhase = $phase->isPrivate()
             || ($phase->isPublic() && !$round->getPhaseState()->isRobbing());
-    }
 
-    protected static function matchActor(Round $round, Area $actorArea) {
-        return true;
-    }
-
-    protected function matchOther(Round $round, Area $actorArea) {
         $mockTileList = $this->getMockTileList();
-        $hand = $actorArea->getHand();
-        return ($mockTileList->count() <= $hand->getPublic()->count())
-        || ($hand->isComplete() && $mockTileList->count() <= $hand->getPrivate()->count());
+        $hand = $this->getActorArea()->getHand();
+        $matchHand = ($mockTileList->count() <= $hand->getPublic()->count())
+            || ($hand->isComplete() && $mockTileList->count() <= $hand->getPrivate()->count());
+
+        return $matchPhase && $matchHand;
     }
 
-    protected function executePlayerImpl(Round $round, Area $actorArea) {
+    protected function executeImpl(Round $round) {
+        $actorArea = $this->getActorArea();
         $actorArea->setHand($actorArea->getHand()->toMockHand($this->getMockTileList()));
     }
     //endregion

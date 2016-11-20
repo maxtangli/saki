@@ -8,7 +8,7 @@ use Saki\Game\Round;
 /**
  * @package Saki\Command\Debug
  */
-class InitCommand extends Command {
+class InitCommand extends DebugCommand {
     //region Command impl
     static function getParamDeclarations() {
         return [];

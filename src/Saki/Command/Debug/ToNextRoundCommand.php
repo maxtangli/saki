@@ -8,7 +8,7 @@ use Saki\Game\Round;
 /**
  * @package Saki\Command\Debug
  */
-class ToNextRoundCommand extends Command {
+class ToNextRoundCommand extends DebugCommand {
     //region Command impl
     static function getParamDeclarations() {
         return [];
@@ -17,9 +17,8 @@ class ToNextRoundCommand extends Command {
 
     //region Command impl
     protected function executableImpl(Round $round) {
-        $phaseState = $round->getPhaseState();
-        return $phaseState->getPhase()->isOver()
-            && !$phaseState->isGameOver($round);
+        return $round->getPhase()->isOver()
+            && !$round->getPhaseState()->isGameOver($round);
     }
 
     protected function executeImpl(Round $round) {

@@ -8,7 +8,7 @@ use Saki\Game\Round;
 /**
  * @package Saki\Command\Debug
  */
-class SkipCommand extends Command {
+class SkipCommand extends DebugCommand {
     //region Command impl
     static function getParamDeclarations() {
         return [IntParamDeclaration::class];

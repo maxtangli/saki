@@ -10,7 +10,7 @@ use Saki\Game\SeatWind;
 /**
  * @package Saki\Command\Debug
  */
-class SkipToCommand extends Command {
+class SkipToCommand extends DebugCommand {
     //region Command impl
     static function getParamDeclarations() {
         return [SeatWindParamDeclaration::class, BoolParamDeclaration::class];

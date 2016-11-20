@@ -9,7 +9,7 @@ use Saki\Game\Tile\Tile;
 /**
  * @package Saki\Command\Debug
  */
-class MockNextDrawCommand extends Command {
+class MockNextDrawCommand extends DebugCommand {
     //region Command impl
     static function getParamDeclarations() {
         return [TileParamDeclaration::class];

@@ -9,7 +9,7 @@ use Saki\Game\Tile\Tile;
 /**
  * @package Saki\Command\Debug
  */
-class MockWallRemainCommand extends Command {
+class MockWallRemainCommand extends DebugCommand {
     //region Command impl
     static function getParamDeclarations() {
         return [IntParamDeclaration::class];
