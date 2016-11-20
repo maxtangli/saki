@@ -118,7 +118,7 @@ class RoundSerializer {
         }
 
         if ($role->mayExecute($actor)) {
-            $commands = $commandProvider->getExecutableList($area->getSeatWind())
+            $commands = $commandProvider->provideActorAll($area->getSeatWind())
                 ->toArray(Utils::getToStringCallback());
         } else {
             $commands = [];

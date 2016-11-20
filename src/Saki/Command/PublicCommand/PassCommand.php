@@ -17,8 +17,9 @@ class PassCommand extends PublicCommand {
         return [SeatWindParamDeclaration::class];
     }
 
-    protected static function getExecutableListImpl(Round $round, SeatWind $actor, Area $actorArea) {
-        return static::createMany($round, $actor, new ArrayList([[]]), true);
+    static function getOtherParamsListRaw(Round $round, SeatWind $actor, Area $actorArea) {
+        $otherParamsList = new ArrayList([[]]);
+        return $otherParamsList;
     }
     //endregion
 

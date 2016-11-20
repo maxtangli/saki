@@ -15,7 +15,7 @@ class CommandProviderTest extends \SakiTestCase {
      */
     protected function assertExecutableList(array $expected, bool $contains, string $actor) {
         $provider = new CommandProvider($this->getCurrentRound(), CommandSet::createStandard());
-        $executableList = $provider->getExecutableList(SeatWind::fromString($actor));
+        $executableList = $provider->provideActorAll(SeatWind::fromString($actor));
 
         foreach ($executableList as $executable) {
             if (!$executable->executable()) {

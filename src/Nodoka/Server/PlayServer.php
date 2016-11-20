@@ -144,7 +144,7 @@ class PlayServer implements MessageComponentInterface {
                 $currentParticipant = $play->getParticipantList($currentActor, true, true)->getSingle();
                 if ($currentParticipant->isAI()) {
                     $discardList = $round->getProcessor()->getProvider()
-                        ->getExecutableList($currentActor)
+                        ->provideActorAll($currentActor)
                         ->where(Utils::toClassPredicate(DiscardCommand::class));
                     /** @var Command $discard */
                     $discard = $discardList->getRandom();

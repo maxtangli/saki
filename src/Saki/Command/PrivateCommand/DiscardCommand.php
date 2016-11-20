@@ -19,11 +19,12 @@ class DiscardCommand extends PrivateCommand {
         return [SeatWindParamDeclaration::class, TileParamDeclaration::class];
     }
 
-    protected static function getExecutableListImpl(Round $round, SeatWind $actor, Area $actorArea) {
+    static function getOtherParamsListRaw(Round $round, SeatWind $actor, Area $actorArea) {
         $uniquePrivate = $actorArea->getHand()->getPrivate()
             ->distinct()
             ->orderByTileID();
-        return static::createMany($round, $actor, $uniquePrivate, true);
+        $otherParamsList = $uniquePrivate;
+        return $otherParamsList;
     }
     //endregion
 

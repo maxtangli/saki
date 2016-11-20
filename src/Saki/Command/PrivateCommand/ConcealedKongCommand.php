@@ -22,7 +22,7 @@ class ConcealedKongCommand extends PrivateCommand {
         return [SeatWindParamDeclaration::class, TileListParamDeclaration::class];
     }
 
-    protected static function getExecutableListImpl(Round $round, SeatWind $actor, Area $actorArea) {
+    static function getOtherParamsListRaw(Round $round, SeatWind $actor, Area $actorArea) {
         $private = $actorArea->getHand()->getPrivate();
         $keySelect = function (Tile $tile) {
             return $tile->toFormatString(false);
@@ -33,7 +33,7 @@ class ConcealedKongCommand extends PrivateCommand {
         $tileGroups = $private->toGroups($keySelect, $groupFilter);
 
         $otherParamsList = new ArrayList($tileGroups);
-        return static::createMany($round, $actor, $otherParamsList, true); // validate drawReplacementAble
+        return $otherParamsList;
     }
     //endregion
 

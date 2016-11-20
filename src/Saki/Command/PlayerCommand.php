@@ -10,19 +10,15 @@ use Saki\Util\ArrayList;
  * @package Saki\Command
  */
 abstract class PlayerCommand extends Command {
-    //region getExecutableList
+    //region CommandProvider helper
     /**
      * @param Round $round
      * @param SeatWind $actor
-     * @return ArrayList ArrayList of PlayerCommand.
+     * @param Area $actorArea
+     * @return ArrayList
      */
-    static function getExecutableList(Round $round, SeatWind $actor) {
-        if (!static::matchPhaseAndActor($round, $actor)) {
-            return new ArrayList();
-        }
-
-        return static::getExecutableListImpl($round, $actor, $round->getArea($actor));
-    }
+    abstract static function getOtherParamsListRaw(Round $round, SeatWind $actor, Area $actorArea);
+    //endregion
 
     /**
      * @param Round $round
@@ -32,53 +28,13 @@ abstract class PlayerCommand extends Command {
     static function matchPhaseAndActor(Round $round, SeatWind $actor) {
         $class = get_called_class();
         $phase = $round->getPhase();
-        $validPhase = (is_subclass_of($class, PrivateCommand::class)  && $phase->isPrivate())
+        $validPhase = (is_subclass_of($class, PrivateCommand::class) && $phase->isPrivate())
             || (is_subclass_of($class, PublicCommand::class) && $phase->isPublic());
 
         $isPhaseActor = $round->getArea($actor)->isPhaseActor();
 
         return $validPhase && $isPhaseActor;
     }
-
-    /**
-     * @param Round $round
-     * @param SeatWind $actor
-     * @param Area $actorArea
-     * @return ArrayList
-     */
-    abstract protected static function getExecutableListImpl(Round $round, SeatWind $actor, Area $actorArea);
-
-    /**
-     * @param Round $round
-     * @param SeatWind $actor
-     * @param ArrayList $otherParamsList
-     * @param bool $validate
-     * @return ArrayList
-     */
-    protected static function createMany(Round $round, SeatWind $actor,
-                                         ArrayList $otherParamsList, bool $validate = false) {
-        $toCommand = function ($otherParams) use ($round, $actor) {
-            $actualParams = is_array($otherParams) ? $otherParams : [$otherParams];
-            array_unshift($actualParams, $actor);
-            return new static($round, $actualParams);
-        };
-        $commandList = $otherParamsList->toArrayList($toCommand);
-
-        // todo remove
-        if ($validate == false) {
-            throw new \InvalidArgumentException();
-        }
-
-        if ($validate) {
-            $executable = function (Command $command) {
-                return $command->executable();
-            };
-            $commandList = $commandList->where($executable);
-        }
-
-        return $commandList;
-    }
-    //endregion
 
     //region constructor, getter
     /**
@@ -116,8 +72,6 @@ abstract class PlayerCommand extends Command {
 
         $actorArea = $this->getActorArea();
         $matches = [
-//            [$this, 'matchPhase'],
-//            [$this, 'matchActor'],
             [$this, 'matchOther'],
             [$this, 'matchProvider'],
         ];

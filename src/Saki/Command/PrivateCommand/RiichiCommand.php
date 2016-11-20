@@ -19,13 +19,13 @@ class RiichiCommand extends PrivateCommand {
         return [SeatWindParamDeclaration::class, TileParamDeclaration::class];
     }
 
-    protected static function getExecutableListImpl(Round $round, SeatWind $actor, Area $actorArea) {
+    static function getOtherParamsListRaw(Round $round, SeatWind $actor, Area $actorArea) {
         // todo optimize
         $waitingAnalyzer = $round->getRule()->getWinAnalyzer()->getWaitingAnalyzer();
         $hand = $actorArea->getHand();
         $futureWaitingList = $waitingAnalyzer->analyzePrivate($hand->getPrivate(), $hand->getMelded());
         $otherParamsList = $futureWaitingList->toDiscardList();
-        return static::createMany($round, $actor, $otherParamsList, true);
+        return $otherParamsList;
     }
     //endregion
 

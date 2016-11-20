@@ -28,7 +28,7 @@ class ExtendKongCommand extends PrivateCommand {
         return [SeatWindParamDeclaration::class, TileParamDeclaration::class, MeldParamDeclaration::class];
     }
 
-    protected static function getExecutableListImpl(Round $round, SeatWind $actor, Area $actorArea) {
+    static function getOtherParamsListRaw(Round $round, SeatWind $actor, Area $actorArea) {
         $hand = $actorArea->getHand();
         $private = $hand->getPrivate();
         $triples = $hand->getMelded()->toFiltered([TripleMeldType::create()]);
@@ -46,8 +46,7 @@ class ExtendKongCommand extends PrivateCommand {
         };
         $otherParamsList = (new ArrayList())
             ->fromSelectMany($triples, $toOtherParamsList);
-
-        return static::createMany($round, $actor, $otherParamsList, true); // validate drawReplacementAble
+        return $otherParamsList;
     }
     //endregion
 

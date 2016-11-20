@@ -1070,8 +1070,10 @@ rush refactor Command
 - [x] analyze PlayerCommand 0.3h
 - [x] refactor: merge matchPhase(), matchActor() into PlayerCommand 0.4h
 
-- [ ] analyze CommandProvider 0.2h
-- [ ] refactor: merge XXCommand.getExecutableList() logic
+- [x] analyze CommandProvider 0.2h
+- [x] refactor: move getExecutableList() into PlayerCommand 0.2h
+- [x] refactor: move getExecutableList() into impl class 0.2h
+- [x] refactor: move getExecutableList() into Provider 0.2h
 
 - [ ] introduce Validation 1.1h
 

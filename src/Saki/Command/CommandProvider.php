@@ -39,16 +39,53 @@ class CommandProvider {
     }
 
     /**
+     * @param string $class
+     * @param $actor
+     * @return ArrayList ArrayList of PlayerCommand.
+     */
+    function provideActorCommand(string $class, $actor) {
+        $round = $this->getRound();
+        if (!$class::matchPhaseAndActor($round, $actor)) {
+            return new ArrayList();
+        }
+
+        $otherParamsList = $class::getOtherParamsListRaw($round, $actor, $round->getArea($actor));
+        return $this->createMany($class, $round, $actor, $otherParamsList);
+    }
+
+    /**
+     * @param string $class
+     * @param Round $round
+     * @param SeatWind $actor
+     * @param ArrayList $otherParamsListRaw
+     * @return ArrayList
+     */
+    private function createMany(string $class, Round $round, SeatWind $actor,
+                                ArrayList $otherParamsListRaw) {
+        $toCommand = function ($otherParams) use ($class, $round, $actor) {
+            $actualParams = is_array($otherParams) ? $otherParams : [$otherParams];
+            array_unshift($actualParams, $actor);
+            return new $class($round, $actualParams);
+        };
+        $executable = function (Command $command) {
+            return $command->executable();
+        };
+        return $otherParamsListRaw
+            ->toArrayList($toCommand)
+            ->where($executable);
+    }
+
+    /**
      * @param SeatWind $actor
      * @return ArrayList ArrayList of PlayerCommand.
      */
-    function getExecutableList(SeatWind $actor) {
+    function provideActorAll(SeatWind $actor) {
         $round = $this->getRound();
-        $getClassExecutableList = function (string $class) use ($round, $actor) {
-            return $class::getExecutableList($round, $actor);
+        $providerActorCommand = function (string $class) use ($actor) {
+            return $this->provideActorCommand($class, $actor);
         };
         $allExecutableList = (new ArrayList())
-            ->fromSelectMany($this->getPlayerCommandSet(), $getClassExecutableList);
+            ->fromSelectMany($this->getPlayerCommandSet(), $providerActorCommand);
 
         // debug only todo replace by pass
         $isPublicActor = $round->getArea($actor)->isPublicActor();
@@ -74,12 +111,12 @@ class CommandProvider {
     /**
      * @return ArrayList ArrayList of PlayerCommand.
      */
-    function getAllExecutableList() {
+    function provideAll() {
         $round = $this->getRound();
         $actorList = $round->getRule()->getPlayerType()
             ->getSeatWindList();
         $allExecutableList = (new ArrayList())
-            ->fromSelectMany($actorList, [$this, 'getExecutableList']);
+            ->fromSelectMany($actorList, [$this, 'provideActorAll']);
         return $allExecutableList;
     }
 }

@@ -22,7 +22,7 @@ abstract class PublicClaimCommand extends PublicCommand {
         return [SeatWindParamDeclaration::class, TileListParamDeclaration::class];
     }
 
-    protected static function getExecutableListImpl(Round $round, SeatWind $actor, Area $actorArea) {
+    static function getOtherParamsListRaw(Round $round, SeatWind $actor, Area $actorArea) {
         $hand = $actorArea->getHand();
         $targetTile = $hand->getTarget()->getTile();
         $public = $hand->getPublic();
@@ -38,8 +38,7 @@ abstract class PublicClaimCommand extends PublicCommand {
             );
         }
         $otherParamsList = $otherParamsListRaw->where($exist);
-
-        return static::createMany($round, $actor, $otherParamsList, true); // validate drawReplacementAble
+        return $otherParamsList;
     }
     //endregion
 
