@@ -38,31 +38,20 @@ class CommandTest extends \SakiTestCase {
 
     function testDecider() {
         $round = $this->getInitRound();
+        $round->enableDecider = true;
         $round->process('mockHand E 1m; discard E 1m');
 
-        $parser = $round->getProcessor()->getParser();
-        $chowS = $parser->parseLine('chow S 23m');
-        $pungW = $parser->parseLine('pung W 11m');
-        $passS = $parser->parseLine('pass S');
-        $passW = $parser->parseLine('pass W');
-        $passN = $parser->parseLine('pass N');
-        $passAll = $parser->parseLine('passAll');
-
         // test passAll
-        $decider = new BufferCommandDecider($round->getRule()->getPlayerType(), $round->getProcessor()->getParser());
-        $decider->submit($passS);
-        $decider->submit($passW);
-        $decider->submit($passN);
-        $this->assertEquals($passAll, $decider->getDecided());
+        $round->process('pass S; pass W; pass N');
+        $this->assertPrivate('S');
 
         // test replace
-        $decider->clear();
-        $decider->submit($passN);
-        $decider->submit($chowS);
-        $decider->submit($pungW);
-        $this->assertFalse($decider->allowSubmit($chowS));
-        $decider->submit($passS);
-        $decider->submit($passN);
-        $this->assertEquals($pungW, $decider->getDecided());
+        $round->process('skip 3; mockHand E 1m; discard E 1m; mockHand S 23m; mockHand W 11m');
+        $round->process(
+            'pass N; pass W; chow S 23m',
+            'pass N; pung W 11m',
+            'pass N; pass S'
+        );
+        $this->assertPrivate('W');
     }
 }

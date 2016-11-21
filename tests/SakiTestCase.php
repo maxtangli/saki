@@ -94,6 +94,7 @@ class SakiTestCase extends \PHPUnit_Framework_TestCase {
     static function getInitRound(PrevailingStatus $prevailingStatus = null) {
         self::$round = self::$round ?? new Round();
         self::$round->debugInit($prevailingStatus ?? PrevailingStatus::createFirst());
+        self::$round->enableDecider = false;
         return self::$round;
     }
 

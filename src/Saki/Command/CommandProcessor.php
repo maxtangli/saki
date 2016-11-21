@@ -33,6 +33,7 @@ class CommandProcessor {
     }
 
     /**
+     * To support replay, introduce CommandInvoker class.
      * @param string[] ...$scripts
      */
     function process(... $scripts) {

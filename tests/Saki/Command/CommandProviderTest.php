@@ -38,16 +38,13 @@ class CommandProviderTest extends \SakiTestCase {
         }
     }
 
-    function testAllExecutableList() {
-//        $round = $this->getInitRound();
-//        $provider = new CommandProvider($round, CommandSet::createStandard());
-//
-//        $all = $provider->getAllExecutableList(); // todo slow +0.3s
-//        $this->assertNotEmpty($all);
-//
-//        $round->process('mockHand E 1s; discard E 1s');
-//        $all = $provider->getAllExecutableList();
-//        $this->assertNotEmpty($all);
+    function testProvidePass() {
+        $round = $this->getInitRound();
+        $round->enableDecider = true;
+        $round->process('mockHand E 1s; discard E 1s');
+        $this->assertExecutableList(['pass S'], true, 'S');
+        $this->assertExecutableList(['pass W'], true, 'W');
+        $this->assertExecutableList(['pass N'], true, 'N');
     }
 
     /**

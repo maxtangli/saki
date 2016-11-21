@@ -20,8 +20,9 @@ rush 71-75 | 15.7h
 rush 76-80 | 23.4h
 rush 81-85 | 28.2h
 rush 86-90 | 11.9h
-rush 91-95 | ing
-     total |412.0h + ing
+rush 91-95 | 13.3h
+rush 96-100| ing
+     total |425.3h + ing
 
 ## rush history
 
@@ -1079,15 +1080,16 @@ rush 94 refactor Command 2.2h
 
 - [x] refactor: remove CommandArgumentException 0.2h
 
-rush 95 integrate PublicCommandBuffer
+rush 95 integrate PublicCommandBuffer 3.9h
 
 - [x] PublicCommandDecider 1.3h
 - [x] add PassCommand 0.8h
 - [x] test
 
 - [x] integrate PublicCommand 1.4h
-- [ ] adapt provider, AI
-- [ ] test
+- [x] test 0.2h
+
+- [x] adapt and test provider 0.2h
 
 rush refactor: introduce Validator
 
@@ -1100,13 +1102,13 @@ rush Wall view
 
 rush meld view
 
-rush multiple ron
-
 rush toward 100% rules!
 
-- [ ] 流局满贯
-- [ ] 包牌
+- [ ] skip needless pass commands in PlayServer or Round
 - [ ] game over rule confirm & tests
+- [ ] multiple ron
+- [ ] 流局満貫
+- [ ] 責任払い
 
 rush optimize WaitingAnalyzer: step2
 
