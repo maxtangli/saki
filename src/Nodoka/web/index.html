@@ -15,76 +15,94 @@
 </header>
 <main>
     <section>
-        <dl>
-            <dt class="deadWallTitle">dead wall</dt>
-            <dd class="deadWallContainer"></dd>
-            <dt class="resultTitle">round result</dt>
-            <dd class="resultContainer"></dd>
-        </dl>
+        <h2>説明</h2>
+        注意<br/>
+        ・UIは作成途中のもので（10%）、不親切な点がある。<br/>
+        プレイの流れ<br/>
+        ・ページを開く時、自動的にWebSocketサーバーに接続し、ゲーム状態のJSONが返る。<br/>
+        ・実行できる命令はボタンより表示されている。<br/>
+        ・ボタンをクリックすると、命令がサーバーに送信され、ゲーム状態が更新される。<br/>
+        マルチプレイ<br/>
+        ・ページを開く時、座席（東南西北）が分配される。<br/>
+        ・<a href="." target="_blank">複数のページを開いたら</a>、マルチプレイを体験できる。<br/>
+        ・空いている座席はAIが担当され、現状はランダム打ちとなる。<br/>
+        コード<br/>
+        ・<a href="https://github.com/maxtangli/saki" target="_blank">https://github.com/maxtangli/saki</a>.<br/>
     </section>
-    <section class="areas">
-        <section class="round">
-            <span class="prevailingWindContainer"></span>
-            <span class="prevailingWindTurnContainer"></span>局
-            <span class="seatWindTurnContainer"></span>本場<br/>
-            <span class="pointSticksContainer"></span>場棒<br/>
-            <span class="remainTileCountContainer"></span>残牌
+    <section>
+        <h2>Game</h2>
+        <section>
+            <dl>
+                <dt class="deadWallTitle">dead wall</dt>
+                <dd class="deadWallContainer"></dd>
+                <dt class="resultTitle">round result</dt>
+                <dd class="resultContainer"></dd>
+            </dl>
         </section>
-        <section class="area area-next">
-            <div class="playerContainer">
-                <span class="actorContainer"></span>
-                <span class="pointContainer"></span>
-            </div>
-            <div class="profileContainer"></div>
-            <div class="discardContainer"></div>
-            <div class="commandsContainer"></div>
-            <div class="handContainer">
-                <div class="publicContainer"></div>
-                <div class="targetContainer"></div>
-                <div class="meldedContainer"></div>
-            </div>
-        </section>
-        <section class="area area-towards">
-            <div class="playerContainer">
-                <span class="actorContainer"></span>
-                <span class="pointContainer"></span>
-            </div>
-            <div class="profileContainer"></div>
-            <div class="discardContainer"></div>
-            <div class="commandsContainer"></div>
-            <div class="handContainer">
-                <div class="publicContainer"></div>
-                <div class="targetContainer"></div>
-                <div class="meldedContainer"></div>
-            </div>
-        </section>
-        <section class="area area-prev">
-            <div class="playerContainer">
-                <span class="actorContainer"></span>
-                <span class="pointContainer"></span>
-            </div>
-            <div class="profileContainer"></div>
-            <div class="discardContainer"></div>
-            <div class="commandsContainer"></div>
-            <div class="handContainer">
-                <div class="publicContainer"></div>
-                <div class="targetContainer"></div>
-                <div class="meldedContainer"></div>
-            </div>
-        </section>
-        <section class="area area-self">
-            <div class="playerContainer">
-                <span class="actorContainer"></span>
-                <span class="pointContainer"></span>
-            </div>
-            <div class="profileContainer"></div>
-            <div class="discardContainer"></div>
-            <div class="commandsContainer"></div>
-            <div class="handContainer">
-                <div class="publicContainer"></div>
-                <div class="targetContainer"></div>
-                <div class="meldedContainer"></div>
-            </div>
+        <section class="areas">
+            <section class="round">
+                <span class="prevailingWindContainer"></span>
+                <span class="prevailingWindTurnContainer"></span>局
+                <span class="seatWindTurnContainer"></span>本場<br/>
+                <span class="pointSticksContainer"></span>場棒<br/>
+                <span class="remainTileCountContainer"></span>残牌
+            </section>
+            <section class="area area-next">
+                <div class="playerContainer">
+                    <span class="actorContainer"></span>
+                    <span class="pointContainer"></span>
+                </div>
+                <div class="profileContainer"></div>
+                <div class="discardContainer"></div>
+                <div class="commandsContainer"></div>
+                <div class="handContainer">
+                    <div class="publicContainer"></div>
+                    <div class="targetContainer"></div>
+                    <div class="meldedContainer"></div>
+                </div>
+            </section>
+            <section class="area area-towards">
+                <div class="playerContainer">
+                    <span class="actorContainer"></span>
+                    <span class="pointContainer"></span>
+                </div>
+                <div class="profileContainer"></div>
+                <div class="discardContainer"></div>
+                <div class="commandsContainer"></div>
+                <div class="handContainer">
+                    <div class="publicContainer"></div>
+                    <div class="targetContainer"></div>
+                    <div class="meldedContainer"></div>
+                </div>
+            </section>
+            <section class="area area-prev">
+                <div class="playerContainer">
+                    <span class="actorContainer"></span>
+                    <span class="pointContainer"></span>
+                </div>
+                <div class="profileContainer"></div>
+                <div class="discardContainer"></div>
+                <div class="commandsContainer"></div>
+                <div class="handContainer">
+                    <div class="publicContainer"></div>
+                    <div class="targetContainer"></div>
+                    <div class="meldedContainer"></div>
+                </div>
+            </section>
+            <section class="area area-self">
+                <div class="playerContainer">
+                    <span class="actorContainer"></span>
+                    <span class="pointContainer"></span>
+                </div>
+                <div class="profileContainer"></div>
+                <div class="discardContainer"></div>
+                <div class="commandsContainer"></div>
+                <div class="handContainer">
+                    <div class="publicContainer"></div>
+                    <div class="targetContainer"></div>
+                    <div class="meldedContainer"></div>
+                </div>
+            </section>
         </section>
     </section>
     <section>
@@ -94,10 +112,6 @@
         <input class="command" type="button" value="mockHand E 123456789m12344p"/>
         <input class="command" type="button" value="mockHand E 119m19p19sESWNCPF"/><br/>
         <textarea class="log"></textarea>
-    </section>
-    <section>
-        <h2>Link</h2>
-        See <a href="https://github.com/maxtangli/saki" target="_blank">github project page</a>.<br/><br/>
     </section>
 </main>
 </body>

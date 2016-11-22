@@ -1091,16 +1091,19 @@ rush 95 integrate PublicCommandBuffer 3.9h
 
 - [x] adapt and test provider 0.2h
 
-rush refactor: introduce Validator
-
-- [ ] Validator 1.1h
-
 rush Wall view
+
+- [x] Dice 0.2h
 
 - [ ] php: player's wall view
 - [ ] css: wall 0.5h
 
 rush meld view
+
+rush optimize WaitingAnalyzer: step2
+
+- [ ] optimize analyzePublic
+- [ ] optimize analyzePrivate
 
 rush toward 100% rules!
 
@@ -1110,13 +1113,9 @@ rush toward 100% rules!
 - [ ] 流局満貫
 - [ ] 責任払い
 
-rush optimize WaitingAnalyzer: step2
-
-- [ ] optimize analyzePublic
-- [ ] optimize analyzePrivate
-
 rush large scale refactoring
 
+- [ ] introduce Validator 1.1h
 - [ ] red dora design
 - [ ] Open, Claim design
 - [ ] toNextPhase design

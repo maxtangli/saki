@@ -70,7 +70,7 @@
 
 ## 牌
 
-- 牌：？定义，分为数牌和字牌两种类别。
+- 牌：？定义，分为数牌和字牌两种类别，分为34种，每种4张，共136张。
 
 - 数牌：牌的两种类别之一，由花色和数值两种元素构成的牌，共27种。
 - 花色：数牌的两种构成元素之一，包括：万、饼、索，共3种，分别记为m、p、s。
@@ -112,12 +112,6 @@
 - 赤宝牌，*RedDora：
 - 宝牌类型役，*DoraTypeYaku：
 
-- 洗牌，Mix the tiles
-- 掷骰，Roll two dice
-- 砌牌，Building the wall
-- 分牌，Break the wall
-- 发牌，The deal
-
 - 巡目，*CircleCount
 - 当前自风，*CurrentSeatWind：
 - 当前阶段，*CurrentPhase：个人阶段，公共阶段。
@@ -135,6 +129,18 @@
 # 流程
 
 ## 单局的流程
+
+发牌
+1.洗牌，Mix the tiles
+2.砌牌，Building the wall：玩家数=4时，每人面前共有17牌墩，即34张牌。以面向从左到右为正序。
+3.掷骰，Roll two dice：庄家掷骰得点数n，选择玩家E.next(n - 1)作为发牌玩家。
+4.分牌，Break the wall：从发牌玩家的逆序n+1牌墩
+- 发牌，The deal
+
+发牌
+1.
+2.对发牌玩家的牌山，从右向左数保留n牌墩，从第n+1牌墩开始发牌。
+
 
 空阶段，*NullPhase
 - 进入：1.初始化。
