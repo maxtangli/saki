@@ -32,11 +32,11 @@ class MockNextDrawCommand extends DebugCommand {
 
     //region Command impl
     protected function executableImpl(Round $round) {
-        return $this->getWall()->getRemainTileCount() > 0;
+        return $this->getWall()->getLiveWall()->getRemainTileCount() > 0;
     }
 
     protected function executeImpl(Round $round) {
-        $this->getWall()->debugSetNextDrawTile($this->getMockTile());
+        $this->getWall()->getLiveWall()->debugSetNextDrawTile($this->getMockTile());
     }
     //endregion
 }

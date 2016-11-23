@@ -17,7 +17,7 @@ class MockWallRemainCommand extends DebugCommand {
     //endregion
 
     /**
-     * @return Tile
+     * @return int
      */
     function getWallRemainTileCount() {
         return $this->getParam(0);
@@ -33,12 +33,12 @@ class MockWallRemainCommand extends DebugCommand {
 
     //region Command impl
     protected function executableImpl(Round $round) {
-        return $this->getWall()->getRemainTileCount() 
+        return $this->getWall()->getLiveWall()->getRemainTileCount()
         >= $this->getWallRemainTileCount();
     }
 
     protected function executeImpl(Round $round) {
-        $this->getWall()->debugSetRemainTileCount($this->getWallRemainTileCount());
+        $this->getWall()->getLiveWall()->debugSetRemainTileCount($this->getWallRemainTileCount());
     }
     //endregion
 }

@@ -22,7 +22,7 @@ class BottomOfTheSeaFishYaku extends Yaku {
     }
 
     protected function matchOther(WinSubTarget $subTarget) {
-        return $subTarget->getWall()->isBottomOfTheSea()
+        return $subTarget->getWall()->getLiveWall()->isBottomOfTheSea()
         && $subTarget->getPhase()->isPublic();
     }
 }

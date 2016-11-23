@@ -341,7 +341,7 @@ class Round {
 
     function deal() {
         $playerType = PlayerType::create($this->areaList->count());
-        $deal = $this->getWall()->deal($playerType);
+        $deal = $this->getWall()->getLiveWall()->deal($playerType);
         $acceptDeal = function (Area $area) use ($deal) {
             $initialTiles = $deal[$area->getSeatWind()->__toString()];
             $newHand = new Hand(new TileList($initialTiles), new MeldList(), Target::createNull());

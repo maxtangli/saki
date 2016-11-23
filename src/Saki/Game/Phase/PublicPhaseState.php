@@ -109,7 +109,7 @@ class PublicPhaseState extends PhaseState {
         $round->getTargetHolder()->setTarget($target);
 
         // bottom of sea not allow claim
-        if ($round->getWall()->isBottomOfTheSea()) {
+        if ($round->getWall()->getLiveWall()->isBottomOfTheSea()) {
             $this->allowClaim = false;
         }
     }

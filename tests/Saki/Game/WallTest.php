@@ -25,7 +25,7 @@ class WallTest extends \SakiTestCase {
         $tileSet = new TileSet($tileList->toArray());
         $wall = new Wall($tileSet);
         $wall->reset(false);
-        $tile = $wall->draw();
+        $tile = $wall->getLiveWall()->draw();
         $this->assertEquals(Tile::fromString('F'), $tile);
 
         // shift

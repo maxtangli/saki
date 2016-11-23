@@ -10,10 +10,9 @@ use Saki\Game\Tile\TileSet;
  */
 class Wall {
     private $tileSet;
+    private $liveWall;
     private $deadWall;
     private $doraFacade;
-    /** @var TileList */
-    private $remainTileList;
 
     /**
      * @param TileSet $tileSet
@@ -30,7 +29,10 @@ class Wall {
         list($deadWallTileLists, $currentTileList) = $this->generateTwoParts($shuffle);
         $this->deadWall = new DeadWall($deadWallTileLists);
         $this->doraFacade = new DoraFacade($this->deadWall);
-        $this->remainTileList = $currentTileList;
+        $this->liveWall = new LiveWallTemp($currentTileList);
+
+//        $this->liveWall = new LiveWall();
+//        $this->liveWall->init(StackList::createByTileList($currentTileList));
     }
 
     /**
@@ -40,7 +42,10 @@ class Wall {
     function reset($shuffle = true) {
         list($deadWallTileLists, $currentTileList) = $this->generateTwoParts($shuffle);
         $this->deadWall->reset($deadWallTileLists);
-        $this->remainTileList = $currentTileList;
+        $this->liveWall = new LiveWallTemp($currentTileList);
+
+//        $this->liveWall = new LiveWall();
+//        $this->liveWall->init(StackList::createByTileList($currentTileList));
     }
 
     /**
@@ -59,7 +64,7 @@ class Wall {
      * @return string
      */
     function __toString() {
-        return $this->getDeadWall()->__toString() . ',' . $this->getRemainTileList()->__toString();
+        return $this->getDeadWall()->__toString() . ',' . $this->getLiveWall()->__toString();
     }
 
     /**
@@ -67,25 +72,8 @@ class Wall {
      */
     function toJson() {
         $a = $this->getDeadWall()->toJson();
-        $a['remainTileCount'] = $this->getRemainTileCount();
+        $a['remainTileCount'] = $this->getLiveWall()->getRemainTileCount();
         return $a;
-    }
-
-    /**
-     * @param Tile $tile
-     */
-    function debugSetNextDrawTile(Tile $tile) {
-        $lastPos = $this->getRemainTileCount() - 1;
-        $this->remainTileList->replaceAt($lastPos, $tile); // validate
-    }
-
-    function debugSetRemainTileCount(int $n) {
-        $removeCount = $this->getRemainTileCount() - $n;
-        $this->remainTileList->removeLast($removeCount); // validate
-
-        if ($this->remainTileList->count() != $n) {
-            throw new \LogicException();
-        }
     }
 
     /**
@@ -93,6 +81,13 @@ class Wall {
      */
     function getTileSet() {
         return $this->tileSet;
+    }
+
+    /**
+     * @return LiveWallTemp
+     */
+    function getLiveWall() {
+        return $this->liveWall;
     }
 
     /**
@@ -107,6 +102,45 @@ class Wall {
      */
     function getDoraFacade() {
         return $this->doraFacade;
+    }
+}
+
+class LiveWallTemp {
+    /** @var TileList */
+    private $remainTileList;
+
+    /**
+     * @param TileList $remainTileList
+     */
+    function __construct(TileList $remainTileList) {
+        $this->remainTileList = $remainTileList;
+    }
+
+    /**
+     * @return string
+     */
+    function __toString() {
+        return $this->getRemainTileList()->toSortedString(false);
+    }
+
+    /**
+     * @param Tile $tile
+     */
+    function debugSetNextDrawTile(Tile $tile) {
+        $lastPos = $this->getRemainTileCount() - 1;
+        $this->remainTileList->replaceAt($lastPos, $tile); // validate
+    }
+
+    /**
+     * @param int $n
+     */
+    function debugSetRemainTileCount(int $n) {
+        $removeCount = $this->getRemainTileCount() - $n;
+        $this->remainTileList->removeLast($removeCount); // validate
+
+        if ($this->remainTileList->count() != $n) {
+            throw new \LogicException();
+        }
     }
 
     /**

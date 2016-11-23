@@ -1097,7 +1097,11 @@ rush 96 Wall view: prepare logic
 
 - [x] analyze 0.3h
 - [ ] Wall by Stacks 4.1h
-- [ ] php: player's wall view
+
+- [x] refactor: split Wall logic into LiveWallTemp 0.1h
+- [x] refactor: replace Wall.XX by LiveWallTemp.XX 0.2h
+
+- [ ] player's wall view
 
 rush 97 Wall view: css
 
