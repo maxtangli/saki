@@ -1091,11 +1091,16 @@ rush 95 integrate PublicCommandBuffer 3.9h
 
 - [x] adapt and test provider 0.2h
 
-rush Wall view
+rush 96 Wall view: prepare logic
 
 - [x] Dice 0.2h
 
+- [x] analyze 0.3h
+- [ ] Wall by Stacks 4.1h
 - [ ] php: player's wall view
+
+rush 97 Wall view: css
+
 - [ ] css: wall 0.5h
 
 rush meld view
@@ -1152,7 +1157,7 @@ Win/Yaku/XX | ok
 rush rule.md doc
 
 - [ ] rule 0.6h
-- [ ] tile 0.6h
+- [ ] tile 1.1h
 - [ ] command 0.6h
 - [ ] yaku 2.8h
 - [ ] furiten 0.8h

@@ -78,13 +78,13 @@ class Wall {
         $lastPos = $this->getRemainTileCount() - 1;
         $this->remainTileList->replaceAt($lastPos, $tile); // validate
     }
-    
+
     function debugSetRemainTileCount(int $n) {
         $removeCount = $this->getRemainTileCount() - $n;
         $this->remainTileList->removeLast($removeCount); // validate
-        
+
         if ($this->remainTileList->count() != $n) {
-            throw new \LogicException();    
+            throw new \LogicException();
         }
     }
 
@@ -135,14 +135,11 @@ class Wall {
      * @return Tile[][] e.x. [E => [1s,2s...] ...]
      */
     function deal(PlayerType $playerType) {
-        $result = [];
+        $result = $playerType->getSeatWindMap([]);
         foreach ([4, 4, 4, 1] as $drawTileCount) {
-            foreach ($playerType->getSeatWindList() as $actor) {
+            foreach ($result as $k => $notUsed) {
                 $tiles = $this->getRemainTileList()->getLastMany($drawTileCount);
-
-                $i = $actor->__toString();
-                $result[$i] = array_merge($result[$i] ?? [], $tiles);
-
+                $result[$k] = array_merge($result[$k], $tiles);
                 $this->getRemainTileList()->removeLast($drawTileCount);
             }
         }

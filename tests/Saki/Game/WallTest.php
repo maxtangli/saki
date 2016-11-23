@@ -32,4 +32,8 @@ class WallTest extends \SakiTestCase {
         $tile = $wall->getDeadWall()->drawReplacement();
         $this->assertEquals(Tile::fromString('1m'), $tile);
     }
+
+    function LiveWallTest() {
+
+    }
 }

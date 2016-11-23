@@ -31,9 +31,13 @@ class DicePair {
         });
     }
 
+    /**
+     * @return int
+     */
     function roll() {
         $this->diceList->walk(function (Dice $dice) {
             $dice->roll();
         });
+        return $this->getNumber();
     }
 }

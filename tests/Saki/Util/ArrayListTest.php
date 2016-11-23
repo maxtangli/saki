@@ -4,6 +4,14 @@ namespace ArrayLikeObjectTest;
 
 use Saki\Util\ArrayList;
 
+class MockValue {
+    public $v;
+
+    function __toString() {
+        return $this->v;
+    }
+}
+
 class ArrayListTest extends \SakiTestCase {
     function testIterate() {
         $a = [0, 1, 2, 3, 4];
@@ -167,6 +175,16 @@ class ArrayListTest extends \SakiTestCase {
             [[0, -1, 2], [0, 1, 2], [1], [-1]],
             [[0, -1, -2], [0, 1, 2], [1, 2], [-1, -2]],
         ];
+    }
+
+    function testSelectModification() {
+        $l = new ArrayList([new MockValue(), new MockValue()]);
+        $l->select(function (MockValue $mockValue) {
+            $mockValue->v = 1;
+            return $mockValue;
+        });
+        $this->assertEquals(1, $l[0]->v);
+        $this->assertEquals(1, $l[1]->v);
     }
 
     /**

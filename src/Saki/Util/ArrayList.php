@@ -65,6 +65,14 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
     }
 
     /**
+     * @param int $size
+     * @return array
+     */
+    function toChunks(int $size) {
+        return array_chunk($this->toArray(), $size);
+    }
+
+    /**
      * @param callable $keySelector
      * @param callable $selector
      * @return array
@@ -149,6 +157,14 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
     //endregion
 
     //region index properties and getters
+    /**
+     * @return int
+     */
+    function getLastIndex() {
+        $this->assertNotEmpty();
+        return $this->count() - 1;
+    }
+
     /**
      * @param int[] $indexes
      * @return bool whether indexes exist or not.
@@ -444,12 +460,36 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
 
     //region operations
     /**
+     * @return mixed
+     */
+    function pop() {
+        $last = $this->getLast(); // validate
+        $this->removeLast();
+        return $last;
+    }
+
+    /**
      * Two elements are considered equal if and only if (string) $elem1 === (string) $elem2.
      * @return $this
      */
     function distinct() {
         $this->assertWritable();
         $this->a = array_values(array_unique($this->a));
+        return $this;
+    }
+
+    /**
+     * @param int $count
+     * @param callable $generator
+     * @return $this
+     */
+    function fromGenerator(int $count, callable $generator) {
+        $a = [];
+        $nTodo = $count;
+        while ($nTodo-- > 0) {
+            $a[] = $generator();
+        }
+        $this->a = $a;
         return $this;
     }
 
@@ -477,6 +517,27 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
             return array_merge($result, $vArray);
         };
         $this->a = array_reduce($arrayOrArrayLists, $merge, []);
+        return $this;
+    }
+
+    /**
+     * @param ArrayList $firstList
+     * @param ArrayList $secondList
+     * @param callable $resultSelector
+     * @return $this
+     */
+    function fromMapping(ArrayList $firstList, ArrayList $secondList, callable $resultSelector) {
+        $this->assertWritable();
+        if ($firstList->count() != $secondList->count()) {
+            throw new \InvalidArgumentException();
+        }
+
+        $a = [];
+        foreach ($firstList->a as $k => $v1) {
+            $v2 = $secondList[$k];
+            $a[] = $resultSelector($v1, $v2);
+        }
+        $this->a = $a;
         return $this;
     }
 
@@ -619,6 +680,14 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
         $replace = array_combine($indexes, $newValues);
         $this->a = array_replace($this->a, $replace);
         return $this;
+    }
+
+    /**
+     * @param $value
+     * @return ArrayList
+     */
+    function replaceLast($value) {
+        return $this->replaceAt($this->getLastIndex(), $value);
     }
 
     /**
