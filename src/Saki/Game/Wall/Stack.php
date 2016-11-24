@@ -8,7 +8,7 @@ use Saki\Util\ArrayList;
  * @package Saki\Game\Wall
  */
 class Stack {
-    /** @var ArrayList [] or [$bottomTile] or [$bottomTile, $topTile] */
+    /** @var ArrayList [] or [$bottomTile] or [$topTile, $bottomTile] */
     private $tileList;
 
     function __construct() {
@@ -24,6 +24,13 @@ class Stack {
      */
     function __toString() {
         return $this->tileList->__toString();
+    }
+
+    /**
+     * @return ArrayList
+     */
+    function getTileList() {
+        return $this->tileList;
     }
 
     /**
@@ -52,21 +59,20 @@ class Stack {
         // $tileChunk = [$tile0, $tile1]
         // $tileList = [$tile1, $tile0]
         $this->tileList->removeAll()
-            ->insertLast($tileChunk[1])
-            ->insertLast($tileChunk[0]);
+            ->insertLast($tileChunk);
     }
 
     /**
      * @param Tile $tile
      */
     function setNextPopTile(Tile $tile) {
-        $this->tileList->replaceLast($tile); // validate
+        $this->tileList->replaceFirst($tile); // validate
     }
 
     /**
      * @return Tile
      */
     function popTile() {
-        return $this->tileList->pop(); // validate
+        return $this->tileList->shift(); // validate
     }
 }

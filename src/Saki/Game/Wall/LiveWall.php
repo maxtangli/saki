@@ -15,21 +15,22 @@ class LiveWall {
      * @param StackList|null $stackList
      */
     function __construct(StackList $stackList = null) {
-        $this->init($stackList ?? new StackList());
+        $this->init($stackList);
     }
 
     /**
-     * @param StackList $stackList
+     * @param StackList|null $stackList
      */
-    function init(StackList $stackList) {
+    function init(StackList $stackList = null) {
+        $actualStackList = $stackList ?? new StackList();
         $notEmpty = function (Stack $stack) {
             return !$stack->isEmpty();
         };
-        if (!$stackList->all($notEmpty)) {
+        if (!$actualStackList->all($notEmpty)) {
             throw new \InvalidArgumentException();
         }
 
-        $this->stackList = $stackList;
+        $this->stackList = $actualStackList;
     }
 
     /**

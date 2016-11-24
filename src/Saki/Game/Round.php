@@ -97,7 +97,7 @@ class Round {
         $this->riichiHolder->roll($isWin);
 
         // round variable
-        $this->wall->reset();
+        $this->wall->init();
         $this->turn = Turn::createFirst();
         $this->phaseState = new NullPhaseState();
         $this->openHistory->reset();
@@ -126,7 +126,7 @@ class Round {
         $this->riichiHolder->init();
 
         // round variable
-        $this->wall->reset();
+        $this->wall->init();
         $this->turn = Turn::createFirst();
         $this->phaseState = new NullPhaseState();
         $this->openHistory->reset();

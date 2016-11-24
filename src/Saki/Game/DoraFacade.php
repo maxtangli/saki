@@ -3,6 +3,7 @@ namespace Saki\Game;
 
 use Saki\Game\Tile\Tile;
 use Saki\Game\Tile\TileList;
+use Saki\Game\Wall\DeadWall;
 
 /**
  * @package Saki\Game

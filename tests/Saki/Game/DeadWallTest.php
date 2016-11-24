@@ -1,9 +1,9 @@
 <?php
 
-use Saki\Game\DeadWall;
 use Saki\Game\DoraFacade;
 use Saki\Game\Tile\Tile;
 use Saki\Game\Tile\TileList;
+use Saki\Game\Wall\DeadWall;
 
 class DeadWallTest extends \SakiTestCase {
     protected function assertTileFan(DoraFacade $f, string $tileString, $doraFan, $uraDoraFan = 0, $redDoraFan = 0) {

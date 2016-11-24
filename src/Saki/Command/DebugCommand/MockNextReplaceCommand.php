@@ -1,7 +1,6 @@
 <?php
 namespace Saki\Command\DebugCommand;
 
-use Saki\Command\Command;
 use Saki\Command\ParamDeclaration\TileParamDeclaration;
 use Saki\Game\Round;
 use Saki\Game\Tile\Tile;
@@ -24,7 +23,7 @@ class MockNextReplaceCommand extends DebugCommand {
     }
 
     /**
-     * @return \Saki\Game\DeadWall
+     * @return \Saki\Game\Wall\DeadWall
      */
     protected function getDeadWall() {
         return $this->getRound()

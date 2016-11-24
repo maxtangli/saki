@@ -1,7 +1,6 @@
 <?php
 namespace Saki\Command\DebugCommand;
 
-use Saki\Command\Command;
 use Saki\Command\ParamDeclaration\BoolParamDeclaration;
 use Saki\Command\ParamDeclaration\IntParamDeclaration;
 use Saki\Command\ParamDeclaration\TileListParamDeclaration;
@@ -40,7 +39,7 @@ class MockDeadWallCommand extends DebugCommand {
     }
 
     /**
-     * @return \Saki\Game\DeadWall
+     * @return \Saki\Game\Wall\DeadWall
      */
     protected function getDeadWall() {
         return $this->getRound()

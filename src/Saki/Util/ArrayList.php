@@ -160,6 +160,14 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
     /**
      * @return int
      */
+    function getFirstIndex() {
+        $this->assertNotEmpty();
+        return 0;
+    }
+
+    /**
+     * @return int
+     */
     function getLastIndex() {
         $this->assertNotEmpty();
         return $this->count() - 1;
@@ -460,15 +468,6 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
 
     //region operations
     /**
-     * @return mixed
-     */
-    function pop() {
-        $last = $this->getLast(); // validate
-        $this->removeLast();
-        return $last;
-    }
-
-    /**
      * Two elements are considered equal if and only if (string) $elem1 === (string) $elem2.
      * @return $this
      */
@@ -646,12 +645,30 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
     }
 
     /**
+     * @return mixed
+     */
+    function shift() {
+        $first = $this->getFirst(); // validate
+        $this->removeFirst();
+        return $first;
+    }
+
+    /**
      * @param int $n
      * @return $this
      */
     function removeLast(int $n = 1) {
         $last = $this->count() - 1;
         return $this->removeAt(range($last, $last - $n + 1)); // validate
+    }
+
+    /**
+     * @return mixed
+     */
+    function pop() {
+        $last = $this->getLast(); // validate
+        $this->removeLast();
+        return $last;
     }
 
     /**
@@ -686,8 +703,16 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
      * @param $value
      * @return ArrayList
      */
+    function replaceFirst($value) {
+        return $this->replaceAt($this->getFirstIndex(), $value); // validate
+    }
+
+    /**
+     * @param $value
+     * @return ArrayList
+     */
     function replaceLast($value) {
-        return $this->replaceAt($this->getLastIndex(), $value);
+        return $this->replaceAt($this->getLastIndex(), $value); // validate
     }
 
     /**

@@ -2,39 +2,13 @@
 
 use Saki\Game\Tile\Tile;
 use Saki\Game\Tile\TileList;
-use Saki\Game\Tile\TileSet;
-use Saki\Game\Wall;
+use Saki\Game\Wall\LiveWall;
+use Saki\Game\Wall\Stack;
+use Saki\Game\Wall\StackList;
 
 class WallTest extends \SakiTestCase {
-    function testAll() {
-        $tileCount = 136;
-
-        // new, no shuffle
-        $wall = new Wall(TileSet::createStandard());
-        $this->assertCount($tileCount, $wall->getTileSet());
-
-        // reset and shuffle
-        $wall->reset();
-
-        // pop
-        $s = '111122223333444455556666777788889999m' .
-            '111122223333444455556666777788889999p' .
-            '111122223333444455556666777788889999s' .
-            'EEEESSSSWWWWNNNNCCCCPPPPFFFF';
-        $tileList = TileList::fromString($s);
-        $tileSet = new TileSet($tileList->toArray());
-        $wall = new Wall($tileSet);
-        $wall->reset(false);
-        $tile = $wall->getLiveWall()->draw();
-        $this->assertEquals(Tile::fromString('F'), $tile);
-
-        // shift
-        $tile = $wall->getDeadWall()->drawReplacement();
-        $this->assertEquals(Tile::fromString('1m'), $tile);
-    }
-
-    function StackTest() {
-        $stack = new Wall\Stack();
+    function testStack() {
+        $stack = new Stack();
         $t0 = Tile::fromString('1s');
         $t1 = Tile::fromString('2s');
 
@@ -48,26 +22,33 @@ class WallTest extends \SakiTestCase {
         $this->assertEquals($mockNext, $stack->popTile());
     }
 
-    function LiveWallTest() {
-        $liveWall = new Wall\LiveWall();
-        $tileList = TileList::fromString('1234s');
-        $liveWall->init(Wall\StackList::createByTileList($tileList));
+    function testStackList() {
+        $tileList = TileList::fromString('0123s');
+        $stackList = StackList::createByTileList($tileList);
+        $this->assertEquals($tileList, $stackList->toTileList());
+    }
 
-        static::assertLiveWallDraw($tileList[3], 2, 3);
-        static::assertLiveWallDraw($tileList[2], 1, 2);
-        static::assertLiveWallDraw($tileList[1], 1, 1);
-        static::assertLiveWallDraw($tileList[0], 0, 0);
+    function testLiveWall() {
+        $liveWall = new LiveWall();
+        $tileList = TileList::fromString('0123s');
+        $liveWall->init(StackList::createByTileList($tileList));
+        // 0 2
+        // 1 3
+        static::assertLiveWallDraw($tileList[2], 2, 3, $liveWall);
+        static::assertLiveWallDraw($tileList[3], 1, 2, $liveWall);
+        static::assertLiveWallDraw($tileList[0], 1, 1, $liveWall);
+        static::assertLiveWallDraw($tileList[1], 0, 0, $liveWall);
 
-        $liveWall->init(Wall\StackList::createByTileList($tileList));
+        $liveWall->init(StackList::createByTileList($tileList));
         $mockNext = Tile::fromString('E');
         $liveWall->debugSetNextDrawTile($mockNext);
         static::assertLiveWallDraw($mockNext, 2, 3, $liveWall);
         $liveWall->debugSetRemainTileCount(1);
-        static::assertLiveWallDraw($tileList[0], 0, 0);
+        static::assertLiveWallDraw($tileList[1], 0, 0, $liveWall);
         // test deal todo
     }
 
-    static function assertLiveWallDraw(Tile $tile, int $stackCount, int $tileCount, Wall\LiveWall $liveWall) {
+    static function assertLiveWallDraw(Tile $tile, int $stackCount, int $tileCount, LiveWall $liveWall) {
         static::assertEquals($tile, $liveWall->draw());
         static::assertEquals($stackCount, $liveWall->getRemainStackCount());
         static::assertEquals($tileCount, $liveWall->getRemainTileCount());

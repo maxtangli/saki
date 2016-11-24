@@ -1091,7 +1091,7 @@ rush 95 integrate PublicCommandBuffer 3.9h
 
 - [x] adapt and test provider 0.2h
 
-rush 96 Wall view: prepare logic
+rush 96 Wall view: LiveWall 5.5h
 
 - [x] Dice 0.2h
 
@@ -1101,6 +1101,15 @@ rush 96 Wall view: prepare logic
 - [x] refactor: split Wall logic into LiveWallTemp 0.1h
 - [x] refactor: replace Wall.XX by LiveWallTemp.XX 0.2h
 - [x] adapt LiveWall into Wall 0.6h
+
+rush 97 Wall view: prepare logic
+
+- [x] two cut by dice pair 1h
+- [ ] test
+
+rush Wall view: DeadWall
+
+- [ ] analyze: replaceWall 0.5h
 
 - [ ] DeadWall
 

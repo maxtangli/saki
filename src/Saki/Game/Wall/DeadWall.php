@@ -1,6 +1,5 @@
 <?php
-namespace Saki\Game;
-
+namespace Saki\Game\Wall;
 use Saki\Game\Tile\Tile;
 use Saki\Game\Tile\TileList;
 use Saki\Util\ArrayList;
@@ -15,9 +14,9 @@ class DeadWall {
      * 0 2 | 4 6 8 10 12 <- indicator    * 5
      * 1 3 | 5 7 9 11 13 <- uraIndicator * 5
      */
-    /** @var  TileList */
+    /** @var TileList */
     private $tileList;
-    /** @var  TileList */
+    /** @var TileList */
     private $replacementList;
     private $indicatorCandidates;
     private $uraIndicatorCandidates;
@@ -94,13 +93,6 @@ class DeadWall {
     function debugSetNextReplacement(Tile $tile) {
         $this->assertAbleDrawReplacement();
         $this->replacementList->replaceAt(0, $tile);
-    }
-
-    /**
-     * @return TileList
-     */
-    function getReplacementList() {
-        return $this->replacementList->getCopy();
     }
 
     /**

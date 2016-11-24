@@ -53,6 +53,16 @@ class StackList extends ArrayList {
         return $this->fromMapping($this, $chunkList, $setChunk);
     }
 
+    /**
+     * @return TileList
+     */
+    function toTileList() {
+        $selector = function (Stack $stack) {
+            return $stack->getTileList();
+        };
+        return (new TileList())->fromSelectMany($this, $selector);
+    }
+
     private static function assertTileListEvenCount(TileList $tileList) {
         $valid = ($tileList->count() % 2 == 0);
         if (!$valid) {
