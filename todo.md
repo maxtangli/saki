@@ -1096,10 +1096,13 @@ rush 96 Wall view: prepare logic
 - [x] Dice 0.2h
 
 - [x] analyze 0.3h
-- [ ] Wall by Stacks 4.1h
+- [x] Wall by Stacks 4.1h
 
 - [x] refactor: split Wall logic into LiveWallTemp 0.1h
 - [x] refactor: replace Wall.XX by LiveWallTemp.XX 0.2h
+- [x] adapt LiveWall into Wall 0.6h
+
+- [ ] DeadWall
 
 - [ ] player's wall view
 

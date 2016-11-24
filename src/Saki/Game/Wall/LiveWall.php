@@ -11,8 +11,11 @@ class LiveWall {
     /** @var StackList */
     private $stackList;
 
-    function __construct() {
-        $this->init(new StackList());
+    /**
+     * @param StackList|null $stackList
+     */
+    function __construct(StackList $stackList = null) {
+        $this->init($stackList ?? new StackList());
     }
 
     /**
@@ -27,6 +30,36 @@ class LiveWall {
         }
 
         $this->stackList = $stackList;
+    }
+
+    /**
+     * @return string
+     */
+    function __toString() {
+        return $this->stackList->__toString();
+    }
+
+    /**
+     * @param Tile $tile
+     */
+    function debugSetNextDrawTile(Tile $tile) {
+        $this->getCurrentStack()->setNextPopTile($tile); // validate
+    }
+
+    /**
+     * @param int $n
+     */
+    function debugSetRemainTileCount(int $n) {
+        $nTodo = $this->getRemainTileCount() - $n;
+
+        $valid = ($nTodo >= 0);
+        if (!$valid) {
+            throw new \InvalidArgumentException();
+        }
+
+        while ($nTodo-- > 0) {
+            $this->draw();
+        }
     }
 
     /**
@@ -80,34 +113,12 @@ class LiveWall {
         $result = $playerType->getSeatWindMap([]);
         foreach ([4, 4, 4, 1] as $drawTileCount) {
             foreach ($result as $k => $notUsed) {
-                while ($drawTileCount-- > 0) {
+                $nTodo = $drawTileCount;
+                while ($nTodo-- > 0) {
                     $result[$k][] = $this->draw();
                 }
             }
         }
         return $result;
-    }
-
-    /**
-     * @param Tile $tile
-     */
-    function debugSetNextDrawTile(Tile $tile) {
-        $this->getCurrentStack()->setNextPopTile($tile); // validate
-    }
-
-    /**
-     * @param int $n
-     */
-    function debugSetRemainTileCount(int $n) {
-        $nTodo = $this->getRemainTileCount() - $n;
-
-        $valid = ($nTodo >= 0);
-        if (!$valid) {
-            throw new \InvalidArgumentException();
-        }
-
-        while ($nTodo-- > 0) {
-            $this->draw();
-        }
     }
 }

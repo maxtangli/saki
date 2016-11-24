@@ -12,7 +12,7 @@ class StackList extends ArrayList {
      * @param int $n
      * @return static
      */
-    static function createByCount(int $n) {
+    static function createByStackCount(int $n) {
         $generateStack = function () {
             return new Stack();
         };
@@ -20,11 +20,17 @@ class StackList extends ArrayList {
     }
 
     /**
+     * tile list
+     * 012345
+     * s1 s2 s3
+     * 1  3  5
+     * 0  2  4
      * @param TileList $tileList
      * @return static
      */
     static function createByTileList(TileList $tileList) {
-        $stackList = static::createByCount($tileList->count() / 2);
+        self::assertTileListEvenCount($tileList);
+        $stackList = static::createByStackCount($tileList->count() / 2);
         $stackList->initByTileList($tileList);
         return $stackList;
     }
@@ -45,5 +51,12 @@ class StackList extends ArrayList {
             return $stack;
         };
         return $this->fromMapping($this, $chunkList, $setChunk);
+    }
+
+    private static function assertTileListEvenCount(TileList $tileList) {
+        $valid = ($tileList->count() % 2 == 0);
+        if (!$valid) {
+            throw new \InvalidArgumentException();
+        }
     }
 }

@@ -49,8 +49,11 @@ class Stack {
             throw new \InvalidArgumentException();
         }
 
+        // $tileChunk = [$tile0, $tile1]
+        // $tileList = [$tile1, $tile0]
         $this->tileList->removeAll()
-            ->insertLast($tileChunk);
+            ->insertLast($tileChunk[1])
+            ->insertLast($tileChunk[0]);
     }
 
     /**
@@ -64,6 +67,6 @@ class Stack {
      * @return Tile
      */
     function popTile() {
-        return $this->tileList->pop();
+        return $this->tileList->pop(); // validate
     }
 }
