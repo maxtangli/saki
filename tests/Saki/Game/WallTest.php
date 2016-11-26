@@ -3,7 +3,6 @@
 use Saki\Game\Tile\Tile;
 use Saki\Game\Tile\TileList;
 use Saki\Game\Tile\TileSet;
-use Saki\Game\Wall;
 use Saki\Game\Wall\LiveWall;
 use Saki\Game\Wall\Stack;
 use Saki\Game\Wall\StackList;
@@ -65,7 +64,8 @@ class WallTest extends \SakiTestCase {
         static::assertLiveWallDraw($mockNext, 2, 3, $liveWall);
         $liveWall->debugSetRemainTileCount(1);
         static::assertLiveWallDraw($tileList[1], 0, 0, $liveWall);
-        // test deal todo
+
+        // test deal: ignore
     }
 
     static function assertLiveWallDraw(Tile $tile, int $stackCount, int $tileCount, LiveWall $liveWall) {
@@ -74,9 +74,7 @@ class WallTest extends \SakiTestCase {
         static::assertEquals($tileCount, $liveWall->getRemainTileCount());
     }
 
-    function testWallToJson() {
-        $round = $this->getInitRound();
-        $wall = $round->getWall();
-//        echo json_encode($wall->toJson());
+    function testActorWall() {
+        // todo
     }
 }

@@ -110,8 +110,8 @@ Saki.DemoView.prototype = {
         var keys = [
             'actor', 'point',
             'discard', 'profile',
-            'public', 'target', 'melded',
-            'commands'
+            'wall', 'commands',
+            'public', 'target', 'melded'
         ];
         var areasData = jsonData['areas'];
         $.each(jsonData['areas'], function (i, areaData) {

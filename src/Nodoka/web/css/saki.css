@@ -137,8 +137,17 @@ body {
     top: 30px;
 }
 
-.commandsContainer {
+.wallContainer {
     background-color: #00FF00;
+    width: 475px; /* = hand.width - left - hand.height */
+    height: 65px;
+    position: absolute;
+    left: 65px;
+    top: 165px;
+}
+
+.commandsContainer {
+    /*background-color: #00FF00;*/
     width: 475px; /* = hand.width - left - hand.height */
     height: 65px;
     position: absolute;

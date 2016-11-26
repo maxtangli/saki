@@ -91,22 +91,7 @@ class Wall {
     function toJson() {
         $a = $this->getDeadWall()->toJson();
         $a['remainTileCount'] = $this->getLiveWall()->getRemainTileCount();
-        $a['actorWalls'] = $this->toActorWallsJson();
         return $a;
-    }
-
-    /**
-     * @return array e.x
-     */
-    private function toActorWallsJson() {
-        $keySelector = function (SeatWind $seatWind) {
-            return $seatWind->__toString();
-        };
-        $valueSelector = function (SeatWind $seatWind) {
-            return $this->getActorWall($seatWind)->toJson();
-        };
-        return $this->playerType->getSeatWindList()
-            ->toMap($keySelector, $valueSelector);
     }
 
     /**
@@ -128,9 +113,10 @@ class Wall {
      * @return StackList
      */
     function getActorWall(SeatWind $seatWind) {
-        $start = $seatWind->getIndex();
+        $n = 17;
+        $start = ($seatWind->getIndex() - 1) * $n;
         return $this->stackList->getCopy()
-            ->take($start, 136 / 4);
+            ->take($start, $n);
     }
 
     /**

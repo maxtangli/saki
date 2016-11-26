@@ -4,7 +4,6 @@ namespace Saki\Game\Wall;
 use Saki\Game\Tile\Tile;
 use Saki\Game\Tile\TileList;
 use Saki\Util\ArrayList;
-use Saki\Util\Utils;
 
 /**
  * @package Saki\Game\Wall
@@ -29,11 +28,15 @@ class Stack {
     }
 
     /**
+     * @param bool $hide
      * @return array e.x. ['X', 'X'] or ['X', '2s'] or ['1s', '2s']
      */
-    function toJson() {
-        return $this->tileList->fillToCount('X', 2)
-            ->toJson();
+    function toJson(bool $hide = false) {
+        $json = $this->tileList->toJson($hide);
+        while (count($json) < 2) {
+            array_unshift($json, 'X');
+        }
+        return $json;
     }
 
     /**

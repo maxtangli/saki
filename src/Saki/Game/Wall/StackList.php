@@ -3,7 +3,6 @@ namespace Saki\Game\Wall;
 
 use Saki\Game\Tile\TileList;
 use Saki\Util\ArrayList;
-use Saki\Util\Utils;
 
 /**
  * @package Saki\Game\Wall
@@ -55,10 +54,13 @@ class StackList extends ArrayList {
     }
 
     /**
+     * @param bool $hide
      * @return array e.x. [['X', 'X'], ['X', '2s'], ['1s', '2s']]
      */
-    function toJson() {
-        $stackToJson = Utils::getMethodCallback('toJson');
+    function toJson(bool $hide = false) {
+        $stackToJson = function (Stack $stack) use ($hide) {
+            return $stack->toJson($hide);
+        };
         return $this->toArray($stackToJson);
     }
 

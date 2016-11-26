@@ -1110,8 +1110,11 @@ rush 97 Wall view: prepare logic 2.5h
 
 rush 98 Wall view: by actor
 
-- [x] json: player's wall view 0.3h
-- [ ] css: wall 0.5h
+- [x] json: player's wall view 0.5h
+- [x] json: hide 0.3h
+- [x] css: wall 0.5h
+- [x] css: actor.wall 0.6h
+- [ ] css: adjust wall area size
 
 rush Wall view: DeadWall
 

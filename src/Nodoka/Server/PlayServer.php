@@ -57,7 +57,7 @@ class PlayServer implements MessageComponentInterface {
      */
     private function send(ConnectionInterface $conn, array $json) {
         $data = json_encode($json);
-        $this->log("Connection {$conn->resourceId} sending data.");
+//        $this->log("Connection {$conn->resourceId} sending data.");
 
         $conn->send($data);
     }
@@ -127,7 +127,7 @@ class PlayServer implements MessageComponentInterface {
     }
 
     function onMessage(ConnectionInterface $from, $msg) {
-        $this->log("Connection {$from->resourceId} message: {$msg}.\n");
+        $this->log("Connection {$from->resourceId} message: {$msg}.");
 
         // try execute, jump to onError if command invalid
         $play = $this->getPlay();

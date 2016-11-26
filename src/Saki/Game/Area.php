@@ -1,7 +1,7 @@
 <?php
 namespace Saki\Game;
 
-use Saki\Tile\TileList;
+use Saki\Game\Tile\TileList;
 
 /**
  * @package Saki\Game
@@ -161,5 +161,13 @@ class Area {
     function getDiscard() {
         return $this->getRound()->getOpenHistory()
             ->getSelfDiscard($this->getSeatWind());
+    }
+
+    /**
+     * @return Wall\StackList
+     */
+    function getActorWall() {
+        return $this->getRound()->getWall()
+            ->getActorWall($this->getSeatWind());
     }
 }

@@ -130,6 +130,7 @@ class RoundSerializer {
             'point' => $area->getPoint(),
             'isReach' => $area->getRiichiStatus()->isRiichi(),
             'discard' => $area->getDiscard()->toArray(Utils::getToStringCallback()),
+            'wall' => $area->getActorWall()->toJson(true),
             'public' => $public,
             'target' => $target,
             'melded' => $hand->getMelded()->toTileStringArrayArray(),

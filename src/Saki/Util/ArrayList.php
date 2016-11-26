@@ -65,6 +65,14 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
     }
 
     /**
+     * @param $value
+     * @return array
+     */
+    function toRepeatArray($value) {
+        return array_pad([], $this->count(), $value);
+    }
+
+    /**
      * @param int $size
      * @return array
      */

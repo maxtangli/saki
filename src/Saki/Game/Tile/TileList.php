@@ -98,10 +98,13 @@ class TileList extends ArrayList {
     }
 
     /**
+     * @param bool $hide
      * @return array e.x. ['1s', '2s']
      */
-    function toJson() {
-        return $this->toArray(Utils::getToStringCallback());
+    function toJson(bool $hide = false) {
+        return $hide
+            ? $this->toRepeatArray('O')
+            : $this->toArray(Utils::getToStringCallback());
     }
 
     /**
