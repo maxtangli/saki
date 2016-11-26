@@ -12,7 +12,7 @@ class MockClient implements ConnectionInterface {
      */
     private static function generateResourceId() {
         static $nextId = 1;
-        return 'mock-' . $nextId++;
+        return 'AI-' . $nextId++;
     }
 
     private $lastReceived;

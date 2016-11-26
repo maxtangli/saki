@@ -102,6 +102,7 @@ class PlayServer implements MessageComponentInterface {
         $this->clearAIClients();
         $this->getPlay()->join($conn);
         $this->fillAIClients();
+        $this->goAI();
 
         $this->notifyAll();
     }
@@ -112,6 +113,7 @@ class PlayServer implements MessageComponentInterface {
         $this->clearAIClients();
         $this->getPlay()->leave($conn);
         $this->fillAIClients();
+        $this->goAI();
 
         $this->notifyAll();
     }
@@ -132,8 +134,15 @@ class PlayServer implements MessageComponentInterface {
         // try execute, jump to onError if command invalid
         $play = $this->getPlay();
         $play->tryExecute($from, $msg);
+        
+        $this->goAI();
 
+        $this->notifyAll();
+    }
+
+    private function goAI() {
         // todo refactor temp solution
+        $play = $this->getPlay();
         while (true) {
             $round = $play->getRound();
             $currentActor = $round->getCurrentSeatWind();
@@ -165,8 +174,6 @@ class PlayServer implements MessageComponentInterface {
 
             break;
         }
-
-        $this->notifyAll();
     }
     //endregion
 }

@@ -1114,12 +1114,17 @@ rush 98 Wall view: by actor
 - [x] json: hide 0.3h
 - [x] css: wall 0.5h
 - [x] css: actor.wall 0.6h
+
 - [ ] css: adjust wall area size
 
 rush Wall view: DeadWall
 
 - [ ] analyze: replaceWall 0.5h
 - [ ] DeadWall
+
+rush bug fix
+
+- [x] bug fix: AI not works after player leave. 0.1h
 
 rush meld view
 
