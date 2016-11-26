@@ -14,6 +14,7 @@ use Saki\Util\ArrayList;
 class Wall {
     // immutable
     private $tileSet;
+    private $playerType;
     private $dicePair;
     // variable
     private $stackList;
@@ -23,8 +24,9 @@ class Wall {
 
     /**
      * @param TileSet $tileSet
+     * @param PlayerType $playerType
      */
-    function __construct(TileSet $tileSet) {
+    function __construct(TileSet $tileSet, PlayerType $playerType) {
         $valid = ($tileSet->count() == 136);
         if (!$valid) {
             throw new \InvalidArgumentException();
@@ -32,6 +34,7 @@ class Wall {
 
         $this->tileSet = $tileSet;
         $this->dicePair = new DicePair();
+        $this->playerType = $playerType;
         $generateStack = function () {
             return new Stack();
         };
@@ -69,10 +72,10 @@ class Wall {
         $this->doraFacade = new DoraFacade($this->deadWall);
 
         // 5.The deal
-        // todo
+        // already done in liveWall
 
         // 6.Open dora indicator
-        // todo
+        // already done in deadWall
     }
 
     /**
@@ -88,7 +91,22 @@ class Wall {
     function toJson() {
         $a = $this->getDeadWall()->toJson();
         $a['remainTileCount'] = $this->getLiveWall()->getRemainTileCount();
+        $a['actorWalls'] = $this->toActorWallsJson();
         return $a;
+    }
+
+    /**
+     * @return array e.x
+     */
+    private function toActorWallsJson() {
+        $keySelector = function (SeatWind $seatWind) {
+            return $seatWind->__toString();
+        };
+        $valueSelector = function (SeatWind $seatWind) {
+            return $this->getActorWall($seatWind)->toJson();
+        };
+        return $this->playerType->getSeatWindList()
+            ->toMap($keySelector, $valueSelector);
     }
 
     /**
@@ -103,6 +121,16 @@ class Wall {
      */
     function getDicePair() {
         return $this->dicePair;
+    }
+
+    /**
+     * @param SeatWind $seatWind
+     * @return StackList
+     */
+    function getActorWall(SeatWind $seatWind) {
+        $start = $seatWind->getIndex();
+        return $this->stackList->getCopy()
+            ->take($start, 136 / 4);
     }
 
     /**

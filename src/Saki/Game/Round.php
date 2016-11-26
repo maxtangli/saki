@@ -57,7 +57,7 @@ class Round {
         $this->pointHolder = new PointHolder($rule->getScoreStrategy()->getPointSetting());
 
         // round variable
-        $this->wall = new Wall($rule->getTileSet());
+        $this->wall = new Wall($rule->getTileSet(), $rule->getPlayerType());
         $this->turn = Turn::createFirst();
         $this->phaseState = new NullPhaseState();
         $this->openHistory = new OpenHistory();

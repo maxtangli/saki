@@ -2,7 +2,9 @@
 namespace Saki\Game\Wall;
 
 use Saki\Game\Tile\Tile;
+use Saki\Game\Tile\TileList;
 use Saki\Util\ArrayList;
+use Saki\Util\Utils;
 
 /**
  * @package Saki\Game\Wall
@@ -12,7 +14,7 @@ class Stack {
     private $tileList;
 
     function __construct() {
-        $this->tileList = new ArrayList();
+        $this->tileList = new TileList();
     }
 
     function init() {
@@ -24,6 +26,14 @@ class Stack {
      */
     function __toString() {
         return $this->tileList->__toString();
+    }
+
+    /**
+     * @return array e.x. ['X', 'X'] or ['X', '2s'] or ['1s', '2s']
+     */
+    function toJson() {
+        return $this->tileList->fillToCount('X', 2)
+            ->toJson();
     }
 
     /**

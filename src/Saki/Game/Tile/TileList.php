@@ -2,6 +2,7 @@
 namespace Saki\Game\Tile;
 
 use Saki\Util\ArrayList;
+use Saki\Util\Utils;
 
 /**
  * @package Saki\Game\Tile
@@ -94,6 +95,13 @@ class TileList extends ArrayList {
         }
 
         return $s;
+    }
+
+    /**
+     * @return array e.x. ['1s', '2s']
+     */
+    function toJson() {
+        return $this->toArray(Utils::getToStringCallback());
     }
 
     /**

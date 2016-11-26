@@ -102,11 +102,21 @@ class Utils {
      */
     static function getToStringCallback() {
         /**
-         * @param object $object
+         * @param mixed $value
          * @return string
          */
-        return function ($object) {
-            return $object->__toString();
+        return function ($value) {
+            return is_object($value) ? $value->__toString() : $value;
+        };
+    }
+
+    /**
+     * @param string $method
+     * @return \Closure
+     */
+    static function getMethodCallback(string $method) {
+        return function ($value) use ($method) {
+            return $value->$method();
         };
     }
 

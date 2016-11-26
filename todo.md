@@ -1102,25 +1102,21 @@ rush 96 Wall view: LiveWall 5.5h
 - [x] refactor: replace Wall.XX by LiveWallTemp.XX 0.2h
 - [x] adapt LiveWall into Wall 0.6h
 
-rush 97 Wall view: prepare logic
+rush 97 Wall view: prepare logic 2.5h
 
 - [x] two cut by dice pair 1h
 - [x] refactor&test break() 1.4h
-- [ ] refactor deal
+- refactor deal 0.1h
+
+rush 98 Wall view: by actor
+
+- [x] json: player's wall view 0.3h
+- [ ] css: wall 0.5h
 
 rush Wall view: DeadWall
 
 - [ ] analyze: replaceWall 0.5h
-
 - [ ] DeadWall
-
-rush Wall view: by actor
-
-- [ ] player's wall view
-
-rush Wall view: css
-
-- [ ] css: wall 0.5h
 
 rush meld view
 
