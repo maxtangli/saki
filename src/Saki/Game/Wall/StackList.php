@@ -63,6 +63,32 @@ class StackList extends ArrayList {
         return (new TileList())->fromSelectMany($this, $selector);
     }
 
+    /**
+     * @param int $diceResult
+     * @return StackList[] [$liveStackList, $deadStackList]
+     */
+    function toTwoBreak(int $diceResult) {
+        if ($this->count() != 68) {
+            throw new \LogicException();
+        }
+
+        // E       S        W        N
+        // 0       1        2        3
+        // 0...16, 17...33, 34...50, 51...67
+        // e.x. dice 5, last 16, aliveFirst 11, dead 12...18, live 11...0,67...19
+        $dealWindIndex = ($diceResult - 1) % 4;
+        $last = ($dealWindIndex + 1) * 17 - 1;
+        $aliveFirst = $last - $diceResult;
+        /** @var StackList $baseStackList */
+        $baseStackList = $this->getCopy()
+            ->shiftCyclicLeft($aliveFirst + 1);
+        $liveStackList = $baseStackList->getCopy()
+            ->removeFirst(7);
+        $deadStackList = $baseStackList->getCopy()
+            ->take(0, 7);
+        return [$liveStackList, $deadStackList];
+    }
+
     private static function assertTileListEvenCount(TileList $tileList) {
         $valid = ($tileList->count() % 2 == 0);
         if (!$valid) {

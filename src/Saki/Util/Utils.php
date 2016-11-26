@@ -62,13 +62,19 @@ class Utils {
 
     /**
      * @param $targetValue
-     * @param callable $equal
+     * @param bool $strict
      * @return \Closure
      */
-    static function toPredicate($targetValue, callable $equal = null) {
-        return function ($v) use ($targetValue, $equal) {
-            return $equal !== null ? $equal($v, $targetValue) : $v == $targetValue;
-        };
+    static function toPredicate($targetValue, bool $strict = false) {
+        if ($strict) {
+            return function ($v) use ($targetValue) {
+                return $v === $targetValue;
+            };
+        } else {
+            return function ($v) use ($targetValue) {
+                return $v == $targetValue;
+            };
+        }
     }
 
     /**
@@ -76,7 +82,7 @@ class Utils {
      * @return \Closure
      */
     static function toClassPredicate($class) {
-        return function ($v) use($class) {
+        return function ($v) use ($class) {
             return $v instanceof $class;
         };
     }

@@ -13,10 +13,14 @@ class SakiTestCase extends \PHPUnit_Framework_TestCase {
     //region PHPUnit_Framework_TestCase override
     static function assertEquals($expected, $actual, $message = '', $delta = 0.0, $maxDepth = 10, $canonicalize = false, $ignoreCase = false) {
         if ($message === '' && is_object($expected) && is_object($actual)) {
-            $message = sprintf(
-                'Failed asserting that two objects are equal, $expected[%s] but $actual[%s].',
-                $expected, $actual
-            );
+            $message = "Failed asserting that two objects are equal, \$expected[$expected] but \$actual[$actual].";
+        }
+        parent::assertEquals($expected, $actual, $message, $delta, $maxDepth, $canonicalize, $ignoreCase);
+    }
+
+    static function assertSame($expected, $actual, $message = '', $delta = 0.0, $maxDepth = 10, $canonicalize = false, $ignoreCase = false) {
+        if ($message === '' && is_object($expected) && is_object($actual)) {
+            $message = "Failed asserting that two objects are same, \$expected[$expected] but \$actual[$actual].";
         }
         parent::assertEquals($expected, $actual, $message, $delta, $maxDepth, $canonicalize, $ignoreCase);
     }
@@ -119,7 +123,7 @@ class SakiTestCase extends \PHPUnit_Framework_TestCase {
         $round = $this->getCurrentRound();
         $parser = $round->getProcessor()->getParser();
         $command = $parser->parseLine($line);
-        
+
         if ($executable) {
             $message = sprintf('Failed asserting that Command[%s] is executable.', $line);
             $this->assertTrue($command->executable(), $message);
@@ -206,7 +210,7 @@ class SakiTestCase extends \PHPUnit_Framework_TestCase {
             $this->assertEquals($expected, $actual);
         }
     }
-    
+
     private function assertPhaseImpl(int $phaseValue, string $expectedCurrentSeatWind = null) {
         $round = $this->getCurrentRound();
 

@@ -1105,7 +1105,8 @@ rush 96 Wall view: LiveWall 5.5h
 rush 97 Wall view: prepare logic
 
 - [x] two cut by dice pair 1h
-- [ ] test
+- [x] refactor&test break() 1.4h
+- [ ] refactor deal
 
 rush Wall view: DeadWall
 
@@ -1113,9 +1114,11 @@ rush Wall view: DeadWall
 
 - [ ] DeadWall
 
+rush Wall view: by actor
+
 - [ ] player's wall view
 
-rush 97 Wall view: css
+rush Wall view: css
 
 - [ ] css: wall 0.5h
 

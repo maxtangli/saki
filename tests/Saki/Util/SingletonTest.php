@@ -3,12 +3,21 @@
 namespace SingletonTest;
 
 class SingletonMockClass1 extends \Saki\Util\Singleton {
+    function __toString() {
+        return 'SingletonMockClass1';
+    }
 }
 
 class SingletonMockClass2 extends SingletonMockClass1 {
+    function __toString() {
+        return 'SingletonMockClass2';
+    }
 }
 
 class SingletonMockClass3 extends SingletonMockClass2 {
+    function __toString() {
+        return 'SingletonMockClass3';
+    }
 }
 
 class SingletonTest extends \SakiTestCase {

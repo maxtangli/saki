@@ -61,26 +61,12 @@ class Wall {
 
         // 3.Roll two dice
         $diceResult = $this->getDicePair()->roll();
-        $dealWindIndex = $diceResult % 4;
 
         // 4.Break the wall
-        // E       S        W        N
-        // 0       1        2        3
-        // 0...16, 17...33, 34...50, 51...67
-        // e.x. dice 2, last 16, aliveFirst 14, dead 15...21, live 14...0,67...22
-
-        $last = $dealWindIndex * 17 - 1;
-        $aliveFirst = $last - $diceResult;
-        /** @var StackList $baseStackList */
-        $baseStackList = $this->stackList->getCopy()
-            ->shiftCyclicLeft($aliveFirst + 1);
-        $deadStackList = $baseStackList->getCopy()
-            ->take(0, 7);
-        $liveStackList = $baseStackList->getCopy()
-            ->removeFirst(7);
+        list($liveStackList, $deadStackList) = $this->stackList->toTwoBreak($diceResult);
+        $this->liveWall->init($liveStackList);
         $this->deadWall = new DeadWall($deadStackList->toTileList());
         $this->doraFacade = new DoraFacade($this->deadWall);
-        $this->liveWall->init($liveStackList);
 
         // 5.The deal
         // todo

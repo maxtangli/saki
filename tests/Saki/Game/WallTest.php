@@ -2,6 +2,7 @@
 
 use Saki\Game\Tile\Tile;
 use Saki\Game\Tile\TileList;
+use Saki\Game\Tile\TileSet;
 use Saki\Game\Wall\LiveWall;
 use Saki\Game\Wall\Stack;
 use Saki\Game\Wall\StackList;
@@ -26,6 +27,24 @@ class WallTest extends \SakiTestCase {
         $tileList = TileList::fromString('0123s');
         $stackList = StackList::createByTileList($tileList);
         $this->assertEquals($tileList, $stackList->toTileList());
+    }
+
+    function testStackListBreak() {
+        // E       S        W        N
+        // 0       1        2        3
+        // 0...16, 17...33, 34...50, 51...67
+        // e.x. dice 5, last 16, aliveFirst 11, dead 12...18, live 11...0,67...19
+        $stackList = StackList::createByTileList(TileSet::createStandard());
+        $diceResult = 5;
+        $twoBreak = $stackList->toTwoBreak($diceResult);
+
+        $liveStackList = $twoBreak[0];
+        $this->assertSame($stackList[11], $liveStackList->getLast());
+        $this->assertSame($stackList[19], $liveStackList->getFirst());
+
+        $deadStackList = $twoBreak[1];
+        $this->assertSame($stackList[12], $deadStackList->getFirst());
+        $this->assertSame($stackList[18], $deadStackList->getLast());
     }
 
     function testLiveWall() {
