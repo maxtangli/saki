@@ -776,6 +776,14 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
     /**
      * @return $this
      */
+    function reverse() {
+        $this->a = array_reverse($this->a);
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
     function shuffle() {
         $this->assertWritable();
         shuffle($this->a);

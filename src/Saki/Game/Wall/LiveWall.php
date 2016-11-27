@@ -1,21 +1,19 @@
 <?php
 namespace Saki\Game\Wall;
 
-use Saki\Game\PlayerType;
 use Saki\Game\Tile\Tile;
 
 /**
  * @package Saki\Game\Wall
  */
-class LiveWall {
+abstract class LiveWall {
+    private $fromLast;
     /** @var StackList */
     private $stackList;
 
-    /**
-     * @param StackList|null $stackList
-     */
-    function __construct(StackList $stackList = null) {
-        $this->init($stackList);
+    protected function __construct(bool $fromLast) {
+        $this->fromLast = $fromLast;
+        $this->init();
     }
 
     /**
@@ -43,7 +41,7 @@ class LiveWall {
     /**
      * @param Tile $tile
      */
-    function debugSetNextDrawTile(Tile $tile) {
+    function debugSetNextTile(Tile $tile) {
         $this->getCurrentStack()->setNextPopTile($tile); // validate
     }
 
@@ -59,7 +57,7 @@ class LiveWall {
         }
 
         while ($nTodo-- > 0) {
-            $this->draw();
+            $this->outNext();
         }
     }
 
@@ -67,7 +65,28 @@ class LiveWall {
      * @return Stack
      */
     private function getCurrentStack() {
-        return $this->stackList->getLast(); // validate
+        return $this->fromLast
+            ? $this->stackList->getLast()
+            : $this->stackList->getFirst(); // validate
+    }
+
+    protected function ableOutNext() {
+        return $this->getRemainTileCount() > 0;
+    }
+
+    /**
+     * @return Tile
+     */
+    protected function outNext() {
+        $currentStack = $this->getCurrentStack(); // validate
+        $tile = $currentStack->popTile();
+
+        if ($currentStack->isEmpty()) {
+            $index = $this->fromLast ? $this->stackList->getLastIndex() : $this->stackList->getFirstIndex();
+            $this->stackList->removeAt($index);
+        }
+
+        return $tile;
     }
 
     /**
@@ -85,41 +104,5 @@ class LiveWall {
         return $stackCount
             ? ($stackCount - 1) * 2 + $this->getCurrentStack()->getCount()
             : 0;
-    }
-
-    /**
-     * @return bool
-     */
-    function isBottomOfTheSea() {
-        return $this->getRemainTileCount() == 0;
-    }
-
-    /**
-     * @return Tile
-     */
-    function draw() {
-        $currentStack = $this->getCurrentStack();
-        $tile = $currentStack->popTile();
-        if ($currentStack->isEmpty()) {
-            $this->stackList->removeLast();
-        }
-        return $tile;
-    }
-
-    /**
-     * @param PlayerType $playerType
-     * @return Tile[][] e.x. [E => [1s,2s...] ...]
-     */
-    function deal(PlayerType $playerType) {
-        $result = $playerType->getSeatWindMap([]);
-        foreach ([4, 4, 4, 1] as $drawTileCount) {
-            foreach ($result as $k => $notUsed) {
-                $nTodo = $drawTileCount;
-                while ($nTodo-- > 0) {
-                    $result[$k][] = $this->draw();
-                }
-            }
-        }
-        return $result;
     }
 }

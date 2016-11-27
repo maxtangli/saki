@@ -3,7 +3,7 @@
 use Saki\Game\Tile\Tile;
 use Saki\Game\Tile\TileList;
 use Saki\Game\Tile\TileSet;
-use Saki\Game\Wall\LiveWall;
+use Saki\Game\Wall\DrawWall;
 use Saki\Game\Wall\Stack;
 use Saki\Game\Wall\StackList;
 
@@ -25,7 +25,7 @@ class WallTest extends \SakiTestCase {
 
     function testStackList() {
         $tileList = TileList::fromString('0123s');
-        $stackList = StackList::createByTileList($tileList);
+        $stackList = StackList::fromTileList($tileList);
         $this->assertEquals($tileList, $stackList->toTileList());
     }
 
@@ -34,7 +34,7 @@ class WallTest extends \SakiTestCase {
         // 0       1        2        3
         // 0...16, 17...33, 34...50, 51...67
         // e.x. dice 5, last 16, aliveFirst 11, dead 12...18, live 11...0,67...19
-        $stackList = StackList::createByTileList(TileSet::createStandard());
+        $stackList = StackList::fromTileList(TileSet::createStandard());
         $diceResult = 5;
         $twoBreak = $stackList->toTwoBreak($diceResult);
 
@@ -48,9 +48,9 @@ class WallTest extends \SakiTestCase {
     }
 
     function testLiveWall() {
-        $liveWall = new LiveWall();
+        $liveWall = new DrawWall();
         $tileList = TileList::fromString('0123s');
-        $liveWall->init(StackList::createByTileList($tileList));
+        $liveWall->init(StackList::fromTileList($tileList));
         // 0 2
         // 1 3
         static::assertLiveWallDraw($tileList[2], 2, 3, $liveWall);
@@ -58,9 +58,9 @@ class WallTest extends \SakiTestCase {
         static::assertLiveWallDraw($tileList[0], 1, 1, $liveWall);
         static::assertLiveWallDraw($tileList[1], 0, 0, $liveWall);
 
-        $liveWall->init(StackList::createByTileList($tileList));
+        $liveWall->init(StackList::fromTileList($tileList));
         $mockNext = Tile::fromString('E');
-        $liveWall->debugSetNextDrawTile($mockNext);
+        $liveWall->debugSetNextTile($mockNext);
         static::assertLiveWallDraw($mockNext, 2, 3, $liveWall);
         $liveWall->debugSetRemainTileCount(1);
         static::assertLiveWallDraw($tileList[1], 0, 0, $liveWall);
@@ -68,7 +68,7 @@ class WallTest extends \SakiTestCase {
         // test deal: ignore
     }
 
-    static function assertLiveWallDraw(Tile $tile, int $stackCount, int $tileCount, LiveWall $liveWall) {
+    static function assertLiveWallDraw(Tile $tile, int $stackCount, int $tileCount, DrawWall $liveWall) {
         static::assertEquals($tile, $liveWall->draw());
         static::assertEquals($stackCount, $liveWall->getRemainStackCount());
         static::assertEquals($tileCount, $liveWall->getRemainTileCount());

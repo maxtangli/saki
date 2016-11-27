@@ -89,7 +89,7 @@ class PrivatePhaseState extends PhaseState {
         $round->toSeatWind($actor);
 
         if ($this->shouldDraw()) {
-            $newTile = $round->getWall()->getLiveWall()
+            $newTile = $round->getWall()->getDrawWall()
                 ->draw();
             $newTarget = new Target($newTile, TargetType::create(TargetType::DRAW), $actor);
             $round->getTargetHolder()

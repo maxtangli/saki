@@ -22,7 +22,7 @@ class Riichi extends Open {
         && $area->getHand()->isConcealed()
         && !$area->getRiichiStatus()->isRiichi()
         && $area->getPoint() >= 1000
-        && $area->getRound()->getWall()->getLiveWall()->getRemainTileCount() >= 4
+        && $area->getRound()->getWall()->getDrawWall()->getRemainTileCount() >= 4
         && $waitingAnalyzer->isWaitingAfterDiscard($private, $melded, $tile); // slowest logic last
     }
 

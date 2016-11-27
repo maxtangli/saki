@@ -3,7 +3,7 @@ namespace Saki\Game;
 
 use Saki\Game\Tile\TileSet;
 use Saki\Game\Wall\DeadWall;
-use Saki\Game\Wall\LiveWall;
+use Saki\Game\Wall\DrawWall;
 use Saki\Game\Wall\Stack;
 use Saki\Game\Wall\StackList;
 use Saki\Util\ArrayList;
@@ -18,7 +18,7 @@ class Wall {
     private $dicePair;
     // variable
     private $stackList;
-    private $liveWall;
+    private $drawWall;
     private $deadWall;
     private $doraFacade;
 
@@ -39,7 +39,7 @@ class Wall {
             return new Stack();
         };
         $this->stackList = (new StackList())->fromGenerator(4 * 17, $generateStack);
-        $this->liveWall = new LiveWall();
+        $this->drawWall = new DrawWall();
 
         $this->init();
     }
@@ -66,13 +66,13 @@ class Wall {
         $diceResult = $this->getDicePair()->roll();
 
         // 4.Break the wall
-        list($liveStackList, $deadStackList) = $this->stackList->toTwoBreak($diceResult);
-        $this->liveWall->init($liveStackList);
-        $this->deadWall = new DeadWall($deadStackList->toTileList());
+        list($drawStackList, $deadStackList) = $this->stackList->toTwoBreak($diceResult);
+        $this->drawWall->init($drawStackList);
+        $this->deadWall = new DeadWall($deadStackList);
         $this->doraFacade = new DoraFacade($this->deadWall);
 
         // 5.The deal
-        // already done in liveWall
+        // already done in drawWall
 
         // 6.Open dora indicator
         // already done in deadWall
@@ -82,7 +82,7 @@ class Wall {
      * @return string
      */
     function __toString() {
-        return $this->getDeadWall()->__toString() . ',' . $this->getLiveWall()->__toString();
+        return $this->getDeadWall()->__toString() . ',' . $this->getDrawWall()->__toString();
     }
 
     /**
@@ -90,7 +90,7 @@ class Wall {
      */
     function toJson() {
         $a = $this->getDeadWall()->toJson();
-        $a['remainTileCount'] = $this->getLiveWall()->getRemainTileCount();
+        $a['remainTileCount'] = $this->getDrawWall()->getRemainTileCount();
         return $a;
     }
 
@@ -120,10 +120,10 @@ class Wall {
     }
 
     /**
-     * @return LiveWall
+     * @return DrawWall
      */
-    function getLiveWall() {
-        return $this->liveWall;
+    function getDrawWall() {
+        return $this->drawWall;
     }
 
     /**

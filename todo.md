@@ -1108,7 +1108,7 @@ rush 97 Wall view: prepare logic 2.5h
 - [x] refactor&test break() 1.4h
 - refactor deal 0.1h
 
-rush 98 Wall view: by actor 2.2h
+rush 98 Wall view: by actor 2.3h
 
 - [x] json: player's wall view 0.5h
 - [x] json: hide 0.3h
@@ -1117,15 +1117,18 @@ rush 98 Wall view: by actor 2.2h
 
 - [x] css: adjust wall area size 0.3h
 
+- [x] bug fix: AI not works after player leave. 0.1h
+- [x] bug fix: AI works when no player exist // bug occurs since not enough unit tests
+
 rush Wall view: DeadWall
 
-- [ ] analyze: replaceWall 0.5h
-- [ ] DeadWall
+- [x] analyze: replaceWall 0.7h
 
-rush bug fix
+- [x] refactor: LiveWallImpl adaptor 0.6h
+- [x] refactor: adapt ReplacementWall into DeadWall 0.4h
+- [x] refactor: split DeadWall.ReplacementWall 0.3h
 
-- [x] bug fix: AI not works after player leave. 0.1h
-- [x] bug fix: AI works when no player exist
+- [ ] refactor: merge DrawWall, ReplacementWall into LiveWall
 
 rush meld view
 

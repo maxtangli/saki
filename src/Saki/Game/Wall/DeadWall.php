@@ -1,6 +1,6 @@
 <?php
 namespace Saki\Game\Wall;
-use Saki\Game\Tile\Tile;
+
 use Saki\Game\Tile\TileList;
 use Saki\Util\ArrayList;
 use Saki\Util\Utils;
@@ -14,20 +14,23 @@ class DeadWall {
      * 0 2 | 4 6 8 10 12 <- indicator    * 5
      * 1 3 | 5 7 9 11 13 <- uraIndicator * 5
      */
+
     /** @var TileList */
     private $tileList;
-    /** @var TileList */
-    private $replacementList;
+    // replacement
+    private $replacementWall;
+    // indicators
     private $indicatorCandidates;
     private $uraIndicatorCandidates;
     private $indicatorCount;
     private $uraIndicatorOpened;
 
     /**
-     * @param TileList $tileList
+     * @param StackList $stackList
      */
-    function __construct(TileList $tileList) {
-        $this->reset($tileList);
+    function __construct(StackList $stackList) {
+        $this->replacementWall = new ReplacementWall();
+        $this->reset($stackList->toTileList());
     }
 
     /**
@@ -42,7 +45,10 @@ class DeadWall {
             );
         }
         $this->tileList = $tileList;
-        $this->replacementList = $tileList->getCopy()->take(0, 4);
+
+        $replacementList = $tileList->getCopy()->take(0, 4);
+        $this->replacementWall->init(StackList::fromTileList($replacementList));
+
         $this->indicatorCandidates = [$tileList[4], $tileList[6], $tileList[8], $tileList[10], $tileList[12]];
         $this->uraIndicatorCandidates = [$tileList[5], $tileList[7], $tileList[9], $tileList[11], $tileList[13]];
         $this->indicatorCount = $indicatorCount;
@@ -88,18 +94,17 @@ class DeadWall {
     }
 
     /**
-     * @param Tile $tile
+     * @return ReplacementWall
      */
-    function debugSetNextReplacement(Tile $tile) {
-        $this->assertAbleDrawReplacement();
-        $this->replacementList->replaceAt(0, $tile);
+    function getReplacementWall() {
+        return $this->replacementWall;
     }
 
     /**
      * @return int
      */
-    function getRemainReplacementCount() {
-        return $this->replacementList->count();
+    private function getRemainReplacementCount() {
+        return $this->replacementWall->getRemainTileCount();
     }
 
     /**
@@ -144,33 +149,6 @@ class DeadWall {
     function getUraIndicatorList() {
         return (new TileList($this->uraIndicatorCandidates))
             ->take(0, $this->getUraIndicatorCount());
-    }
-
-    /**
-     * @return Tile
-     */
-    function drawReplacement() {
-        $this->assertAbleDrawReplacement();
-
-        $tile = $this->replacementList->getFirst();
-        $this->replacementList->removeFirst();
-
-        $this->openIndicator();
-
-        return $tile;
-    }
-
-    /**
-     * @return bool
-     */
-    function isAbleDrawReplacement() {
-        return $this->getRemainReplacementCount() > 0;
-    }
-
-    protected function assertAbleDrawReplacement() {
-        if (!$this->isAbleDrawReplacement()) {
-            throw new \InvalidArgumentException('not drawable');
-        }
     }
 
     /**

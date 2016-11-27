@@ -4,6 +4,7 @@ use Saki\Game\DoraFacade;
 use Saki\Game\Tile\Tile;
 use Saki\Game\Tile\TileList;
 use Saki\Game\Wall\DeadWall;
+use Saki\Game\Wall\StackList;
 
 class DeadWallTest extends \SakiTestCase {
     protected function assertTileFan(DoraFacade $f, string $tileString, $doraFan, $uraDoraFan = 0, $redDoraFan = 0) {
@@ -28,8 +29,8 @@ class DeadWallTest extends \SakiTestCase {
          * E W | 1s 1s 2s 3s 4s <- indicator    * 5
          * S N | 1m 1m 2m 3m 4m <- uraIndicator * 5
          */
-        $l = TileList::fromString('EEEE1s1m1s1m2s2m3s3m4s4m');
-        $w = new DeadWall($l);
+        $stackList = StackList::fromTileList(TileList::fromString('EEEE1s1m1s1m2s2m3s3m4s4m'));
+        $w = new DeadWall($stackList);
         $f = new DoraFacade($w);
 
         // 1s

@@ -12,7 +12,7 @@ class StackList extends ArrayList {
      * @param int $n
      * @return static
      */
-    static function createByStackCount(int $n) {
+    static function fromStackCount(int $n) {
         $generateStack = function () {
             return new Stack();
         };
@@ -28,9 +28,9 @@ class StackList extends ArrayList {
      * @param TileList $tileList
      * @return static
      */
-    static function createByTileList(TileList $tileList) {
+    static function fromTileList(TileList $tileList) {
         self::assertTileListEvenCount($tileList);
-        $stackList = static::createByStackCount($tileList->count() / 2);
+        $stackList = static::fromStackCount($tileList->count() / 2);
         $stackList->initByTileList($tileList);
         return $stackList;
     }

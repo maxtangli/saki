@@ -32,11 +32,11 @@ class MockNextReplaceCommand extends DebugCommand {
 
     //region Command impl
     protected function executableImpl(Round $round) {
-        return $this->getDeadWall()->isAbleDrawReplacement();
+        return $this->getDeadWall()->getReplacementWall()->ableDrawReplacement();
     }
 
     protected function executeImpl(Round $round) {
-        $this->getDeadWall()->debugSetNextReplacement($this->getMockTile());
+        $this->getDeadWall()->getReplacementWall()->debugSetNextTile($this->getMockTile());
     }
     //endregion
 }
