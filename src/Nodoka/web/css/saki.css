@@ -184,6 +184,7 @@ body {
 
 /*-- wall --*/
 .wall {
+    margin-top: 20px;
 }
 
 .stack {
@@ -227,10 +228,16 @@ body {
     color: transparent; /* hidden text */
 }
 
+.tile-wall {
+    width: 27.5px;
+    height: 37.5px;
+    background-size: 27.5px 37.5px; /* 25/30 of .tile */
+}
+
 .tile-indicator {
     width: 16.5px;
     height: 22.5px;
-    background-size: 16.5px 22.5px;
+    background-size: 16.5px 22.5px; /* 15/30 of .tile */
 }
 
 .tile-1m {

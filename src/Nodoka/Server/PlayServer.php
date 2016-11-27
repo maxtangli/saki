@@ -134,7 +134,7 @@ class PlayServer implements MessageComponentInterface {
         // try execute, jump to onError if command invalid
         $play = $this->getPlay();
         $play->tryExecute($from, $msg);
-        
+
         $this->goAI();
 
         $this->notifyAll();
@@ -143,6 +143,15 @@ class PlayServer implements MessageComponentInterface {
     private function goAI() {
         // todo refactor temp solution
         $play = $this->getPlay();
+
+        // do nothing if no player is playing
+        $isAI = function (Participant $participant) {
+            return $participant->isAI();
+        };
+        if ($play->getParticipantList()->all($isAI)) {
+            return;
+        }
+
         while (true) {
             $round = $play->getRound();
             $currentActor = $round->getCurrentSeatWind();
@@ -163,9 +172,6 @@ class PlayServer implements MessageComponentInterface {
             } elseif ($round->getPhase()->isPublic()) {
                 // if public phase and public actors are all AI, execute passAll
                 $publicParticipantList = $play->getParticipantList($currentActor, false, true);
-                $isAI = function (Participant $participant) {
-                    return $participant->isAI();
-                };
                 if ($publicParticipantList->all($isAI)) {
                     $round->processLine('passAll');
                     continue;

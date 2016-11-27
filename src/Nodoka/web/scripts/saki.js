@@ -164,17 +164,21 @@ Saki.DemoView.prototype = {
             });
     },
     /*-- wall --*/
-    stack: function (stackData) {
-        return $('<span class="stack"></span>')
-            .append(this.tile(stackData[0]))
-            .append(this.tile(stackData[1]));
+    deadWall: function (deadWallData) {
+        return this.wall(deadWallData);
     },
     wall: function (stacksData) {
         return $('<div class="wall"></div>')
             .append(stacksData.map($.proxy(this.stack, this)));
     },
-    deadWall: function (deadWallData) {
-        return this.wall(deadWallData);
+    stack: function (stackData) {
+        return $('<span class="stack"></span>')
+            .append(this.tileWall(stackData[0]))
+            .append(this.tileWall(stackData[1]));
+    },
+    tileWall: function (tileData) {
+        return this.tile(tileData)
+            .addClass('tile-wall');
     },
     /*-- hand --*/
     public: function (tilesData) {

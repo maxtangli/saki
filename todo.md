@@ -1108,14 +1108,14 @@ rush 97 Wall view: prepare logic 2.5h
 - [x] refactor&test break() 1.4h
 - refactor deal 0.1h
 
-rush 98 Wall view: by actor
+rush 98 Wall view: by actor 2.2h
 
 - [x] json: player's wall view 0.5h
 - [x] json: hide 0.3h
 - [x] css: wall 0.5h
 - [x] css: actor.wall 0.6h
 
-- [ ] css: adjust wall area size
+- [x] css: adjust wall area size 0.3h
 
 rush Wall view: DeadWall
 
@@ -1125,6 +1125,7 @@ rush Wall view: DeadWall
 rush bug fix
 
 - [x] bug fix: AI not works after player leave. 0.1h
+- [x] bug fix: AI works when no player exist
 
 rush meld view
 
