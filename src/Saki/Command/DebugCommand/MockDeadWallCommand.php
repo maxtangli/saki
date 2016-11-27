@@ -48,7 +48,7 @@ class MockDeadWallCommand extends DebugCommand {
 
     //region Command impl
     protected function executableImpl(Round $round) {
-        return $this->getTileList()->count() == $this->getDeadWall()->getRemainTileCount();
+        return $this->getTileList()->count() == 10;
     }
 
     protected function executeImpl(Round $round) {

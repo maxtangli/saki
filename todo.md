@@ -1120,15 +1120,23 @@ rush 98 Wall view: by actor 2.3h
 - [x] bug fix: AI not works after player leave. 0.1h
 - [x] bug fix: AI works when no player exist // bug occurs since not enough unit tests
 
-rush Wall view: DeadWall
+rush 99 Wall view: ReplacementWall
 
 - [x] analyze: replaceWall 0.7h
 
+  introduce ReplacementWall
 - [x] refactor: LiveWallImpl adaptor 0.6h
 - [x] refactor: adapt ReplacementWall into DeadWall 0.4h
 - [x] refactor: split DeadWall.ReplacementWall 0.3h
+- [x] refactor: merge DrawWall, ReplacementWall into LiveWall 0.2h
 
-- [ ] refactor: merge DrawWall, ReplacementWall into LiveWall
+  split ReplacementWall and DeadWall
+- [x] refactor: change MockDeadWallCommand 0.1h
+- [ ] refactor: move ReplacementWall into Wall
+
+rush Wall view: IndicatorWall
+
+- [ ] refactor: rename DeadWall into IndicatorWall
 
 rush meld view
 

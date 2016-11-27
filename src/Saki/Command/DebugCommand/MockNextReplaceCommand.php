@@ -32,7 +32,7 @@ class MockNextReplaceCommand extends DebugCommand {
 
     //region Command impl
     protected function executableImpl(Round $round) {
-        return $this->getDeadWall()->getReplacementWall()->ableDrawReplacement();
+        return $this->getDeadWall()->getReplacementWall()->ableOutNext();
     }
 
     protected function executeImpl(Round $round) {

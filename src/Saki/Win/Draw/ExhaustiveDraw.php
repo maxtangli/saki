@@ -14,7 +14,7 @@ class ExhaustiveDraw extends Draw {
         $nextState = $round->getPhaseState()->getNextState($round);
         $isExhaustiveDraw = $nextState->getPhase()->isPrivate()
             && $nextState->shouldDraw()
-            && $round->getWall()->getDrawWall()->isBottomOfTheSea();
+            && $round->getWall()->getDrawWall()->isEmpty();
         return $isExhaustiveDraw;
     }
 

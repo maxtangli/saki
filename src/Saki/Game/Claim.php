@@ -167,7 +167,7 @@ class Claim implements Immutable {
         // kong commands require ableDrawReplacement
         // todo note: seems not good to place here
         $validDrawReplacementAble = !$toMeld->isQuad()
-            || $round->getWall()->getDeadWall()->getReplacementWall()->ableDrawReplacement();
+            || $round->getWall()->getDeadWall()->getReplacementWall()->ableOutNext();
         if (!$validDrawReplacementAble) {
             return false;
         }
@@ -202,7 +202,7 @@ class Claim implements Immutable {
         } elseif ($newPrivateOrPublic->getSize()->isPublic()) {
             $deadWall = $round->getWall()->getDeadWall();
             $newPublic = $newPrivateOrPublic;
-            $newTargetTile = $deadWall->getReplacementWall()->drawReplacement();
+            $newTargetTile = $deadWall->getReplacementWall()->outNext();
             $deadWall->openIndicator();
             $newTarget = new Target($newTargetTile, TargetType::create(TargetType::REPLACE), $this->getActor());
         } else {

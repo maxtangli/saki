@@ -4,6 +4,7 @@ use Saki\Game\Tile\Tile;
 use Saki\Game\Tile\TileList;
 use Saki\Game\Tile\TileSet;
 use Saki\Game\Wall\DrawWall;
+use Saki\Game\Wall\LiveWall;
 use Saki\Game\Wall\Stack;
 use Saki\Game\Wall\StackList;
 
@@ -47,29 +48,29 @@ class WallTest extends \SakiTestCase {
         $this->assertSame($stackList[18], $deadStackList->getLast());
     }
 
-    function testLiveWall() {
-        $liveWall = new DrawWall();
+    function testDrawWall() {
+        $drawWall = new LiveWall(true);
         $tileList = TileList::fromString('0123s');
-        $liveWall->init(StackList::fromTileList($tileList));
+        $drawWall->init(StackList::fromTileList($tileList));
         // 0 2
         // 1 3
-        static::assertLiveWallDraw($tileList[2], 2, 3, $liveWall);
-        static::assertLiveWallDraw($tileList[3], 1, 2, $liveWall);
-        static::assertLiveWallDraw($tileList[0], 1, 1, $liveWall);
-        static::assertLiveWallDraw($tileList[1], 0, 0, $liveWall);
+        static::assertDrawWallOut($tileList[2], 2, 3, $drawWall);
+        static::assertDrawWallOut($tileList[3], 1, 2, $drawWall);
+        static::assertDrawWallOut($tileList[0], 1, 1, $drawWall);
+        static::assertDrawWallOut($tileList[1], 0, 0, $drawWall);
 
-        $liveWall->init(StackList::fromTileList($tileList));
+        $drawWall->init(StackList::fromTileList($tileList));
         $mockNext = Tile::fromString('E');
-        $liveWall->debugSetNextTile($mockNext);
-        static::assertLiveWallDraw($mockNext, 2, 3, $liveWall);
-        $liveWall->debugSetRemainTileCount(1);
-        static::assertLiveWallDraw($tileList[1], 0, 0, $liveWall);
+        $drawWall->debugSetNextTile($mockNext);
+        static::assertDrawWallOut($mockNext, 2, 3, $drawWall);
+        $drawWall->debugSetRemainTileCount(1);
+        static::assertDrawWallOut($tileList[1], 0, 0, $drawWall);
 
         // test deal: ignore
     }
 
-    static function assertLiveWallDraw(Tile $tile, int $stackCount, int $tileCount, DrawWall $liveWall) {
-        static::assertEquals($tile, $liveWall->draw());
+    static function assertDrawWallOut(Tile $tile, int $stackCount, int $tileCount, LiveWall $liveWall) {
+        static::assertEquals($tile, $liveWall->outNext());
         static::assertEquals($stackCount, $liveWall->getRemainStackCount());
         static::assertEquals($tileCount, $liveWall->getRemainTileCount());
     }

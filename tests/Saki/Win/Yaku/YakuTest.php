@@ -494,7 +494,7 @@ class YakuTest extends \SakiTestCase {
         $round = $this->getInitRound();
 
         // dora not counted without other yakus
-        $round->process('skip 4; mockDeadWall EEEE1919293949s 5 false; mockHand E 222789s789m12345m');
+        $round->process('skip 4; mockDeadWall 1919293949s 5 false; mockHand E 222789s789m12345m');
         $this->assertYakuListEmpty('E');
 
         // dora counted with other yakus
@@ -506,7 +506,7 @@ class YakuTest extends \SakiTestCase {
         $round = $this->getInitRound();
 
         // uraDora not counted without other yakus
-        $round->process('skip 4; mockDeadWall EEEE9191929394s 5 true; mockHand E 222789s789m12345m');
+        $round->process('skip 4; mockDeadWall 9191929394s 5 true; mockHand E 222789s789m12345m');
         $this->assertYakuListEmpty('E');
 
         // uraDora counted with other yakus
@@ -518,7 +518,7 @@ class YakuTest extends \SakiTestCase {
         $round = $this->getInitRound();
 
         // redDora not counted without other yakus
-        $round->process('skip 4; mockDeadWall EEEE9999999999s 1 false; mockHand E 222789s789m12340m');
+        $round->process('skip 4; mockDeadWall 9999999999s 1 false; mockHand E 222789s789m12340m');
         $this->assertYakuListEmpty('E');
 
         // redDora counted with other yakus

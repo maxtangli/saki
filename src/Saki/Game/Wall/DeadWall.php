@@ -29,7 +29,7 @@ class DeadWall {
      * @param StackList $stackList
      */
     function __construct(StackList $stackList) {
-        $this->replacementWall = new ReplacementWall();
+        $this->replacementWall = new LiveWall(false);
         $this->reset($stackList->toTileList());
     }
 
@@ -39,6 +39,10 @@ class DeadWall {
      * @param bool $uraIndicatorOpened
      */
     function reset(TileList $tileList, int $indicatorCount = 1, bool $uraIndicatorOpened = false) {
+        if (count($tileList) == 10) {
+            $tileList->insertFirst(TileList::fromString('EEEE')->toArray());
+        }
+
         if (count($tileList) != 14) {
             throw new \InvalidArgumentException(
                 sprintf('Invalid $tileList[%s].', $tileList)
@@ -66,7 +70,7 @@ class DeadWall {
      * @return array
      */
     function toJson() {
-        $a = array_fill(0, $this->getRemainReplacementCount(), 'O');
+        $a = array_fill(0, $this->getReplacementWall()->getRemainTileCount(), 'O');
         $replacements = (new ArrayList($a))
             ->fillToCount('X', 4)
             ->toArray();
@@ -86,32 +90,15 @@ class DeadWall {
         }
 
         return [
-            'replacements' => $replacements,
-            'indicators' => $indicators,
-            'uraIndicators' => $uraIndicators,
             'stacks' => $stacks,
         ];
     }
 
     /**
-     * @return ReplacementWall
+     * @return LiveWall
      */
     function getReplacementWall() {
         return $this->replacementWall;
-    }
-
-    /**
-     * @return int
-     */
-    private function getRemainReplacementCount() {
-        return $this->replacementWall->getRemainTileCount();
-    }
-
-    /**
-     * @return int
-     */
-    function getRemainTileCount() {
-        return $this->getRemainReplacementCount() + 10;
     }
 
     /**

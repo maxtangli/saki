@@ -3,7 +3,7 @@ namespace Saki\Game;
 
 use Saki\Game\Tile\TileSet;
 use Saki\Game\Wall\DeadWall;
-use Saki\Game\Wall\DrawWall;
+use Saki\Game\Wall\LiveWall;
 use Saki\Game\Wall\Stack;
 use Saki\Game\Wall\StackList;
 use Saki\Util\ArrayList;
@@ -39,7 +39,7 @@ class Wall {
             return new Stack();
         };
         $this->stackList = (new StackList())->fromGenerator(4 * 17, $generateStack);
-        $this->drawWall = new DrawWall();
+        $this->drawWall = new LiveWall(true);
 
         $this->init();
     }
@@ -72,7 +72,7 @@ class Wall {
         $this->doraFacade = new DoraFacade($this->deadWall);
 
         // 5.The deal
-        // already done in drawWall
+        // see drawWall->deal()
 
         // 6.Open dora indicator
         // already done in deadWall
@@ -120,7 +120,7 @@ class Wall {
     }
 
     /**
-     * @return DrawWall
+     * @return LiveWall
      */
     function getDrawWall() {
         return $this->drawWall;
@@ -138,5 +138,22 @@ class Wall {
      */
     function getDoraFacade() {
         return $this->doraFacade;
+    }
+
+    /**
+     * @param PlayerType $playerType
+     * @return Tile[][] e.x. [E => [1s,2s...] ...]
+     */
+    function deal(PlayerType $playerType) {
+        $result = $playerType->getSeatWindMap([]);
+        foreach ([4, 4, 4, 1] as $drawTileCount) {
+            foreach ($result as $k => $notUsed) {
+                $nTodo = $drawTileCount;
+                while ($nTodo-- > 0) {
+                    $result[$k][] = $this->getDrawWall()->outNext();
+                }
+            }
+        }
+        return $result;
     }
 }
