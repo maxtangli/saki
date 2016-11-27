@@ -49,6 +49,20 @@ class Stack {
     /**
      * @return int
      */
+    function getTopTile() {
+        return $this->tileList->assertCount(2)->offsetGet(0);
+    }
+
+    /**
+     * @return int
+     */
+    function getBottomTile() {
+        return $this->tileList->assertCount(2)->offsetGet(1);
+    }
+
+    /**
+     * @return int
+     */
     function getCount() {
         return $this->tileList->count();
     }
@@ -69,8 +83,6 @@ class Stack {
             throw new \InvalidArgumentException();
         }
 
-        // $tileChunk = [$tile0, $tile1]
-        // $tileList = [$tile1, $tile0]
         $this->tileList->removeAll()
             ->insertLast($tileChunk);
     }

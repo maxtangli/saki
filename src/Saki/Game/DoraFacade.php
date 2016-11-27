@@ -3,7 +3,7 @@ namespace Saki\Game;
 
 use Saki\Game\Tile\Tile;
 use Saki\Game\Tile\TileList;
-use Saki\Game\Wall\DeadWall;
+use Saki\Game\Wall\IndicatorWall;
 
 /**
  * @package Saki\Game
@@ -12,9 +12,9 @@ class DoraFacade {
     private $deadWall;
 
     /**
-     * @param DeadWall $deadWall
+     * @param IndicatorWall $deadWall
      */
-    function __construct(DeadWall $deadWall) {
+    function __construct(IndicatorWall $deadWall) {
         $this->deadWall = $deadWall;
     }
 

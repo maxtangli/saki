@@ -3,7 +3,7 @@
 namespace Saki\Command;
 
 use Saki\Command\DebugCommand\InitCommand;
-use Saki\Command\DebugCommand\MockDeadWallCommand;
+use Saki\Command\DebugCommand\MockIndicatorWallCommand;
 use Saki\Command\DebugCommand\MockHandCommand;
 use Saki\Command\DebugCommand\MockNextDrawCommand;
 use Saki\Command\DebugCommand\MockNextReplaceCommand;
@@ -53,7 +53,7 @@ class CommandSet extends ArrayList {
                 RonCommand::class,
                 // debug
                 InitCommand::class,
-                MockDeadWallCommand::class,
+                MockIndicatorWallCommand::class,
                 MockHandCommand::class,
                 MockNextDrawCommand::class,
                 MockNextReplaceCommand::class,

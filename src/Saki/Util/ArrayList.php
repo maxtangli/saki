@@ -868,6 +868,7 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
 
     /**
      * @param $indexOrIndexes
+     * @return $this
      */
     protected function assertGetIndex($indexOrIndexes) {
         $indexes = $this->util_boxing($indexOrIndexes);
@@ -877,33 +878,52 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
                     , implode(',', $indexes))
             );
         }
+        return $this;
     }
 
     /**
      * @param int $index
+     * @return $this
      */
     protected function assertInsertIndex(int $index) {
         if (!Utils::inRange($index, 0, $this->count())) {
             throw new \InvalidArgumentException(
-                sprintf('Invalid insert position $n[%s].', $index)
+                "Invalid insert position \$index[$index]."
             );
         }
+        return $this;
     }
 
-    protected function assertSingle() {
-        if ($this->count() != 1) {
+    /**
+     * @param int $n
+     * @return $this
+     */
+    function assertCount(int $n) {
+        if ($this->count() != $n) {
             throw new \InvalidArgumentException(
-                'Failed to assert $this->count() == 1.'
+                "Failed to assert \$this->count() == $n."
             );
         }
+        return $this;
     }
 
+    /**
+     * @return $this
+     */
+    protected function assertSingle() {
+        return $this->assertCount(1);
+    }
+
+    /**
+     * @return $this
+     */
     protected function assertNotEmpty() {
         if ($this->isEmpty()) {
             throw new \InvalidArgumentException(
                 'Failed to assert not empty.'
             );
         }
+        return $this;
     }
     //endregion
 }

@@ -2,47 +2,35 @@
 namespace Saki\Game\Wall;
 
 use Saki\Game\Tile\TileList;
-use Saki\Util\Utils;
 
 /**
  * @package Saki\Game
  */
-class DeadWall {
+class IndicatorWall {
     /**
      * 0 2 4 6 8 <- indicator    * 5
      * 1 3 5 7 9 <- uraIndicator * 5
      */
-
-    /** @var TileList */
-    private $tileList;
-    // indicators
-    private $indicatorCandidates;
-    private $uraIndicatorCandidates;
+    /** @var StackList */
+    private $stackList;
     private $indicatorCount;
     private $uraIndicatorOpened;
 
     /**
-     * @param StackList $indicatorStackList
+     * @param StackList $stackList
      */
-    function __construct(StackList $indicatorStackList) {
-        $this->reset($indicatorStackList->toTileList());
+    function __construct(StackList $stackList) {
+        $this->reset($stackList);
     }
 
     /**
-     * @param TileList $tileList
+     * @param StackList $stackList
      * @param int $indicatorCount
      * @param bool $uraIndicatorOpened
      */
-    function reset(TileList $tileList, int $indicatorCount = 1, bool $uraIndicatorOpened = false) {
-        if (count($tileList) != 10) {
-            throw new \InvalidArgumentException(
-                sprintf('Invalid $tileList[%s].', $tileList)
-            );
-        }
-        $this->tileList = $tileList;
-
-        $this->indicatorCandidates = [$tileList[0], $tileList[2], $tileList[4], $tileList[6], $tileList[8]];
-        $this->uraIndicatorCandidates = [$tileList[1], $tileList[3], $tileList[5], $tileList[7], $tileList[9]];
+    function reset(StackList $stackList, int $indicatorCount = 1, bool $uraIndicatorOpened = false) {
+        $stackList->toTileList()->assertCount(10);
+        $this->stackList = $stackList;
         $this->indicatorCount = $indicatorCount;
         $this->uraIndicatorOpened = $uraIndicatorOpened;
     }
@@ -51,30 +39,14 @@ class DeadWall {
      * @return string
      */
     function __toString() {
-        return $this->tileList->__toString();
+        return $this->stackList->__toString();
     }
 
     /**
      * @return array
      */
     function toJson() {
-        $format = function (TileList $indicatorList) {
-            return $indicatorList
-                ->select(Utils::getToStringCallback())
-                ->fillToCount('O', 5)
-                ->toArray();
-        };
-        $indicators = $format($this->getIndicatorList());
-        $uraIndicators = $format($this->getUraIndicatorList());
-
-        $stacks = [];
-        foreach (range(0, 4) as $i) {
-            $stacks[] = [$indicators[$i], $uraIndicators[$i]];
-        }
-
-        return [
-            'stacks' => $stacks,
-        ];
+        return $this->stackList->toJson(true);
     }
 
     /**
@@ -102,7 +74,7 @@ class DeadWall {
      * @return TileList
      */
     function getIndicatorList() {
-        return (new TileList($this->indicatorCandidates))
+        return $this->stackList->toTopTileList()
             ->take(0, $this->indicatorCount);
     }
 
@@ -110,7 +82,7 @@ class DeadWall {
      * @return TileList
      */
     function getUraIndicatorList() {
-        return (new TileList($this->uraIndicatorCandidates))
+        return $this->stackList->toBottomTileList()
             ->take(0, $this->getUraIndicatorCount());
     }
 
@@ -126,6 +98,10 @@ class DeadWall {
     }
 
     function openUraIndicators() {
+        $valid = !$this->uraIndicatorOpened;
+        if (!$valid) {
+            throw new \InvalidArgumentException();
+        }
         $this->uraIndicatorOpened = true;
     }
 }

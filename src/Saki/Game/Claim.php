@@ -203,7 +203,7 @@ class Claim implements Immutable {
             $wall = $round->getWall();
             $newPublic = $newPrivateOrPublic;
             $newTargetTile = $wall->getReplaceWall()->outNext();
-            $wall->getDeadWall()->openIndicator();
+            $wall->getIndicatorWall()->openIndicator();
             $newTarget = new Target($newTargetTile, TargetType::create(TargetType::REPLACE), $this->getActor());
         } else {
             throw new \LogicException();

@@ -3,7 +3,7 @@ namespace Saki\Game;
 
 use Saki\Game\Tile\Tile;
 use Saki\Game\Tile\TileSet;
-use Saki\Game\Wall\DeadWall;
+use Saki\Game\Wall\IndicatorWall;
 use Saki\Game\Wall\LiveWall;
 use Saki\Game\Wall\Stack;
 use Saki\Game\Wall\StackList;
@@ -16,12 +16,12 @@ class Wall {
     // immutable
     private $tileSet;
     private $playerType;
-    private $dicePair;
     // variable
+    private $dicePair;
     private $stackList;
     private $drawWall;
     private $replaceWall;
-    private $deadWall;
+    private $indicatorWall;
     private $doraFacade;
     private $dealResult;
 
@@ -36,9 +36,9 @@ class Wall {
         }
 
         $this->tileSet = $tileSet;
-        $this->dicePair = new DicePair();
         $this->playerType = $playerType;
 
+        $this->dicePair = new DicePair();
         $generateStack = function () {
             return new Stack();
         };
@@ -74,8 +74,8 @@ class Wall {
         list($drawStackList, $replaceStackList, $indicatorStackList) = $this->stackList->toThreeBreak($diceResult);
         $this->drawWall->init($drawStackList);
         $this->replaceWall->init($replaceStackList);
-        $this->deadWall = new DeadWall($indicatorStackList);
-        $this->doraFacade = new DoraFacade($this->deadWall);
+        $this->indicatorWall = new IndicatorWall($indicatorStackList);
+        $this->doraFacade = new DoraFacade($this->indicatorWall);
 
         // 5.The deal
         $this->dealResult = $this->deal($this->playerType);
@@ -105,16 +105,17 @@ class Wall {
      * @return string
      */
     function __toString() {
-        return $this->getDeadWall()->__toString() . ',' . $this->getDrawWall()->__toString();
+        return $this->getIndicatorWall()->__toString() . ',' . $this->getDrawWall()->__toString();
     }
 
     /**
      * @return array
      */
     function toJson() {
-        $a = $this->getDeadWall()->toJson();
-        $a['remainTileCount'] = $this->getDrawWall()->getRemainTileCount();
-        return $a;
+        return [
+            'stacks' => $this->getIndicatorWall()->toJson(),
+            'remainTileCount' => $this->getDrawWall()->getRemainTileCount(),
+        ];
     }
 
     /**
@@ -157,10 +158,10 @@ class Wall {
     }
 
     /**
-     * @return DeadWall
+     * @return IndicatorWall
      */
-    function getDeadWall() {
-        return $this->deadWall;
+    function getIndicatorWall() {
+        return $this->indicatorWall;
     }
 
     /**

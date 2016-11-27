@@ -36,7 +36,7 @@ class TsumoCommand extends PrivateCommand {
 
         $actor = $this->getActor();
 
-        $round->getWall()->getDeadWall()->openUraIndicators();
+        $round->getWall()->getIndicatorWall()->openUraIndicators();
 
         $winReport = $round->getWinReport($actor);
         $result = new WinResult(WinResultInput::createTsumo(

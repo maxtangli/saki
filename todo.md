@@ -1137,9 +1137,13 @@ rush 99 Wall view: ReplacementWall 2.7h
 
 rush 100 Wall view: IndicatorWall
 
-- [ ] css: playerWall double layer
+- [x] refactor: rename DeadWall into IndicatorWall 0.1h
+- [x] refactor: adapt StackList into IndicatorWall 0.5h
 
-- [ ] refactor: rename DeadWall into IndicatorWall
+- [ ] add Stack.$opened
+- [ ] json: $opened
+
+- [ ] css: playerWall double layer
 
 rush meld view
 

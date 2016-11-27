@@ -6,11 +6,12 @@ use Saki\Command\ParamDeclaration\IntParamDeclaration;
 use Saki\Command\ParamDeclaration\TileListParamDeclaration;
 use Saki\Game\Round;
 use Saki\Game\Tile\TileList;
+use Saki\Game\Wall\StackList;
 
 /**
  * @package Saki\Command\Debug
  */
-class MockDeadWallCommand extends DebugCommand {
+class MockIndicatorWallCommand extends DebugCommand {
     //region Command impl
     static function getParamDeclarations() {
         return [TileListParamDeclaration::class, IntParamDeclaration::class, BoolParamDeclaration::class];
@@ -38,22 +39,18 @@ class MockDeadWallCommand extends DebugCommand {
         return $this->getParam(2);
     }
 
-    /**
-     * @return \Saki\Game\Wall\DeadWall
-     */
-    protected function getDeadWall() {
-        return $this->getRound()
-            ->getWall()->getDeadWall();
-    }
-
     //region Command impl
     protected function executableImpl(Round $round) {
         return $this->getTileList()->count() == 10;
     }
 
     protected function executeImpl(Round $round) {
-        $this->getDeadWall()->reset(
-            $this->getTileList(), $this->getOpenedIndicatorCount(), $this->getUraDoraOpened()
+        $indicatorWall = $this->getRound()->getWall()->getIndicatorWall();
+        $stackList = StackList::fromTileList($this->getTileList());
+        $indicatorWall->reset(
+            $stackList,
+            $this->getOpenedIndicatorCount(),
+            $this->getUraDoraOpened()
         );
     }
     //endregion

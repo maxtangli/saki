@@ -3,7 +3,7 @@
 use Saki\Game\DoraFacade;
 use Saki\Game\Tile\Tile;
 use Saki\Game\Tile\TileList;
-use Saki\Game\Wall\DeadWall;
+use Saki\Game\Wall\IndicatorWall;
 use Saki\Game\Wall\StackList;
 
 class DeadWallTest extends \SakiTestCase {
@@ -29,7 +29,7 @@ class DeadWallTest extends \SakiTestCase {
          * 1m 1m 2m 3m 4m <- uraIndicator * 5
          */
         $stackList = StackList::fromTileList(TileList::fromString('1s1m1s1m2s2m3s3m4s4m'));
-        $w = new DeadWall($stackList);
+        $w = new IndicatorWall($stackList);
         $f = new DoraFacade($w);
 
         // 1s
