@@ -23,20 +23,20 @@ class MockNextReplaceCommand extends DebugCommand {
     }
 
     /**
-     * @return \Saki\Game\Wall\DeadWall
+     * @return \Saki\Game\Wall\LiveWall
      */
-    protected function getDeadWall() {
+    protected function getReplaceWall() {
         return $this->getRound()
-            ->getWall()->getDeadWall();
+            ->getWall()->getReplaceWall();
     }
 
     //region Command impl
     protected function executableImpl(Round $round) {
-        return $this->getDeadWall()->getReplacementWall()->ableOutNext();
+        return $this->getReplaceWall()->ableOutNext();
     }
 
     protected function executeImpl(Round $round) {
-        $this->getDeadWall()->getReplacementWall()->debugSetNextTile($this->getMockTile());
+        $this->getReplaceWall()->debugSetNextTile($this->getMockTile());
     }
     //endregion
 }

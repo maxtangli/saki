@@ -76,9 +76,9 @@ class StackList extends ArrayList {
 
     /**
      * @param int $diceResult
-     * @return StackList[] [$liveStackList, $deadStackList]
+     * @return StackList[] [$drawStackList, $replaceStackList, $indicatorStackList]
      */
-    function toTwoBreak(int $diceResult) {
+    function toThreeBreak(int $diceResult) {
         if ($this->count() != 68) {
             throw new \LogicException();
         }
@@ -86,18 +86,17 @@ class StackList extends ArrayList {
         // E       S        W        N
         // 0       1        2        3
         // 0...16, 17...33, 34...50, 51...67
-        // e.x. dice 5, last 16, aliveFirst 11, dead 12...18, live 11...0,67...19
+        // e.x. dice 5, last 16, aliveFirst 11,
+        //      replace 12...13, indicator 14...18, live 11...0,67...19
         $dealWindIndex = ($diceResult - 1) % 4;
         $last = ($dealWindIndex + 1) * 17 - 1;
         $aliveFirst = $last - $diceResult;
-        /** @var StackList $baseStackList */
-        $baseStackList = $this->getCopy()
-            ->shiftCyclicLeft($aliveFirst + 1);
-        $liveStackList = $baseStackList->getCopy()
-            ->removeFirst(7);
-        $deadStackList = $baseStackList->getCopy()
-            ->take(0, 7);
-        return [$liveStackList, $deadStackList];
+        /** @var StackList $base */
+        $base = $this->getCopy()->shiftCyclicLeft($aliveFirst + 1);
+        $drawStackList = $base->getCopy()->removeFirst(7);
+        $replaceStackList = $base->getCopy()->take(0, 2);
+        $indicatorStackList = $base->getCopy()->take(2, 5);
+        return [$drawStackList, $replaceStackList, $indicatorStackList];
     }
 
     private static function assertTileListEvenCount(TileList $tileList) {

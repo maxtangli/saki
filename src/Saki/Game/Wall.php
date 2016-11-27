@@ -1,6 +1,7 @@
 <?php
 namespace Saki\Game;
 
+use Saki\Game\Tile\Tile;
 use Saki\Game\Tile\TileSet;
 use Saki\Game\Wall\DeadWall;
 use Saki\Game\Wall\LiveWall;
@@ -19,8 +20,10 @@ class Wall {
     // variable
     private $stackList;
     private $drawWall;
+    private $replaceWall;
     private $deadWall;
     private $doraFacade;
+    private $dealResult;
 
     /**
      * @param TileSet $tileSet
@@ -35,11 +38,13 @@ class Wall {
         $this->tileSet = $tileSet;
         $this->dicePair = new DicePair();
         $this->playerType = $playerType;
+
         $generateStack = function () {
             return new Stack();
         };
         $this->stackList = (new StackList())->fromGenerator(4 * 17, $generateStack);
         $this->drawWall = new LiveWall(true);
+        $this->replaceWall = new LiveWall(false);
 
         $this->init();
     }
@@ -66,16 +71,34 @@ class Wall {
         $diceResult = $this->getDicePair()->roll();
 
         // 4.Break the wall
-        list($drawStackList, $deadStackList) = $this->stackList->toTwoBreak($diceResult);
+        list($drawStackList, $replaceStackList, $indicatorStackList) = $this->stackList->toThreeBreak($diceResult);
         $this->drawWall->init($drawStackList);
-        $this->deadWall = new DeadWall($deadStackList);
+        $this->replaceWall->init($replaceStackList);
+        $this->deadWall = new DeadWall($indicatorStackList);
         $this->doraFacade = new DoraFacade($this->deadWall);
 
         // 5.The deal
-        // see drawWall->deal()
+        $this->dealResult = $this->deal($this->playerType);
 
         // 6.Open dora indicator
         // already done in deadWall
+    }
+
+    /**
+     * @param PlayerType $playerType
+     * @return Tile[][] e.x. [E => [1s,2s...] ...]
+     */
+    private function deal(PlayerType $playerType) {
+        $result = $playerType->getSeatWindMap([]);
+        foreach ([4, 4, 4, 1] as $drawTileCount) {
+            foreach ($result as $k => $notUsed) {
+                $nTodo = $drawTileCount;
+                while ($nTodo-- > 0) {
+                    $result[$k][] = $this->getDrawWall()->outNext();
+                }
+            }
+        }
+        return $result;
     }
 
     /**
@@ -127,6 +150,13 @@ class Wall {
     }
 
     /**
+     * @return LiveWall
+     */
+    function getReplaceWall() {
+        return $this->replaceWall;
+    }
+
+    /**
      * @return DeadWall
      */
     function getDeadWall() {
@@ -141,19 +171,9 @@ class Wall {
     }
 
     /**
-     * @param PlayerType $playerType
      * @return Tile[][] e.x. [E => [1s,2s...] ...]
      */
-    function deal(PlayerType $playerType) {
-        $result = $playerType->getSeatWindMap([]);
-        foreach ([4, 4, 4, 1] as $drawTileCount) {
-            foreach ($result as $k => $notUsed) {
-                $nTodo = $drawTileCount;
-                while ($nTodo-- > 0) {
-                    $result[$k][] = $this->getDrawWall()->outNext();
-                }
-            }
-        }
-        return $result;
+    function getDealResult() {
+        return $this->dealResult;
     }
 }

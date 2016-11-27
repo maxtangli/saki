@@ -1120,7 +1120,7 @@ rush 98 Wall view: by actor 2.3h
 - [x] bug fix: AI not works after player leave. 0.1h
 - [x] bug fix: AI works when no player exist // bug occurs since not enough unit tests
 
-rush 99 Wall view: ReplacementWall
+rush 99 Wall view: ReplacementWall 2.7h
 
 - [x] analyze: replaceWall 0.7h
 
@@ -1132,9 +1132,12 @@ rush 99 Wall view: ReplacementWall
 
   split ReplacementWall and DeadWall
 - [x] refactor: change MockDeadWallCommand 0.1h
-- [ ] refactor: move ReplacementWall into Wall
+- [x] refactor: move ReplacementWall into Wall 0.2h
+- [x] refactor: Wall.$dealResult 0.2h
 
-rush Wall view: IndicatorWall
+rush 100 Wall view: IndicatorWall
+
+- [ ] css: playerWall double layer
 
 - [ ] refactor: rename DeadWall into IndicatorWall
 

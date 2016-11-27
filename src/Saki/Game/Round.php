@@ -138,6 +138,16 @@ class Round {
         $this->toNextPhase();
     }
 
+    function deal() {
+        $dealResult = $this->getWall()->getDealResult();
+        $acceptDeal = function (Area $area) use ($dealResult) {
+            $initialTiles = $dealResult[$area->getSeatWind()->__toString()];
+            $newHand = new Hand(new TileList($initialTiles), new MeldList(), Target::createNull());
+            $area->setHand($newHand);
+        };
+        $this->areaList->walk($acceptDeal);
+    }
+
     /**
      * @return Rule
      */
@@ -337,17 +347,6 @@ class Round {
         // WinTarget will assert valid player
         return $this->getRule()->getWinAnalyzer()
             ->analyze(new WinTarget($this, $actor));
-    }
-
-    function deal() {
-        $playerType = PlayerType::create($this->areaList->count());
-        $deal = $this->getWall()->deal($playerType);
-        $acceptDeal = function (Area $area) use ($deal) {
-            $initialTiles = $deal[$area->getSeatWind()->__toString()];
-            $newHand = new Hand(new TileList($initialTiles), new MeldList(), Target::createNull());
-            $area->setHand($newHand);
-        };
-        $this->areaList->walk($acceptDeal);
     }
 
     /**

@@ -25,11 +25,10 @@ class DeadWallTest extends \SakiTestCase {
 
     function testDoraFacade() {
         /**
-         * replacement * 4
-         * E W | 1s 1s 2s 3s 4s <- indicator    * 5
-         * S N | 1m 1m 2m 3m 4m <- uraIndicator * 5
+         * 1s 1s 2s 3s 4s <- indicator    * 5
+         * 1m 1m 2m 3m 4m <- uraIndicator * 5
          */
-        $stackList = StackList::fromTileList(TileList::fromString('EEEE1s1m1s1m2s2m3s3m4s4m'));
+        $stackList = StackList::fromTileList(TileList::fromString('1s1m1s1m2s2m3s3m4s4m'));
         $w = new DeadWall($stackList);
         $f = new DoraFacade($w);
 

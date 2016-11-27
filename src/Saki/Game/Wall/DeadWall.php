@@ -2,7 +2,6 @@
 namespace Saki\Game\Wall;
 
 use Saki\Game\Tile\TileList;
-use Saki\Util\ArrayList;
 use Saki\Util\Utils;
 
 /**
@@ -10,15 +9,12 @@ use Saki\Util\Utils;
  */
 class DeadWall {
     /**
-     * replacement * 4
-     * 0 2 | 4 6 8 10 12 <- indicator    * 5
-     * 1 3 | 5 7 9 11 13 <- uraIndicator * 5
+     * 0 2 4 6 8 <- indicator    * 5
+     * 1 3 5 7 9 <- uraIndicator * 5
      */
 
     /** @var TileList */
     private $tileList;
-    // replacement
-    private $replacementWall;
     // indicators
     private $indicatorCandidates;
     private $uraIndicatorCandidates;
@@ -26,11 +22,10 @@ class DeadWall {
     private $uraIndicatorOpened;
 
     /**
-     * @param StackList $stackList
+     * @param StackList $indicatorStackList
      */
-    function __construct(StackList $stackList) {
-        $this->replacementWall = new LiveWall(false);
-        $this->reset($stackList->toTileList());
+    function __construct(StackList $indicatorStackList) {
+        $this->reset($indicatorStackList->toTileList());
     }
 
     /**
@@ -39,22 +34,15 @@ class DeadWall {
      * @param bool $uraIndicatorOpened
      */
     function reset(TileList $tileList, int $indicatorCount = 1, bool $uraIndicatorOpened = false) {
-        if (count($tileList) == 10) {
-            $tileList->insertFirst(TileList::fromString('EEEE')->toArray());
-        }
-
-        if (count($tileList) != 14) {
+        if (count($tileList) != 10) {
             throw new \InvalidArgumentException(
                 sprintf('Invalid $tileList[%s].', $tileList)
             );
         }
         $this->tileList = $tileList;
 
-        $replacementList = $tileList->getCopy()->take(0, 4);
-        $this->replacementWall->init(StackList::fromTileList($replacementList));
-
-        $this->indicatorCandidates = [$tileList[4], $tileList[6], $tileList[8], $tileList[10], $tileList[12]];
-        $this->uraIndicatorCandidates = [$tileList[5], $tileList[7], $tileList[9], $tileList[11], $tileList[13]];
+        $this->indicatorCandidates = [$tileList[0], $tileList[2], $tileList[4], $tileList[6], $tileList[8]];
+        $this->uraIndicatorCandidates = [$tileList[1], $tileList[3], $tileList[5], $tileList[7], $tileList[9]];
         $this->indicatorCount = $indicatorCount;
         $this->uraIndicatorOpened = $uraIndicatorOpened;
     }
@@ -70,11 +58,6 @@ class DeadWall {
      * @return array
      */
     function toJson() {
-        $a = array_fill(0, $this->getReplacementWall()->getRemainTileCount(), 'O');
-        $replacements = (new ArrayList($a))
-            ->fillToCount('X', 4)
-            ->toArray();
-
         $format = function (TileList $indicatorList) {
             return $indicatorList
                 ->select(Utils::getToStringCallback())
@@ -84,7 +67,7 @@ class DeadWall {
         $indicators = $format($this->getIndicatorList());
         $uraIndicators = $format($this->getUraIndicatorList());
 
-        $stacks = array_chunk($replacements, 2);
+        $stacks = [];
         foreach (range(0, 4) as $i) {
             $stacks[] = [$indicators[$i], $uraIndicators[$i]];
         }
@@ -92,13 +75,6 @@ class DeadWall {
         return [
             'stacks' => $stacks,
         ];
-    }
-
-    /**
-     * @return LiveWall
-     */
-    function getReplacementWall() {
-        return $this->replacementWall;
     }
 
     /**
@@ -142,7 +118,7 @@ class DeadWall {
      * @param int $n
      */
     function openIndicator(int $n = 1) {
-        $valid = $this->indicatorCount + $n <= 5;
+        $valid = ($this->indicatorCount + $n <= 5);
         if (!$valid) {
             throw new \InvalidArgumentException();
         }
