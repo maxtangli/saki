@@ -88,7 +88,6 @@ Saki.DemoView.prototype = {
 
         var wall = jsonData.round.wall;
         $('.remainTileCountContainer').html(wall.remainTileCount);
-        $('.deadWallContainer').html(this.deadWall(wall.stacks));
 
         var result = jsonData.result;
         if (result.isRoundOver) {
@@ -157,16 +156,13 @@ Saki.DemoView.prototype = {
             .attr({
                 class: 'command',
                 type: 'button',
-                value: commandData
+                value: commandData,
             })
             .click(function () {
                 return send(this.value);
             });
     },
     /*-- wall --*/
-    deadWall: function (deadWallData) {
-        return this.wall(deadWallData);
-    },
     wall: function (stacksData) {
         return $('<div class="wall"></div>')
             .append(stacksData.map($.proxy(this.stack, this)));
