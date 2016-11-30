@@ -1140,7 +1140,8 @@ rush 100 Wall view: IndicatorWall
 - [x] refactor: rename DeadWall into IndicatorWall 0.1h
 - [x] refactor: adapt StackList into IndicatorWall 0.5h
 
-- [ ] add Stack.$opened
+- [x] refactor: introduce StackTile for Stack 0.8h
+- [ ] IndicatorWall.open()
 - [ ] json: $opened
 
 - [ ] css: playerWall double layer

@@ -3,6 +3,7 @@ namespace Saki\Game\Wall;
 
 use Saki\Game\Tile\TileList;
 use Saki\Util\ArrayList;
+use Saki\Util\Utils;
 
 /**
  * @package Saki\Game\Wall
@@ -54,14 +55,10 @@ class StackList extends ArrayList {
     }
 
     /**
-     * @param bool $hide
      * @return array e.x. [['X', 'X'], ['X', '2s'], ['1s', '2s']]
      */
-    function toJson(bool $hide = false) {
-        $stackToJson = function (Stack $stack) use ($hide) {
-            return $stack->toJson($hide);
-        };
-        return $this->toArray($stackToJson);
+    function toJson() {
+        return $this->toArray(Utils::getMethodCallback('toJson'));
     }
 
     /**
@@ -69,7 +66,7 @@ class StackList extends ArrayList {
      */
     function toTileList() {
         $selector = function (Stack $stack) {
-            return $stack->getTileList();
+            return $stack->toTileList();
         };
         return (new TileList())->fromSelectMany($this, $selector);
     }
@@ -79,7 +76,7 @@ class StackList extends ArrayList {
      */
     function toTopTileList() {
         $getTopTile = function (Stack $stack) {
-            return $stack->getTopTile();
+            return $stack->getTop()->getTile();
         };
         return (new TileList())->fromSelect($this, $getTopTile);
     }
@@ -89,7 +86,7 @@ class StackList extends ArrayList {
      */
     function toBottomTileList() {
         $getBottomTile = function (Stack $stack) {
-            return $stack->getBottomTile();
+            return $stack->getBottom()->getTile();
         };
         return (new TileList())->fromSelect($this, $getBottomTile);
     }

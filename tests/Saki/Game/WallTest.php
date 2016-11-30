@@ -15,6 +15,9 @@ class WallTest extends \SakiTestCase {
         $t1 = Tile::fromString('2s');
 
         $stack->setTileChunk([$t0, $t1]);
+        $this->assertEquals(['O', 'O'], $stack->toJson());
+        $stack->getTop()->open();
+        $stack->getBottom()->open();
         $this->assertEquals(['1s', '2s'], $stack->toJson());
         $this->assertEquals($t0, $stack->popTile());
         $this->assertEquals(['X', '2s'], $stack->toJson());
@@ -73,7 +76,6 @@ class WallTest extends \SakiTestCase {
         static::assertDrawWallOut($mockNext, 2, 3, $drawWall);
         $drawWall->debugSetRemainTileCount(1);
         static::assertDrawWallOut($tileList[1], 0, 0, $drawWall);
-
         // test deal: ignore
     }
 

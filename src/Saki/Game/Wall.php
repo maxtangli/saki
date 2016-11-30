@@ -81,7 +81,7 @@ class Wall {
         $this->dealResult = $this->deal($this->playerType);
 
         // 6.Open dora indicator
-        // already done in deadWall
+        // already done in indicatorWall
     }
 
     /**
