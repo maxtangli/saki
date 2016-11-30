@@ -72,26 +72,6 @@ class StackList extends ArrayList {
     }
 
     /**
-     * @return TileList
-     */
-    function toTopTileList() {
-        $getTopTile = function (Stack $stack) {
-            return $stack->getTop()->getTile();
-        };
-        return (new TileList())->fromSelect($this, $getTopTile);
-    }
-
-    /**
-     * @return TileList
-     */
-    function toBottomTileList() {
-        $getBottomTile = function (Stack $stack) {
-            return $stack->getBottom()->getTile();
-        };
-        return (new TileList())->fromSelect($this, $getBottomTile);
-    }
-
-    /**
      * @param int $diceResult
      * @return StackList[] [$drawStackList, $replaceStackList, $indicatorStackList]
      */

@@ -1141,10 +1141,15 @@ rush 100 Wall view: IndicatorWall
 - [x] refactor: adapt StackList into IndicatorWall 0.5h
 
 - [x] refactor: introduce StackTile for Stack 0.8h
-- [ ] IndicatorWall.open()
+- [x] refactor: adapt StackTile for IndicatorWall 0.7h
+
+- [ ] refactor: DoraFacade
+
 - [ ] json: $opened
 
 - [ ] css: playerWall double layer
+
+rush more clean UI
 
 rush meld view
 

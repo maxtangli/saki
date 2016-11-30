@@ -13,8 +13,6 @@ class IndicatorWall {
      */
     /** @var StackList */
     private $stackList;
-    private $indicatorCount;
-    private $uraIndicatorOpened;
 
     /**
      * @param StackList $stackList
@@ -31,8 +29,10 @@ class IndicatorWall {
     function reset(StackList $stackList, int $indicatorCount = 1, bool $uraIndicatorOpened = false) {
         $stackList->toTileList()->assertCount(10);
         $this->stackList = $stackList;
-        $this->indicatorCount = $indicatorCount;
-        $this->uraIndicatorOpened = $uraIndicatorOpened;
+        $this->openIndicator($indicatorCount);
+        if ($uraIndicatorOpened) {
+            $this->openUraIndicators();
+        }
     }
 
     /**
@@ -46,62 +46,65 @@ class IndicatorWall {
      * @return array
      */
     function toJson() {
-        return $this->stackList->toJson(true);
-    }
-
-    /**
-     * @return int
-     */
-    function getIndicatorCount() {
-        return $this->indicatorCount;
-    }
-
-    /**
-     * @return bool
-     */
-    function uraIndicatorOpened() {
-        return $this->uraIndicatorOpened;
-    }
-
-    /**
-     * @return int
-     */
-    function getUraIndicatorCount() {
-        return $this->uraIndicatorOpened() ? $this->getIndicatorCount() : 0;
+        return $this->stackList->toJson();
     }
 
     /**
      * @return TileList
      */
     function getIndicatorList() {
-        return $this->stackList->toTopTileList()
-            ->take(0, $this->indicatorCount);
+        $isOpened = function (Stack $stack) {
+            return $stack->getTop()->isOpened();
+        };
+        $toTile = function (Stack $stack) {
+            return $stack->getTop()->getTile();
+        };
+        $a = $this->stackList->getCopy()
+            ->where($isOpened)
+            ->toArray($toTile);
+        return new TileList($a);
     }
 
     /**
      * @return TileList
      */
     function getUraIndicatorList() {
-        return $this->stackList->toBottomTileList()
-            ->take(0, $this->getUraIndicatorCount());
+        $isOpened = function (Stack $stack) {
+            return $stack->getBottom()->isOpened();
+        };
+        $toTile = function (Stack $stack) {
+            return $stack->getBottom()->getTile();
+        };
+        $a = $this->stackList->getCopy()
+            ->where($isOpened)
+            ->toArray($toTile);
+        return new TileList($a);
     }
 
     /**
      * @param int $n
      */
     function openIndicator(int $n = 1) {
-        $valid = ($this->indicatorCount + $n <= 5);
-        if (!$valid) {
-            throw new \InvalidArgumentException();
-        }
-        $this->indicatorCount += $n;
+        $isNotOpened = function (Stack $stack) {
+            return !$stack->getTop()->isOpened();
+        };
+        /** @var Stack $nextNotOpenedStack */
+        $openTop = function (Stack $stack) {
+            $stack->getTop()->open();
+        };
+        $this->stackList->getCopy()
+            ->where($isNotOpened)
+            ->take(0, $n)
+            ->walk($openTop); // validate by take()
     }
 
     function openUraIndicators() {
-        $valid = !$this->uraIndicatorOpened;
-        if (!$valid) {
-            throw new \InvalidArgumentException();
-        }
-        $this->uraIndicatorOpened = true;
+        $openedIndicatorCount = $this->getIndicatorList()->count();
+        $openBottom = function (Stack $stack) {
+            $stack->getBottom()->open();
+        };
+        $this->stackList->getCopy()
+            ->take(0, $openedIndicatorCount)
+            ->walk($openBottom);
     }
 }
