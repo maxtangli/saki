@@ -22,7 +22,6 @@ class Wall {
     private $drawWall;
     private $replaceWall;
     private $indicatorWall;
-    private $doraFacade;
     private $dealResult;
 
     /**
@@ -75,7 +74,6 @@ class Wall {
         $this->drawWall->init($drawStackList);
         $this->replaceWall->init($replaceStackList);
         $this->indicatorWall = new IndicatorWall($indicatorStackList);
-        $this->doraFacade = new DoraFacade($this->indicatorWall);
 
         // 5.The deal
         $this->dealResult = $this->deal($this->playerType);
@@ -162,13 +160,6 @@ class Wall {
      */
     function getIndicatorWall() {
         return $this->indicatorWall;
-    }
-
-    /**
-     * @return DoraFacade
-     */
-    function getDoraFacade() {
-        return $this->doraFacade;
     }
 
     /**

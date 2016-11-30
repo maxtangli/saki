@@ -1,28 +1,29 @@
 ## rush statistics
 
-rush       | hours
----------- | -----
-rush  0- 5 | 34.0h
-rush  6-10 | 23.8h
-rush 11-15 | 15.8h
-rush 16-20 | 25.6h
-rush 21-25 | 26.7h
-rush 26-30 | 24.1h
-rush 31-35 | 17.4h
-rush 36-40 | 24.6h
-rush 41-45 | 15.3h
-rush 46-50 | 24.0h
-rush 51-55 | 21.5h
-rush 56-60 | 33.0h
-rush 61-65 | 17.1h
-rush 66-70 | 22.9h
-rush 71-75 | 15.7h
-rush 76-80 | 23.4h
-rush 81-85 | 28.2h
-rush 86-90 | 11.9h
-rush 91-95 | 13.3h
-rush 96-100| ing
-     total |425.3h + ing
+rush        | hours
+----------- | -----
+rush   0-5  | 34.0h
+rush   6-10 | 23.8h
+rush  11-15 | 15.8h
+rush  16-20 | 25.6h
+rush  21-25 | 26.7h
+rush  26-30 | 24.1h
+rush  31-35 | 17.4h
+rush  36-40 | 24.6h
+rush  41-45 | 15.3h
+rush  46-50 | 24.0h
+rush  51-55 | 21.5h
+rush  56-60 | 33.0h
+rush  61-65 | 17.1h
+rush  66-70 | 22.9h
+rush  71-75 | 15.7h
+rush  76-80 | 23.4h
+rush  81-85 | 28.2h
+rush  86-90 | 11.9h
+rush  91-95 | 13.3h
+rush  96-100| 16.1h
+rush 101-105| ing
+     total  |441.4h + ing
 
 ## rush history
 
@@ -1135,7 +1136,7 @@ rush 99 Wall view: ReplacementWall 2.7h
 - [x] refactor: move ReplacementWall into Wall 0.2h
 - [x] refactor: Wall.$dealResult 0.2h
 
-rush 100 Wall view: IndicatorWall
+rush 100 Wall view: IndicatorWall 3.1h
 
 - [x] refactor: rename DeadWall into IndicatorWall 0.1h
 - [x] refactor: adapt StackList into IndicatorWall 0.5h
@@ -1143,13 +1144,11 @@ rush 100 Wall view: IndicatorWall
 - [x] refactor: introduce StackTile for Stack 0.8h
 - [x] refactor: adapt StackTile for IndicatorWall 0.7h
 
-- [ ] refactor: DoraFacade
-
-- [ ] json: $opened
-
-- [ ] css: playerWall double layer
+- [x] refactor: DoraType 1h
 
 rush more clean UI
+
+- [ ] css: playerWall double layer
 
 rush meld view
 

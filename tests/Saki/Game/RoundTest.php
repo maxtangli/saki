@@ -235,7 +235,7 @@ class RoundTest extends \SakiTestCase {
         // test over phase
         $round->process('mockHand E 123m456m789m123s55s; tsumo E');
         $this->assertOver();
-        $this->assertCount(1, $round->getWall()->getDoraFacade()->getUraIndicatorList());
+        $this->assertCount(1, $round->getWall()->getIndicatorWall()->getUraIndicatorList());
 
         // test toNextRound
         $round->toNextRound();

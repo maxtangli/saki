@@ -1,8 +1,8 @@
 <?php
 namespace Saki\Win\Yaku;
 
-use Saki\Game\DoraFacade;
 use Saki\Game\Tile\TileList;
+use Saki\Game\Wall\IndicatorWall;
 use Saki\Win\WinSubTarget;
 
 /**
@@ -18,9 +18,8 @@ abstract class AbstractDoraYaku extends Yaku {
     }
 
     protected function getExistCountImpl(WinSubTarget $subTarget) {
-        $doraFacade = $subTarget->getWall()->getDoraFacade();
-        $complete = $subTarget->getComplete();
-        return $this->getDoraFanImpl($doraFacade, $complete);
+        $indicatorWall = $subTarget->getWall()->getIndicatorWall();
+        return $this->getDoraFanImpl($subTarget->getComplete(), $indicatorWall);
     }
 
     function getRequiredSeries() {
@@ -32,9 +31,9 @@ abstract class AbstractDoraYaku extends Yaku {
     }
 
     /**
-     * @param DoraFacade $doraFacade
      * @param TileList $complete
+     * @param IndicatorWall $indicatorWall
      * @return int
      */
-    abstract function getDoraFanImpl(DoraFacade $doraFacade, TileList $complete);
+    abstract function getDoraFanImpl(TileList $complete, IndicatorWall $indicatorWall);
 }

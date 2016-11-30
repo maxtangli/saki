@@ -1,8 +1,8 @@
 <?php
 namespace Saki\Win\Yaku\Fan1;
 
-use Saki\Game\DoraFacade;
 use Saki\Game\Tile\TileList;
+use Saki\Game\Wall\IndicatorWall;
 use Saki\Win\Yaku\AbstractDoraYaku;
 
 /**
@@ -10,7 +10,7 @@ use Saki\Win\Yaku\AbstractDoraYaku;
  * @package Saki\Win\Yaku\Fan1
  */
 class UraDoraYaku extends AbstractDoraYaku {
-    function getDoraFanImpl(DoraFacade $doraFacade, TileList $complete) {
-        return $doraFacade->getHandUraDoraFan($complete);
+    function getDoraFanImpl(TileList $complete, IndicatorWall $indicatorWall) {
+        return $indicatorWall->getHandUraDoraFan($complete);
     }
 }

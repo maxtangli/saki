@@ -107,4 +107,22 @@ class IndicatorWall {
             ->take(0, $openedIndicatorCount)
             ->walk($openBottom);
     }
+
+    /**
+     * @param TileList $hand
+     * @return int
+     */
+    function getHandDoraFan(TileList $hand) {
+        return DoraType::create(DoraType::DORA)
+            ->getHandFan($hand, $this->getIndicatorList());
+    }
+
+    /**
+     * @param TileList $hand
+     * @return int
+     */
+    function getHandUraDoraFan(TileList $hand) {
+        return DoraType::create(DoraType::URA_DORA)
+            ->getHandFan($hand, $this->getUraIndicatorList());
+    }
 }
