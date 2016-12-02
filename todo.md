@@ -1146,6 +1146,14 @@ rush 100 Wall view: IndicatorWall 3.1h
 
 - [x] refactor: DoraType 1h
 
+rush 101 fix pass command and AI 1.8h
+
+- [x] analyze 0.4h
+- [x] skip needless pass commands 1h
+- [x] bug: private AI not execute? 0.3h
+
+- [x] refactor: adapt CommandProvided 0.1h
+
 rush more clean UI
 
 - [ ] css: playerWall double layer
@@ -1159,7 +1167,6 @@ rush optimize WaitingAnalyzer: step2
 
 rush toward 100% rules!
 
-- [ ] skip needless pass commands in PlayServer or Round
 - [ ] game over rule confirm & tests
 - [ ] multiple ron
 - [ ] 流局満貫

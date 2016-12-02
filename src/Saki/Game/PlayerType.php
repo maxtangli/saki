@@ -36,7 +36,11 @@ class PlayerType extends Enum {
         $keys = $seatWindList->toArray(function (SeatWind $seatWind) {
             return $seatWind->__toString();
         });
-        $values = array_fill(0, $seatWindList->count(), $defaultValue);
+        if (is_callable($defaultValue)) {
+            $values = $seatWindList->toArray($defaultValue);
+        } else {
+            $values = array_fill(0, $seatWindList->count(), $defaultValue);
+        }
         return array_combine($keys, $values);
     }
 }

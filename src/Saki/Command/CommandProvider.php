@@ -2,7 +2,6 @@
 namespace Saki\Command;
 
 use Saki\Command\DebugCommand\InitCommand;
-use Saki\Command\DebugCommand\PassAllCommand;
 use Saki\Command\DebugCommand\ToNextRoundCommand;
 use Saki\Game\Round;
 use Saki\Game\SeatWind;
@@ -43,7 +42,7 @@ class CommandProvider {
      * @param $actor
      * @return ArrayList ArrayList of PlayerCommand.
      */
-    function provideActorCommand(string $class, $actor) {
+    private function provideActorCommand(string $class, $actor) {
         $round = $this->getRound();
         if (!$class::matchPhaseAndActor($round, $actor)) {
             return new ArrayList();
@@ -79,7 +78,7 @@ class CommandProvider {
      * @param SeatWind $actor
      * @return ArrayList ArrayList of PlayerCommand.
      */
-    function provideActorAll(SeatWind $actor) {
+    private function provideActorAll(SeatWind $actor) {
         $round = $this->getRound();
         $providerActorCommand = function (string $class) use ($actor) {
             return $this->provideActorCommand($class, $actor);
@@ -103,14 +102,15 @@ class CommandProvider {
     }
 
     /**
-     * @return ArrayList ArrayList of PlayerCommand.
+     * @return CommandProvided
      */
     function provideAll() {
+        $provideActorAll = function (SeatWind $actor) {
+            return $this->provideActorAll($actor);
+        };
         $round = $this->getRound();
-        $actorList = $round->getRule()->getPlayerType()
-            ->getSeatWindList();
-        $allExecutableList = (new ArrayList())
-            ->fromSelectMany($actorList, [$this, 'provideActorAll']);
-        return $allExecutableList;
+        $actorCommands = $round->getRule()->getPlayerType()
+            ->getSeatWindMap($provideActorAll);
+        return new CommandProvided($actorCommands);
     }
 }

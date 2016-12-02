@@ -248,6 +248,18 @@ if buffer.full
 - if all pass，return passAll
 - otherwise, return candidate
 
+## 公共阶段的无用指令跳过
+
+// skip AI private actor
+if private phase && actor.isAI
+  execute random discard
+
+// skip all public actor's needless single pass commands
+if public phase && decider on
+  commands = provider.get where public actor
+    for all actor where commands=[pass] or actor.isAI
+      execute pass
+
 # 流局的判定
 
 ## 荒牌流局，ExhaustiveDraw

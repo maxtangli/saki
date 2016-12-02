@@ -5,6 +5,7 @@ use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
 use Saki\Command\Command;
 use Saki\Command\PrivateCommand\DiscardCommand;
+use Saki\Command\PublicCommand\PassCommand;
 use Saki\Play\Participant;
 use Saki\Play\Play;
 use Saki\Util\Utils;
@@ -141,10 +142,10 @@ class PlayServer implements MessageComponentInterface {
     }
 
     private function goAI() {
-        // todo refactor temp solution
+        // todo refactor: better responsibility assign
         $play = $this->getPlay();
 
-        // do nothing if no player is playing
+        // if no player, exit
         $isAI = function (Participant $participant) {
             return $participant->isAI();
         };
@@ -152,29 +153,52 @@ class PlayServer implements MessageComponentInterface {
             return;
         }
 
+        // if player exist
         while (true) {
             $round = $play->getRound();
             $currentActor = $round->getCurrentSeatWind();
+            $commandProvided = $round->getProcessor()->getProvider()->provideAll();
 
             if ($round->getPhase()->isPrivate()) {
-                // if private phase and current actor is AI, execute discard
+                // if private actor is AI, execute discard random
                 /** @var Participant $currentParticipant */
-                $currentParticipant = $play->getParticipantList($currentActor, true, true)->getSingle();
+                $currentParticipant = $play
+                    ->getParticipantList($currentActor, true, true)
+                    ->getSingle();
                 if ($currentParticipant->isAI()) {
-                    $discardList = $round->getProcessor()->getProvider()
-                        ->provideActorAll($currentActor)
-                        ->where(Utils::toClassPredicate(DiscardCommand::class));
                     /** @var Command $discard */
-                    $discard = $discardList->getRandom();
-                    $discard->execute();
+                    $randomDiscard = $commandProvided
+                        ->getActorProvided($currentActor, DiscardCommand::class)
+                        ->getRandom();
+                    $randomDiscard->execute();
                     continue;
                 }
             } elseif ($round->getPhase()->isPublic()) {
-                // if public phase and public actors are all AI, execute passAll
                 $publicParticipantList = $play->getParticipantList($currentActor, false, true);
                 if ($publicParticipantList->all($isAI)) {
+                    // if public actors are all AI, execute passAll
                     $round->processLine('passAll');
                     continue;
+                } else {
+                    // for all public actors where actor is AI or commands=[pass], execute pass
+                    $shouldExecutePass = function (Participant $participant) use ($commandProvided) {
+                        $actor = $participant->getRole()->getViewer();
+                        $commandList = $commandProvided->getActorProvided($actor);
+
+                        $isPass = Utils::toClassPredicate(PassCommand::class);
+                        return $commandList->any($isPass)
+                            && ($participant->isAI() || $commandList->count() == 1);
+                    };
+                    $list = $publicParticipantList->getCopy()->where($shouldExecutePass);
+                    if (!$list->isEmpty()) {
+                        $executePass = function (Participant $participant) use ($round) {
+                            $actorString = $participant->getRole()->getViewer()->__toString();
+                            $commandLine = "pass $actorString";
+                            $round->processLine($commandLine);
+                        };
+                        $list->walk($executePass);
+                        continue;
+                    }
                 }
             }
 

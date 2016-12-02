@@ -83,7 +83,9 @@ class Utils {
      */
     static function toClassPredicate($class) {
         return function ($v) use ($class) {
-            return $v instanceof $class;
+            return isset($class)
+                ? $v instanceof $class
+                : true;
         };
     }
 

@@ -17,6 +17,7 @@ class Play {
     function __construct() {
         $round = new Round();
         $this->round = $round;
+        $round->enableDecider = true;
         $this->participants = new \SplObjectStorage();
         $this->roleManager = new RoleManager($round->getRule()->getPlayerType());
     }
