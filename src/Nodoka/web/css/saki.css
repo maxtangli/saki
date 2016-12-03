@@ -16,6 +16,7 @@ body {
 }
 
 .areas {
+    border-radius: 25px;
     background-color: grey;
     width: 680px;
     height: 680px; /* = hand.width + hand.height */
@@ -120,7 +121,8 @@ body {
 }
 
 .profileContainer {
-    background-color: #00FFFF;
+    /*border-radius: 25px;*/
+    /*background-color: #00FFFF;*/
     width: 135px;
     height: 65px;
     position: absolute;
@@ -129,7 +131,8 @@ body {
 }
 
 .discardContainer {
-    background-color: #FF0000;
+    /*border-radius: 25px;*/
+    /*background-color: #FF0000;*/
     width: 210px; /* = 5 * tile.width + tile.height */
     height: 135px; /* >= 3 * tile.height */
     position: absolute;
@@ -138,7 +141,8 @@ body {
 }
 
 .wallContainer {
-    background-color: #00FF00;
+    /*border-radius: 25px;*/
+    /*background-color: #00FF00;*/
     width: 475px; /* = hand.width - left - hand.height */
     height: 65px;
     position: absolute;
@@ -157,7 +161,8 @@ body {
 }
 
 .handContainer {
-    background-color: #0000FF;
+    /*border-radius: 25px;*/
+    /*background-color: #0000FF;*/
     width: 610px;
     height: 70px;
     position: absolute;

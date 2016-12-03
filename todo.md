@@ -1154,9 +1154,10 @@ rush 101 fix pass command and AI 1.8h
 
 - [x] refactor: adapt CommandProvided 0.1h
 
-rush more clean UI
+rush UI: discard by click tile
 
-- [ ] css: playerWall double layer
+- [x] css: remove bg color 0.1h
+- css: playerWall double layer 0.1h
 
 rush meld view
 
