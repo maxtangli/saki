@@ -139,7 +139,7 @@ Saki.DemoView.prototype = {
     /*-- discard --*/
     discard: function (tilesData) {
         return $('<div class="discard"></div>')
-            .append(tilesData.map(this.tile));
+            .append(tilesData.map($.proxy(this.tile, this)));
     },
     /*-- profile --*/
     profile: function (profileData) {
@@ -151,6 +151,9 @@ Saki.DemoView.prototype = {
             .append(commandsData.map($.proxy(this.command, this)));
     },
     command: function (commandData) {
+        if (commandData.search('discard') != -1) {
+            return '';
+        }
         var send = $.proxy(this.game.send, this.game);
         return $('<input/>')
             .attr({
@@ -179,10 +182,10 @@ Saki.DemoView.prototype = {
     /*-- hand --*/
     public: function (tilesData) {
         return $('<span class="public"></span>')
-            .append(tilesData.map(this.tile));
+            .append(tilesData.map($.proxy(this.tileDiscard, this)));
     },
     target: function (tileData) {
-        return this.tile(tileData);
+        return this.tileDiscard(tileData);
     },
     melded: function (meldedData) {
         return $('<span class="melded"></span>')
@@ -190,9 +193,20 @@ Saki.DemoView.prototype = {
     },
     meld: function (meldData) {
         return $('<span class="meld"></span>')
-            .append(meldData.map(this.tile));
+            .append(meldData.map($.proxy(this.tile, this)));
     },
     /*-- tile --*/
+    tileDiscard: function (tileData) {
+        var send = $.proxy(this.game.send, this.game);
+        return $('<span></span>')
+            .attr('class', 'tile tile-' + tileData.tile)
+            .html(tileData)
+            .attr('command', tileData.command)
+            .click(function () {
+                var command = $(this).attr('command');
+                return command ? send(command) : false;
+            });
+    },
     tile: function (tileData) {
         return $('<span></span>')
             .attr('class', 'tile tile-' + tileData)

@@ -3,6 +3,7 @@ namespace Saki\Play;
 
 use Saki\Game\Area;
 use Saki\Game\Round;
+use Saki\Game\Tile\Tile;
 use Saki\Util\Utils;
 use Saki\Win\WinReport;
 
@@ -102,26 +103,38 @@ class RoundSerializer {
         $actor = $area->getSeatWind();
         $hand = $area->getHand();
         $commandProvider = $this->getRound()->getProcessor()->getProvider();
+        $provided = $commandProvider->provideAll()
+            ->getActorProvided($area->getSeatWind())
+            ->select(Utils::getToStringCallback());
 
+        if ($role->mayExecute($actor)) {
+            $commands = $provided->toArray();
+        } else {
+            $commands = [];
+        }
+
+        $toTileData = function (Tile $tile) use ($provided, $actor) {
+            $discardCommand = "discard $actor $tile";
+            $command = $provided->valueExist($discardCommand)
+                ? $discardCommand
+                : null;
+            return [
+                'tile' => $tile->__toString(),
+                'command' => $command,
+            ];
+        };
         if ($role->mayViewHand($actor)) {
             $public = $hand->getPublic()
                 ->orderByTileID()
-                ->toArray(Utils::getToStringCallback());
+                ->toArray($toTileData);
             $target = $hand->getTarget()->existAndIsCreator($actor)
-                ? $hand->getTarget()->getTile()->__toString()
-                : 'X';
+                ? $toTileData($hand->getTarget()->getTile())
+                : ['tile' => 'X', 'command' => null];
         } else {
-            $public = array_fill(0, $hand->getPublic()->count(), 'O');
+            $public = array_fill(0, $hand->getPublic()->count(), ['tile' => 'O', 'command' => null]);
             $target = $hand->getTarget()->existAndIsCreator($actor)
-                ? 'O'
-                : 'X';
-        }
-
-        if ($role->mayExecute($actor)) {
-            $commands = $commandProvider->provideAll()->getActorProvided($area->getSeatWind())
-                ->toArray(Utils::getToStringCallback());
-        } else {
-            $commands = [];
+                ? ['tile' => 'O', 'command' => null]
+                : ['tile' => 'X', 'command' => null];
         }
 
         $a = [
@@ -131,10 +144,10 @@ class RoundSerializer {
             'isReach' => $area->getRiichiStatus()->isRiichi(),
             'discard' => $area->getDiscard()->toArray(Utils::getToStringCallback()),
             'wall' => $area->getActorWall()->toJson(),
+            'commands' => $commands,
             'public' => $public,
             'target' => $target,
             'melded' => $hand->getMelded()->toTileStringArrayArray(),
-            'commands' => $commands,
         ];
 
         return $a;

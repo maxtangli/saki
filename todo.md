@@ -1154,10 +1154,20 @@ rush 101 fix pass command and AI 1.8h
 
 - [x] refactor: adapt CommandProvided 0.1h
 
-rush UI: discard by click tile
+rush 102 UI: discard by click tile 1.5h
 
 - [x] css: remove bg color 0.1h
 - css: playerWall double layer 0.1h
+
+- [x] analyze 0.2h
+- [x] json: tile data bind discard command 0.4h
+- [x] js: discard by click 0.7h
+
+rush 103 UI: result
+
+- [ ] dialog box
+- [ ] view: yaku
+- [ ] view: point
 
 rush meld view
 
