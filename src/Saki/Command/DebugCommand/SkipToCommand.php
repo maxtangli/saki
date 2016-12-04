@@ -1,7 +1,6 @@
 <?php
 namespace Saki\Command\DebugCommand;
 
-use Saki\Command\Command;
 use Saki\Command\ParamDeclaration\BoolParamDeclaration;
 use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Game\Round;
@@ -40,9 +39,10 @@ class SkipToCommand extends DebugCommand {
         while (!$this->match($round)) {
             $phase = $round->getPhase();
             if ($phase->isPrivate()) {
-                $currentActor = $round->getCurrentSeatWind();
-                $scripts = sprintf('mockHand %s C; discard %s C', $currentActor, $currentActor);
-                $round->process($scripts);
+                $area = $round->getCurrentArea();
+                $actor = $round->getCurrentSeatWind();
+                $tile = $area->getHand()->getTarget()->getTile();
+                $round->process("discard $actor $tile");
             } elseif ($phase->isPublic()) {
                 $round->process('passAll');
             } else {
@@ -60,7 +60,7 @@ class SkipToCommand extends DebugCommand {
     protected function match(Round $round) {
         if ($round->getPhase()->isPrivateOrPublic()) {
             return $round->getCurrentSeatWind() == $this->getSeatWind()
-            && $round->getPhase()->isPrivate() == $this->getIsPrivate();
+                && $round->getPhase()->isPrivate() == $this->getIsPrivate();
         } else {
             return true;
         }

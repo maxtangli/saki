@@ -99,7 +99,7 @@ abstract class PlayerCommand extends Command {
                     return $decider->getDecided()->execute();
                 }
             } else {
-                // do nothing
+                return true;
             }
         } else {
             return $this->executePlayerImpl($round, $this->getActorArea());

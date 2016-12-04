@@ -41,7 +41,7 @@ class RoundTest extends \SakiTestCase {
         $this->assertEquals('2m', $handS->getTarget()->getTile()->toFormatString(true));
         $this->assertEquals('123456789p1234s', $handS->getPublic()->toSortedString(true));
     }
-    
+
     function testNew() {
         // todo
     }
@@ -140,7 +140,7 @@ class RoundTest extends \SakiTestCase {
         $this->assertNotExecutable('chow W 45m');
     }
 
-    function testChowSwapCalling(){
+    function testChowSwapCalling() {
         $round = $this->getInitRound();
         $round->process(
             'mockHand E 1111s; concealedKong E 1111s',
@@ -321,10 +321,12 @@ class RoundTest extends \SakiTestCase {
 
     function testExhaustiveDraw() {
         $round = $this->getInitRound();
+        $round->process('mockHand E 123456789m12355p; riichi E 5p');
         for ($phase = $round->getPhaseState()->getPhase(); $phase != Phase::createOver(); $phase = $round->getPhaseState()->getPhase()) {
             $round->process('skip 1');
         }
         $this->assertOver(ResultType::EXHAUSTIVE_DRAW);
+        $this->assertPoints([25000 - 1000 + 3000, 25000 - 1000, 25000 - 1000, 25000 - 1000]);
     }
 
     // comment out since slow 230ms todo

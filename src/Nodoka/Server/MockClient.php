@@ -52,6 +52,7 @@ class MockClient implements ConnectionInterface {
      */
     function send($data) {
         $this->setLastReceived($data);
+        return $this; // right?
     }
 
     /**

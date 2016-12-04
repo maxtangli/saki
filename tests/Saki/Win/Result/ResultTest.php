@@ -2,6 +2,8 @@
 
 use Saki\Game\SeatWind;
 use Saki\Win\Point\FanAndFu;
+use Saki\Win\Result\ExhaustiveDrawResult;
+use Saki\Win\Result\Result;
 use Saki\Win\Result\WinResult;
 use Saki\Win\Result\WinResultInput;
 
@@ -13,7 +15,7 @@ class WinResultTest extends \SakiTestCase {
      * @param int $riichiChange
      * @param int $seatChange
      */
-    protected function assertPointChange(
+    protected function assertWinResultPointChange(
         int $tableChange, int $riichiChange, int $seatChange,
         WinResult $result, string $actorString
     ) {
@@ -35,7 +37,7 @@ class WinResultTest extends \SakiTestCase {
     protected function assertAllPointChange(array $expected, WinResult $result) {
         foreach ($expected as $i => list($tableChange, $riichiChange, $seatChange)) {
             $actor = SeatWind::fromIndex($i + 1);
-            $this->assertPointChange($tableChange, $riichiChange, $seatChange,
+            $this->assertWinResultPointChange($tableChange, $riichiChange, $seatChange,
                 $result, $actor);
         }
     }
@@ -121,5 +123,33 @@ class WinResultTest extends \SakiTestCase {
             [-2000 - 2600, 0, -300 - 300],
             [0, 0, 0],
         ], $result);
+    }
+
+    private function assertResultPointChange(int $pointChange, string $seatWind, Result $result) {
+        $actual = $result->getPointChange(SeatWind::fromString($seatWind));
+        $this->assertEquals($pointChange, $actual);
+    }
+
+    /**
+     * @param array $pointChanges
+     * @param array $waitingArray
+     * @dataProvider provideExhaustiveResult
+     */
+    function testExhaustiveResult(array $pointChanges, array $waitingArray) {
+        $result = ExhaustiveDrawResult::fromWaitingArray($waitingArray);
+        $this->assertResultPointChange($pointChanges[0], 'E', $result);
+        $this->assertResultPointChange($pointChanges[1], 'S', $result);
+        $this->assertResultPointChange($pointChanges[2], 'W', $result);
+        $this->assertResultPointChange($pointChanges[3], 'N', $result);
+    }
+
+    function provideExhaustiveResult() {
+        return [
+            [[0, 0, 0, 0], [false, false, false, false]],
+            [[3000, -1000, -1000, -1000], [true, false, false, false]],
+            [[1500, 1500, -1500, -1500], [true, true, false, false]],
+            [[1000, 1000, 1000, -3000], [true, true, true, false]],
+            [[0, 0, 0, 0], [true, true, true, true]],
+        ];
     }
 }

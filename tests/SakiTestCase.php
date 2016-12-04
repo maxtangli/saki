@@ -222,5 +222,18 @@ class SakiTestCase extends \PHPUnit_Framework_TestCase {
             $this->assertEquals(SeatWind::fromString($expectedCurrentSeatWind), $currentSeatWind);
         }
     }
+
+    function assertPoint(int $point, string $seatWind) {
+        $actual = $this->getCurrentRound()->getPointHolder()
+            ->getPoint(SeatWind::fromString($seatWind));
+        $this->assertEquals($point, $actual);
+    }
+
+    function assertPoints(array $points) {
+        $this->assertPoint($points[0], 'E');
+        $this->assertPoint($points[1], 'S');
+        $this->assertPoint($points[2], 'W');
+        $this->assertPoint($points[3], 'N');
+    }
     //endregion
 }

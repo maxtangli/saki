@@ -33,42 +33,35 @@ class ExhaustiveDrawResult extends Result {
 
     //region impl
     function isKeepDealer() {
-        return $this->isDealerWaiting();
+        return $this->isWaiting(SeatWind::createEast());
     }
 
     function getPointChange(SeatWind $seatWind) {
         list($waitingCount, $notWaitingCount) = $this->getCounts();
 
-        if ($waitingCount == 0) {
+        if ($waitingCount == 0 || $notWaitingCount == 0) {
             return 0;
         }
 
         // 3000 points from notWaiting players to waiting players
         return $this->isWaiting($seatWind)
-            ? 3000 / $notWaitingCount
-            : -3000 / $waitingCount;
+            ? 3000 / $waitingCount
+            : -3000 / $notWaitingCount;
     }
     //endregion
-
-    /**
-     * @return bool
-     */
-    protected function isDealerWaiting() {
-        return $this->isWaiting(SeatWind::createEast());
-    }
 
     /**
      * @param SeatWind $seatWind
      * @return bool
      */
-    protected function isWaiting(SeatWind $seatWind) {
+    private function isWaiting(SeatWind $seatWind) {
         return $this->waitingMap[$seatWind->__toString()];
     }
 
     /**
      * @return int[] Return an array in format: [$waitingCount, $notWaitingCount].
      */
-    protected function getCounts() {
+    private function getCounts() {
         $yes = $no = 0;
         foreach ($this->waitingMap as $v) {
             if ($v) {

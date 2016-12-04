@@ -181,7 +181,6 @@ class Round {
     /**
      * @param string $scriptLine
      * @param SeatWind|null $requireActor
-     * @return Command
      * @throws InvalidArgumentException
      */
     function processLine(string $scriptLine, SeatWind $requireActor = null) {

@@ -56,7 +56,7 @@ class OverPhaseState extends PhaseState {
         if (!$isTopEnoughPoint) {
             return false;
         } // else isTopPlayerEnoughPoint
-        
+
         $isDealerTop = $topItem->getSeatWind()->isDealer();
         $result = $round->getPhaseState()->getResult();
         return !($result->isKeepDealer()) || $isDealerTop;
@@ -86,10 +86,9 @@ class OverPhaseState extends PhaseState {
     }
 
     function enter(Round $round) {
-        $result = $this->getResult();
-
         // modify points
-        $round->getPointHolder()->applyPointChangeMap($result->getPointChangeMap());
+        $pointChangeMap = $this->getResult()->getPointChangeMap();
+        $round->getPointHolder()->applyPointChangeMap($pointChangeMap);
     }
 
     function leave(Round $round) {

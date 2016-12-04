@@ -1163,7 +1163,12 @@ rush 102 UI: discard by click tile 1.5h
 - [x] json: tile data bind discard command 0.4h
 - [x] js: discard by click 0.7h
 
-rush 103 UI: result
+rush 103 test ExhaustiveDraw 1h
+
+- [x] test: ExhaustiveDrawResult 0.3h
+- [x] bug fix: winner point not changed for exhaustive draw 0.5h
+
+rush UI: result
 
 - [ ] dialog box
 - [ ] view: yaku

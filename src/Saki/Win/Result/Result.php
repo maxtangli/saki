@@ -9,7 +9,7 @@ use Saki\Util\Immutable;
  * @package Saki\Win\Result
  */
 abstract class Result implements Immutable {
-    private $playerCount;
+    private $playerType;
     private $resultType;
 
     /**
@@ -17,22 +17,22 @@ abstract class Result implements Immutable {
      * @param ResultType $resultResultType
      */
     function __construct(PlayerType $playerType, ResultType $resultResultType) {
-        $this->playerCount = $playerType->getValue();
+        $this->playerType = $playerType;
         $this->resultType = $resultResultType;
     }
 
     /**
-     * @return ResultType
+     * @return string
      */
     function __toString() {
         return $this->getResultType()->__toString();
     }
 
     /**
-     * @return int
+     * @return PlayerType
      */
-    function getPlayerCount() {
-        return $this->playerCount;
+    function getPlayerType() {
+        return $this->playerType;
     }
 
     /**
@@ -46,9 +46,7 @@ abstract class Result implements Immutable {
      * @return array An array to indicate point changes in format e.x. ['E' => -1000 ...].
      */
     function getPointChangeMap() {
-        $keyList = SeatWind::createList($this->getPlayerCount());
-        $valueList = $keyList->toArrayList([$this, 'getPointChange']);
-        return array_combine($keyList->toArray(), $valueList->toArray());
+        return $this->getPlayerType()->getSeatWindMap([$this, 'getPointChange']);
     }
 
     //region subclass hooks

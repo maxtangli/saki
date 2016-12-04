@@ -20,15 +20,14 @@ class ExhaustiveDraw extends Draw {
 
     protected function getResultImpl(Round $round) {
         $waitingAnalyzer = $round->getRule()->getWinAnalyzer()->getWaitingAnalyzer();
-        $areaList = $round->getAreaList();
         $isWaiting = function (Area $area) use ($waitingAnalyzer) {
             $public = $area->getHand()->getPublic();
             $melded = $area->getHand()->getMelded();
             $waitingTileList = $waitingAnalyzer->analyzePublic($public, $melded);
-            $isWaiting = $waitingTileList->count() > 0;
+            $isWaiting = !$waitingTileList->isEmpty();
             return $isWaiting;
         };
-        $waitingArray = $areaList->toArrayList($isWaiting)->toArray();
+        $waitingArray = $round->getAreaList()->toArray($isWaiting);
         $result = ExhaustiveDrawResult::fromWaitingArray($waitingArray);
         return $result;
     }
