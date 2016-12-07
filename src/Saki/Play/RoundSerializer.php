@@ -123,7 +123,7 @@ class RoundSerializer {
                 'command' => $command,
             ];
         };
-        if ($role->mayViewHand($actor)) {
+        if ($role->mayViewHand($actor) || $this->getRound()->getPhase()->isOver()) {
             $public = $hand->getPublic()
                 ->orderByTileID()
                 ->toArray($toTileData);

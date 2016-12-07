@@ -11,13 +11,14 @@
 </head>
 <body>
 <header>
-    <h1>Saki Demo(build.161204)</h1>
+    <h1>Saki Demo(build.161207)</h1>
 </header>
 <main>
     <section>
         <h2>説明</h2>
         完成度<br/>
         ・Rule 95%, UI 10%, network 10%。<br/>
+        ・問題点：立直判定のアルゴリズムが重い。<br/>
         プレイの流れ<br/>
         ・ページを開く時、自動的にWebSocketサーバーに接続し、ゲーム状態のJSONが返る。<br/>
         ・実行できる命令はボタンより表示されている（「打つ」は牌のクリックより）。<br/>
@@ -31,13 +32,10 @@
     </section>
     <section>
         <h2>Game</h2>
-        <section>
-            <dl>
-                <dt class="resultTitle">round result</dt>
-                <dd class="resultContainer"></dd>
-            </dl>
-        </section>
         <section class="areas">
+            <section class="result">
+                <div class="resultContainer"></div>
+            </section>
             <section class="round">
                 <span class="prevailingWindContainer"></span>
                 <span class="prevailingWindTurnContainer"></span>局

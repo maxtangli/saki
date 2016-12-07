@@ -100,10 +100,13 @@ Saki.DemoView.prototype = {
             } else {
                 var resultText = result.result;
             }
+            $('.result').show();
+            $('.resultContainer').text(resultText);
         } else {
-            var resultText = 'none';
+            $('.result').hide();
+            $('.resultContainer').text('');
         }
-        $('.resultContainer').text(resultText);
+
 
         var that = this;
         var keys = [

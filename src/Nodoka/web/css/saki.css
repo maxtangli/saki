@@ -27,6 +27,19 @@ body {
     margin-top: 10px;
 }
 
+.result {
+    border-radius: 25px;
+    background-color: whitesmoke;
+    height: 400px;
+    width: 400px;
+    position: absolute;
+    left: 140px;
+    top: 140px;
+    z-index: 10;
+    text-align: center;
+    opacity: 0.9;
+}
+
 .resultContainer {
     white-space: pre-line;
 }
@@ -44,7 +57,7 @@ body {
     margin-left: 16px;
 }
 
-.prevailingWindTurnContainer{
+.prevailingWindTurnContainer {
 }
 
 .seatWindTurnContainer {

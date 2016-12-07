@@ -1170,9 +1170,11 @@ rush 103 test ExhaustiveDraw 1h
 
 rush UI: result
 
-- [ ] dialog box
-- [ ] view: yaku
-- [ ] view: point
+- [x] view: result dialog box 0.4h
+- [x] open all hand when over phase
+- [ ] view: indicator wall
+- [ ] view: hand
+- [ ] view: point change
 
 rush meld view
 
