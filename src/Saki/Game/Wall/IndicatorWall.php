@@ -46,7 +46,11 @@ class IndicatorWall {
      * @return array
      */
     function toJson() {
-        return $this->stackList->toJson();
+        $a = $this->stackList->toJson();
+        return [
+            'indicatorList' => [$a[0][0], $a[1][0], $a[2][0], $a[3][0], $a[4][0]],
+            'uraIndicatorList' => [$a[0][1], $a[1][1], $a[2][1], $a[3][1], $a[4][1]],
+        ];
     }
 
     /**

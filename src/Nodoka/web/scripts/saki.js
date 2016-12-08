@@ -101,12 +101,11 @@ Saki.DemoView.prototype = {
                 var resultText = result.result;
             }
             $('.result').show();
+            $('.indicatorWallContainer').html(this.indicatorWall(result.indicatorWall));
             $('.resultContainer').text(resultText);
         } else {
             $('.result').hide();
-            $('.resultContainer').text('');
         }
-
 
         var that = this;
         var keys = [
@@ -169,6 +168,11 @@ Saki.DemoView.prototype = {
             });
     },
     /*-- wall --*/
+    indicatorWall: function (indicatorWallData) {
+        return $('<div class="indicatorWall"></div>')
+            .append(this.discard(indicatorWallData.indicatorList))
+            .append(this.discard(indicatorWallData.uraIndicatorList));
+    },
     wall: function (stacksData) {
         return $('<div class="wall"></div>')
             .append(stacksData.map($.proxy(this.stack, this)));

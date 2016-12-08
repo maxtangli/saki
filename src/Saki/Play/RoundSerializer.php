@@ -163,6 +163,7 @@ class RoundSerializer {
             'isGameOver' => $round->isGameOver(),
             'isRoundOver' => $round->getPhase()->isOver(),
             'result' => null,
+            'indicatorWall' => $round->getWall()->getIndicatorWall()->toJson(),
             'winReports' => [],
         ];
 

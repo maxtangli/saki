@@ -1172,16 +1172,16 @@ rush UI: result
 
 - [x] view: result dialog box 0.4h
 - [x] open all hand when over phase
-- [ ] view: indicator wall
+- [x] view: indicator wall 0.7h
 - [ ] view: hand
 - [ ] view: point change
-
-rush meld view
 
 rush optimize WaitingAnalyzer: step2
 
 - [ ] optimize analyzePublic
 - [ ] optimize analyzePrivate
+
+rush meld view
 
 rush toward 100% rules!
 
