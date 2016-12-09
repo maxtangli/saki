@@ -1168,13 +1168,12 @@ rush 103 test ExhaustiveDraw 1h
 - [x] test: ExhaustiveDrawResult 0.3h
 - [x] bug fix: winner point not changed for exhaustive draw 0.5h
 
-rush UI: result
+rush 104 UI: result 1.5h
 
 - [x] view: result dialog box 0.4h
 - [x] open all hand when over phase
 - [x] view: indicator wall 0.7h
-- [ ] view: hand
-- [ ] view: point change
+- [x] view: point change 0.4h
 
 rush optimize WaitingAnalyzer: step2
 

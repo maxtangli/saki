@@ -12,6 +12,7 @@ class PointHolder {
     // variable
     /** @var int[] */
     private $pointMap;
+    private $lastPointChangeMap;
 
     /**
      * @param PointSetting $pointSetting
@@ -61,9 +62,28 @@ class PointHolder {
      * @param int[] $pointChangeMap
      */
     function applyPointChangeMap(array $pointChangeMap) {
+        $this->lastPointChangeMap = $pointChangeMap;
+
         foreach ($pointChangeMap as $seatWindString => $pointChange) {
             $seatWind = SeatWind::fromString($seatWindString);
             $this->setPointChange($seatWind, $pointChange);
         }
+    }
+
+    /**
+     * @return array e.x. ['E' => ['pre' => 25000, 'change' => -1000, 'now' => 24000], ...]
+     */
+    function getLastChangeDetail() {
+        $result = [];
+        $pointChangeMap = $this->lastPointChangeMap;
+
+        foreach ($pointChangeMap as $seatWindString => $pointChange) {
+            $now = $this->getPoint(SeatWind::fromString($seatWindString));
+            $change = $pointChangeMap[$seatWindString];
+            $pre = $now - $change;
+            $result[$seatWindString] = ['pre' => $pre, 'change' => $change, 'now' => $now];
+        }
+
+        return $result;
     }
 }

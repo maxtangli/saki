@@ -93,16 +93,23 @@ Saki.DemoView.prototype = {
         if (result.isRoundOver) {
             if (result.winReports.length > 0) {
                 var report = result.winReports[0];
-                var resultText =
-                    result.result
+                var resultText = result.result
                     + '\n' + [report.actor, report.fan + ' fan', report.fu + ' fu'].join(',')
                     + '\n' + report.yakuItems.join('\n');
             } else {
                 var resultText = result.result;
             }
+
+            var lastChangeDetailText = '';
+            $.each(result.lastChangeDetail, function (actor, a) {
+                lastChangeDetailText = lastChangeDetailText
+                    + actor + ':' + [a.pre, a.change, a.now].join(',') + '\n';
+            });
+
             $('.result').show();
             $('.indicatorWallContainer').html(this.indicatorWall(result.indicatorWall));
             $('.resultContainer').text(resultText);
+            $('.lastChangeDetailContainer').text(lastChangeDetailText);
         } else {
             $('.result').hide();
         }

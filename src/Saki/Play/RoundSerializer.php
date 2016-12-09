@@ -163,7 +163,6 @@ class RoundSerializer {
             'isGameOver' => $round->isGameOver(),
             'isRoundOver' => $round->getPhase()->isOver(),
             'result' => null,
-            'indicatorWall' => $round->getWall()->getIndicatorWall()->toJson(),
             'winReports' => [],
         ];
 
@@ -171,6 +170,8 @@ class RoundSerializer {
             $overPhaseResult = $round->getPhaseState()->getResult();
 
             $a['result'] = $overPhaseResult->__toString();
+            $a['indicatorWall'] = $round->getWall()->getIndicatorWall()->toJson();
+            $a['lastChangeDetail'] = $round->getPointHolder()->getLastChangeDetail();
 
             if ($overPhaseResult->getResultType()->isWin()) {
                 $a['winReports'] = $overPhaseResult->getWinReportList()

@@ -40,7 +40,17 @@ body {
     opacity: 0.9;
 }
 
+.indicatorWallContainer {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
 .resultContainer {
+    white-space: pre-line;
+    margin-bottom: 10px;
+}
+
+.lastChangeDetailContainer {
     white-space: pre-line;
 }
 
