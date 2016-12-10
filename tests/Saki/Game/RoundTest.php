@@ -329,17 +329,16 @@ class RoundTest extends \SakiTestCase {
         $this->assertPoints([25000 - 1000 + 3000, 25000 - 1000, 25000 - 1000, 25000 - 1000]);
     }
 
-    // comment out since slow 230ms todo
-//    function testFourRiichiDraw() { 
-//        $round = $this->getInitRound();
-//        $round->process(
-//            'mockHand E 123456789m12357s; riichi E 7s; passAll',
-//            'mockHand S 123456789m12357s; riichi S 7s; passAll',
-//            'mockHand W 123456789m12357s; riichi W 7s; passAll',
-//            'mockHand N 123456789m12357s; riichi N 7s; passAll'
-//        );
-//        $this->assertResultType(ResultType::FOUR_REACH_DRAW);
-//    }
+    function testFourRiichiDraw() {
+        $round = $this->getInitRound();
+        $round->process(
+            'mockHand E 123456789m12357s; riichi E 7s; passAll',
+            'mockHand S 123456789m12357s; riichi S 7s; passAll',
+            'mockHand W 123456789m12357s; riichi W 7s; passAll',
+            'mockHand N 123456789m12357s; riichi N 7s; passAll'
+        );
+        $this->assertOver(ResultType::FOUR_REACH_DRAW);
+    }
 
     function testFourWindDraw() {
         $round = $this->getInitRound();

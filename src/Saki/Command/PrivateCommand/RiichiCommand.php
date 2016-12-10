@@ -19,7 +19,6 @@ class RiichiCommand extends PrivateCommand {
     }
 
     static function getOtherParamsListRaw(Round $round, SeatWind $actor, Area $actorArea) {
-        // todo optimize
         $waitingAnalyzer = $round->getRule()->getWinAnalyzer()->getWaitingAnalyzer();
         $hand = $actorArea->getHand();
         $futureWaitingList = $waitingAnalyzer->analyzePrivate($hand->getPrivate(), $hand->getMelded());

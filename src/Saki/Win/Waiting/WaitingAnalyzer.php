@@ -31,6 +31,7 @@ use Saki\Win\Series\SeriesAnalyzer;
 class WaitingAnalyzer {
     private $publicMeldListAnalyzer;
     private $seriesAnalyzer;
+    private $analyzePrivateBuffer; // temp solution to speed up RiichiCommand provide
 
     /**
      * @param SeriesAnalyzer $seriesAnalyzer
@@ -44,6 +45,7 @@ class WaitingAnalyzer {
         ];
         $this->publicMeldListAnalyzer = new MeldListAnalyzer($meldTypes, 1);
         $this->seriesAnalyzer = $seriesAnalyzer;
+        $this->analyzePrivateBuffer = [];
     }
 
     /**
@@ -67,7 +69,10 @@ class WaitingAnalyzer {
      * @return bool
      */
     function isWaitingAfterDiscard(TileList $private, MeldList $melded, Tile $tile) {
-        $futureWaitingList = $this->analyzePrivate($private, $melded);
+        $key = $private->__toString() . '#' . $melded->__toString();
+        $futureWaitingList = $this->analyzePrivateBuffer[$key]
+            ?? $this->analyzePrivate($private, $melded);
+
         $isWaiting = $futureWaitingList->count() > 0;
         if (!$isWaiting) {
             return false;
@@ -104,11 +109,14 @@ class WaitingAnalyzer {
         foreach ($uniqueTileList as $discard) {
             $public->fromSelect($private)->remove($discard, Tile::getPrioritySelector());
             $waiting = $this->analyzePublic($public, $melded);
-            if ($waiting->count() > 0) {
+            if (!$waiting->isEmpty()) {
                 $futureWaiting = new FutureWaiting($discard, $waiting);
                 $futureWaitingList->insertLast($futureWaiting);
             }
         }
+
+        $key = $private->__toString() . '#' . $melded->__toString();
+        $this->analyzePrivateBuffer = [$key => $futureWaitingList];
 
         return $futureWaitingList;
     }
@@ -135,11 +143,14 @@ class WaitingAnalyzer {
         // collect each MeldList's waiting as final waiting
         $waiting = new TileList();
         foreach ($setListList as $setList) {
-            $waiting->concat(
-                $this->getSetListWaiting($setList, $melded, $waiting)
-            );
+//            MsTimer::create()->restart();
+            $setListWaiting = $this->getSetListWaiting($setList, $melded, $waiting);
+//            $ms = MsTimer::create()->restart();
+//            echo "$setList: $ms.\n";
+
+            $waiting->concat($setListWaiting);
         }
-        return $waiting->orderByTileID();
+        return $waiting->distinct()->orderByTileID();
         /**
          * An alternative simple but slow algorithm,
          * which is replaced by current one.
@@ -160,7 +171,7 @@ class WaitingAnalyzer {
      * @param TileList $ignore
      * @return TileList
      */
-    protected function getSetListWaiting(MeldList $setList, MeldList $melded, TileList $ignore) {
+    private function getSetListWaiting(MeldList $setList, MeldList $melded, TileList $ignore) {
         $waiting = new TileList();
         $currentIgnore = $ignore->getCopy();
         foreach ($this->getSourceList($setList) as $source) {
@@ -175,7 +186,7 @@ class WaitingAnalyzer {
      * @param MeldList $setList
      * @return MeldList
      */
-    protected function getSourceList(MeldList $setList) {
+    private function getSourceList(MeldList $setList) {
         // a setList's waiting tiles must come from:
 
         // - case1. two pairs' for 4+1 series
@@ -206,7 +217,7 @@ class WaitingAnalyzer {
      * @param Meld $source
      * @return TileList
      */
-    protected function getSourceWaiting(MeldList $setList, MeldList $melded, TileList $ignore, Meld $source) {
+    private function getSourceWaiting(MeldList $setList, MeldList $melded, TileList $ignore, Meld $source) {
         $waiting = new TileList();
 
         $seriesAnalyzer = $this->getSeriesAnalyzer();

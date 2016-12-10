@@ -1175,9 +1175,13 @@ rush 104 UI: result 1.5h
 - [x] view: indicator wall 0.7h
 - [x] view: point change 0.4h
 
-rush optimize WaitingAnalyzer: step2
+rush 105 optimize provide 1.8h
 
 - [x] buffer provideAll() 0.6h
+- [x] measure&analyze 0.8h // provide RiichiCommand => analyzePrivate
+- [x] optimize RiichiProvider: buffer analyzePrivate 0.4h
+
+rush optimize WaitingAnalyzer: step2
 
 - [ ] optimize analyzePublic
 - [ ] optimize analyzePrivate
