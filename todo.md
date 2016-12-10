@@ -1177,6 +1177,8 @@ rush 104 UI: result 1.5h
 
 rush optimize WaitingAnalyzer: step2
 
+- [x] buffer provideAll() 0.6h
+
 - [ ] optimize analyzePublic
 - [ ] optimize analyzePrivate
 

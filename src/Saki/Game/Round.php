@@ -23,8 +23,8 @@ use Saki\Win\WinTarget;
 class Round {
     // immutable
     private $rule;
-    private $processor;
     // variable
+    private $processor;
     private $prevailing;
     /**
      * An ArrayList of Area, same size with PlayerList, order by ascend initial SeatWind.
@@ -49,9 +49,9 @@ class Round {
 
         // immutable
         $this->rule = $rule;
-        $this->processor = new CommandProcessor($this, CommandSet::createStandard());
 
         // variable
+        $this->processor = new CommandProcessor($this, CommandSet::createStandard());
         $this->prevailing = Prevailing::createFirst($rule->getPrevailingContext());
         $this->riichiHolder = new RiichiHolder($rule->getPlayerType());
         $this->pointHolder = new PointHolder($rule->getScoreStrategy()->getPointSetting());
@@ -88,6 +88,7 @@ class Round {
      */
     function roll(bool $keepDealer, bool $isWin = false) {
         // variable
+        $this->processor->init();
         $this->prevailing = $this->prevailing->toRolled($keepDealer);
         $roll = function (Area $area) use ($keepDealer) {
             $area->roll($area->getSeatWind()->toRolled($keepDealer));
@@ -118,6 +119,7 @@ class Round {
         $nextDealerSeatWind = $nextDealerArea->getSeatWind();
 
         // variable
+        $this->processor->init();
         $this->prevailing = $this->prevailing->toDebugInitialized($prevailingStatus);
         $this->areaList->walk(function (Area $area) use ($nextDealerSeatWind) {
             $area->debugInit($area->getSeatWind()->toNextSelf($nextDealerSeatWind));
@@ -195,7 +197,7 @@ class Round {
                 throw new \InvalidArgumentException('not actor.');
             }
         }
-        $command->execute();
+        $this->process($command->__toString());
     }
 
     /**

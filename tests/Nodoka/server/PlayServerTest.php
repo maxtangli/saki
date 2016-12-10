@@ -15,45 +15,57 @@ class PlayServerTest extends \SakiTestCase {
         $this->playServer->setLogEnable(false);
     }
 
+    function testDiscard() {
+        $playServer = $this->playServer;
+
+        $client1 = new MockClient();
+        $playServer->onOpen($client1);
+
+        $tile = $playServer->getPlay()->getRound()->getDealerArea()
+            ->getHand()->getPublic()->getFirst();
+        $command = "discard E $tile";
+        $playServer->onMessage($client1, $command);
+    }
+
     function testViewerAssign() {
-        $play = $this->playServer;
+        $playServer = $this->playServer;
 
         // initial
         $client1 = new MockClient();
-        $play->onOpen($client1);
+        $playServer->onOpen($client1);
         $this->assertViewer('E', $client1);
 
         $client2 = new MockClient();
-        $play->onOpen($client2);
+        $playServer->onOpen($client2);
         $this->assertViewer('S', $client2);
 
         $client3 = new MockClient();
-        $play->onOpen($client3);
+        $playServer->onOpen($client3);
         $this->assertViewer('W', $client3);
 
         $client4 = new MockClient();
-        $play->onOpen($client4);
+        $playServer->onOpen($client4);
         $this->assertViewer('N', $client4);
 
         // reallocate in wind order after close
-        $play->onClose($client3);
-        $play->onClose($client2);
+        $playServer->onClose($client3);
+        $playServer->onClose($client2);
 
         $client2 = new MockClient();
-        $play->onOpen($client2);
+        $playServer->onOpen($client2);
         $this->assertViewer('S', $client2);
 
         $client3 = new MockClient();
-        $play->onOpen($client3);
+        $playServer->onOpen($client3);
         $this->assertViewer('W', $client3);
 
         // viewer assigned if four player joined
         $client5 = new MockClient();
-        $play->onOpen($client5);
+        $playServer->onOpen($client5);
         $this->assertViewer('E', $client5);
 
         $client6 = new MockClient();
-        $play->onOpen($client6);
+        $playServer->onOpen($client6);
         $this->assertViewer('E', $client6);
 
         // viewer no see commands

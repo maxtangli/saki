@@ -170,7 +170,7 @@ class PlayServer implements MessageComponentInterface {
                     $randomDiscard = $commandProvided
                         ->getActorProvided($currentActor, DiscardCommand::class)
                         ->getRandom();
-                    $randomDiscard->execute();
+                    $round->processLine($randomDiscard->__toString());
                     continue;
                 }
             } elseif ($round->getPhase()->isPublic()) {

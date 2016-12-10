@@ -1,5 +1,6 @@
 <?php
 namespace Saki\Command;
+
 use Saki\Game\Round;
 
 /**
@@ -16,6 +17,10 @@ class CommandProcessor {
     function __construct(Round $round, CommandSet $commandSet) {
         $this->parser = new CommandParser($round, $commandSet);
         $this->provider = new CommandProvider($round, $commandSet);
+    }
+
+    function init() {
+        $this->getProvider()->clearProvideAll();
     }
 
     /**
@@ -42,5 +47,6 @@ class CommandProcessor {
         array_walk($commands, function (Command $command) {
             $command->execute();
         });
+        $this->getProvider()->clearProvideAll();
     }
 }

@@ -874,7 +874,7 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
         $indexes = $this->util_boxing($indexOrIndexes);
         if (!$this->indexesExist($indexes)) {
             throw new \InvalidArgumentException(
-                sprintf('Invalid get position $n[%s].'
+                sprintf('ArrayList: Invalid get position $n[%s].'
                     , implode(',', $indexes))
             );
         }
@@ -888,7 +888,7 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
     protected function assertInsertIndex(int $index) {
         if (!Utils::inRange($index, 0, $this->count())) {
             throw new \InvalidArgumentException(
-                "Invalid insert position \$index[$index]."
+                "ArrayList: Invalid insert position \$index[$index]."
             );
         }
         return $this;
@@ -901,7 +901,7 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
     function assertCount(int $n) {
         if ($this->count() != $n) {
             throw new \InvalidArgumentException(
-                "Failed to assert \$this->count() == $n."
+                "ArrayList: Failed to assert \$this->count() == $n."
             );
         }
         return $this;
@@ -920,7 +920,7 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
     protected function assertNotEmpty() {
         if ($this->isEmpty()) {
             throw new \InvalidArgumentException(
-                'Failed to assert not empty.'
+                "ArrayList: Failed to assert not empty."
             );
         }
         return $this;

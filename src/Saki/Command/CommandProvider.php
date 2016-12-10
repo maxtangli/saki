@@ -101,16 +101,25 @@ class CommandProvider {
         return $allExecutableList;
     }
 
+    private $provideAllBuffer = null; // a temp solution to speed up
+
+    function clearProvideAll() {
+        $this->provideAllBuffer = null;
+    }
+
     /**
      * @return CommandProvided
      */
     function provideAll() {
-        $provideActorAll = function (SeatWind $actor) {
-            return $this->provideActorAll($actor);
-        };
-        $round = $this->getRound();
-        $actorCommands = $round->getRule()->getPlayerType()
-            ->getSeatWindMap($provideActorAll);
-        return new CommandProvided($actorCommands);
+        if (!isset($this->provideAllBuffer)) {
+            $provideActorAll = function (SeatWind $actor) {
+                return $this->provideActorAll($actor);
+            };
+            $round = $this->getRound();
+            $actorCommands = $round->getRule()->getPlayerType()
+                ->getSeatWindMap($provideActorAll);
+            $this->provideAllBuffer = new CommandProvided($actorCommands);
+        }
+        return $this->provideAllBuffer;
     }
 }
