@@ -50,9 +50,9 @@ class MeldList extends ArrayList {
     /**
      * @return string[][]
      */
-    function toTileStringArrayArray() {
+    function toJson() {
         $meldToStringArray = function (Meld $meld) {
-            return $meld->toTileStringArray();
+            return $meld->toJson();
         };
         return $this->toArray($meldToStringArray);
     }

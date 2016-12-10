@@ -138,7 +138,7 @@ class RoundSerializer {
         }
 
         $a = [
-            'relation' => $role->getRelation($actor),
+            'relation' => $role->getRelation($actor)->__toString(),
             'actor' => $actor->__toString(),
             'point' => $area->getPoint(),
             'isReach' => $area->getRiichiStatus()->isRiichi(),
@@ -147,7 +147,7 @@ class RoundSerializer {
             'commands' => $commands,
             'public' => $public,
             'target' => $target,
-            'melded' => $hand->getMelded()->toTileStringArrayArray(),
+            'melded' => $hand->getMelded()->toJson(),
         ];
 
         return $a;

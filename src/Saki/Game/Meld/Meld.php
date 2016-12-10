@@ -1,6 +1,7 @@
 <?php
 namespace Saki\Game\Meld;
 
+use Saki\Game\Relation;
 use Saki\Game\Tile\Tile;
 use Saki\Game\Tile\TileList;
 use Saki\Util\Immutable;
@@ -94,13 +95,18 @@ class Meld extends TileList implements Immutable {
 
     private $meldType;
     private $concealed;
+    private $fromRelation; // only used in toJson()
+    private $isExtendKong; // only used in toJson()
 
     /**
      * @param Tile[] $tiles
      * @param MeldType|null $meldType
      * @param bool $concealed
+     * @param Relation $fromRelation
+     * @param bool $isExtendKong
      */
-    function __construct(array $tiles, MeldType $meldType = null, bool $concealed = false) {
+    function __construct(array $tiles, MeldType $meldType = null, bool $concealed = false,
+                         Relation $fromRelation = null, bool $isExtendKong = false) {
         $l = (new TileList($tiles))->orderByTileID();
         $actualMeldType = $meldType ?? self::getMeldTypeAnalyzer()->analyzeMeldType($l); // validate
         if (!$actualMeldType->valid($l)) {
@@ -112,6 +118,8 @@ class Meld extends TileList implements Immutable {
         parent::__construct($l->toArray());
         $this->meldType = $actualMeldType;
         $this->concealed = $concealed;
+        $this->fromRelation = $fromRelation ?? Relation::create(Relation::SELF);
+        $this->isExtendKong = $isExtendKong;
     }
 
     function getCopy() {
@@ -140,10 +148,25 @@ class Meld extends TileList implements Immutable {
     }
 
     /**
-     * @return string[]
+     * @param bool $hide
+     * @return \string[]
      */
-    function toTileStringArray() {
-        return $this->toArray(Utils::getToStringCallback());
+    function toJson(bool $hide = false) {
+        // ignore $hide
+        $a = $this->toArray(Utils::getToStringCallback());
+
+        if ($this->isRun() || $this->isTriple() || $this->isQuad(false)) {
+            $fromIndex = $this->fromRelation->toFromIndex($this->count());
+            $a[$fromIndex] = '-' . $a[$fromIndex];
+            if ($this->isExtendKong) {
+                $secondFromIndex= $this->fromRelation->toSecondFromIndex($this->count());
+                $a[$secondFromIndex] = '-' . $a[$secondFromIndex];
+            }
+        } elseif ($this->isQuad(true)) {
+            $a[0] = $a[3] = 'O';
+        }
+
+        return $a;
     }
 
     /**
@@ -193,7 +216,7 @@ class Meld extends TileList implements Immutable {
         return $concealedFlag === null || $this->isConcealed() === $concealedFlag;
     }
 
-    //region MeldType delegates
+//region MeldType delegates
     /**
      * @return bool
      */
@@ -259,9 +282,10 @@ class Meld extends TileList implements Immutable {
     function getWinSetType() {
         return $this->getMeldType()->getWinSetType();
     }
-    //endregion
 
-    //region target of weak meld type
+//endregion
+
+//region target of weak meld type
     /**
      * @param Tile $waitingTile
      * @return bool
@@ -304,9 +328,10 @@ class Meld extends TileList implements Immutable {
             ? $this->toWeakMeld($waitingTile)->getWaitingType()
             : WaitingType::create(WaitingType::NOT_WAITING);
     }
-    //endregion
 
-    //region weak meld type
+//endregion
+
+//region weak meld type
     /**
      * @param Tile $newTile
      * @param MeldType|null $targetMeldType
@@ -357,6 +382,6 @@ class Meld extends TileList implements Immutable {
     function getWaitingType() {
         return $this->getMeldType()->getWaitingType($this);
     }
-    //endregion
+//endregion
 }
 

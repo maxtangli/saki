@@ -1,5 +1,6 @@
 <?php
 
+use Saki\Game\Relation;
 use Saki\Game\SeatWind;
 
 class SeatWindTest extends \SakiTestCase {
@@ -47,7 +48,7 @@ class SeatWindTest extends \SakiTestCase {
      * @dataProvider provideToRelation
      */
     function testToRelation(string $expected, SeatWind $seatWind, SeatWind $viewer) {
-        $actual = $seatWind->toRelation($viewer);
+        $actual = Relation::createByTarget($seatWind, $viewer)->__toString();
         $this->assertEquals($expected, $actual);
     }
 

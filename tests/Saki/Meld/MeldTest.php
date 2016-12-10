@@ -5,6 +5,7 @@ use Saki\Game\Meld\PairMeldType;
 use Saki\Game\Meld\QuadMeldType;
 use Saki\Game\Meld\ThirteenOrphanMeldType;
 use Saki\Game\Meld\WeakThirteenOrphanMeldType;
+use Saki\Game\Relation;
 use Saki\Game\Tile\Tile;
 use Saki\Game\Tile\TileList;
 
@@ -63,7 +64,7 @@ class MeldTest extends \SakiTestCase {
 
     /**
      * @depends      testAddKong
-     * @dataProvider addKongIsConcealedProvider
+     * @dataProvider provideAddKongIsConcealed
      */
     function testAddKongIsConcealed($before, $forceConcealed, $after) {
         $m1 = new Meld(TileList::fromString('111m')->toArray(), null, $before);
@@ -71,7 +72,7 @@ class MeldTest extends \SakiTestCase {
         $this->assertEquals($after, $m2->isConcealed());
     }
 
-    function addKongIsConcealedProvider() {
+    function provideAddKongIsConcealed() {
         return [
             [true, null, true],
             [false, null, false],
@@ -89,5 +90,35 @@ class MeldTest extends \SakiTestCase {
         $this->assertArrayList('9m', $mt->getWaiting(TileList::fromString('11m19p19sESWNCPF')));
 
         $this->assertFalse($mt->valid(TileList::fromString('111m9p19sESWNCPF')));
+    }
+
+    /**
+     * @dataProvider provideToJson
+     */
+    function testToJson(array $expected, string $meld, string $relation, bool $isConcealed = false, bool $isExtendKong = false) {
+        $meld = new Meld(TileList::fromString($meld)->toArray(), null, $isConcealed,
+            Relation::fromString($relation), $isExtendKong);
+        $this->assertEquals($expected, $meld->toJson());
+    }
+
+    function provideToJson() {
+        return [
+            // chow
+            [['-1s', '2s', '3s'], '123s', 'prev'],
+            // pung
+            [['-1s', '1s', '1s'], '111s', 'prev'],
+            [['1s', '-1s', '1s'], '111s', 'towards'],
+            [['1s', '1s', '-1s'], '111s', 'next'],
+            // kong
+            [['-1s', '1s', '1s', '1s'], '1111s', 'prev'],
+            [['1s', '-1s', '1s', '1s'], '1111s', 'towards'],
+            [['1s', '1s', '1s', '-1s'], '1111s', 'next'],
+            // extendKong
+            [['-1s', '-1s', '1s', '1s'], '1111s', 'prev', false, true],
+            [['1s', '-1s', '-1s', '1s'], '1111s', 'towards', false, true],
+            [['1s', '1s', '-1s', '-1s'], '1111s', 'next', false, true],
+            // concealedKong
+            [['O', '1s', '1s', 'O'], '1111s', 'self', true]
+        ];
     }
 }

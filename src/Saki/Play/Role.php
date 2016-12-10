@@ -1,6 +1,7 @@
 <?php
 namespace Saki\Play;
 
+use Saki\Game\Relation;
 use Saki\Game\SeatWind;
 
 /**
@@ -60,10 +61,10 @@ class Role {
 
     /**
      * @param SeatWind $seatWind
-     * @return string
+     * @return Relation
      */
     function getRelation(SeatWind $seatWind) {
-        return $seatWind->toRelation($this->getViewer());
+        return Relation::createByTarget($seatWind, $this->getViewer());
     }
 
     /**

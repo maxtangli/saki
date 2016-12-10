@@ -22,8 +22,9 @@ rush  81-85 | 28.2h
 rush  86-90 | 11.9h
 rush  91-95 | 13.3h
 rush  96-100| 16.1h
-rush 101-105| ing
-     total  |441.4h + ing
+rush 101-105|  7.6h
+rush 106-110|   ing
+     total  |449.0h + ing
 
 ## rush history
 
@@ -1181,12 +1182,13 @@ rush 105 optimize provide 1.8h
 - [x] measure&analyze 0.8h // provide RiichiCommand => analyzePrivate
 - [x] optimize RiichiProvider: buffer analyzePrivate 0.4h
 
-rush optimize WaitingAnalyzer: step2
+rush 106 meld view
 
-- [ ] optimize analyzePublic
-- [ ] optimize analyzePrivate
-
-rush meld view
+- [x] analyze 0.3h
+- [x] refactor: introduce Relation 0.3h
+- [x] meld.toJson() 0.7h
+- [ ] adapt create meld
+- [ ] css view: meld
 
 rush toward 100% rules!
 
@@ -1198,9 +1200,9 @@ rush toward 100% rules!
 rush large scale refactoring
 
 - [ ] introduce Validator 1.1h
-- [ ] red dora design
-- [ ] Open, Claim design
-- [ ] toNextPhase design
+- [ ] refactor: red dora design
+- [ ] refactor: Open, Claim design
+- [ ] refactor: toNextPhase design
 
 rush room
 

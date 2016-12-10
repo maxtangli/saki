@@ -29,16 +29,6 @@ class SeatWind extends IndicatorWind {
     }
 
     /**
-     * @param SeatWind $viewer
-     * @return string
-     */
-    function toRelation(SeatWind $viewer) {
-        $a = ['self', 'next', 'towards', 'prev'];
-        $i = $viewer->getNormalizedOffsetTo($this, 4);
-        return $a[$i];
-    }
-
-    /**
      * @return bool
      */
     function isDealer() {

@@ -260,6 +260,14 @@ if public phase && decider on
     for all actor where commands=[pass] or actor.isAI
       execute pass
 
+## 副露的表示
+
+吃：-|| fromRel=prev
+碰：-|| |-| ||- fromRel=other
+大明杠：-||| |-|| |||- fromRel=other
+加杠：=|| |=| ||= fromRel=other+self
+暗杠：O||O fromRel=self
+
 # 流局的判定
 
 ## 荒牌流局，ExhaustiveDraw
