@@ -67,7 +67,7 @@ class ExtendKongCommand extends PrivateCommand {
      * @return Claim
      */
     protected function getClaim() {
-        return Claim::createFromMelded(
+        return Claim::createExtendKong(
             $this->getActor(),
             $this->getRound()->getTurn(),
             $this->getTile(),

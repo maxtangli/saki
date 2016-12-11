@@ -1191,13 +1191,21 @@ rush 106 meld view: json
 - adapt create meld 0.6h // shock: prev analyze is wrong!
 - [x] analyze again 0.3h
 - [x] claim.toJson(): chow/pung/kong 1.2h
-- [ ] claim.toJson(): extendKong
-- [ ] claim.toJson(): concealedKong
+
+- [x] claim.toJson(): concealedKong 0.5h
+
+- claim.toJson(): extendKong 1h
+- wrong: meldList.remove(meld) failed since meld differ in claim now! 0.1h
+
+- [ ] refactor: claim
 
 rush 107 meld view: css
 
+rush refactor: claim
+
 rush toward 100% rules!
 
+- [ ] refactor: toJson()
 - [ ] game over rule confirm & tests
 - [ ] multiple ron
 - [ ] 流局満貫
@@ -1217,27 +1225,6 @@ rush room
 - [ ] register: email, nickname, password.
 - [ ] login: allow at most 1 websocket connection.
 - [ ] logout:?
-
-refactor process
-
-module      | process
------------ | -----
-Command     | ok
-Game        | ok
-Meld        | ok
-Phase       | ok
-Tile        | ok
-Util        | ok
-Win         | ok
-Win/Draw    | ok
-Win/Fu      | ok
-Win/Point   | ok
-Win/Result  | ok
-Win/Score   | ok
-Win/Series  | ok
-Win/Waiting | ok
-Win/Yaku    | ok
-Win/Yaku/XX | ok
 
 rush rule.md doc
 

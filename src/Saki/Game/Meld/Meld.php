@@ -1,12 +1,10 @@
 <?php
 namespace Saki\Game\Meld;
 
-use Saki\Game\Claim;
 use Saki\Game\Tile\Tile;
 use Saki\Game\Tile\TileList;
 use Saki\Util\Immutable;
 use Saki\Util\ReadonlyArrayList;
-use Saki\Util\Utils;
 use Saki\Win\Waiting\WaitingType;
 
 /**
@@ -95,16 +93,13 @@ class Meld extends TileList implements Immutable {
 
     private $meldType;
     private $concealed;
-    private $claim;
 
     /**
      * @param Tile[] $tiles
      * @param MeldType|null $meldType
      * @param bool $concealed
-     * @param Claim $claim
      */
-    function __construct(array $tiles, MeldType $meldType = null, bool $concealed = false,
-                         Claim $claim = null) {
+    function __construct(array $tiles, MeldType $meldType = null, bool $concealed = false) {
         $l = (new TileList($tiles))->orderByTileID();
         $actualMeldType = $meldType ?? self::getMeldTypeAnalyzer()->analyzeMeldType($l); // validate
         if (!$actualMeldType->valid($l)) {
@@ -116,7 +111,6 @@ class Meld extends TileList implements Immutable {
         parent::__construct($l->toArray());
         $this->meldType = $actualMeldType;
         $this->concealed = $concealed;
-        $this->claim = $claim;
     }
 
     function getCopy() {
@@ -142,28 +136,6 @@ class Meld extends TileList implements Immutable {
      */
     function __toString() {
         return $this->toSortedString(true);
-    }
-
-    /**
-     * @param bool $hide
-     * @return \string[]
-     */
-    function toJson(bool $hide = false) {
-        // ignore $hide
-        $a = $this->toArray(Utils::getToStringCallback());
-
-        if ($this->isRun() || $this->isTriple() || $this->isQuad(false)) {
-            $fromIndex = $this->fromRelation->toFromIndex($this->count());
-            $a[$fromIndex] = '-' . $a[$fromIndex];
-            if ($this->isExtendKong) {
-                $secondFromIndex = $this->fromRelation->toSecondFromIndex($this->count());
-                $a[$secondFromIndex] = '-' . $a[$secondFromIndex];
-            }
-        } elseif ($this->isQuad(true)) {
-            $a[0] = $a[3] = 'O';
-        }
-
-        return $a;
     }
 
     /**
@@ -211,13 +183,6 @@ class Meld extends TileList implements Immutable {
      */
     function matchConcealed(bool $concealedFlag = null) {
         return $concealedFlag === null || $this->isConcealed() === $concealedFlag;
-    }
-
-    /**
-     * @return Claim|null
-     */
-    function getClaim() {
-        return $this->claim;
     }
 
 //region MeldType delegates
@@ -358,11 +323,9 @@ class Meld extends TileList implements Immutable {
      * @param Tile $newTile
      * @param MeldType|null $targetMeldType
      * @param bool|null $concealedFlag
-     * @param Claim $claim
      * @return Meld
      */
-    function toTargetMeld(Tile $newTile, MeldType $targetMeldType = null, bool $concealedFlag = null,
-                          Claim $claim = null) {
+    function toTargetMeld(Tile $newTile, MeldType $targetMeldType = null, bool $concealedFlag = null) {
         if (!$this->canToTargetMeld($newTile, $targetMeldType)) {
             throw new \InvalidArgumentException();
         }
@@ -370,7 +333,7 @@ class Meld extends TileList implements Immutable {
         $targetTileList = $this->toTileList()->insertLast($newTile)->orderByTileID();
         $actualTargetMeldType = $targetMeldType ?? $this->getMeldType()->getTargetMeldType();
         $targetConcealed = $concealedFlag ?? $this->isConcealed();
-        return new Meld($targetTileList->toArray(), $actualTargetMeldType, $targetConcealed, $claim);
+        return new Meld($targetTileList->toArray(), $actualTargetMeldType, $targetConcealed);
     }
 
     /**

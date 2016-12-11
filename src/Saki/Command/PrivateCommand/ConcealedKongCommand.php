@@ -48,12 +48,11 @@ class ConcealedKongCommand extends PrivateCommand {
      */
     protected function getClaim() {
         $tiles = $this->getTileList()->toArray();
-        return Claim::create(
+        return Claim::createConcealedKong(
             $this->getActor(),
             $this->getRound()->getTurn(),
             $tiles,
-            QuadMeldType::create(),
-            true
+            QuadMeldType::create()
         );
     }
 

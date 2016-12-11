@@ -277,7 +277,7 @@ kong: fromRel=other
 - 555s+0s: [-0s,5s,5s,5s] [5s,-0s,5s,5s] [5s,5s,5s,-0s]
 
 extendKong: fromRel=other+self
-- 在原json基础上，把 目标牌 放在 原fromRel位置-1?
+- 在原json基础上，把 目标牌 放在 原fromRel位置
 - 55s+0s+5s: [-5s,-0s,5s,5s] [5s,-5s,-0s,5s] [5s,5s,-5s,-0s]
 
 concealedKong: fromRel=self

@@ -98,28 +98,39 @@ class MeldTest extends \SakiTestCase {
     }
 
     /**
-     * @dataProvider provideToJsonOther
+     * @param string $meld
+     * @param string $tile
+     * @param string $relation
+     * @return Claim
      */
-    function testToJsonOther(array $expected, string $meldString, string $tileString, string $relationString) {
+    private function toPublicClaim(string $meld, string $tile, string $relation) {
         $self = SeatWind::createEast();
-        $meld = Meld::fromString($meldString);
+        $turn = Turn::createFirst();
+        $toMeld = Meld::fromString($meld);
         $otherTarget = new Target(
-            Tile::fromString($tileString),
+            Tile::fromString($tile),
             TargetType::create(TargetType::DISCARD),
-            Relation::fromString($relationString)->toOther($self)
+            Relation::fromString($relation)->toOther($self)
         );
-        $claim = Claim::create(
+        $claim = Claim::createPublic(
             $self,
-            Turn::createFirst(),
-            $meld->toArray(),
-            $meld->getMeldType(),
-            false,
+            $turn,
+            $toMeld->toArray(),
+            $toMeld->getMeldType(),
             $otherTarget
         );
+        return $claim;
+    }
+
+    /**
+     * @dataProvider providePublicToJson
+     */
+    function testPublicToJson(array $expected, string $meld, string $tile, string $relation) {
+        $claim = $this->toPublicClaim($meld, $tile, $relation);
         $this->assertEquals($expected, $claim->toJson());
     }
 
-    function provideToJsonOther() {
+    function providePublicToJson() {
         return [
             // chow
             [['-1s', '2s', '3s'], '123s', '1s', 'prev'],
@@ -137,16 +148,39 @@ class MeldTest extends \SakiTestCase {
     }
 
 //    /**
-//     * @daraProvide provideToJsonSelf
+//     * @dataProvider provideExtendKongToJson
 //     */
-//    function testToJsonSelf() {
+//    function testExtendKongToJson(array $expected, string $meld, string $tile, string $relation, string $extendKongTile) {
+//        $self = SeatWind::createEast();
+//        $turn = Turn::createFirst();
+//        $fromMeld = $this->toPublicClaim($meld, $tile, $relation)->getToMeld();
+//        $claim = Claim::createExtendKong($self, $turn, Tile::fromString($extendKongTile), $fromMeld);
+//        $this->assertEquals($expected, $claim->toJson());
 //    }
 //
-//    function provideToJsonSelf() {
+//    function provideExtendKongToJson() {
 //        return [
-//            // extendKong
-//            [[]],
-//            // concealedKong
+//            [['-0s', '-5s', '5s', '5s'], '550s', '0s', 'prev', '5s'],
+//            [['5s', '-0s', '-5s', '5s'], '550s', '0s', 'towards', '5s'],
+//            [['5s', '5s', '-0s', '-5s',], '550s', '0s', 'next', '5s'],
 //        ];
 //    }
+
+    /**
+     * @dataProvider provideConcealedKongToJson
+     */
+    function testConcealedKongToJson(array $expected, string $meldString) {
+        $self = SeatWind::createEast();
+        $turn = Turn::createFirst();
+        $meld = Meld::fromString($meldString);
+        $claim = Claim::createConcealedKong($self, $turn, $meld->toArray(), $meld->getMeldType());
+        $this->assertEquals($expected, $claim->toJson());
+    }
+
+    function provideConcealedKongToJson() {
+        return [
+            [['O', '5s', '5s', 'O'], '5555s'],
+            [['O', '5s', '0s', 'O'], '5550s'],
+        ];
+    }
 }

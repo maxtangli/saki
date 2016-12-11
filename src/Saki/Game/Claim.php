@@ -14,15 +14,30 @@ class Claim implements Immutable {
     /**
      * @param SeatWind $actor
      * @param Turn $turn
-     * @param Tile $targetTile
-     * @param Meld $fromMelded
+     * @param Tile[] $tiles
+     * @param MeldType $meldType
+     * @param Target $otherTarget
      * @return Claim
      */
-    static function createFromMelded(SeatWind $actor, Turn $turn, Tile $targetTile, Meld $fromMelded) {
-        $toMeld = $fromMelded->canToTargetMeld($targetTile)
-            ? $fromMelded->toTargetMeld($targetTile)
+    static function createPublic(SeatWind $actor, Turn $turn, array $tiles, MeldType $meldType, Target $otherTarget) {
+        $toMeld = Meld::valid($tiles, $meldType)
+            ? new Meld($tiles, $meldType)
             : null;
-        return new self($actor, $turn, $toMeld, $fromMelded);
+        return new self($actor, $turn, $toMeld, null, $otherTarget);
+    }
+
+    /**
+     * @param SeatWind $actor
+     * @param Turn $turn
+     * @param Tile $targetTile
+     * @param Meld $fromMeld
+     * @return Claim
+     */
+    static function createExtendKong(SeatWind $actor, Turn $turn, Tile $targetTile, Meld $fromMeld) {
+        $toMeld = $fromMeld->canToTargetMeld($targetTile)
+            ? $fromMeld->toTargetMeld($targetTile)
+            : null;
+        return new self($actor, $turn, $toMeld, $fromMeld);
     }
 
     /**
@@ -30,43 +45,37 @@ class Claim implements Immutable {
      * @param Turn $turn
      * @param Tile[] $tiles
      * @param MeldType $meldType
-     * @param bool $concealed
-     * @param Target $otherTarget
      * @return Claim
      */
-    static function create(SeatWind $actor, Turn $turn,
-                           array $tiles, MeldType $meldType, bool $concealed,
-                           Target $otherTarget = null) {
-        $toMeld = Meld::valid($tiles, $meldType, $concealed)
-            ? new Meld($tiles, $meldType, $concealed)
+    static function createConcealedKong(SeatWind $actor, Turn $turn, array $tiles, MeldType $meldType) {
+        $toMeld = Meld::valid($tiles, $meldType, true)
+            ? new Meld($tiles, $meldType, true)
             : null;
-        return new self($actor, $turn, $toMeld, null, $otherTarget);
+        return new self($actor, $turn, $toMeld);
     }
 
     private $actor;
     private $turn;
     private $toMeld;
-    private $fromMelded;
+    private $fromMeld;
     private $otherTile;
     private $fromRelation;
-    private $isExtendKong;
 
     /**
      * @param SeatWind $actor
      * @param Turn $turn
      * @param Meld $toMeld
-     * @param Meld|null $fromMelded
+     * @param Meld|null $fromMeld
      * @param Target $otherTarget
      */
-    protected function __construct(SeatWind $actor, Turn $turn, Meld $toMeld,
-                                   Meld $fromMelded = null, Target $otherTarget = null) {
+    protected function __construct(SeatWind $actor, Turn $turn, Meld $toMeld = null,
+                                   Meld $fromMeld = null, Target $otherTarget = null) {
         $this->actor = $actor;
         $this->turn = $turn;
         $this->toMeld = $toMeld;
-        $this->fromMelded = $fromMelded;
+        $this->fromMeld = $fromMeld;
         $this->otherTile = isset($otherTarget) ? $otherTarget->getTile() : null;
         $this->fromRelation = isset($otherTarget) ? $otherTarget->getRelation($actor) : Relation::createSelf();
-        $this->isExtendKong = false;
     }
 
     /**
@@ -74,21 +83,57 @@ class Claim implements Immutable {
      */
     function toJson() {
         $meld = $this->getToMeld();
-        if ($meld->isRun() || $meld->isTriple() || ($meld->isQuad(false) && !$this->isExtendKong)) {
-            $relationIndex = $this->fromRelation->toFromMeldIndex($meld->count());
+        $l = $meld->toArrayList();
+        $isExtendKong = isset($this->fromMeld);
+        if ($meld->isRun() || $meld->isTriple() || ($meld->isQuad(false) && !$isExtendKong)) {
+            // move target tile to relation position
+            $relationIndex = $this->getRelationIndex();
             $otherTileIndex = $meld->getIndex($this->otherTile, Tile::getPrioritySelector());
-            $a = $meld->toArrayList()
-                ->move($otherTileIndex, $relationIndex)
+            $a = $l->move($otherTileIndex, $relationIndex)
                 ->toArray(Utils::getToStringCallback());
             $a[$relationIndex] = '-' . $a[$relationIndex];
             return $a;
-        } elseif ($this->isExtendKong) {
-
+        } elseif ($isExtendKong) {
+//            // insert target tile before fromClaim's relation position
+//            $fromClaim = $this->getFromMeldOrNull()->getClaim();
+//            $relationIndex = $fromClaim->getRelationIndex() + 1;
+//            $a = $fromClaim->toJson();
+//
+//            $targetTile = $this->getToMeld()->toTileList()
+//                ->remove($this->getFromMeldOrNull()->toArray(), Tile::getPrioritySelector())
+//                ->getSingle();
+//            $targetTileJson = '-' . $targetTile->__toString();
+//
+//            array_splice($a, $relationIndex, 0, $targetTileJson);
+//            return $a;
         } elseif ($meld->isQuad(true)) {
+            // if contains 1 red, swap it to pos 2
+            $isRed = function (Tile $tile) {
+                return $tile->isRedDora();
+            };
+            $redTileList = $l->getCopy()->where($isRed);
+            if (!$redTileList->isEmpty()) {
+                if ($redTileList->count() >= 2) {
+                    throw new \LogicException('not implemented.');
+                }
+                $redTileIndex = $l->getIndex($redTileList->getSingle(), Tile::getPrioritySelector());
+                $l->swap($redTileIndex, 2);
+            }
 
+            // hide first and last tile which means concealed meld
+            $a = $l->toArray(Utils::getToStringCallback());
+            $a[0] = $a[3] = 'O';
+            return $a;
         } else {
             throw new \LogicException();
         }
+    }
+
+    /**
+     * @return int
+     */
+    function getRelationIndex() {
+        return $this->fromRelation->toDisplaySetIndex($this->getToMeld()->count());
     }
 
     /**
@@ -125,16 +170,16 @@ class Claim implements Immutable {
     /**
      * @return Meld|null
      */
-    function getFromMeldedOrNull() {
-        return $this->fromMelded;
+    function getFromMeldOrNull() {
+        return $this->fromMeld;
     }
 
     /**
      * @return Tile[]
      */
-    function getFromMeldedTiles() {
-        return $this->fromMelded !== null ?
-            $this->fromMelded->toArray() :
+    function getFromMeldTiles() {
+        return $this->fromMeld !== null ?
+            $this->fromMeld->toArray() :
             [];
     }
 
@@ -143,7 +188,7 @@ class Claim implements Immutable {
      */
     function getFromTiles() {
         return $this->getToMeld()->toTileList()
-            ->remove($this->getFromMeldedTiles())
+            ->remove($this->getFromMeldTiles())
             ->toArray();
     }
 
@@ -153,7 +198,7 @@ class Claim implements Immutable {
      */
     function getFromSelfTiles() {
         return $this->getToMeld()->toTileList()
-            ->remove($this->getFromMeldedTiles())
+            ->remove($this->getFromMeldTiles())
             ->remove($this->otherTile ?? [])
             ->toArray();
     }
@@ -180,6 +225,7 @@ class Claim implements Immutable {
 
         // chow, pong, kong commands require not riichi
         if ($area->getRiichiStatus()->isRiichi()) {
+            // todo bug: should only apply for chow, pong, kong
             return false;
         }
 
@@ -202,7 +248,7 @@ class Claim implements Immutable {
 
         // able to create meld
         $validHand = $hand->getPrivate()->valueExist($this->getFromTiles(), Tile::getPrioritySelector()) // handle red
-            && $hand->getMelded()->valueExist($this->getFromMeldedOrNull() ?? [], Meld::getCompareKeySelector(true, true)); // handle red
+            && $hand->getMelded()->valueExist($this->getFromMeldOrNull() ?? [], Meld::getCompareKeySelector(true, true)); // handle red
         if (!$validHand) {
             return false;
         }
@@ -236,8 +282,9 @@ class Claim implements Immutable {
         } else {
             throw new \LogicException();
         }
+
         $newMelded = $hand->getMelded()->getCopy()
-            ->remove($this->getFromMeldedOrNull() ?? [])
+            ->remove($this->getFromMeldOrNull() ?? [])
             ->insertLast($this->getToMeld());
         $newHand = new Hand($newPublic, $newMelded, $newTarget);
 

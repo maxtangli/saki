@@ -49,7 +49,7 @@ class Relation extends Enum {
      * @param int $n
      * @return int
      */
-    function toFromMeldIndex(int $n) {
+    function toDisplaySetIndex(int $n) {
         switch ($this->getValue()) {
             case self::SELF:
             case self::PREV:
@@ -60,14 +60,5 @@ class Relation extends Enum {
                 return $n - 1;
         }
         throw new \LogicException();
-    }
-
-    /**
-     * @param int $n
-     * @return int
-     */
-    function toSecondFromMeldIndex(int $n) {
-        $i = $this->toFromMeldIndex($n);
-        return $i < $n - 1 ? $i + 1 : $i - 1;
     }
 }
