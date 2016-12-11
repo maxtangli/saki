@@ -1,13 +1,18 @@
 <?php
 
+use Saki\Game\Claim;
 use Saki\Game\Meld\Meld;
 use Saki\Game\Meld\PairMeldType;
 use Saki\Game\Meld\QuadMeldType;
 use Saki\Game\Meld\ThirteenOrphanMeldType;
 use Saki\Game\Meld\WeakThirteenOrphanMeldType;
 use Saki\Game\Relation;
+use Saki\Game\SeatWind;
+use Saki\Game\Target;
+use Saki\Game\TargetType;
 use Saki\Game\Tile\Tile;
 use Saki\Game\Tile\TileList;
+use Saki\Game\Turn;
 
 class MeldTest extends \SakiTestCase {
     function testCreate() {
@@ -93,32 +98,55 @@ class MeldTest extends \SakiTestCase {
     }
 
     /**
-     * @dataProvider provideToJson
+     * @dataProvider provideToJsonOther
      */
-    function testToJson(array $expected, string $meld, string $relation, bool $isConcealed = false, bool $isExtendKong = false) {
-        $meld = new Meld(TileList::fromString($meld)->toArray(), null, $isConcealed,
-            Relation::fromString($relation), $isExtendKong);
-        $this->assertEquals($expected, $meld->toJson());
+    function testToJsonOther(array $expected, string $meldString, string $tileString, string $relationString) {
+        $self = SeatWind::createEast();
+        $meld = Meld::fromString($meldString);
+        $otherTarget = new Target(
+            Tile::fromString($tileString),
+            TargetType::create(TargetType::DISCARD),
+            Relation::fromString($relationString)->toOther($self)
+        );
+        $claim = Claim::create(
+            $self,
+            Turn::createFirst(),
+            $meld->toArray(),
+            $meld->getMeldType(),
+            false,
+            $otherTarget
+        );
+        $this->assertEquals($expected, $claim->toJson());
     }
 
-    function provideToJson() {
+    function provideToJsonOther() {
         return [
             // chow
-            [['-1s', '2s', '3s'], '123s', 'prev'],
+            [['-1s', '2s', '3s'], '123s', '1s', 'prev'],
+            [['-2s', '1s', '3s'], '123s', '2s', 'prev'],
+            [['-3s', '1s', '2s'], '123s', '3s', 'prev'],
             // pung
-            [['-1s', '1s', '1s'], '111s', 'prev'],
-            [['1s', '-1s', '1s'], '111s', 'towards'],
-            [['1s', '1s', '-1s'], '111s', 'next'],
+            [['-0s', '5s', '5s'], '550s', '0s', 'prev'],
+            [['5s', '-0s', '5s'], '550s', '0s', 'towards'],
+            [['5s', '5s', '-0s'], '550s', '0s', 'next'],
             // kong
-            [['-1s', '1s', '1s', '1s'], '1111s', 'prev'],
-            [['1s', '-1s', '1s', '1s'], '1111s', 'towards'],
-            [['1s', '1s', '1s', '-1s'], '1111s', 'next'],
-            // extendKong
-            [['-1s', '-1s', '1s', '1s'], '1111s', 'prev', false, true],
-            [['1s', '-1s', '-1s', '1s'], '1111s', 'towards', false, true],
-            [['1s', '1s', '-1s', '-1s'], '1111s', 'next', false, true],
-            // concealedKong
-            [['O', '1s', '1s', 'O'], '1111s', 'self', true]
+            [['-0s', '5s', '5s', '5s'], '5550s', '0s', 'prev'],
+            [['5s', '-0s', '5s', '5s'], '5550s', '0s', 'towards'],
+            [['5s', '5s', '5s', '-0s'], '5550s', '0s', 'next'],
         ];
     }
+
+//    /**
+//     * @daraProvide provideToJsonSelf
+//     */
+//    function testToJsonSelf() {
+//    }
+//
+//    function provideToJsonSelf() {
+//        return [
+//            // extendKong
+//            [[]],
+//            // concealedKong
+//        ];
+//    }
 }

@@ -262,11 +262,28 @@ if public phase && decider on
 
 ## 副露的表示
 
-吃：-|| fromRel=prev
-碰：-|| |-| ||- fromRel=other
-大明杠：-||| |-|| |||- fromRel=other
-加杠：=|| |=| ||= fromRel=other+self
-暗杠：O||O fromRel=self
+chow: fromRel=prev
+- 排序后，把 目标牌 移动到 fromRel位置
+- 45+6s: -6s,4s,5s
+- 46+5s: -5s,4s,6s
+- 56+4s: -4s,5s,6s
+
+pung: fromRel=other
+- 排序后，把 目标牌 移动到 fromRel位置
+- 55s+0s: [-0s,5s,5s] [5s,-0s,5s] [5s,5s,-0s]
+
+kong: fromRel=other
+- 排序后，把 目标牌 移动到 fromRel位置
+- 555s+0s: [-0s,5s,5s,5s] [5s,-0s,5s,5s] [5s,5s,5s,-0s]
+
+extendKong: fromRel=other+self
+- 在原json基础上，把 目标牌 放在 原fromRel位置-1?
+- 55s+0s+5s: [-5s,-0s,5s,5s] [5s,-5s,-0s,5s] [5s,5s,-5s,-0s]
+
+concealedKong: fromRel=self
+- 排序后，把 赤牌 交换到 pos=1，隐藏两端
+- 5555s: O,5s,5s,O
+- 5500s: O,0s,0s,O
 
 # 流局的判定
 

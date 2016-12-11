@@ -1,7 +1,7 @@
 <?php
 namespace Saki\Game\Meld;
 
-use Saki\Game\Relation;
+use Saki\Game\Claim;
 use Saki\Game\Tile\Tile;
 use Saki\Game\Tile\TileList;
 use Saki\Util\Immutable;
@@ -95,18 +95,16 @@ class Meld extends TileList implements Immutable {
 
     private $meldType;
     private $concealed;
-    private $fromRelation; // only used in toJson()
-    private $isExtendKong; // only used in toJson()
+    private $claim;
 
     /**
      * @param Tile[] $tiles
      * @param MeldType|null $meldType
      * @param bool $concealed
-     * @param Relation $fromRelation
-     * @param bool $isExtendKong
+     * @param Claim $claim
      */
     function __construct(array $tiles, MeldType $meldType = null, bool $concealed = false,
-                         Relation $fromRelation = null, bool $isExtendKong = false) {
+                         Claim $claim = null) {
         $l = (new TileList($tiles))->orderByTileID();
         $actualMeldType = $meldType ?? self::getMeldTypeAnalyzer()->analyzeMeldType($l); // validate
         if (!$actualMeldType->valid($l)) {
@@ -118,8 +116,7 @@ class Meld extends TileList implements Immutable {
         parent::__construct($l->toArray());
         $this->meldType = $actualMeldType;
         $this->concealed = $concealed;
-        $this->fromRelation = $fromRelation ?? Relation::create(Relation::SELF);
-        $this->isExtendKong = $isExtendKong;
+        $this->claim = $claim;
     }
 
     function getCopy() {
@@ -159,7 +156,7 @@ class Meld extends TileList implements Immutable {
             $fromIndex = $this->fromRelation->toFromIndex($this->count());
             $a[$fromIndex] = '-' . $a[$fromIndex];
             if ($this->isExtendKong) {
-                $secondFromIndex= $this->fromRelation->toSecondFromIndex($this->count());
+                $secondFromIndex = $this->fromRelation->toSecondFromIndex($this->count());
                 $a[$secondFromIndex] = '-' . $a[$secondFromIndex];
             }
         } elseif ($this->isQuad(true)) {
@@ -214,6 +211,13 @@ class Meld extends TileList implements Immutable {
      */
     function matchConcealed(bool $concealedFlag = null) {
         return $concealedFlag === null || $this->isConcealed() === $concealedFlag;
+    }
+
+    /**
+     * @return Claim|null
+     */
+    function getClaim() {
+        return $this->claim;
     }
 
 //region MeldType delegates
@@ -282,7 +286,6 @@ class Meld extends TileList implements Immutable {
     function getWinSetType() {
         return $this->getMeldType()->getWinSetType();
     }
-
 //endregion
 
 //region target of weak meld type
@@ -328,7 +331,6 @@ class Meld extends TileList implements Immutable {
             ? $this->toWeakMeld($waitingTile)->getWaitingType()
             : WaitingType::create(WaitingType::NOT_WAITING);
     }
-
 //endregion
 
 //region weak meld type
@@ -356,9 +358,11 @@ class Meld extends TileList implements Immutable {
      * @param Tile $newTile
      * @param MeldType|null $targetMeldType
      * @param bool|null $concealedFlag
+     * @param Claim $claim
      * @return Meld
      */
-    function toTargetMeld(Tile $newTile, MeldType $targetMeldType = null, bool $concealedFlag = null) {
+    function toTargetMeld(Tile $newTile, MeldType $targetMeldType = null, bool $concealedFlag = null,
+                          Claim $claim = null) {
         if (!$this->canToTargetMeld($newTile, $targetMeldType)) {
             throw new \InvalidArgumentException();
         }
@@ -366,7 +370,7 @@ class Meld extends TileList implements Immutable {
         $targetTileList = $this->toTileList()->insertLast($newTile)->orderByTileID();
         $actualTargetMeldType = $targetMeldType ?? $this->getMeldType()->getTargetMeldType();
         $targetConcealed = $concealedFlag ?? $this->isConcealed();
-        return new Meld($targetTileList->toArray(), $actualTargetMeldType, $targetConcealed);
+        return new Meld($targetTileList->toArray(), $actualTargetMeldType, $targetConcealed, $claim);
     }
 
     /**

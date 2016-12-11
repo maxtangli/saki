@@ -1182,13 +1182,19 @@ rush 105 optimize provide 1.8h
 - [x] measure&analyze 0.8h // provide RiichiCommand => analyzePrivate
 - [x] optimize RiichiProvider: buffer analyzePrivate 0.4h
 
-rush 106 meld view
+rush 106 meld view: json
 
 - [x] analyze 0.3h
 - [x] refactor: introduce Relation 0.3h
 - [x] meld.toJson() 0.7h
-- [ ] adapt create meld
-- [ ] css view: meld
+
+- adapt create meld 0.6h // shock: prev analyze is wrong!
+- [x] analyze again 0.3h
+- [x] claim.toJson(): chow/pung/kong 1.2h
+- [ ] claim.toJson(): extendKong
+- [ ] claim.toJson(): concealedKong
+
+rush 107 meld view: css
 
 rush toward 100% rules!
 

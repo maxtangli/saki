@@ -14,20 +14,42 @@ class Relation extends Enum {
     const PREV = 3;
 
     /**
-     * @param SeatWind $target
+     * @param SeatWind $other
      * @param SeatWind $self
      * @return Relation
      */
-    static function createByTarget(SeatWind $target, SeatWind $self) {
-        $i = $self->getNormalizedOffsetTo($target, 4);
-        return new self($i);
+    static function createByOther(SeatWind $other, SeatWind $self) {
+        $i = $self->getNormalizedOffsetTo($other, 4);
+        return self::create($i);
+    }
+
+    /**
+     * @return self
+     */
+    static function createSelf() {
+        return self::create(self::SELF);
+    }
+
+    /**
+     * @param SeatWind $self
+     * @return SeatWind
+     */
+    function toOther(SeatWind $self) {
+        return $self->toNext($this->getToNextOffset());
+    }
+
+    /**
+     * @return int
+     */
+    private function getToNextOffset() {
+        return $this->getValue();
     }
 
     /**
      * @param int $n
      * @return int
      */
-    function toFromIndex(int $n) {
+    function toFromMeldIndex(int $n) {
         switch ($this->getValue()) {
             case self::SELF:
             case self::PREV:
@@ -44,8 +66,8 @@ class Relation extends Enum {
      * @param int $n
      * @return int
      */
-    function toSecondFromIndex(int $n) {
-        $i = $this->toFromIndex($n);
+    function toSecondFromMeldIndex(int $n) {
+        $i = $this->toFromMeldIndex($n);
         return $i < $n - 1 ? $i + 1 : $i - 1;
     }
 }

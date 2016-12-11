@@ -5,6 +5,7 @@ use Saki\Game\Meld\Meld;
 use Saki\Game\Meld\MeldType;
 use Saki\Game\Tile\Tile;
 use Saki\Util\Immutable;
+use Saki\Util\Utils;
 
 /**
  * @package Saki\Game
@@ -30,37 +31,64 @@ class Claim implements Immutable {
      * @param Tile[] $tiles
      * @param MeldType $meldType
      * @param bool $concealed
-     * @param Tile $otherTile
+     * @param Target $otherTarget
      * @return Claim
      */
     static function create(SeatWind $actor, Turn $turn,
                            array $tiles, MeldType $meldType, bool $concealed,
-                           Tile $otherTile = null) {
+                           Target $otherTarget = null) {
         $toMeld = Meld::valid($tiles, $meldType, $concealed)
             ? new Meld($tiles, $meldType, $concealed)
             : null;
-        return new self($actor, $turn, $toMeld, null, $otherTile);
+        return new self($actor, $turn, $toMeld, null, $otherTarget);
     }
 
     private $actor;
     private $turn;
     private $toMeld;
     private $fromMelded;
-    private $otherTile; // todo remove?
+    private $otherTile;
+    private $fromRelation;
+    private $isExtendKong;
 
     /**
      * @param SeatWind $actor
      * @param Turn $turn
      * @param Meld $toMeld
      * @param Meld|null $fromMelded
-     * @param Tile $otherTile
+     * @param Target $otherTarget
      */
-    protected function __construct(SeatWind $actor, Turn $turn, Meld $toMeld, Meld $fromMelded = null, Tile $otherTile = null) {
+    protected function __construct(SeatWind $actor, Turn $turn, Meld $toMeld,
+                                   Meld $fromMelded = null, Target $otherTarget = null) {
         $this->actor = $actor;
         $this->turn = $turn;
         $this->toMeld = $toMeld;
         $this->fromMelded = $fromMelded;
-        $this->otherTile = $otherTile;
+        $this->otherTile = isset($otherTarget) ? $otherTarget->getTile() : null;
+        $this->fromRelation = isset($otherTarget) ? $otherTarget->getRelation($actor) : Relation::createSelf();
+        $this->isExtendKong = false;
+    }
+
+    /**
+     * @return array
+     */
+    function toJson() {
+        $meld = $this->getToMeld();
+        if ($meld->isRun() || $meld->isTriple() || ($meld->isQuad(false) && !$this->isExtendKong)) {
+            $relationIndex = $this->fromRelation->toFromMeldIndex($meld->count());
+            $otherTileIndex = $meld->getIndex($this->otherTile, Tile::getPrioritySelector());
+            $a = $meld->toArrayList()
+                ->move($otherTileIndex, $relationIndex)
+                ->toArray(Utils::getToStringCallback());
+            $a[$relationIndex] = '-' . $a[$relationIndex];
+            return $a;
+        } elseif ($this->isExtendKong) {
+
+        } elseif ($meld->isQuad(true)) {
+
+        } else {
+            throw new \LogicException();
+        }
     }
 
     /**

@@ -2,11 +2,12 @@
 namespace Saki\Game;
 
 use Saki\Game\Tile\Tile;
+use Saki\Util\Immutable;
 
 /**
  * @package Saki\Game
  */
-class Target {
+class Target implements Immutable {
     /**
      * @return Target
      */
@@ -115,7 +116,7 @@ class Target {
     }
 
     /**
-     * @return Tile
+     * @return SeatWind
      */
     function getCreator() {
         $this->assertExist();
@@ -138,6 +139,14 @@ class Target {
     function isOwner(SeatWind $seatWind) {
         $this->assertExist();
         return $this->isCreator($seatWind)
-        == $this->getType()->isOwnByCreator();
+            == $this->getType()->isOwnByCreator();
+    }
+
+    /**
+     * @param SeatWind $self
+     * @return Relation
+     */
+    function getRelation(SeatWind $self) {
+        return Relation::createByOther($this->getCreator(), $self);
     }
 }

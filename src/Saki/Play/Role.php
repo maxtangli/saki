@@ -64,7 +64,7 @@ class Role {
      * @return Relation
      */
     function getRelation(SeatWind $seatWind) {
-        return Relation::createByTarget($seatWind, $this->getViewer());
+        return Relation::createByOther($seatWind, $this->getViewer());
     }
 
     /**

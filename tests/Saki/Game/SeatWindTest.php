@@ -1,6 +1,5 @@
 <?php
 
-use Saki\Game\Relation;
 use Saki\Game\SeatWind;
 
 class SeatWindTest extends \SakiTestCase {
@@ -41,34 +40,7 @@ class SeatWindTest extends \SakiTestCase {
         $this->assertEquals(SeatWind::createWest(), SeatWind::createEast()->toNext(2));
     }
 
-    /**
-     * @param string $expected
-     * @param SeatWind $seatWind
-     * @param SeatWind $viewer
-     * @dataProvider provideToRelation
-     */
-    function testToRelation(string $expected, SeatWind $seatWind, SeatWind $viewer) {
-        $actual = Relation::createByTarget($seatWind, $viewer)->__toString();
-        $this->assertEquals($expected, $actual);
-    }
-
-    function provideToRelation() {
-        /**  viewer
-         *   E S W N
-         * E self prev towa next
-         * S next self prev towa
-         * W towa next self prev
-         * N prev towa next self
-         */
-        list($e, $s, $w, $n) = SeatWind::createList(4)->toArray();
-        return [
-            ['self', $e, $e],
-            ['prev', $e, $s],
-            ['towards', $e, $w],
-            ['next', $e, $n],
-            ['next', $s, $e],
-            ['towards', $w, $e],
-            ['prev', $n, $e],
-        ];
+    function testToPrev() {
+        $this->assertEquals(SeatWind::createNorth(), SeatWind::createEast()->toPrev(1));
     }
 }

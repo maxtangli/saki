@@ -189,7 +189,7 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
      */
     function indexesExist(array $indexes) {
         return empty($indexes) ||
-        (min($indexes) >= 0 && isset($this->a[max($indexes)]));
+            (min($indexes) >= 0 && isset($this->a[max($indexes)]));
     }
 
     /**
@@ -770,6 +770,35 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
         $newLeft = array_slice($this->a, $leftShiftCount);
         $newAll = array_merge($newLeft, $newRight);
         $this->a = $newAll;
+        return $this;
+    }
+
+    /**
+     * @param int $indexFrom
+     * @param int $indexTo
+     * @return $this
+     */
+    function move(int $indexFrom, int $indexTo) {
+        $this->assertGetIndex([$indexFrom, $indexTo]);
+        if ($indexFrom != $indexTo) {
+            $v = $this->offsetGet($indexFrom);
+            $this->removeAt($indexFrom)->insert($v, $indexTo);
+        }
+        return $this;
+    }
+
+    /**
+     * @param int $index1
+     * @param int $index2
+     * @return $this
+     */
+    function swap(int $index1, int $index2) {
+        $this->assertGetIndex([$index1, $index2]);
+        if ($index1 != $index2) {
+            $temp = $this->a[$index1];
+            $this->a[$index1] = $this->a[$index2];
+            $this->a[$index2] = $temp;
+        }
         return $this;
     }
 

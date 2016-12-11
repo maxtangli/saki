@@ -30,6 +30,16 @@ abstract class IndicatorWind implements Immutable {
     }
     //endregion
 
+    /**
+     * @param int $offset
+     * @return static
+     */
+    function toPrev(int $offset = 1) {
+        $windCount = 4;
+        $nextOffset = $windCount - $offset;
+        return $this->toNext($nextOffset);
+    }
+
     private static $instances = [];
 
     /**

@@ -14,6 +14,10 @@ class SakiTestCase extends \PHPUnit_Framework_TestCase {
     static function assertEquals($expected, $actual, $message = '', $delta = 0.0, $maxDepth = 10, $canonicalize = false, $ignoreCase = false) {
         if ($message === '' && is_object($expected) && is_object($actual)) {
             $message = "Failed asserting that two objects are equal, \$expected[$expected] but \$actual[$actual].";
+        } elseif ($message === '' && is_array($expected) && is_array($actual)) {
+            $expectedString = implode(',', $expected);
+            $actualString = implode(',', $actual);
+            $message = "Failed asserting that two arrays are equal, \$expected[$expectedString] but \$actual[$actualString].";
         }
         parent::assertEquals($expected, $actual, $message, $delta, $maxDepth, $canonicalize, $ignoreCase);
     }
