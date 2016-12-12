@@ -49,7 +49,7 @@ abstract class MeldType extends Singleton {
     /**
      * @param TileList $sourceTileList
      * @return TileList[] Returns [[$beginTileList, $remainTileList]...] if success, [] otherwise.
-     *                    Note that WeakRun may return multiple possible cuts.
+     *                    Note that WeakChow may return multiple possible cuts.
      */
     function getPossibleCuts(TileList $sourceTileList) {
         if ($sourceTileList->isEmpty()) {

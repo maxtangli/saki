@@ -1210,12 +1210,12 @@ rush 107 meld view: css
 
 rush meld view: extendKong
 
+- [x] refactor: rename !(.*)->isEmpty => $1->isNotEmpty 0.1h
+- [x] refactor: rename meldType => chow/pung/kong 0.1h
+
 - [ ] claim.toJson(): extendKong
 
-- [ ] refactor: !(.*)->isEmpty => $1->isNotEmpty
 - [ ] refactor: claim
-
-rush refactor: claim
 
 rush toward 100% rules!
 

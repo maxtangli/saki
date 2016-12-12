@@ -7,7 +7,7 @@ use Saki\Game\Tile\TileList;
 /**
  * @package Saki\Game\Meld
  */
-class QuadMeldType extends MeldType {
+class KongMeldType extends MeldType {
     //region MeldType impl
     function getTileCount() {
         return 4;

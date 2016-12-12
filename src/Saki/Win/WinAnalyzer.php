@@ -4,9 +4,9 @@ namespace Saki\Win;
 use Saki\Game\Meld\MeldList;
 use Saki\Game\Meld\MeldListAnalyzer;
 use Saki\Game\Meld\PairMeldType;
-use Saki\Game\Meld\RunMeldType;
+use Saki\Game\Meld\ChowMeldType;
 use Saki\Game\Meld\ThirteenOrphanMeldType;
-use Saki\Game\Meld\TripleMeldType;
+use Saki\Game\Meld\PungMeldType;
 use Saki\Game\Tile\Tile;
 use Saki\Game\Tile\TileList;
 use Saki\Util\ArrayList;
@@ -39,8 +39,8 @@ class WinAnalyzer {
         );
 
         $handMeldTypes = [
-            RunMeldType::create(),
-            TripleMeldType::create(),
+            ChowMeldType::create(),
+            PungMeldType::create(),
             PairMeldType::create(),
             ThirteenOrphanMeldType::create(),
         ];

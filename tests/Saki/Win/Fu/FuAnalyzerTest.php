@@ -26,7 +26,7 @@ class FuAnalyzerTest extends \SakiTestCase {
 
         $subTarget = new WinSubTarget($round, $actor, $handMeldList);
         $yakuList = new YakuItemList();
-        $waitingType = WaitingType::create(WaitingType::ONE_SIDE_RUN_WAITING);
+        $waitingType = WaitingType::create(WaitingType::ONE_SIDE_CHOW_WAITING);
         $target = new FuTarget($subTarget, $yakuList, $waitingType);
         $analyzer = FuAnalyzer::create();
         $result = $analyzer->getResult($target);

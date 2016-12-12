@@ -214,7 +214,7 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
      */
     function getFirstOrDefault(callable $predicate = null, $default = null) {
         if (is_null($predicate)) {
-            return !$this->isEmpty() ? $this->getFirst() : $default;
+            return $this->isNotEmpty() ? $this->getFirst() : $default;
         }
 
         foreach ($this->a as $v) {

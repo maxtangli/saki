@@ -2,7 +2,7 @@
 namespace Saki\Game;
 
 use Saki\Game\Meld\Meld;
-use Saki\Game\Meld\WeakRunMeldType;
+use Saki\Game\Meld\WeakChowMeldType;
 use Saki\Game\Phase\PrivatePhaseState;
 use Saki\Game\Tile\Tile;
 use Saki\Game\Tile\TileList;
@@ -32,11 +32,11 @@ class SwapCalling implements Immutable {
     /**
      * @param TileList $public
      * @param Tile $targetTile
-     * @param Meld $run
+     * @param Meld $chow
      * @return bool
      */
-    function allowChow(TileList $public, Tile $targetTile, Meld $run) {
-        if (!$run->isRun()) {
+    function allowChow(TileList $public, Tile $targetTile, Meld $chow) {
+        if (!$chow->isChow()) {
             throw new \InvalidArgumentException();
         }
 
@@ -44,13 +44,13 @@ class SwapCalling implements Immutable {
             return true;
         }
 
-        $chowWeakRun = $run->toWeakMeld($targetTile);
-        $discardAble = function (Tile $tile) use ($chowWeakRun) {
-            return $this->discardAble($chowWeakRun, $tile);
+        $chowWeakChow = $chow->toWeakMeld($targetTile);
+        $discardAble = function (Tile $tile) use ($chowWeakChow) {
+            return $this->discardAble($chowWeakChow, $tile);
         };
         $afterChow = $public->getCopy()
             ->insertLast($targetTile)
-            ->remove($run->toArray());
+            ->remove($chow->toArray());
         return $afterChow->any($discardAble);
     }
 
@@ -69,21 +69,21 @@ class SwapCalling implements Immutable {
         }
 
         $claim = $privatePhaseState->getClaim();
-        if (!$claim->getToMeld()->isRun()) {
+        if (!$claim->getToMeld()->isChow()) {
             return true;
         }
 
-        $chowWeakRun = new Meld($claim->getFromSelfTiles(), WeakRunMeldType::create());
-        return $this->discardAble($chowWeakRun, $tile);
+        $chowWeakChow = new Meld($claim->getFromSelfTiles(), WeakChowMeldType::create());
+        return $this->discardAble($chowWeakChow, $tile);
     }
 
     /**
-     * @param Meld $chowWeakRun
+     * @param Meld $chowWeakChow
      * @param Tile $tile
      * @return bool
      */
-    protected function discardAble(Meld $chowWeakRun, Tile $tile) {
-        $ngTileList = $chowWeakRun->getWaiting();
+    protected function discardAble(Meld $chowWeakChow, Tile $tile) {
+        $ngTileList = $chowWeakChow->getWaiting();
         return !$ngTileList->valueExist($tile);
     }
 }

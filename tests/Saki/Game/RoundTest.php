@@ -208,7 +208,7 @@ class RoundTest extends \SakiTestCase {
             'mockHand S 005m23456789p13s; mockNextReplace 1p; pung S 0m5m'
         );
 
-        // enter robQuad phase
+        // enter robKong phase
         $claimTurn = $round->getTurn();
         $round->process('extendKong S 0m 055m');
         $this->assertPublic();
@@ -217,7 +217,7 @@ class RoundTest extends \SakiTestCase {
         $this->assertCurrentTurnNotChanged($claimTurn);
         $this->assertHand(null, null, '0m', 'E');
 
-        // leave robQuad phase and enter private phase
+        // leave robKong phase and enter private phase
         $round->process('passAll');
         $this->assertPrivate('S');
         $this->assertHasClaim($claimTurn);

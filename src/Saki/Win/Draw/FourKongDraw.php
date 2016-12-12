@@ -2,7 +2,7 @@
 namespace Saki\Win\Draw;
 
 use Saki\Game\Area;
-use Saki\Game\Meld\QuadMeldType;
+use Saki\Game\Meld\KongMeldType;
 use Saki\Game\Round;
 use Saki\Win\Result\AbortiveDrawResult;
 use Saki\Win\Result\ResultType;
@@ -16,7 +16,7 @@ class FourKongDraw extends Draw {
         $areaList = $round->getAreaList();
         $kongCountList = $areaList->toArrayList(function (Area $area) {
             $melded = $area->getHand()->getMelded();
-            $kongCount = $melded->toFiltered([QuadMeldType::create()])->count();
+            $kongCount = $melded->toFiltered([KongMeldType::create()])->count();
             return $kongCount;
         });
 

@@ -3,7 +3,7 @@
 use Saki\Game\Claim;
 use Saki\Game\Meld\Meld;
 use Saki\Game\Meld\PairMeldType;
-use Saki\Game\Meld\QuadMeldType;
+use Saki\Game\Meld\KongMeldType;
 use Saki\Game\Meld\ThirteenOrphanMeldType;
 use Saki\Game\Meld\WeakThirteenOrphanMeldType;
 use Saki\Game\Relation;
@@ -59,12 +59,12 @@ class MeldTest extends \SakiTestCase {
     function testAddKong() {
         // canExtendKong
         $meld = Meld::fromString('111m');
-        $this->assertTrue($meld->canToTargetMeld(Tile::fromString('1m'), QuadMeldType::create()));
-        $this->assertFalse($meld->canToTargetMeld(Tile::fromString('1s'), QuadMeldType::create()));
-        // extendKong get Quad
-        $meld2 = $meld->toTargetMeld(Tile::fromString('1m'), QuadMeldType::create());
+        $this->assertTrue($meld->canToTargetMeld(Tile::fromString('1m'), KongMeldType::create()));
+        $this->assertFalse($meld->canToTargetMeld(Tile::fromString('1s'), KongMeldType::create()));
+        // extendKong get Kong
+        $meld2 = $meld->toTargetMeld(Tile::fromString('1m'), KongMeldType::create());
         $this->assertSame('1111m', $meld2->__toString());
-        $this->assertEquals(QuadMeldType::create(), $meld2->getMeldType());
+        $this->assertEquals(KongMeldType::create(), $meld2->getMeldType());
     }
 
     /**
@@ -73,7 +73,7 @@ class MeldTest extends \SakiTestCase {
      */
     function testAddKongIsConcealed($before, $forceConcealed, $after) {
         $m1 = new Meld(TileList::fromString('111m')->toArray(), null, $before);
-        $m2 = $m1->toTargetMeld(Tile::fromString('1m'), QuadMeldType::create(), $forceConcealed);
+        $m2 = $m1->toTargetMeld(Tile::fromString('1m'), KongMeldType::create(), $forceConcealed);
         $this->assertEquals($after, $m2->isConcealed());
     }
 

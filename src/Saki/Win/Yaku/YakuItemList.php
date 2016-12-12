@@ -36,7 +36,7 @@ class YakuItemList extends ArrayList {
             return $yakuItem->getYaku()->isYakuMan();
         };
         $yakumanItemList = (new ArrayList($this->toArray()))->where($isYakuman);
-        if (!$yakumanItemList->isEmpty()) {
+        if ($yakumanItemList->isNotEmpty()) {
             $this->fromSelect($yakumanItemList);
         }
 

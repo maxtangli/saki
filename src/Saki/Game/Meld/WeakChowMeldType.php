@@ -8,7 +8,7 @@ use Saki\Win\Waiting\WaitingType;
 /**
  * @package Saki\Game\Meld
  */
-class WeakRunMeldType extends WeakMeldType {
+class WeakChowMeldType extends WeakMeldType {
     /**
      * @param TileList $validCountTileList
      * @return int[] list($diff, $min, $max)
@@ -46,17 +46,17 @@ class WeakRunMeldType extends WeakMeldType {
 
     //region WeakMeldType impl
     function getTargetMeldType() {
-        return RunMeldType::create();
+        return ChowMeldType::create();
     }
 
     protected function getWaitingImpl(TileList $validMeldTileList) {
         list(, $min, $max) = $this->getNumbers($validMeldTileList);
         $v = $this->getWaitingTypeImpl($validMeldTileList)->getValue();
-        if ($v == WaitingType::MIDDLE_RUN_WAITING) {
+        if ($v == WaitingType::MIDDLE_CHOW_WAITING) {
             $waitingNumbers = [$min + 1];
-        } elseif ($v == WaitingType::ONE_SIDE_RUN_WAITING) {
+        } elseif ($v == WaitingType::ONE_SIDE_CHOW_WAITING) {
             $waitingNumbers = $min == 1 ? [3] : [7];
-        } elseif ($v == WaitingType::TWO_SIDE_RUN_WAITING) {
+        } elseif ($v == WaitingType::TWO_SIDE_CHOW_WAITING) {
             $waitingNumbers = [$min - 1, $max + 1];
         } else {
             throw new \LogicException();
@@ -70,14 +70,14 @@ class WeakRunMeldType extends WeakMeldType {
     protected function getWaitingTypeImpl(TileList $validMeldTileList) {
         list($diff, $min, $max) = $this->getNumbers($validMeldTileList);
         if ($diff == 2) {
-            $v = WaitingType::MIDDLE_RUN_WAITING;
+            $v = WaitingType::MIDDLE_CHOW_WAITING;
         } elseif ($diff == 1) {
             if ($min == 1) {
-                $v = WaitingType::ONE_SIDE_RUN_WAITING;
+                $v = WaitingType::ONE_SIDE_CHOW_WAITING;
             } elseif ($max == 9) {
-                $v = WaitingType::ONE_SIDE_RUN_WAITING;
+                $v = WaitingType::ONE_SIDE_CHOW_WAITING;
             } else {
-                $v = WaitingType::TWO_SIDE_RUN_WAITING;
+                $v = WaitingType::TWO_SIDE_CHOW_WAITING;
             }
         } else {
             throw new \LogicException();

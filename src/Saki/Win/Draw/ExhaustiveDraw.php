@@ -24,7 +24,7 @@ class ExhaustiveDraw extends Draw {
             $public = $area->getHand()->getPublic();
             $melded = $area->getHand()->getMelded();
             $waitingTileList = $waitingAnalyzer->analyzePublic($public, $melded);
-            $isWaiting = !$waitingTileList->isEmpty();
+            $isWaiting = $waitingTileList->isNotEmpty();
             return $isWaiting;
         };
         $waitingArray = $round->getAreaList()->toArray($isWaiting);

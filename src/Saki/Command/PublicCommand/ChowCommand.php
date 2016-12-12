@@ -1,7 +1,7 @@
 <?php
 namespace Saki\Command\PublicCommand;
 
-use Saki\Game\Meld\RunMeldType;
+use Saki\Game\Meld\ChowMeldType;
 use Saki\Game\Tile\Tile;
 use Saki\Game\Tile\TileList;
 use Saki\Util\ArrayList;
@@ -17,7 +17,7 @@ class ChowCommand extends PublicClaimCommand {
     }
 
     function getClaimMeldType() {
-        return RunMeldType::create();
+        return ChowMeldType::create();
     }
 
     protected static function getOtherParamsListImpl(Tile $notRedTargetTile) {

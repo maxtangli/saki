@@ -76,6 +76,13 @@ class Stack {
     }
 
     /**
+     * @return bool
+     */
+    function isNotEmpty() {
+        return $this->stackTileList->isNotEmpty();
+    }
+
+    /**
      * @param Tile[] $tileChunk
      */
     function setTileChunk(array $tileChunk) {

@@ -3,9 +3,9 @@
 use Saki\Game\Meld\Meld;
 use Saki\Game\Meld\MeldListAnalyzer;
 use Saki\Game\Meld\PairMeldType;
-use Saki\Game\Meld\QuadMeldType;
-use Saki\Game\Meld\RunMeldType;
-use Saki\Game\Meld\TripleMeldType;
+use Saki\Game\Meld\KongMeldType;
+use Saki\Game\Meld\ChowMeldType;
+use Saki\Game\Meld\PungMeldType;
 use Saki\Game\Tile\TileList;
 use Saki\Util\Utils;
 
@@ -25,9 +25,9 @@ class MeldListAnalyzerTest extends \SakiTestCase {
     function getMeldCompositionsProvider() {
         $meldTypes = [
             PairMeldType::create(),
-            RunMeldType::create(),
-            TripleMeldType::create(),
-            QuadMeldType::create(),
+            ChowMeldType::create(),
+            PungMeldType::create(),
+            KongMeldType::create(),
         ];
         return [
             // empty case
@@ -47,7 +47,7 @@ class MeldListAnalyzerTest extends \SakiTestCase {
     }
 
     function testConcealed() {
-        $round = new MeldListAnalyzer([RunMeldType::create()], 0, true);
+        $round = new MeldListAnalyzer([ChowMeldType::create()], 0, true);
         $combinationList = $round->analyzeMeldListList(TileList::fromString('123s'));
         $this->assertEquals(Meld::fromString('(123s)'), $combinationList[0][0]);
     }

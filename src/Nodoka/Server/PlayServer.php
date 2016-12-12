@@ -190,7 +190,7 @@ class PlayServer implements MessageComponentInterface {
                             && ($participant->isAI() || $commandList->count() == 1);
                     };
                     $list = $publicParticipantList->getCopy()->where($shouldExecutePass);
-                    if (!$list->isEmpty()) {
+                    if ($list->isNotEmpty()) {
                         $executePass = function (Participant $participant) use ($round) {
                             $actorString = $participant->getRole()->getViewer()->__toString();
                             $commandLine = "pass $actorString";

@@ -21,15 +21,15 @@ class Meld extends TileList implements Immutable {
     static function getMeldTypeAnalyzer() {
         self::$meldTypeAnalyzer = self::$meldTypeAnalyzer ?? new MeldTypeAnalyzer([
                 // hand win set
-                RunMeldType::create(),
-                TripleMeldType::create(),
+                ChowMeldType::create(),
+                PungMeldType::create(),
                 // declare win set
-                QuadMeldType::create(),
+                KongMeldType::create(),
                 // pair
                 PairMeldType::create(),
                 // weak
                 WeakPairMeldType::create(),
-                WeakRunMeldType::create(),
+                WeakChowMeldType::create(),
                 // special
                 ThirteenOrphanMeldType::create(),
             ]);
@@ -196,32 +196,32 @@ class Meld extends TileList implements Immutable {
     /**
      * @return bool
      */
-    function isRun() {
-        return $this->getMeldType() instanceof RunMeldType;
+    function isChow() {
+        return $this->getMeldType() instanceof ChowMeldType;
     }
 
     /**
      * @param bool $concealedFlag
      * @return bool
      */
-    function isTriple(bool $concealedFlag = null) {
-        return $this->getMeldType() instanceof TripleMeldType && $this->matchConcealed($concealedFlag);
+    function isPung(bool $concealedFlag = null) {
+        return $this->getMeldType() instanceof PungMeldType && $this->matchConcealed($concealedFlag);
     }
 
     /**
      * @param bool $concealedFlag
      * @return bool
      */
-    function isQuad(bool $concealedFlag = null) {
-        return $this->getMeldType() instanceof QuadMeldType && $this->matchConcealed($concealedFlag);
+    function isKong(bool $concealedFlag = null) {
+        return $this->getMeldType() instanceof KongMeldType && $this->matchConcealed($concealedFlag);
     }
 
     /**
      * @param bool $concealedFlag
      * @return bool
      */
-    function isTripleOrQuad(bool $concealedFlag = null) {
-        return $this->isTriple($concealedFlag) || $this->isQuad($concealedFlag);
+    function isPungOrKong(bool $concealedFlag = null) {
+        return $this->isPung($concealedFlag) || $this->isKong($concealedFlag);
     }
 
     /**
@@ -234,8 +234,8 @@ class Meld extends TileList implements Immutable {
     /**
      * @return bool
      */
-    function isWeakRun() {
-        return $this->getMeldType() instanceof WeakRunMeldType;
+    function isWeakChow() {
+        return $this->getMeldType() instanceof WeakChowMeldType;
     }
 
     /**

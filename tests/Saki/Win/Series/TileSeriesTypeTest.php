@@ -34,15 +34,15 @@ class SeriesTypeTest extends \SakiTestCase {
 
     function FourWinSetAndOnePairProvider() {
         return [
-            ['123s,456s,789s,111m,11s', '9s', Series::FOUR_WIN_SET_AND_ONE_PAIR, WaitingType::TWO_SIDE_RUN_WAITING, ['6s', '9s']],
-            ['123s,567s,789s,111m,11s', '7s', Series::FOUR_WIN_SET_AND_ONE_PAIR, WaitingType::TWO_SIDE_RUN_WAITING, ['4s', '7s']],
-            ['123s,567s,789s,777s,11s', '7s', Series::FOUR_WIN_SET_AND_ONE_PAIR, WaitingType::TWO_SIDE_RUN_WAITING, ['1s', '4s', '7s']],
+            ['123s,456s,789s,111m,11s', '9s', Series::FOUR_WIN_SET_AND_ONE_PAIR, WaitingType::TWO_SIDE_CHOW_WAITING, ['6s', '9s']],
+            ['123s,567s,789s,111m,11s', '7s', Series::FOUR_WIN_SET_AND_ONE_PAIR, WaitingType::TWO_SIDE_CHOW_WAITING, ['4s', '7s']],
+            ['123s,567s,789s,777s,11s', '7s', Series::FOUR_WIN_SET_AND_ONE_PAIR, WaitingType::TWO_SIDE_CHOW_WAITING, ['1s', '4s', '7s']],
 
             ['123s,456s,789s,EEE,WW', 'E', Series::FOUR_WIN_SET_AND_ONE_PAIR, WaitingType::TRIPLE_WAITING, ['E', 'W']],
 
-            ['123s,456s,789s,111s,11s', '7s', Series::FOUR_WIN_SET_AND_ONE_PAIR, WaitingType::ONE_SIDE_RUN_WAITING, ['7s']],
+            ['123s,456s,789s,111s,11s', '7s', Series::FOUR_WIN_SET_AND_ONE_PAIR, WaitingType::ONE_SIDE_CHOW_WAITING, ['7s']],
 
-            ['123s,456s,789s,111s,11s', '8s', Series::FOUR_WIN_SET_AND_ONE_PAIR, WaitingType::MIDDLE_RUN_WAITING, ['8s']],
+            ['123s,456s,789s,111s,11s', '8s', Series::FOUR_WIN_SET_AND_ONE_PAIR, WaitingType::MIDDLE_CHOW_WAITING, ['8s']],
 
             ['123s,456s,789s,111s,EE', 'E', Series::FOUR_WIN_SET_AND_ONE_PAIR, WaitingType::PAIR_WAITING, ['E']],
 

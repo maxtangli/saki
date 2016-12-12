@@ -99,7 +99,7 @@ class OpenHistory {
         };
         $result = $this->list->getCopy()->where($match);
 
-        if (!$result->isEmpty() && $excludeLastTile) {
+        if ($result->isNotEmpty() && $excludeLastTile) {
             $result->removeLast();
         }
 

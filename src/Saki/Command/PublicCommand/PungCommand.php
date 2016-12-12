@@ -1,7 +1,7 @@
 <?php
 namespace Saki\Command\PublicCommand;
 
-use Saki\Game\Meld\TripleMeldType;
+use Saki\Game\Meld\PungMeldType;
 use Saki\Game\Tile\Tile;
 use Saki\Game\Tile\TileList;
 use Saki\Util\ArrayList;
@@ -12,7 +12,7 @@ use Saki\Util\ArrayList;
 class PungCommand extends PublicClaimCommand {
     //region PublicClaimCommand impl
     function getClaimMeldType() {
-        return TripleMeldType::create();
+        return PungMeldType::create();
     }
 
     protected static function getOtherParamsListImpl(Tile $notRedTargetTile) {

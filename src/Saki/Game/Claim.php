@@ -85,7 +85,7 @@ class Claim implements Immutable {
         $meld = $this->getToMeld();
         $l = $meld->toArrayList();
         $isExtendKong = isset($this->fromMeld);
-        if ($meld->isRun() || $meld->isTriple() || ($meld->isQuad(false) && !$isExtendKong)) {
+        if ($meld->isChow() || $meld->isPung() || ($meld->isKong(false) && !$isExtendKong)) {
             // move target tile to relation position
             $relationIndex = $this->getRelationIndex();
             $otherTileIndex = $meld->getIndex($this->otherTile, Tile::getPrioritySelector());
@@ -107,13 +107,13 @@ class Claim implements Immutable {
 //
 //            array_splice($a, $relationIndex, 0, $targetTileJson);
 //            return $a;
-        } elseif ($meld->isQuad(true)) {
+        } elseif ($meld->isKong(true)) {
             // if contains 1 red, swap it to pos 2
             $isRed = function (Tile $tile) {
                 return $tile->isRedDora();
             };
             $redTileList = $l->getCopy()->where($isRed);
-            if (!$redTileList->isEmpty()) {
+            if ($redTileList->isNotEmpty()) {
                 if ($redTileList->count() >= 2) {
                     throw new \LogicException('not implemented.');
                 }
@@ -233,7 +233,7 @@ class Claim implements Immutable {
         // chow commands require SwapCalling.executable
         // todo note: seems not good to place here
         $swapCalling = $round->getRule()->getSwapCalling();
-        $validSwapCalling = !$toMeld->isRun()
+        $validSwapCalling = !$toMeld->isChow()
             || $swapCalling->allowChow($hand->getPublic(), $hand->getTarget()->getTile(), $toMeld);
         if (!$validSwapCalling) {
             return false;
@@ -241,7 +241,7 @@ class Claim implements Immutable {
 
         // kong commands require ableDrawReplacement
         // todo note: seems not good to place here
-        $validDrawReplacementAble = !$toMeld->isQuad()
+        $validDrawReplacementAble = !$toMeld->isKong()
             || $round->getWall()->getReplaceWall()->ableOutNext();
         if (!$validDrawReplacementAble) {
             return false;

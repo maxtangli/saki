@@ -7,7 +7,7 @@ use Saki\Command\ParamDeclaration\TileParamDeclaration;
 use Saki\Game\Area;
 use Saki\Game\Claim;
 use Saki\Game\Meld\Meld;
-use Saki\Game\Meld\TripleMeldType;
+use Saki\Game\Meld\PungMeldType;
 use Saki\Game\Open;
 use Saki\Game\Phase\PublicPhaseState;
 use Saki\Game\Round;
@@ -30,13 +30,13 @@ class ExtendKongCommand extends PrivateCommand {
     static function getOtherParamsListRaw(Round $round, SeatWind $actor, Area $actorArea) {
         $hand = $actorArea->getHand();
         $private = $hand->getPrivate();
-        $triples = $hand->getMelded()->toFiltered([TripleMeldType::create()]);
+        $pungs = $hand->getMelded()->toFiltered([PungMeldType::create()]);
 
-        $toOtherParamsList = function (Meld $triple) use ($private) {
+        $toOtherParamsList = function (Meld $pung) use ($private) {
             /** @var Tile $tile */
-            $tile = $triple[0];
-            $toParams = function (Tile $tile) use ($triple) {
-                return [$tile, $triple];
+            $tile = $pung[0];
+            $toParams = function (Tile $tile) use ($pung) {
+                return [$tile, $pung];
             };
             return $private->toArrayList()
                 ->where(Utils::toPredicate($tile))
@@ -44,7 +44,7 @@ class ExtendKongCommand extends PrivateCommand {
                 ->select($toParams);
         };
         $otherParamsList = (new ArrayList())
-            ->fromSelectMany($triples, $toOtherParamsList);
+            ->fromSelectMany($pungs, $toOtherParamsList);
         return $otherParamsList;
     }
     //endregion

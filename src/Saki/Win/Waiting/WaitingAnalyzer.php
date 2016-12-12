@@ -5,10 +5,10 @@ use Saki\Game\Meld\Meld;
 use Saki\Game\Meld\MeldList;
 use Saki\Game\Meld\MeldListAnalyzer;
 use Saki\Game\Meld\PairMeldType;
-use Saki\Game\Meld\RunMeldType;
-use Saki\Game\Meld\TripleMeldType;
+use Saki\Game\Meld\ChowMeldType;
+use Saki\Game\Meld\PungMeldType;
 use Saki\Game\Meld\WeakPairMeldType;
-use Saki\Game\Meld\WeakRunMeldType;
+use Saki\Game\Meld\WeakChowMeldType;
 use Saki\Game\Meld\WeakThirteenOrphanMeldType;
 use Saki\Game\Tile\Tile;
 use Saki\Game\Tile\TileList;
@@ -38,9 +38,9 @@ class WaitingAnalyzer {
      */
     function __construct(SeriesAnalyzer $seriesAnalyzer) {
         $meldTypes = [
-            RunMeldType::create(), TripleMeldType::create(),
+            ChowMeldType::create(), PungMeldType::create(),
             PairMeldType::create(),
-            WeakRunMeldType::create(), WeakPairMeldType::create(),
+            WeakChowMeldType::create(), WeakPairMeldType::create(),
             WeakThirteenOrphanMeldType::create(),
         ];
         $this->publicMeldListAnalyzer = new MeldListAnalyzer($meldTypes, 1);
@@ -109,7 +109,7 @@ class WaitingAnalyzer {
         foreach ($uniqueTileList as $discard) {
             $public->fromSelect($private)->remove($discard, Tile::getPrioritySelector());
             $waiting = $this->analyzePublic($public, $melded);
-            if (!$waiting->isEmpty()) {
+            if ($waiting->isNotEmpty()) {
                 $futureWaiting = new FutureWaiting($discard, $waiting);
                 $futureWaitingList->insertLast($futureWaiting);
             }
@@ -196,9 +196,9 @@ class WaitingAnalyzer {
         }
 
         // - case2. one weakPair's for seven-pairs series
-        //       or one weakRun's for 4+1 series
+        //       or one weakChow's for 4+1 series
         //       or one weakThirteenOrphan's for thirteen-orphan case
-        $weakList = $setList->toFiltered([WeakPairMeldType::create(), WeakRunMeldType::create(), WeakThirteenOrphanMeldType::create()]);
+        $weakList = $setList->toFiltered([WeakPairMeldType::create(), WeakChowMeldType::create(), WeakThirteenOrphanMeldType::create()]);
         if (count($weakList) == 1) {
             return $weakList;
         }

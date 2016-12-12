@@ -27,14 +27,14 @@ class PureFourConcealedPungsYaku extends Yaku {
     }
 
     protected function matchOther(WinSubTarget $subTarget) {
-        $isFourConcealedTriples = $subTarget->getAllMeldList()
+        $isFourConcealedPungs = $subTarget->getAllMeldList()
             ->isFourPungsOrKongsAndAPair(true);
 
         $waitingType = Series::create(Series::FOUR_WIN_SET_AND_ONE_PAIR)
             ->getWaitingType($subTarget->getSubHand());
         $isPairWaiting = ($waitingType == WaitingType::create(WaitingType::PAIR_WAITING));
 
-        return $isFourConcealedTriples && $isPairWaiting;
+        return $isFourConcealedPungs && $isPairWaiting;
     }
 
     function getExcludedYakus() {

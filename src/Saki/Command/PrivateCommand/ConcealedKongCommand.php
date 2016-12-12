@@ -5,7 +5,7 @@ use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\ParamDeclaration\TileListParamDeclaration;
 use Saki\Game\Area;
 use Saki\Game\Claim;
-use Saki\Game\Meld\QuadMeldType;
+use Saki\Game\Meld\KongMeldType;
 use Saki\Game\Round;
 use Saki\Game\SeatWind;
 use Saki\Game\Tile\Tile;
@@ -52,7 +52,7 @@ class ConcealedKongCommand extends PrivateCommand {
             $this->getActor(),
             $this->getRound()->getTurn(),
             $tiles,
-            QuadMeldType::create()
+            KongMeldType::create()
         );
     }
 

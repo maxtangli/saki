@@ -102,12 +102,12 @@ class FuAnalyzer extends Singleton {
          * - 明槓  8符 16符
          * - 暗槓 16符 32符
          */
-        if ($winSetMeld->isTripleOrQuad()) {
+        if ($winSetMeld->isPungOrKong()) {
             $baseFu = 2;
             $termRatio = $winSetMeld[0]->isTermOrHonour() ? 2 : 1;
             $concealedRatio = $winSetMeld->isConcealed() ? 2 : 1;
-            $quadRatio = $winSetMeld->isQuad() ? 4 : 1;
-            $meldFu = $baseFu * $termRatio * $concealedRatio * $quadRatio;
+            $kongRatio = $winSetMeld->isKong() ? 4 : 1;
+            $meldFu = $baseFu * $termRatio * $concealedRatio * $kongRatio;
             return $meldFu;
         } else {
             return 0;
@@ -156,8 +156,8 @@ class FuAnalyzer extends Singleton {
          * - 単騎待ち 2符
          */
         $targetWaitingTypes = [
-            WaitingType::create(WaitingType::MIDDLE_RUN_WAITING),
-            WaitingType::create(WaitingType::ONE_SIDE_RUN_WAITING),
+            WaitingType::create(WaitingType::MIDDLE_CHOW_WAITING),
+            WaitingType::create(WaitingType::ONE_SIDE_CHOW_WAITING),
             WaitingType::create(WaitingType::PAIR_WAITING),
         ];
         $waitingTypeFu = in_array($waitingType, $targetWaitingTypes) ? 2 : 0;

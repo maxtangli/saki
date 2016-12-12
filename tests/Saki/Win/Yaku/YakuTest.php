@@ -171,7 +171,7 @@ class YakuTest extends \SakiTestCase {
             [PinfuYaku::create(), true, '123m,456m,789m,123s,55s', null, '1s'],
             // not isConcealed
             [PinfuYaku::create(), false, '123m,456m,123s,55s', '789m', '1s'],
-            // not 4 run
+            // not 4 chow
             [PinfuYaku::create(), false, '123m,456m,999m,123s,55s', null, '1s'],
             // not suit pair
             [PinfuYaku::create(), false, '123m,456m,789m,123s,EE', null, '1s'],
@@ -238,7 +238,7 @@ class YakuTest extends \SakiTestCase {
             // test OutsideHandYaku
             [OutsideHandYaku::create(), true, '123m,789m,123s,EE', '789s'],
             [OutsideHandYaku::create(), true, '123m,789m,123s,11s', '789s'],
-            // not any run
+            // not any chow
             [OutsideHandYaku::create(), false, '111m,999m,111p,11s', '9999p'],
             // not all outside
             [OutsideHandYaku::create(), false, '123m,789m,123s,11s', '678s'],
@@ -247,7 +247,7 @@ class YakuTest extends \SakiTestCase {
 
             // test TerminalsInAllSetsYaku
             [TerminalsInAllSetsYaku::create(), true, '123m,789m,123s,11s', '789s'],
-            // not any run
+            // not any chow
             [TerminalsInAllSetsYaku::create(), false, '111m,999m,111p,11s', '999p'],
             // not all outside
             [TerminalsInAllSetsYaku::create(), false, '123m,789m,123s,11s', '678s'],
@@ -350,7 +350,7 @@ class YakuTest extends \SakiTestCase {
             [BigThreeDragonsYaku::create(), true, 'CCC,PPP,123s,11s', 'FFF'],
             [BigThreeDragonsYaku::create(), true, 'CCC,PPP,123s,11s', 'FFFF'],
             [BigThreeDragonsYaku::create(), true, 'CCC,PPP,123s,11s', '(FFFF)'],
-            // not 3 tripleOrQuads
+            // not 3 tripleOrKongs
             [BigThreeDragonsYaku::create(), false, 'CC,PPP,123s,EEE', 'FFF'],
 
             // BlessingOfEarthYaku is tested alone
@@ -368,7 +368,7 @@ class YakuTest extends \SakiTestCase {
             // test FourKongsYaku
             [FourKongsYaku::create(), true, '11s', '2222s,3333s,4444s,5555s'],
             [FourKongsYaku::create(), true, '11s', '2222s,3333s,4444s,(5555s)'],
-            // not 4 quads
+            // not 4 kongs
             [FourKongsYaku::create(), false, '11s', '2222s,3333s,4444s,555s'],
 
             // test PureFourConcealedPungsYaku
@@ -463,7 +463,7 @@ class YakuTest extends \SakiTestCase {
         $this->assertYakuList('E', [AfterAKongWinYaku::create()]);
     }
 
-    function testRobbingAQuad() {
+    function testRobbingAKong() {
         $round = $this->getInitRound();
         $round->process(
             'skip 4; mockHand W 23m123456789s11p',

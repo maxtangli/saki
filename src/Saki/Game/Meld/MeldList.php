@@ -121,12 +121,12 @@ class MeldList extends ArrayList {
      * @return int
      */
     function getNormalizedTileCount() {
-        // note: each quad introduces 1 extra Tile
+        // note: each kong introduces 1 extra Tile
         $tileCount = $this->getSum(function (Meld $meld) {
             return $meld->count();
         });
-        $quadMeldCount = $this->toFiltered([QuadMeldType::create()])->count();
-        $n = $tileCount - $quadMeldCount;
+        $kongMeldCount = $this->toFiltered([KongMeldType::create()])->count();
+        $n = $tileCount - $kongMeldCount;
         return $n;
     }
 
@@ -178,32 +178,32 @@ class MeldList extends ArrayList {
     /**
      * @return bool
      */
-    function isFourRunAndOnePair() {
+    function isFourChowAndOnePair() {
         $this->assertCompletePrivateHandCount();
-        $runCount = $this->getCount($this->getPredicate([RunMeldType::create()]));
+        $chowCount = $this->getCount($this->getPredicate([ChowMeldType::create()]));
         $pairCount = $this->getCount($this->getPredicate([PairMeldType::create()]));
-        return [$runCount, $pairCount] == [4, 1];
+        return [$chowCount, $pairCount] == [4, 1];
     }
 
     /**
-     * @param bool|false $requireConcealedTripleOrQuad
+     * @param bool|false $requireConcealed
      * @return bool
      */
-    function isFourPungsOrKongsAndAPair(bool $requireConcealedTripleOrQuad = false) {
+    function isFourPungsOrKongsAndAPair(bool $requireConcealed = false) {
         $this->assertCompletePrivateHandCount();
 
-        $concealedFlag = $requireConcealedTripleOrQuad ? true : null;
-        $isRequiredTripleOrQuad = $this->getPredicate([TripleMeldType::create(), QuadMeldType::create()], $concealedFlag);
+        $concealedFlag = $requireConcealed ? true : null;
+        $isRequiredPungOrKong = $this->getPredicate([PungMeldType::create(), KongMeldType::create()], $concealedFlag);
 
-        $tripleOrQuadCount = $this->getCount($isRequiredTripleOrQuad);
+        $pungOrKongCount = $this->getCount($isRequiredPungOrKong);
         $pairCount = $this->getCount($this->getPredicate([PairMeldType::create()]));
-        return [$tripleOrQuadCount, $pairCount] == [4, 1];
+        return [$pungOrKongCount, $pairCount] == [4, 1];
     }
     //endregion
 
     // WARNING: be careful about compare of Tile.isRedDora, Meld.isConcealed.
 
-    //region yaku: run, three color, thirteen orphan
+    //region yaku: chow, three color, thirteen orphan
     /**
      * @param bool $isTwoDoubleChow
      * @return bool
@@ -212,12 +212,12 @@ class MeldList extends ArrayList {
         $this->assertCompletePrivateHandCount();
         $requiredDoubleChowCount = $isTwoDoubleChow ? 2 : 1;
 
-        $runMeldList = $this->toFiltered([RunMeldType::create()]);
-        $getRunKey = function (Meld $runMeld) {
+        $chowMeldList = $this->toFiltered([ChowMeldType::create()]);
+        $getChowKey = function (Meld $chowMeld) {
             $considerConcealed = false;
-            return $runMeld->toSortedString($considerConcealed);
+            return $chowMeld->toSortedString($considerConcealed);
         };
-        $doubleChowCount = count($runMeldList->getCounts($getRunKey, 2));
+        $doubleChowCount = count($chowMeldList->getCounts($getChowKey, 2));
 
         return $doubleChowCount >= $requiredDoubleChowCount;
     }
@@ -243,8 +243,8 @@ class MeldList extends ArrayList {
      */
     function isMixedTripleChow() {
         $this->assertCompletePrivateHandCount();
-        $runList = $this->toFiltered([RunMeldType::create()]);
-        return $runList->isThreeColorSuits();
+        $chowList = $this->toFiltered([ChowMeldType::create()]);
+        return $chowList->isThreeColorSuits();
     }
 
     /**
@@ -252,18 +252,18 @@ class MeldList extends ArrayList {
      */
     function isTriplePungOrKong() {
         $this->assertCompletePrivateHandCount();
-        $suitTripleOrQuadList = $this->toFiltered([TripleMeldType::create(), QuadMeldType::create()])
+        $suitPungOrKongList = $this->toFiltered([PungMeldType::create(), KongMeldType::create()])
             ->where(function (Meld $meld) {
                 return $meld->isAllSuit();
             });
-        return $suitTripleOrQuadList->isThreeColorSuits();
+        return $suitPungOrKongList->isThreeColorSuits();
     }
 
     protected function isThreeColorSuits() {
         $map = []; // [1 => ['s' => true] ...]
-        foreach ($this as $tripleOrQuad) {
+        foreach ($this as $pungOrKong) {
             /** @var Tile $firstTile */
-            $fistTile = $tripleOrQuad[0];
+            $fistTile = $pungOrKong[0];
             $number = $fistTile->getNumber();
             $tileTypeString = $fistTile->getTileType()->__toString();
             $map[$number][$tileTypeString] = true;
@@ -298,20 +298,20 @@ class MeldList extends ArrayList {
     }
     //endregion
 
-    //region yaku: triple and quad
+    //region yaku: pung and kong
     /**
      * @param Tile $valueTile
      * @return bool
      */
     function isValueTiles(Tile $valueTile) {
         $this->assertCompletePrivateHandCount();
-        $tripleOrQuadList = $this->toFiltered([TripleMeldType::create(), QuadMeldType::create()]);
-        $isValueMeld = function (Meld $tripleOrQuad) use ($valueTile) {
+        $pungOrKongList = $this->toFiltered([PungMeldType::create(), KongMeldType::create()]);
+        $isValueMeld = function (Meld $pungOrKong) use ($valueTile) {
             /** @var Tile $firstTile */
-            $firstTile = $tripleOrQuad[0];
+            $firstTile = $pungOrKong[0];
             return $firstTile == $valueTile;
         };
-        return $tripleOrQuadList->any($isValueMeld);
+        return $pungOrKongList->any($isValueMeld);
     }
 
     /**
@@ -319,9 +319,9 @@ class MeldList extends ArrayList {
      */
     function isThreeConcealedPungsOrKongs() {
         $this->assertCompletePrivateHandCount();
-        $isConcealedTripleOrQuad = $this->getPredicate([TripleMeldType::create(), QuadMeldType::create()], true);
-        $concealedTripleOrQuadCount = $this->getCount($isConcealedTripleOrQuad);
-        return $concealedTripleOrQuadCount == 3;
+        $isConcealedPungOrKong = $this->getPredicate([PungMeldType::create(), KongMeldType::create()], true);
+        $concealedPungOrKongCount = $this->getCount($isConcealedPungOrKong);
+        return $concealedPungOrKongCount == 3;
     }
 
     /**
@@ -331,8 +331,8 @@ class MeldList extends ArrayList {
     function isThreeOrFourKongs(bool $isFour) {
         $this->assertCompletePrivateHandCount();
         $n = $isFour ? 4 : 3;
-        $quadCount = $this->getCount($this->getPredicate([QuadMeldType::create()]));
-        return $quadCount == $n;
+        $kongCount = $this->getCount($this->getPredicate([KongMeldType::create()]));
+        return $kongCount == $n;
     }
 
     // yaku: tile concerned
@@ -343,8 +343,8 @@ class MeldList extends ArrayList {
     function isOutsideHand(bool $isPure) {
         $this->assertCompletePrivateHandCount();
 
-        $hasRun = $this->any($this->getPredicate([RunMeldType::create()]));
-        if (!$hasRun) {
+        $hasChow = $this->any($this->getPredicate([ChowMeldType::create()]));
+        if (!$hasChow) {
             return false;
         }
 
@@ -397,8 +397,8 @@ class MeldList extends ArrayList {
             return $meld[0]->getTileType()->isDragon();
         });
         $pairCount = $dragonMeldList->getCount($this->getPredicate([PairMeldType::create()]));
-        $tripleOrQuadCount = $dragonMeldList->getCount($this->getPredicate([TripleMeldType::create(), QuadMeldType::create()]));
-        return [$pairCount, $tripleOrQuadCount] == ($isBig ? [0, 3] : [1, 2]);
+        $pungOrKongCount = $dragonMeldList->getCount($this->getPredicate([PungMeldType::create(), KongMeldType::create()]));
+        return [$pairCount, $pungOrKongCount] == ($isBig ? [0, 3] : [1, 2]);
     }
 
     /**
@@ -411,8 +411,8 @@ class MeldList extends ArrayList {
             return $meld[0]->getTileType()->isWind();
         });
         $pairCount = $windMeldList->getCount($this->getPredicate([PairMeldType::create()]));
-        $tripleOrQuadCount = $windMeldList->getCount($this->getPredicate([TripleMeldType::create(), QuadMeldType::create()]));
-        return [$pairCount, $tripleOrQuadCount] == ($isBig ? [0, 4] : [1, 3]);
+        $pungOrKongCount = $windMeldList->getCount($this->getPredicate([PungMeldType::create(), KongMeldType::create()]));
+        return [$pairCount, $pungOrKongCount] == ($isBig ? [0, 4] : [1, 3]);
     }
     //endregion
 }

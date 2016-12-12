@@ -22,7 +22,7 @@ class LiveWall {
     function init(StackList $stackList = null) {
         $actualStackList = $stackList ?? new StackList();
         $notEmpty = function (Stack $stack) {
-            return !$stack->isEmpty();
+            return $stack->isNotEmpty();
         };
         if (!$actualStackList->all($notEmpty)) {
             throw new \InvalidArgumentException();
@@ -46,6 +46,13 @@ class LiveWall {
     }
 
     /**
+     * @return bool
+     */
+    function isNotEmpty() {
+        return $this->stackList->isNotEmpty();
+    }
+
+    /**
      * @return int
      */
     function getRemainStackCount() {
@@ -66,7 +73,7 @@ class LiveWall {
      * @return bool
      */
     function ableOutNext() {
-        return !$this->isEmpty();
+        return $this->isNotEmpty();
     }
 
     /**

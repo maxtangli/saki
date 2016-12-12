@@ -3,12 +3,12 @@
 use Saki\Game\Meld\Meld;
 use Saki\Game\Meld\MeldType;
 use Saki\Game\Meld\PairMeldType;
-use Saki\Game\Meld\QuadMeldType;
-use Saki\Game\Meld\RunMeldType;
+use Saki\Game\Meld\KongMeldType;
+use Saki\Game\Meld\ChowMeldType;
 use Saki\Game\Meld\ThirteenOrphanMeldType;
-use Saki\Game\Meld\TripleMeldType;
+use Saki\Game\Meld\PungMeldType;
 use Saki\Game\Meld\WeakPairMeldType;
-use Saki\Game\Meld\WeakRunMeldType;
+use Saki\Game\Meld\WeakChowMeldType;
 use Saki\Game\Tile\Tile;
 use Saki\Game\Tile\TileList;
 use Saki\Util\ArrayList;
@@ -20,11 +20,11 @@ class MeldTypeTest extends \SakiTestCase {
     }
 
     function testWinSetType() {
-        $this->assertTrue(RunMeldType::create()->getWinSetType()->isWinSet());
-        $this->assertTrue(RunMeldType::create()->getWinSetType()->isHandWinSet());
+        $this->assertTrue(ChowMeldType::create()->getWinSetType()->isWinSet());
+        $this->assertTrue(ChowMeldType::create()->getWinSetType()->isHandWinSet());
 
-        $this->assertTrue(QuadMeldType::create()->getWinSetType()->isWinSet());
-        $this->assertFalse(QuadMeldType::create()->getWinSetType()->isHandWinSet());
+        $this->assertTrue(KongMeldType::create()->getWinSetType()->isWinSet());
+        $this->assertFalse(KongMeldType::create()->getWinSetType()->isHandWinSet());
     }
 
     /**
@@ -41,36 +41,36 @@ class MeldTypeTest extends \SakiTestCase {
 
     function validProvider() {
         $pair = PairMeldType::create();
-        $run = RunMeldType::create();
-        $triple = TripleMeldType::create();
+        $chow = ChowMeldType::create();
+        $pung = PungMeldType::create();
         $weakPair = WeakPairMeldType::create();
-        $weakRun = WeakRunMeldType::create();
+        $weakChow = WeakChowMeldType::create();
         $orphan = ThirteenOrphanMeldType::create();
         return [
             [true, $pair, '11m'],
             [false, $pair, '111m'],
 
-            [true, $triple, '111m'],
-            [false, $triple, '11m1s'],
-            [false, $triple, '11m'],
+            [true, $pung, '111m'],
+            [false, $pung, '11m1s'],
+            [false, $pung, '11m'],
 
-            [true, $run, '123m'],
-            [true, $run, '132m'],
-            [true, $run, '213m'],
-            [true, $run, '231m'],
-            [true, $run, '312m'],
-            [true, $run, '321m'],
-            [false, $run, '12m3s'],
-            [false, $run, '121m'],
+            [true, $chow, '123m'],
+            [true, $chow, '132m'],
+            [true, $chow, '213m'],
+            [true, $chow, '231m'],
+            [true, $chow, '312m'],
+            [true, $chow, '321m'],
+            [false, $chow, '12m3s'],
+            [false, $chow, '121m'],
 
             [true, $weakPair, '1m'],
             [false, $weakPair, '11m'],
 
-            [true, $weakRun, '12m'],
-            [true, $weakRun, '89m'],
-            [true, $weakRun, '13m'],
-            [true, $weakRun, '23m'],
-            [false, $weakRun, '14m'],
+            [true, $weakChow, '12m'],
+            [true, $weakChow, '89m'],
+            [true, $weakChow, '13m'],
+            [true, $weakChow, '23m'],
+            [false, $weakChow, '14m'],
 
             [true, $orphan, '119m19p19sESWNCPF'],
             [true, $orphan, '199m19p19sESWNCPF'],
@@ -80,10 +80,10 @@ class MeldTypeTest extends \SakiTestCase {
     }
 
     /**
-     * @dataProvider weakRunProvider
+     * @dataProvider weakChowProvider
      */
-    function testWeakRun(string $tileListString, array $waitingTileStrings, int $waitingTypeValue) {
-        $weakRun = WeakRunMeldType::create();
+    function testWeakChow(string $tileListString, array $waitingTileStrings, int $waitingTypeValue) {
+        $weakChow = WeakChowMeldType::create();
         $tileList = TileList::fromString($tileListString);
         $waitingTileList = (new ArrayList($waitingTileStrings))->select(function ($s) {
             return Tile::fromString($s);
@@ -91,25 +91,25 @@ class MeldTypeTest extends \SakiTestCase {
         $waitingType = WaitingType::create($waitingTypeValue);
 
         // test waitingTiles, waitingType
-        $this->assertEquals($waitingTileList->toArray(), $weakRun->getWaiting($tileList)->toArray());
-        $this->assertEquals($waitingType, $weakRun->getWaitingType($tileList), $weakRun->getWaitingType($tileList));
+        $this->assertEquals($waitingTileList->toArray(), $weakChow->getWaiting($tileList)->toArray());
+        $this->assertEquals($waitingType, $weakChow->getWaitingType($tileList), $weakChow->getWaitingType($tileList));
 
         // test toTargetMeld
-        $weakRunMeld = Meld::fromString($tileListString);
+        $weakChowMeld = Meld::fromString($tileListString);
         foreach ($waitingTileList as $waitingTile) {
-            $this->assertTrue($weakRunMeld->canToTargetMeld($waitingTile));
-            $targetMeld = $weakRunMeld->toTargetMeld($waitingTile);
+            $this->assertTrue($weakChowMeld->canToTargetMeld($waitingTile));
+            $targetMeld = $weakChowMeld->toTargetMeld($waitingTile);
             $this->assertTrue($targetMeld->canToWeakMeld($waitingTile));
-            $this->assertEquals($weakRunMeld, $targetMeld->toWeakMeld($waitingTile));
+            $this->assertEquals($weakChowMeld, $targetMeld->toWeakMeld($waitingTile));
         }
     }
 
-    function weakRunProvider() {
+    function weakChowProvider() {
         return [
-            ['12m', ['3m'], WaitingType::ONE_SIDE_RUN_WAITING],
-            ['89m', ['7m'], WaitingType::ONE_SIDE_RUN_WAITING],
-            ['13m', ['2m'], WaitingType::MIDDLE_RUN_WAITING],
-            ['23m', ['1m', '4m'], WaitingType::TWO_SIDE_RUN_WAITING],
+            ['12m', ['3m'], WaitingType::ONE_SIDE_CHOW_WAITING],
+            ['89m', ['7m'], WaitingType::ONE_SIDE_CHOW_WAITING],
+            ['13m', ['2m'], WaitingType::MIDDLE_CHOW_WAITING],
+            ['23m', ['1m', '4m'], WaitingType::TWO_SIDE_CHOW_WAITING],
         ];
     }
 }

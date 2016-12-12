@@ -34,15 +34,15 @@ class PinfuYaku extends Yaku {
          * 4. 両面待ち
          * @see https://ja.wikipedia.org/wiki/平和_(麻雀)
          */
-        $isFourRunAndOnePair = $subTarget->getAllMeldList()->isFourRunAndOnePair();
+        $isFourChowAndOnePair = $subTarget->getAllMeldList()->isFourChowAndOnePair();
 
         $isAllSuit = $subTarget->getComplete()->isAllSuit();
 
         $waitingType = Series::create(Series::FOUR_WIN_SET_AND_ONE_PAIR)
             ->getWaitingType($subTarget->getSubHand());
-        $isTwoSideWaiting = ($waitingType == WaitingType::create(WaitingType::TWO_SIDE_RUN_WAITING));
+        $isTwoSideWaiting = ($waitingType == WaitingType::create(WaitingType::TWO_SIDE_CHOW_WAITING));
 
-        return $isFourRunAndOnePair && $isAllSuit && $isTwoSideWaiting;
+        return $isFourChowAndOnePair && $isAllSuit && $isTwoSideWaiting;
     }
 }
 

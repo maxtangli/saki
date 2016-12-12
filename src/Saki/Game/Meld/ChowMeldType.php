@@ -8,7 +8,7 @@ use Saki\Util\ArrayList;
 /**
  * @package Saki\Game\Meld
  */
-class RunMeldType extends MeldType {
+class ChowMeldType extends MeldType {
     //region MeldType impl
     function getTileCount() {
         return 3;

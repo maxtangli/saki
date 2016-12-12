@@ -23,7 +23,7 @@ class PairMeldType extends WeakMeldType {
     }
 
     function getTargetMeldType() {
-        return TripleMeldType::create();
+        return PungMeldType::create();
     }
     //endregion
 

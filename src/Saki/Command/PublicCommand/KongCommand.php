@@ -1,7 +1,7 @@
 <?php
 namespace Saki\Command\PublicCommand;
 
-use Saki\Game\Meld\QuadMeldType;
+use Saki\Game\Meld\KongMeldType;
 use Saki\Game\Tile\Tile;
 use Saki\Game\Tile\TileList;
 use Saki\Util\ArrayList;
@@ -12,7 +12,7 @@ use Saki\Util\ArrayList;
 class KongCommand extends PublicClaimCommand {
     //region PublicClaimCommand impl
     function getClaimMeldType() {
-        return QuadMeldType::create();
+        return KongMeldType::create();
     }
 
     protected static function getOtherParamsListImpl(Tile $notRedTargetTile) {

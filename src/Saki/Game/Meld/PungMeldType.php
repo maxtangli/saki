@@ -8,7 +8,7 @@ use Saki\Win\Waiting\WaitingType;
 /**
  * @package Saki\Game\Meld
  */
-class TripleMeldType extends WeakMeldType {
+class PungMeldType extends WeakMeldType {
     //region MeldType impl
     function getTileCount() {
         return 3;
@@ -23,7 +23,7 @@ class TripleMeldType extends WeakMeldType {
     }
 
     function getTargetMeldType() {
-        return QuadMeldType::create();
+        return KongMeldType::create();
     }
     //endregion
 
