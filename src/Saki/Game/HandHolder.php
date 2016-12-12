@@ -56,6 +56,7 @@ class HandHolder {
     function setHand(Hand $hand) {
         $this->public->fromSelect($hand->getPublic());
         $this->melded->fromSelect($hand->getMelded());
+        $this->melded->json = $hand->getMelded()->json; // temp solution
         if ($hand->getTarget()->exist()) {
             $this->targetHolder->setTarget($hand->getTarget());
         }

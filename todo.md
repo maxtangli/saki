@@ -1188,18 +1188,24 @@ rush 106 meld view: json
 - [x] refactor: introduce Relation 0.3h
 - [x] meld.toJson() 0.7h
 
-- adapt create meld 0.6h // shock: prev analyze is wrong!
+- wrong: adapt create meld 0.6h // shock: prev analyze is wrong!
 - [x] analyze again 0.3h
 - [x] claim.toJson(): chow/pung/kong 1.2h
 
 - [x] claim.toJson(): concealedKong 0.5h
 
-- claim.toJson(): extendKong 1h
+- wrong: claim.toJson(): extendKong 1h
 - wrong: meldList.remove(meld) failed since meld differ in claim now! 0.1h
 
-- [ ] refactor: claim
+- [x] MeldList.jsonList 0.7h
+- [x] front: debug input
 
-rush 107 meld view: css
+- [ ] meld view: css
+
+- [ ] claim.toJson(): extendKong
+
+- [ ] refactor: !(.*)->isEmpty => $1->isNotEmpty
+- [ ] refactor: claim
 
 rush refactor: claim
 

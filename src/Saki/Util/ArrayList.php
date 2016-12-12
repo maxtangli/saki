@@ -383,6 +383,13 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
     /**
      * @return bool
      */
+    function isNotEmpty() {
+        return !empty($this->a);
+    }
+
+    /**
+     * @return bool
+     */
     function isUnique() {
         return count(array_unique($this->a)) == count($this->a);
     }

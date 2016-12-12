@@ -40,6 +40,11 @@ class MeldList extends ArrayList {
         return new static($melds);
     }
 
+    /**
+     * @param array $meldTypes
+     * @param bool|null $concealedFlag
+     * @return \Closure
+     */
     protected static function getPredicate(array $meldTypes, bool $concealedFlag = null) {
         return function (Meld $meld) use ($meldTypes, $concealedFlag) {
             return in_array($meld->getMeldType(), $meldTypes)
@@ -47,10 +52,28 @@ class MeldList extends ArrayList {
         };
     }
 
+    public $json; // temp solution to support display set toJson()
+
+    /**
+     * @param array|null $a
+     */
+    function __construct(array $a = null) {
+        parent::__construct($a);
+        $this->json = [];
+    }
+
+    function getCopy() {
+        $copy = parent::getCopy();
+        $copy->json = $this->json;
+        return $copy;
+    }
+
     /**
      * @return string[][]
      */
     function toJson() {
+        return $this->json;
+
         $meldToStringArray = function (Meld $meld) {
             return $meld->toJson();
         };

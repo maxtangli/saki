@@ -241,6 +241,10 @@ Saki.DemoView.prototype.constructor = Saki.DemoView;
         $('.command').click(function () {
             game.send(this.value);
         });
+
+        $('#debugButton').click(function () {
+            game.send($('#debugText').val());
+        });
     });
 
     Saki.debug('imported js executed.');

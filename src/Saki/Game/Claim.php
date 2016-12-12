@@ -94,6 +94,7 @@ class Claim implements Immutable {
             $a[$relationIndex] = '-' . $a[$relationIndex];
             return $a;
         } elseif ($isExtendKong) {
+            return $meld->toJson(); // todo
 //            // insert target tile before fromClaim's relation position
 //            $fromClaim = $this->getFromMeldOrNull()->getClaim();
 //            $relationIndex = $fromClaim->getRelationIndex() + 1;
@@ -283,11 +284,17 @@ class Claim implements Immutable {
             throw new \LogicException();
         }
 
-        $newMelded = $hand->getMelded()->getCopy()
-            ->remove($this->getFromMeldOrNull() ?? [])
-            ->insertLast($this->getToMeld());
+        $newMelded = $hand->getMelded()->getCopy();
+        $fromMeld = $this->getFromMeldOrNull();
+        if (isset($fromMeld)) {
+            $fromIndex = $newMelded->getIndex($fromMeld);
+            $newMelded->replaceAt($fromIndex, $this->getToMeld());
+            $newMelded->json[$fromIndex] = $this->toJson();
+        } else {
+            $newMelded->insertLast($this->getToMeld());
+            $newMelded->json[] = $this->toJson();
+        }
         $newHand = new Hand($newPublic, $newMelded, $newTarget);
-
         $area->setHand($newHand);
 
         if (!$hand->getTarget()->isOwner($this->getActor())) {
