@@ -189,10 +189,18 @@ body {
     position: absolute;
     left: 0px;
     top: 230px;
+    /* to align bottom */
+    box-sizing: border-box;
+    padding-top: 25px; /* height - tile.height */
 }
 
 .publicContainer, .targetContainer, .meldedContainer {
     display: inline-block;
+}
+
+.meldedContainer {
+    /* to align right */
+    float: right;
 }
 
 /*-- player --*/
@@ -235,6 +243,8 @@ body {
 }
 
 .melded {
+    /* to align top */
+    float: right;
 }
 
 .melded > .meld {
@@ -242,6 +252,7 @@ body {
 }
 
 .meld {
+
 }
 
 /*-- tile --*/
@@ -255,15 +266,27 @@ body {
 }
 
 .tile-wall {
+    /* 25/30 of .tile */
     width: 27.5px;
     height: 37.5px;
-    background-size: 27.5px 37.5px; /* 25/30 of .tile */
+    background-size: 27.5px 37.5px;
 }
 
 .tile-indicator {
+    /* 15/30 of .tile */
     width: 16.5px;
     height: 22.5px;
-    background-size: 16.5px 22.5px; /* 15/30 of .tile */
+    background-size: 16.5px 22.5px;
+}
+
+.tile- {
+    /* rotate */
+    width: 45px;
+    height: 33px;
+    background-size: 45px 33px;
+    /* to align bottom in a meld */
+    position: relative;
+    top: 12px;
 }
 
 .tile-1m {
@@ -421,4 +444,152 @@ body {
 .tile-X { /* empty tile */
     background-image: url("images/X.png");
     opacity: 0;
+}
+
+.tile--1m {
+    background-image: url("images/-1m.png");
+}
+
+.tile--2m {
+    background-image: url("images/-2m.png");
+}
+
+.tile--3m {
+    background-image: url("images/-3m.png");
+}
+
+.tile--4m {
+    background-image: url("images/-4m.png");
+}
+
+.tile--5m {
+    background-image: url("images/-5m.png");
+}
+
+.tile--0m {
+    background-image: url("images/-0m.png");
+}
+
+.tile--6m {
+    background-image: url("images/-6m.png");
+}
+
+.tile--7m {
+    background-image: url("images/-7m.png");
+}
+
+.tile--8m {
+    background-image: url("images/-8m.png");
+}
+
+.tile--9m {
+    background-image: url("images/-9m.png");
+}
+
+.tile--1p {
+    background-image: url("images/-1p.png");
+}
+
+.tile--2p {
+    background-image: url("images/-2p.png");
+}
+
+.tile--3p {
+    background-image: url("images/-3p.png");
+}
+
+.tile--4p {
+    background-image: url("images/-4p.png");
+}
+
+.tile--5p {
+    background-image: url("images/-5p.png");
+}
+
+.tile--0p {
+    background-image: url("images/-0p.png");
+}
+
+.tile--6p {
+    background-image: url("images/-6p.png");
+}
+
+.tile--7p {
+    background-image: url("images/-7p.png");
+}
+
+.tile--8p {
+    background-image: url("images/-8p.png");
+}
+
+.tile--9p {
+    background-image: url("images/-9p.png");
+}
+
+.tile--1s {
+    background-image: url("images/-1s.png");
+}
+
+.tile--2s {
+    background-image: url("images/-2s.png");
+}
+
+.tile--3s {
+    background-image: url("images/-3s.png");
+}
+
+.tile--4s {
+    background-image: url("images/-4s.png");
+}
+
+.tile--5s {
+    background-image: url("images/-5s.png");
+}
+
+.tile--0s {
+    background-image: url("images/-0s.png");
+}
+
+.tile--6s {
+    background-image: url("images/-6s.png");
+}
+
+.tile--7s {
+    background-image: url("images/-7s.png");
+}
+
+.tile--8s {
+    background-image: url("images/-8s.png");
+}
+
+.tile--9s {
+    background-image: url("images/-9s.png");
+}
+
+.tile--E {
+    background-image: url("images/-E.png");
+}
+
+.tile--S {
+    background-image: url("images/-S.png");
+}
+
+.tile--W {
+    background-image: url("images/-W.png");
+}
+
+.tile--N {
+    background-image: url("images/-N.png");
+}
+
+.tile--C {
+    background-image: url("images/-C.png");
+}
+
+.tile--P {
+    background-image: url("images/-P.png");
+}
+
+.tile--F {
+    background-image: url("images/-F.png");
 }

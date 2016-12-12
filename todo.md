@@ -1200,7 +1200,15 @@ rush 106 meld view: json
 - [x] MeldList.jsonList 0.7h
 - [x] front: debug input
 
-- [ ] meld view: css
+rush 107 meld view: css
+
+- [x] css: tile- 0.4h
+- [x] css: meld tile- align bottom 0.2h
+- [x] css: handContainer contents align bottom 0.3h
+- [x] css: meldContainer align right
+- test: chow/pung/kong, concealedKong
+
+rush meld view: extendKong
 
 - [ ] claim.toJson(): extendKong
 

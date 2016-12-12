@@ -203,7 +203,7 @@ Saki.DemoView.prototype = {
     },
     melded: function (meldedData) {
         return $('<span class="melded"></span>')
-            .append(meldedData.map($.proxy(this.meld, this)));
+            .append(meldedData.reverse().map($.proxy(this.meld, this)));
     },
     meld: function (meldData) {
         return $('<span class="meld"></span>')
@@ -222,8 +222,10 @@ Saki.DemoView.prototype = {
             });
     },
     tile: function (tileData) {
+        var cls = 'tile tile-' + tileData;
+        if (tileData[0] == '-') cls = cls + ' tile-';
         return $('<span></span>')
-            .attr('class', 'tile tile-' + tileData)
+            .attr('class', cls)
             .html(tileData);
     },
 };
