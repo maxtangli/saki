@@ -7,11 +7,22 @@ use Saki\Game\Tile\Tile;
  * @package Saki\Game
  */
 class Riichi extends Open {
+    //region override Open
+    function __construct(Area $area, Tile $openTile) {
+        parent::__construct($area, $openTile, true);
+    }
+
+    function valid() {
+        return parent::valid()
+            && $this->validExternal()
+            && $this->validWaiting(); // slowest logic last
+    }
+
     /**
-     * @param Area $area
      * @return bool
      */
-    static function validExternal(Area $area) {
+    function validExternal() {
+        $area = $this->getArea();
         return $area->getHand()->isConcealed()
             && !$area->getRiichiStatus()->isRiichi()
             && $area->getPoint() >= 1000
@@ -19,10 +30,10 @@ class Riichi extends Open {
     }
 
     /**
-     * @param Area $area
      * @return bool
      */
-    function validWaiting(Area $area) {
+    function validWaiting() {
+        $area = $this->getArea();
         $waitingAnalyzer = $area->getRound()->getRule()
             ->getWinAnalyzer()->getWaitingAnalyzer();
         $hand = $area->getHand();
@@ -30,20 +41,10 @@ class Riichi extends Open {
         return $waitingAnalyzer->isWaitingAfterDiscard($private, $melded, $tile);
     }
 
-    //region override Open
-    function __construct(SeatWind $actor, Tile $openTile) {
-        parent::__construct($actor, $openTile, true);
-    }
+    function apply() {
+        parent::apply();
 
-    function valid(Area $area) {
-        return parent::valid($area)
-            && static::validExternal($area)
-            && $this->validWaiting($area); // slowest logic last
-    }
-
-    function apply(Area $area) {
-        parent::apply($area);
-
+        $area = $this->getArea();
         $round = $area->getRound();
         $riichiStatus = new RiichiStatus($round->getTurn());
         $round->getRiichiHolder()

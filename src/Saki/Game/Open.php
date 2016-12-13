@@ -8,18 +8,18 @@ use Saki\Util\Immutable;
  * @package Saki\Game
  */
 class Open implements Immutable {
-    private $actor;
+    private $area;
     private $openTile;
     private $isDiscard;
 
     /**
-     * @param SeatWind $actor
+     * @param Area $area
      * @param Tile $openTile
      * @param bool $isDiscard
      */
-    function __construct(SeatWind $actor,
+    function __construct(Area $area,
                          Tile $openTile, bool $isDiscard) {
-        $this->actor = $actor;
+        $this->area = $area;
         $this->openTile = $openTile;
         $this->isDiscard = $isDiscard;
     }
@@ -28,7 +28,14 @@ class Open implements Immutable {
      * @return SeatWind
      */
     function getActor() {
-        return $this->actor;
+        return $this->getArea()->getSeatWind();
+    }
+
+    /**
+     * @return Area
+     */
+    function getArea() {
+        return $this->area;
     }
 
     /**
@@ -46,12 +53,12 @@ class Open implements Immutable {
     }
 
     /**
-     * @param Area $area
      * @return bool
      */
-    function valid(Area $area) {
+    function valid() {
         // valid SwapCalling
         // note: seems not good to place here
+        $area = $this->getArea();
         $round = $area->getRound();
         $swapCalling = $round->getRule()->getSwapCalling();
         $phaseState = $round->getPhaseState();
@@ -71,15 +78,13 @@ class Open implements Immutable {
         }
     }
 
-    /**
-     * @param Area $area
-     */
-    function apply(Area $area) {
-        if (!$this->valid($area)) {
+    function apply() {
+        if (!$this->valid()) {
             throw new \InvalidArgumentException();
         }
         $openTile = $this->getOpenTile();
 
+        $area = $this->getArea();
         $hand = $area->getHand();
         $newPublic = $hand->getPrivate()
             ->remove($openTile, Tile::getPrioritySelector()); // handle red

@@ -68,7 +68,7 @@ class ExtendKongCommand extends PrivateCommand {
      */
     protected function getClaim() {
         return Claim::createExtendKong(
-            $this->getActor(),
+            $this->getActorArea(),
             $this->getRound()->getTurn(),
             $this->getTile(),
             $this->getMeld()
@@ -77,7 +77,7 @@ class ExtendKongCommand extends PrivateCommand {
 
     //region PrivateCommand impl
     protected function executablePlayerImpl(Round $round, Area $actorArea) {
-        return $this->getClaim()->valid($actorArea);
+        return $this->getClaim()->valid();
     }
 
     protected function executePlayerImpl(Round $round, Area $actorArea) {
@@ -85,8 +85,8 @@ class ExtendKongCommand extends PrivateCommand {
         $tile = $this->getTile();
 
         // set target tile
-        $open = new Open($actor, $tile, false);
-        $open->apply($actorArea);
+        $open = new Open($actorArea, $tile, false);
+        $open->apply();
 
         // to RobbingPublicPhase
         $claim = $this->getClaim();

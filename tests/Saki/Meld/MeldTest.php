@@ -104,7 +104,9 @@ class MeldTest extends \SakiTestCase {
      * @return Claim
      */
     private function toPublicClaim(string $meld, string $tile, string $relation) {
+        $round = $this->getInitRound();
         $self = SeatWind::createEast();
+        $area = $round->getArea($self);
         $turn = Turn::createFirst();
         $toMeld = Meld::fromString($meld);
         $otherTarget = new Target(
@@ -113,7 +115,7 @@ class MeldTest extends \SakiTestCase {
             Relation::fromString($relation)->toOther($self)
         );
         $claim = Claim::createPublic(
-            $self,
+            $area,
             $turn,
             $toMeld->toArray(),
             $toMeld->getMeldType(),
@@ -170,10 +172,12 @@ class MeldTest extends \SakiTestCase {
      * @dataProvider provideConcealedKongToJson
      */
     function testConcealedKongToJson(array $expected, string $meldString) {
+        $round = $this->getInitRound();
         $self = SeatWind::createEast();
+        $area = $round->getArea($self);
         $turn = Turn::createFirst();
         $meld = Meld::fromString($meldString);
-        $claim = Claim::createConcealedKong($self, $turn, $meld->toArray(), $meld->getMeldType());
+        $claim = Claim::createConcealedKong($area, $turn, $meld->toArray(), $meld->getMeldType());
         $this->assertEquals($expected, $claim->toJson());
     }
 

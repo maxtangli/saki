@@ -1213,9 +1213,11 @@ rush meld view: extendKong
 - [x] refactor: rename !(.*)->isEmpty => $1->isNotEmpty 0.1h
 - [x] refactor: rename meldType => chow/pung/kong 0.1h
 
-- [ ] claim.toJson(): extendKong
+- [x] refactor: pull up claim.apply($area) into claim.$area 0.3h
+- [x] refactor: pull up open 0.3h
+- [ ] claim.toJson(): extendKong 0.2h
 
-- [ ] refactor: claim
+- [ ] refactor: claim 0.2h
 
 rush toward 100% rules!
 

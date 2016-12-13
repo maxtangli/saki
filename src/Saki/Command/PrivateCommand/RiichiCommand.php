@@ -38,16 +38,16 @@ class RiichiCommand extends PrivateCommand {
      * @return Riichi
      */
     protected function getRiichi() {
-        return new Riichi($this->getActor(), $this->getTile());
+        return new Riichi($this->getActorArea(), $this->getTile());
     }
 
     //region PrivateCommand impl
     protected function executablePlayerImpl(Round $round, Area $actorArea) {
-        return $this->getRiichi()->valid($actorArea);
+        return $this->getRiichi()->valid();
     }
 
     protected function executePlayerImpl(Round $round, Area $actorArea) {
-        $this->getRiichi()->apply($actorArea);
+        $this->getRiichi()->apply();
         $round->toNextPhase();
     }
     //endregion

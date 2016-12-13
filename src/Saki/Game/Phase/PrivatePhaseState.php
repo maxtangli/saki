@@ -85,7 +85,6 @@ class PrivatePhaseState extends PhaseState {
 
     function enter(Round $round) {
         $actor = $this->getActor();
-        $area = $round->getArea($actor);
         $round->toSeatWind($actor);
 
         if ($this->shouldDraw()) {
@@ -100,7 +99,7 @@ class PrivatePhaseState extends PhaseState {
             $target = $this->target ?? $round->getOpenHistory()->getLastOpen()->toTarget();
             $round->getTargetHolder()
                 ->setTarget($target);
-            $this->claim->apply($area);
+            $this->claim->apply();
         }
     }
 

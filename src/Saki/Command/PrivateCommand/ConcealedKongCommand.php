@@ -49,7 +49,7 @@ class ConcealedKongCommand extends PrivateCommand {
     protected function getClaim() {
         $tiles = $this->getTileList()->toArray();
         return Claim::createConcealedKong(
-            $this->getActor(),
+            $this->getActorArea(),
             $this->getRound()->getTurn(),
             $tiles,
             KongMeldType::create()
@@ -59,11 +59,11 @@ class ConcealedKongCommand extends PrivateCommand {
     //region PrivateCommand impl
     protected function executablePlayerImpl(Round $round, Area $actorArea) {
         $validCount = $this->getTileList()->count() == 4;
-        return $validCount && $this->getClaim()->valid($actorArea);
+        return $validCount && $this->getClaim()->valid();
     }
 
     protected function executePlayerImpl(Round $round, Area $actorArea) {
-        $this->getClaim()->apply($actorArea);
+        $this->getClaim()->apply();
         // stay in private phase
     }
     //endregion

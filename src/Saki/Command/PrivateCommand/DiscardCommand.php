@@ -38,16 +38,16 @@ class DiscardCommand extends PrivateCommand {
      * @return Open
      */
     protected function getOpen() {
-        return new Open($this->getActor(), $this->getTile(), true);
+        return new Open($this->getActorArea(), $this->getTile(), true);
     }
 
     //region PrivateCommand impl
     protected function executablePlayerImpl(Round $round, Area $actorArea) {
-        return $this->getOpen()->valid($actorArea);
+        return $this->getOpen()->valid();
     }
 
     protected function executePlayerImpl(Round $round, Area $actorArea) {
-        $this->getOpen()->apply($actorArea);
+        $this->getOpen()->apply();
         $round->toNextPhase();
     }
     //endregion

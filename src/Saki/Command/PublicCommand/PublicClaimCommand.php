@@ -65,7 +65,7 @@ abstract class PublicClaimCommand extends PublicCommand {
      */
     function getClaim() {
         return Claim::createPublic(
-            $this->getActor(),
+            $this->getActorArea(),
             $this->getRound()->getTurn(),
             $this->getClaimTiles(),
             $this->getClaimMeldType(),
@@ -78,7 +78,7 @@ abstract class PublicClaimCommand extends PublicCommand {
         $validNextSeatWind = !$this->requirePublicNextActor() || $actorArea->isPublicNextActor();
         $validCount = (1 + $this->getTileList()->count())
             == $this->getClaimMeldType()->getTileCount();
-        return $validNextSeatWind && $validCount && $this->getClaim()->valid($actorArea);
+        return $validNextSeatWind && $validCount && $this->getClaim()->valid();
     }
 
     protected function executePlayerImpl(Round $round, Area $actorArea) {

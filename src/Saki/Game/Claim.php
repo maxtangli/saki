@@ -12,49 +12,49 @@ use Saki\Util\Utils;
  */
 class Claim implements Immutable {
     /**
-     * @param SeatWind $actor
+     * @param Area $area
      * @param Turn $turn
      * @param Tile[] $tiles
      * @param MeldType $meldType
      * @param Target $otherTarget
      * @return Claim
      */
-    static function createPublic(SeatWind $actor, Turn $turn, array $tiles, MeldType $meldType, Target $otherTarget) {
+    static function createPublic(Area $area, Turn $turn, array $tiles, MeldType $meldType, Target $otherTarget) {
         $toMeld = Meld::valid($tiles, $meldType)
             ? new Meld($tiles, $meldType)
             : null;
-        return new self($actor, $turn, $toMeld, null, $otherTarget);
+        return new self($area, $turn, $toMeld, null, $otherTarget);
     }
 
     /**
-     * @param SeatWind $actor
+     * @param Area $area
      * @param Turn $turn
      * @param Tile $targetTile
      * @param Meld $fromMeld
      * @return Claim
      */
-    static function createExtendKong(SeatWind $actor, Turn $turn, Tile $targetTile, Meld $fromMeld) {
+    static function createExtendKong(Area $area, Turn $turn, Tile $targetTile, Meld $fromMeld) {
         $toMeld = $fromMeld->canToTargetMeld($targetTile)
             ? $fromMeld->toTargetMeld($targetTile)
             : null;
-        return new self($actor, $turn, $toMeld, $fromMeld);
+        return new self($area, $turn, $toMeld, $fromMeld);
     }
 
     /**
-     * @param SeatWind $actor
+     * @param Area $area
      * @param Turn $turn
      * @param Tile[] $tiles
      * @param MeldType $meldType
      * @return Claim
      */
-    static function createConcealedKong(SeatWind $actor, Turn $turn, array $tiles, MeldType $meldType) {
+    static function createConcealedKong(Area $area, Turn $turn, array $tiles, MeldType $meldType) {
         $toMeld = Meld::valid($tiles, $meldType, true)
             ? new Meld($tiles, $meldType, true)
             : null;
-        return new self($actor, $turn, $toMeld);
+        return new self($area, $turn, $toMeld);
     }
 
-    private $actor;
+    private $area;
     private $turn;
     private $toMeld;
     private $fromMeld;
@@ -62,52 +62,39 @@ class Claim implements Immutable {
     private $fromRelation;
 
     /**
-     * @param SeatWind $actor
+     * @param Area $area
      * @param Turn $turn
      * @param Meld $toMeld
      * @param Meld|null $fromMeld
      * @param Target $otherTarget
      */
-    protected function __construct(SeatWind $actor, Turn $turn, Meld $toMeld = null,
+    protected function __construct(Area $area, Turn $turn, Meld $toMeld = null,
                                    Meld $fromMeld = null, Target $otherTarget = null) {
-        $this->actor = $actor;
+        $this->area = $area;
         $this->turn = $turn;
         $this->toMeld = $toMeld;
         $this->fromMeld = $fromMeld;
         $this->otherTile = isset($otherTarget) ? $otherTarget->getTile() : null;
-        $this->fromRelation = isset($otherTarget) ? $otherTarget->getRelation($actor) : Relation::createSelf();
+        $this->fromRelation = isset($otherTarget) ? $otherTarget->getRelation($area->getSeatWind()) : Relation::createSelf();
     }
 
     /**
      * @return array
      */
     function toJson() {
-        $meld = $this->getToMeld();
-        $l = $meld->toArrayList();
-        $isExtendKong = isset($this->fromMeld);
-        if ($meld->isChow() || $meld->isPung() || ($meld->isKong(false) && !$isExtendKong)) {
+        $l = $this->getToMeld()->toArrayList();
+        if ($this->isChowOrPungOrKong()) {
             // move target tile to relation position
             $relationIndex = $this->getRelationIndex();
-            $otherTileIndex = $meld->getIndex($this->otherTile, Tile::getPrioritySelector());
+            $otherTileIndex = $l->getIndex($this->otherTile, Tile::getPrioritySelector());
             $a = $l->move($otherTileIndex, $relationIndex)
                 ->toArray(Utils::getToStringCallback());
             $a[$relationIndex] = '-' . $a[$relationIndex];
             return $a;
-        } elseif ($isExtendKong) {
-            return $meld->toJson(); // todo
-//            // insert target tile before fromClaim's relation position
-//            $fromClaim = $this->getFromMeldOrNull()->getClaim();
-//            $relationIndex = $fromClaim->getRelationIndex() + 1;
-//            $a = $fromClaim->toJson();
-//
-//            $targetTile = $this->getToMeld()->toTileList()
-//                ->remove($this->getFromMeldOrNull()->toArray(), Tile::getPrioritySelector())
-//                ->getSingle();
-//            $targetTileJson = '-' . $targetTile->__toString();
-//
-//            array_splice($a, $relationIndex, 0, $targetTileJson);
-//            return $a;
-        } elseif ($meld->isKong(true)) {
+        } elseif ($this->isExtendKong()) {
+            // todo
+            return $this->getToMeld()->toJson();
+        } elseif ($this->isConcealedKong()) {
             // if contains 1 red, swap it to pos 2
             $isRed = function (Tile $tile) {
                 return $tile->isRedDora();
@@ -131,6 +118,49 @@ class Claim implements Immutable {
     }
 
     /**
+     * @return bool
+     */
+    function isChow() {
+        return $this->getToMeld()->isChow();
+    }
+
+    /**
+     * @return bool
+     */
+    function isPung() {
+        return $this->getToMeld()->isPung();
+    }
+
+    /**
+     * @return bool
+     */
+    function isKong() {
+        return $this->getToMeld()->isKong(false)
+            && !$this->isExtendKong();
+    }
+
+    /**
+     * @return bool
+     */
+    function isChowOrPungOrKong() {
+        return $this->isChow() || $this->isPung() || $this->isKong();
+    }
+
+    /**
+     * @return bool
+     */
+    function isExtendKong() {
+        return isset($this->fromMeld);
+    }
+
+    /**
+     * @return bool
+     */
+    function isConcealedKong() {
+        return $this->getToMeld()->isKong(true);
+    }
+
+    /**
      * @return int
      */
     function getRelationIndex() {
@@ -141,7 +171,14 @@ class Claim implements Immutable {
      * @return SeatWind
      */
     function getActor() {
-        return $this->actor;
+        return $this->getArea()->getSeatWind();
+    }
+
+    /**
+     * @return Area
+     */
+    function getArea() {
+        return $this->area;
     }
 
     /**
@@ -205,45 +242,43 @@ class Claim implements Immutable {
     }
 
     /**
-     * @param Area $area
      * @return bool
      */
-    function valid(Area $area) {
+    function valid() {
         // params ok
         if (!$this->validToMeld()) {
             return false;
         }
 
+        $area = $this->getArea();
         $toMeld = $this->getToMeld();
         $round = $area->getRound();
         $hand = $area->getHand();
 
         // phaseState allow claim
-        $allowClaim = $round->getPhaseState()->allowClaim();
-        if (!$allowClaim) {
+        if (!$round->getPhaseState()->allowClaim()) {
             return false;
         }
 
         // chow, pong, kong commands require not riichi
-        if ($area->getRiichiStatus()->isRiichi()) {
-            // todo bug: should only apply for chow, pong, kong
+        if ($this->isChowOrPungOrKong() &&
+            $area->getRiichiStatus()->isRiichi()
+        ) {
             return false;
         }
 
         // chow commands require SwapCalling.executable
-        // todo note: seems not good to place here
         $swapCalling = $round->getRule()->getSwapCalling();
-        $validSwapCalling = !$toMeld->isChow()
-            || $swapCalling->allowChow($hand->getPublic(), $hand->getTarget()->getTile(), $toMeld);
-        if (!$validSwapCalling) {
+        if ($this->isChow()
+            && !$swapCalling->allowChow($hand->getPublic(), $hand->getTarget()->getTile(), $toMeld)
+        ) {
             return false;
         }
 
         // kong commands require ableDrawReplacement
-        // todo note: seems not good to place here
-        $validDrawReplacementAble = !$toMeld->isKong()
-            || $round->getWall()->getReplaceWall()->ableOutNext();
-        if (!$validDrawReplacementAble) {
+        if ($this->isKong()
+            && !$round->getWall()->getReplaceWall()->ableOutNext()
+        ) {
             return false;
         }
 
@@ -257,14 +292,12 @@ class Claim implements Immutable {
         return true;
     }
 
-    /**
-     * @param Area $area
-     */
-    function apply(Area $area) {
-        if (!$this->valid($area)) {
+    function apply() {
+        if (!$this->valid()) {
             throw new \InvalidArgumentException();
         }
 
+        $area = $this->getArea();
         $round = $area->getRound();
         $hand = $area->getHand();
 
