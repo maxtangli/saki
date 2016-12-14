@@ -15,21 +15,6 @@
 </header>
 <main>
     <section>
-        <h2>説明</h2>
-        完成度<br/>
-        ・Rule 95%, UI 10%, network 10%。<br/>
-        プレイの流れ<br/>
-        ・ページを開く時、自動的にWebSocketサーバーに接続し、ゲーム状態のJSONが返る。<br/>
-        ・実行できる命令はボタンより表示されている（「打つ」は牌のクリックより）。<br/>
-        ・ボタンをクリックすると、命令がサーバーに送信され、ゲーム状態が更新される。<br/>
-        マルチプレイ<br/>
-        ・ページを開く時、座席（東南西北）が分配される。<br/>
-        ・<a href="." target="_blank">複数のページを開いたら</a>、マルチプレイを体験できる。<br/>
-        ・空いている座席はAIが担当され、現状はランダム打ちとなる。<br/>
-        コード<br/>
-        ・<a href="https://github.com/maxtangli/saki" target="_blank">https://github.com/maxtangli/saki</a><br/>
-    </section>
-    <section>
         <h2>Game</h2>
         <section class="areas">
             <section class="result">
@@ -108,6 +93,7 @@
     </section>
     <section>
         <h2>Debug</h2>
+        Code:<a href="https://github.com/maxtangli/saki" target="_blank">https://github.com/maxtangli/saki</a><br/>
         Open <a href="." target="_blank">a new tab</a> to simulate multi-player.<br/>
         debug<input id="debugText" type="text" size="57" value="mockHand E 1111m"/><input id="debugButton" type="button" value="send"/><br/>
         <input class="command" type="button" value="init"/>

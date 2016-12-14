@@ -62,8 +62,11 @@ class MeldList extends ArrayList {
         $this->json = [];
     }
 
+    /**
+     * @return static
+     */
     function getCopy() {
-        $copy = parent::getCopy();
+        $copy = new static($this->toArray());
         $copy->json = $this->json;
         return $copy;
     }
@@ -73,11 +76,11 @@ class MeldList extends ArrayList {
      */
     function toJson() {
         return $this->json;
-
-        $meldToStringArray = function (Meld $meld) {
-            return $meld->toJson();
-        };
-        return $this->toArray($meldToStringArray);
+//
+//        $meldToStringArray = function (Meld $meld) {
+//            return $meld->toJson();
+//        };
+//        return $this->toArray($meldToStringArray);
     }
 
     /**

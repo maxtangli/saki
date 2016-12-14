@@ -82,6 +82,7 @@ class Claim implements Immutable {
      * @return array
      */
     function toJson() {
+        // todo split into sub classes
         $l = $this->getToMeld()->toArrayList();
         if ($this->isChowOrPungOrKong()) {
             // move target tile to relation position
@@ -92,8 +93,26 @@ class Claim implements Immutable {
             $a[$relationIndex] = '-' . $a[$relationIndex];
             return $a;
         } elseif ($this->isExtendKong()) {
-            // todo
-            return $this->getToMeld()->toJson();
+            $melded = $this->getArea()->getHand()->getMelded();
+            $fromMeldIndex = $melded->getIndex($this->getFromMeldOrNull());
+            $json = $melded->json[$fromMeldIndex];
+
+            foreach ($json as $relationIndex => $tileJson) {
+                if ($tileJson[0] == '-') {
+                    break;
+                }
+            }
+            if (!isset($relationIndex)) {
+                throw new \LogicException();
+            }
+            $newIndex = $relationIndex + 1;
+
+            $targetTile = $this->getToMeld()->toTileList()
+                ->remove($this->getFromMeldOrNull()->toArray(), Tile::getPrioritySelector())
+                ->getSingle();
+            $targetTileJson = '-' . $targetTile;
+            array_splice($json, $newIndex, 0, $targetTileJson);
+            return $json;
         } elseif ($this->isConcealedKong()) {
             // if contains 1 red, swap it to pos 2
             $isRed = function (Tile $tile) {

@@ -1,6 +1,7 @@
 <?php
 
 use Saki\Game\Claim;
+use Saki\Game\Hand;
 use Saki\Game\Meld\Meld;
 use Saki\Game\Meld\PairMeldType;
 use Saki\Game\Meld\KongMeldType;
@@ -149,24 +150,37 @@ class MeldTest extends \SakiTestCase {
         ];
     }
 
-//    /**
-//     * @dataProvider provideExtendKongToJson
-//     */
-//    function testExtendKongToJson(array $expected, string $meld, string $tile, string $relation, string $extendKongTile) {
-//        $self = SeatWind::createEast();
-//        $turn = Turn::createFirst();
-//        $fromMeld = $this->toPublicClaim($meld, $tile, $relation)->getToMeld();
-//        $claim = Claim::createExtendKong($self, $turn, Tile::fromString($extendKongTile), $fromMeld);
-//        $this->assertEquals($expected, $claim->toJson());
-//    }
-//
-//    function provideExtendKongToJson() {
-//        return [
-//            [['-0s', '-5s', '5s', '5s'], '550s', '0s', 'prev', '5s'],
-//            [['5s', '-0s', '-5s', '5s'], '550s', '0s', 'towards', '5s'],
-//            [['5s', '5s', '-0s', '-5s',], '550s', '0s', 'next', '5s'],
-//        ];
-//    }
+    /**
+     * @dataProvider provideExtendKongToJson
+     */
+    function testExtendKongToJson(array $expected, string $meld, string $tile, string $relation, string $extendKongTile) {
+        $publicClaim = $this->toPublicClaim($meld, $tile, $relation);
+        $round = $this->getCurrentRound();
+        $self = SeatWind::createEast();
+        $area = $round->getArea($self);
+        $turn = Turn::createFirst();
+        $fromMeld = $publicClaim->getToMeld();
+
+        // temp solution
+        $oldHand = $area->getHand();
+        $newMelded = $oldHand->getMelded()
+            ->insertLast($fromMeld);
+        $newMelded->json[] = $publicClaim->toJson();
+        $newPublic = $oldHand->getPublic()->removeFirst($fromMeld->count());
+        $newHand = new Hand($newPublic, $newMelded, $oldHand->getTarget());
+        $area->setHand($newHand);
+
+        $claim = Claim::createExtendKong($area, $turn, Tile::fromString($extendKongTile), $fromMeld);
+        $this->assertEquals($expected, $claim->toJson());
+    }
+
+    function provideExtendKongToJson() {
+        return [
+            [['-0s', '-5s', '5s', '5s'], '550s', '0s', 'prev', '5s'],
+            [['5s', '-0s', '-5s', '5s'], '550s', '0s', 'towards', '5s'],
+            [['5s', '5s', '-0s', '-5s',], '550s', '0s', 'next', '5s'],
+        ];
+    }
 
     /**
      * @dataProvider provideConcealedKongToJson
