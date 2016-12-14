@@ -1218,7 +1218,7 @@ rush 108 meld view: extendKong
 - [x] refactor: claim.apply() 0.2h
 
 - [x] claim.toJson(): extendKong 0.7h
-- [ ] css: extendKong
+- [x] css: extendKong 0.2h
 
 - [ ] refactor: split claim
 

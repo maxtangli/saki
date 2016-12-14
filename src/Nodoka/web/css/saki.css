@@ -252,7 +252,7 @@ body {
 }
 
 .meld {
-
+    position: relative;
 }
 
 /*-- tile --*/
@@ -286,7 +286,25 @@ body {
     background-size: 45px 33px;
     /* to align bottom in a meld */
     position: relative;
-    top: 12px;
+    top: 12px; /* width - height */
+}
+
+.tile-extendKong-1 {
+    position: absolute;
+    top: -21px; /* - 2 * .tile-.height - .tile-.width */
+    left: 0; /* (1 - 1) * .tile-.height */
+}
+
+.tile-extendKong-2 {
+    position: absolute;
+    top: -21px; /* - 2 * .tile-.height - .tile-.width */
+    left: 33px; /* (2 - 1) * .tile-.height */
+}
+
+.tile-extendKong-3 {
+    position: absolute;
+    top: -21px; /* - 2 * .tile-.height - .tile-.width */
+    left: 66px; /* (3 - 1) * .tile-.height */
 }
 
 .tile-1m {

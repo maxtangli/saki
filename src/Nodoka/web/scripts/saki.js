@@ -206,8 +206,21 @@ Saki.DemoView.prototype = {
             .append(meldedData.reverse().map($.proxy(this.meld, this)));
     },
     meld: function (meldData) {
-        return $('<span class="meld"></span>')
-            .append(meldData.map($.proxy(this.tile, this)));
+        var meld = $('<span class="meld"></span>');
+        var isExtendKong = false;
+        for (var i = 0; i < meldData.length; ++i) {
+            var tileData = meldData[i];
+            var tile = this.tile(tileData);
+            if (isExtendKong && tileData[0] == '-') {
+                tile.addClass('tile-extendKong-' + i);
+            }
+            meld.append(tile);
+
+            if (tileData[0] == '-') {
+                isExtendKong = true;
+            }
+        }
+        return meld;
     },
     /*-- tile --*/
     tileDiscard: function (tileData) {
