@@ -2,9 +2,11 @@
 
 namespace Saki\Game;
 
+use Saki\Command\CommandProvided;
 use Saki\Game\Meld\MeldList;
 use Saki\Game\Tile\Tile;
 use Saki\Game\Tile\TileList;
+use Saki\Util\ArrayList;
 use Saki\Util\Immutable;
 
 /**
@@ -44,6 +46,44 @@ class Hand implements Immutable {
      */
     function __toString() {
         return sprintf('target[%s],public[%s],melded[%s]', $this->getTarget(), $this->getPublic(), $this->getMelded());
+    }
+
+    /**
+     * @param SeatWind $actor
+     * @param ArrayList $commandList
+     * @param bool $mayViewHand
+     * @return array
+     */
+    function toJson(SeatWind $actor, ArrayList $commandList, bool $mayViewHand) {
+        $melded = $this->getMelded()->toJson();
+        if ($mayViewHand) {
+            $toTileData = function (Tile $tile) use ($commandList, $actor) {
+                $discardCommand = "discard $actor $tile";
+                $command = $commandList->valueExist($discardCommand)
+                    ? $discardCommand
+                    : null;
+                return [
+                    'tile' => $tile->__toString(),
+                    'command' => $command,
+                ];
+            };
+            $public = $this->getPublic()
+                ->orderByTileID()
+                ->toArray($toTileData);
+            $target = $this->getTarget()->existAndIsCreator($actor)
+                ? $toTileData($this->getTarget()->getTile())
+                : ['tile' => 'X', 'command' => null];
+        } else {
+            $public = array_fill(0, $this->getPublic()->count(), ['tile' => 'O', 'command' => null]);
+            $target = $this->getTarget()->existAndIsCreator($actor)
+                ? ['tile' => 'O', 'command' => null]
+                : ['tile' => 'X', 'command' => null];
+        }
+        return [
+            'public' => $public,
+            'melded' => $melded,
+            'target' => $target,
+        ];
     }
 
     /**

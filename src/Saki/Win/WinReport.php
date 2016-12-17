@@ -2,6 +2,7 @@
 namespace Saki\Win;
 
 use Saki\Game\SeatWind;
+use Saki\Util\Utils;
 use Saki\Win\Yaku\YakuItemList;
 
 /**
@@ -19,5 +20,18 @@ class WinReport extends WinSubReport {
             new YakuItemList(),
             0
         );
+    }
+
+    /**
+     * @return array
+     */
+    function toJson() {
+        $a = [
+            'actor' => $this->getActor()->__toString(),
+            'fan' => $this->getFan(),
+            'fu' => $this->getFu(),
+            'yakuItems' => $this->getYakuItemList()->toArray(Utils::getToStringCallback()),
+        ];
+        return $a;
     }
 }

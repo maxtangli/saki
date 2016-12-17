@@ -3,7 +3,7 @@ namespace Saki\Play;
 
 use Saki\Game\Area;
 use Saki\Game\Round;
-use Saki\Game\Tile\Tile;
+use Saki\Util\ArrayList;
 use Saki\Util\Utils;
 use Saki\Win\WinReport;
 
@@ -81,6 +81,38 @@ class RoundSerializer {
     }
 
     /**
+     * @param Area $area
+     * @return array
+     */
+    function toAreaJson(Area $area) {
+        $role = $this->getRole();
+        $actor = $area->getSeatWind();
+        if ($role->mayExecute($actor)) {
+            $commandProvider = $area->getRound()->getProcessor()->getProvider();
+            $commandList = $commandProvider->provideAll()
+                ->getActorProvided($actor)
+                ->select(Utils::getToStringCallback());
+        } else {
+            $commandList = new ArrayList();
+        }
+
+        $handJson = $area->getHand()->toJson($actor, $commandList, $role->mayViewHand($actor));
+        $a = [
+            'relation' => $role->getRelation($actor)->__toString(),
+            'actor' => $actor->__toString(),
+            'point' => $area->getPoint(),
+            'isReach' => $area->getRiichiStatus()->isRiichi(),
+            'discard' => $area->getDiscard()->toArray(Utils::getToStringCallback()),
+            'wall' => $area->getActorWall()->toJson(),
+            'commands' => $commandList->toArray(Utils::getToStringCallback()),
+            'public' => $handJson['public'],
+            'melded' => $handJson['melded'],
+            'target' => $handJson['target'],
+        ];
+        return $a;
+    }
+
+    /**
      * @return array e.x. ['prev' => 'E', 'self' => 'S', 'next' => 'W', 'towards' => 'N']
      */
     function toRelationsJson() {
@@ -92,65 +124,6 @@ class RoundSerializer {
             return $area->getSeatWind()->__toString();
         };
         return $areaList->toMap($toRelation, $toSeatWind);
-    }
-
-    /**
-     * @param Area $area
-     * @return array
-     */
-    function toAreaJson(Area $area) {
-        $role = $this->getRole();
-        $actor = $area->getSeatWind();
-        $hand = $area->getHand();
-        $commandProvider = $this->getRound()->getProcessor()->getProvider();
-        $provided = $commandProvider->provideAll()
-            ->getActorProvided($area->getSeatWind())
-            ->select(Utils::getToStringCallback());
-
-        if ($role->mayExecute($actor)) {
-            $commands = $provided->toArray();
-        } else {
-            $commands = [];
-        }
-
-        $toTileData = function (Tile $tile) use ($provided, $actor) {
-            $discardCommand = "discard $actor $tile";
-            $command = $provided->valueExist($discardCommand)
-                ? $discardCommand
-                : null;
-            return [
-                'tile' => $tile->__toString(),
-                'command' => $command,
-            ];
-        };
-        if ($role->mayViewHand($actor) || $this->getRound()->getPhase()->isOver()) {
-            $public = $hand->getPublic()
-                ->orderByTileID()
-                ->toArray($toTileData);
-            $target = $hand->getTarget()->existAndIsCreator($actor)
-                ? $toTileData($hand->getTarget()->getTile())
-                : ['tile' => 'X', 'command' => null];
-        } else {
-            $public = array_fill(0, $hand->getPublic()->count(), ['tile' => 'O', 'command' => null]);
-            $target = $hand->getTarget()->existAndIsCreator($actor)
-                ? ['tile' => 'O', 'command' => null]
-                : ['tile' => 'X', 'command' => null];
-        }
-
-        $a = [
-            'relation' => $role->getRelation($actor)->__toString(),
-            'actor' => $actor->__toString(),
-            'point' => $area->getPoint(),
-            'isReach' => $area->getRiichiStatus()->isRiichi(),
-            'discard' => $area->getDiscard()->toArray(Utils::getToStringCallback()),
-            'wall' => $area->getActorWall()->toJson(),
-            'commands' => $commands,
-            'public' => $public,
-            'target' => $target,
-            'melded' => $hand->getMelded()->toJson(),
-        ];
-
-        return $a;
     }
 
     /**
@@ -174,25 +147,14 @@ class RoundSerializer {
             $a['lastChangeDetail'] = $round->getPointHolder()->getLastChangeDetail();
 
             if ($overPhaseResult->getResultType()->isWin()) {
+                $winReportToJson = function (WinReport $winReport) {
+                    return $winReport->toJson();
+                };
                 $a['winReports'] = $overPhaseResult->getWinReportList()
-                    ->toArray([$this, 'toWinReportJson']);
+                    ->toArray($winReportToJson);
             }
         }
 
-        return $a;
-    }
-
-    /**
-     * @param WinReport $winReport
-     * @return array
-     */
-    function toWinReportJson(WinReport $winReport) {
-        $a = [
-            'actor' => $winReport->getActor()->__toString(),
-            'fan' => $winReport->getFan(),
-            'fu' => $winReport->getFu(),
-            'yakuItems' => $winReport->getYakuItemList()->toArray(Utils::getToStringCallback()),
-        ];
         return $a;
     }
 }

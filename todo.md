@@ -1182,7 +1182,7 @@ rush 105 optimize provide 1.8h
 - [x] measure&analyze 0.8h // provide RiichiCommand => analyzePrivate
 - [x] optimize RiichiProvider: buffer analyzePrivate 0.4h
 
-rush 106 meld view: json
+rush 106 meld view: json 5.7h
 
 - [x] analyze 0.3h
 - [x] refactor: introduce Relation 0.3h
@@ -1200,7 +1200,7 @@ rush 106 meld view: json
 - [x] MeldList.jsonList 0.7h
 - [x] front: debug input
 
-rush 107 meld view: css
+rush 107 meld view: css 0.9h
 
 - [x] css: tile- 0.4h
 - [x] css: meld tile- align bottom 0.2h
@@ -1208,7 +1208,7 @@ rush 107 meld view: css
 - [x] css: meldContainer align right
 - test: chow/pung/kong, concealedKong
 
-rush 108 meld view: extendKong
+rush 108 meld view: extendKong 1.9h
 
 - [x] refactor: rename !(.*)->isEmpty => $1->isNotEmpty 0.1h
 - [x] refactor: rename meldType => chow/pung/kong 0.1h
@@ -1220,11 +1220,15 @@ rush 108 meld view: extendKong
 - [x] claim.toJson(): extendKong 0.7h
 - [x] css: extendKong 0.2h
 
-- [ ] refactor: split claim
+rush 109 refactor
+
+- [x] hand.toJson() 0.2h
+- [x] area.toJson() 0.2h
+- [x] result.toJson() 0.1h
 
 rush toward 100% rules!
 
-- [ ] refactor: toJson()
+
 - [ ] game over rule confirm & tests
 - [ ] multiple ron
 - [ ] 流局満貫
