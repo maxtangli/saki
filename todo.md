@@ -1220,14 +1220,26 @@ rush 108 meld view: extendKong 1.9h
 - [x] claim.toJson(): extendKong 0.7h
 - [x] css: extendKong 0.2h
 
-rush 109 refactor
+rush 109 refactor: toJson 0.5h
 
 - [x] hand.toJson() 0.2h
 - [x] area.toJson() 0.2h
 - [x] result.toJson() 0.1h
 
-rush toward 100% rules!
+rush 110 refactor: PhaseState
 
+- [x] refactor: remove NullPhaseState 0.2h
+- [x] refactor: move Round.processLine into Command 0.1h
+
+- [x] refactor: PhaseState has $round 0.1h
+- [x] refactor: PhaseState remove needless $round 0.1h
+- [x] refactor: move isRoundOver/isGameOver into PhaseState 0.3h
+
+- [ ] refactor: simplify roll(),debugInit(),toNextPhase()
+
+rush view: gameOver
+rush discard: riichi flag and view
+rush toward 100% rules!
 
 - [ ] game over rule confirm & tests
 - [ ] multiple ron
@@ -1237,7 +1249,6 @@ rush toward 100% rules!
 rush refactor
 
 - [ ] introduce Validator 1.1h
-- [ ] refactor: toNextPhase design
 
 rush room
 

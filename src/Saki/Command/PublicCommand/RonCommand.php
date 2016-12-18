@@ -46,7 +46,7 @@ class RonCommand extends PublicCommand {
             [$winReport]
         ));
         $round->toNextPhase(
-            new OverPhaseState($result)
+            new OverPhaseState($round, $result)
         );
     }
     //endregion

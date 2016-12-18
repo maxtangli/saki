@@ -11,7 +11,7 @@ use Saki\Win\Result\ExhaustiveDrawResult;
 class ExhaustiveDraw extends Draw {
     //region Draw impl
     protected function isDrawImpl(Round $round) {
-        $nextState = $round->getPhaseState()->getNextState($round);
+        $nextState = $round->getPhaseState()->getNextState();
         $isExhaustiveDraw = $nextState->getPhase()->isPrivate()
             && $nextState->shouldDraw()
             && $round->getWall()->getDrawWall()->isEmpty();

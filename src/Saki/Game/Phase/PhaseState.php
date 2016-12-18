@@ -8,7 +8,22 @@ use Saki\Game\Round;
  * @package Saki\Game\Phase
  */
 abstract class PhaseState {
+    private $round;
     private $customNextState;
+
+    /**
+     * @param Round $round
+     */
+    function __construct(Round $round) {
+        $this->round = $round;
+    }
+
+    /**
+     * @return Round
+     */
+    function getRound() {
+        return $this->round;
+    }
 
     /**
      * @return PhaseState|null
@@ -25,11 +40,32 @@ abstract class PhaseState {
     }
 
     /**
-     * @param Round $round
      * @return PhaseState|PrivatePhaseState
+     * @internal param Round $round
      */
-    function getNextState(Round $round) {
-        return $this->getCustomNextState() ?? $this->getDefaultNextState($round);
+    function getNextState() {
+        return $this->getCustomNextState() ?? $this->getDefaultNextState();
+    }
+
+    /**
+     * @return bool
+     */
+    function isRoundOver() {
+        return $this->getPhase()->isOver();
+    }
+
+    /**
+     * @return bool
+     */
+    function isGameOver() {
+        return false;
+    }
+
+    /**
+     * @return bool
+     */
+    function canToNextRound() {
+        return $this->isRoundOver() && !$this->isGameOver();
     }
 
     //region subclass hooks
@@ -39,19 +75,20 @@ abstract class PhaseState {
     abstract function getPhase();
 
     /**
-     * @param Round $round
      * @return PhaseState
      */
-    abstract function getDefaultNextState(Round $round);
+    abstract function getDefaultNextState();
 
     /**
-     * @param Round $round
+     * @return
+     * @internal param Round $round
      */
-    abstract function enter(Round $round);
+    abstract function enter();
 
     /**
-     * @param Round $round
+     * @return
+     * @internal param Round $round
      */
-    abstract function leave(Round $round);
+    abstract function leave();
     //endregion
 }

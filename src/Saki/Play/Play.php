@@ -113,6 +113,6 @@ class Play {
     function tryExecute($userKey, string $commandLine) {
         // todo check role
 
-        $this->getRound()->processLine($commandLine);
+        $this->getRound()->getProcessor()->processLine($commandLine);
     }
 }

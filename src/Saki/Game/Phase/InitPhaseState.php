@@ -2,7 +2,6 @@
 namespace Saki\Game\Phase;
 
 use Saki\Game\Phase;
-use Saki\Game\Round;
 use Saki\Game\SeatWind;
 
 /**
@@ -14,17 +13,15 @@ class InitPhaseState extends PhaseState {
         return Phase::createInit();
     }
 
-    function getDefaultNextState(Round $round) {
-        $nextActor = SeatWind::createEast();
-        $shouldDrawTile = true;
-        return new PrivatePhaseState($nextActor, $shouldDrawTile);
+    function getDefaultNextState() {
+        return new PrivatePhaseState($this->getRound(), SeatWind::createEast(), true);
     }
 
-    function enter(Round $round) {
-        $round->deal();
+    function enter() {
+        // do nothing
     }
 
-    function leave(Round $round) {
+    function leave() {
         // do nothing
     }
     //endregion

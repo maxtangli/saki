@@ -83,7 +83,7 @@ abstract class PublicClaimCommand extends PublicCommand {
 
     protected function executePlayerImpl(Round $round, Area $actorArea) {
         $round->toNextPhase(
-            new PrivatePhaseState($this->getActor(), false, $this->getClaim())
+            new PrivatePhaseState($round, $this->getActor(), false, $this->getClaim())
         );
     }
     //endregion

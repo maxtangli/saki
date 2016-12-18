@@ -170,14 +170,14 @@ class PlayServer implements MessageComponentInterface {
                     $randomDiscard = $commandProvided
                         ->getActorProvided($currentActor, DiscardCommand::class)
                         ->getRandom();
-                    $round->processLine($randomDiscard->__toString());
+                    $round->getProcessor()->processLine($randomDiscard->__toString());
                     continue;
                 }
             } elseif ($round->getPhase()->isPublic()) {
                 $publicParticipantList = $play->getParticipantList($currentActor, false, true);
                 if ($publicParticipantList->all($isAI)) {
                     // if public actors are all AI, execute passAll
-                    $round->processLine('passAll');
+                    $round->getProcessor()->processLine('passAll');
                     continue;
                 } else {
                     // for all public actors where actor is AI or commands=[pass], execute pass
@@ -194,7 +194,7 @@ class PlayServer implements MessageComponentInterface {
                         $executePass = function (Participant $participant) use ($round) {
                             $actorString = $participant->getRole()->getViewer()->__toString();
                             $commandLine = "pass $actorString";
-                            $round->processLine($commandLine);
+                            $round->getProcessor()->processLine($commandLine);
                         };
                         $list->walk($executePass);
                         continue;

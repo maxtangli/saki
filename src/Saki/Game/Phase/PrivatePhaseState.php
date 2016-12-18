@@ -19,15 +19,17 @@ class PrivatePhaseState extends PhaseState {
     private $allowClaim;
 
     /**
+     * @param Round $round
      * @param SeatWind $actor
      * @param bool $shouldDraw
      * @param Claim|null $claim
      * @param Target|null $target
      */
-    function __construct(SeatWind $actor, bool $shouldDraw, Claim $claim = null, Target $target = null) {
+    function __construct(Round $round, SeatWind $actor, bool $shouldDraw, Claim $claim = null, Target $target = null) {
         if ($shouldDraw && $claim) {
             throw new \InvalidArgumentException();
         }
+        parent::__construct($round);
 
         $this->actor = $actor;
         $this->shouldDraw = $shouldDraw;
@@ -56,7 +58,7 @@ class PrivatePhaseState extends PhaseState {
     function hasClaim() {
         return $this->claim !== null;
     }
-    
+
     /**
      * @return Claim
      */
@@ -66,7 +68,7 @@ class PrivatePhaseState extends PhaseState {
         }
         return $this->claim;
     }
-    
+
     /**
      * @return boolean
      */
@@ -79,11 +81,12 @@ class PrivatePhaseState extends PhaseState {
         return Phase::createPrivate();
     }
 
-    function getDefaultNextState(Round $round) {
-        return PublicPhaseState::create();
+    function getDefaultNextState() {
+        return PublicPhaseState::create($this->getRound());
     }
 
-    function enter(Round $round) {
+    function enter() {
+        $round = $this->getRound();
         $actor = $this->getActor();
         $round->toSeatWind($actor);
 
@@ -103,9 +106,9 @@ class PrivatePhaseState extends PhaseState {
         }
     }
 
-    function leave(Round $round) {
-        if (!$this->getNextState($round)->getPhase()->isOver()) {
-            $round->getTargetHolder()
+    function leave() {
+        if (!$this->getNextState()->getPhase()->isOver()) {
+            $this->getRound()->getTargetHolder()
                 ->setTarget(Target::createNull());
         }
     }

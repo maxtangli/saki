@@ -15,23 +15,28 @@ use Saki\Game\Target;
  */
 class PublicPhaseState extends PhaseState {
     /**
+     * @param Round $round
      * @param SeatWind $actor
      * @param Claim $claim
      * @param Target $target
      * @return PublicPhaseState
      */
-    static function createRobbing(SeatWind $actor, Claim $claim, Target $target) {
+    static function createRobbing(Round $round, SeatWind $actor, Claim $claim, Target $target) {
         list($allowClaim, $isRobbing) = [false, true];
-        $phase = new self($allowClaim, $isRobbing);
+        $phase = new self($round, $allowClaim, $isRobbing);
         $phase->setCustomNextState(
-            new PrivatePhaseState($actor, false, $claim, $target)
+            new PrivatePhaseState($round, $actor, false, $claim, $target)
         );
         return $phase;
     }
 
-    static function create() {
+    /**
+     * @param Round $round
+     * @return PublicPhaseState
+     */
+    static function create(Round $round) {
         list($allowClaim, $isRobbing) = [true, false];
-        return new self($allowClaim, $isRobbing);
+        return new self($round, $allowClaim, $isRobbing);
     }
 
     private $decider;
@@ -39,20 +44,22 @@ class PublicPhaseState extends PhaseState {
     private $isRobbing;
 
     /**
+     * @param Round $round
      * @param bool $allowClaim
      * @param bool $isRobbing
      */
-    private function __construct(bool $allowClaim, bool $isRobbing) {
+    function __construct(Round $round, bool $allowClaim, bool $isRobbing) {
+        parent::__construct($round);
         $this->decider = null;
         $this->allowClaim = $allowClaim;
         $this->isRobbing = $isRobbing;
     }
 
     /**
-     * @param Round $round
      * @return CommandDecider
      */
-    function getCommandDecider(Round $round) {
+    function getCommandDecider() {
+        $round = $this->getRound();
         if (is_null($this->decider)) {
             $this->decider = $round->enableDecider
                 ? new BufferCommandDecider($round->getRule()->getPlayerType(), $round->getProcessor()->getParser())
@@ -76,15 +83,15 @@ class PublicPhaseState extends PhaseState {
     }
 
     /**
-     * @param Round $round
      * @return bool
      */
-    protected function handleDraw(Round $round) {
+    protected function handleDraw() {
+        $round = $this->getRound();
         $drawAnalyzer = $round->getRule()->getDrawAnalyzer();
         $drawOrFalse = $drawAnalyzer->analyzeDrawOrFalse($round);
         if ($drawOrFalse !== false) {
             $drawResult = $drawOrFalse->getResult($round);
-            $this->setCustomNextState(new OverPhaseState($drawResult));
+            $this->setCustomNextState(new OverPhaseState($round, $drawResult));
             return true;
         } else {
             // do nothing
@@ -97,13 +104,16 @@ class PublicPhaseState extends PhaseState {
         return Phase::createPublic();
     }
 
-    function getDefaultNextState(Round $round) {
+    function getDefaultNextState() {
+        $round = $this->getRound();
         $nextActor = $round->getTurn()->getSeatWind()->toNext();
         $shouldDrawTile = true;
-        return new PrivatePhaseState($nextActor, $shouldDrawTile);
+        return new PrivatePhaseState($round, $nextActor, $shouldDrawTile);
     }
 
-    function enter(Round $round) {
+    function enter() {
+        $round = $this->getRound();
+
         // set target
         $target = $round->getOpenHistory()->getLastOpen()->toTarget();
         $round->getTargetHolder()->setTarget($target);
@@ -114,10 +124,12 @@ class PublicPhaseState extends PhaseState {
         }
     }
 
-    function leave(Round $round) {
-        $this->handleDraw($round);
+    function leave() {
+        $round = $this->getRound();
 
-        if (!$this->getNextState($round)->getPhase()->isOver()) {
+        $this->handleDraw();
+
+        if (!$this->getNextState()->getPhase()->isOver()) {
             $round->getTargetHolder()
                 ->setTarget(Target::createNull());
         }

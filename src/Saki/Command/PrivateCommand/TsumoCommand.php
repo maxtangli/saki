@@ -47,7 +47,7 @@ class TsumoCommand extends PrivateCommand {
             $winReport
         ));
         $round->toNextPhase(
-            new OverPhaseState($result)
+            new OverPhaseState($round, $result)
         );
     }
     //endregion

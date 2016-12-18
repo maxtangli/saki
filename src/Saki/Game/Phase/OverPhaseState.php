@@ -14,9 +14,11 @@ class OverPhaseState extends PhaseState {
     private $result;
 
     /**
+     * @param Round $round
      * @param Result $result
      */
-    function __construct(Result $result) {
+    function __construct(Round $round, Result $result) {
+        parent::__construct($round);
         $this->result = $result;
     }
 
@@ -27,11 +29,40 @@ class OverPhaseState extends PhaseState {
         return $this->result;
     }
 
+    function toNextRound() {
+        if (!$this->canToNextRound()) {
+            throw new \LogicException(
+                'Failed to call toNextRound().'
+            );
+        }
+
+        $round = $this->getRound();
+        // roll round
+        $result = $this->getResult();
+        $keepDealer = $result->isKeepDealer();
+        $isWin = $result->getResultType()->isWin();
+        $round->roll($keepDealer, $isWin);
+    }
+
     /**
-     * @param Round $round
+     * @return PointList
+     */
+    function getFinalScore() {
+        if (!$this->isGameOver()) {
+            throw new \InvalidArgumentException('Game is not over.');
+        }
+        $round = $this->getRound();
+        $scoreStrategy = $round->getRule()->getScoreStrategy();
+        $raw = $round->getPointHolder()->getPointList();
+        return $scoreStrategy->rawToFinal($raw);
+    }
+
+    //region PhaseState impl
+    /**
      * @return bool
      */
-    function isGameOver(Round $round) {
+    function isGameOver() {
+        $round = $this->getRound();
         $pointList = $round->getPointHolder()->getPointList();
         $prevailingCurrent = $round->getPrevailing();
 
@@ -62,36 +93,23 @@ class OverPhaseState extends PhaseState {
         return !($result->isKeepDealer()) || $isDealerTop;
     }
 
-    /**
-     * @param Round $round
-     * @return PointList
-     */
-    function getFinalScore(Round $round) {
-        if (!$this->isGameOver($round)) {
-            throw new \InvalidArgumentException('Game is not over.');
-        }
-
-        $scoreStrategy = $round->getRule()->getScoreStrategy();
-        $raw = $round->getPointHolder()->getPointList();
-        return $scoreStrategy->rawToFinal($raw);
-    }
-
-    //region PhaseState impl
     function getPhase() {
         return Phase::createOver();
     }
 
-    function getDefaultNextState(Round $round) {
-        throw new \LogicException('No nextState exists in OverPhaseState.');
+    function getDefaultNextState() {
+        return new InitPhaseState($this->getRound());
     }
 
-    function enter(Round $round) {
+    function enter() {
         // modify points
         $pointChangeMap = $this->getResult()->getPointChangeMap();
-        $round->getPointHolder()->applyPointChangeMap($pointChangeMap);
+        $this->getRound()->getPointHolder()
+            ->applyPointChangeMap($pointChangeMap);
     }
 
-    function leave(Round $round) {
+    function leave() {
+        // do nothing
     }
     //endregion
 }

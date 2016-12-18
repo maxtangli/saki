@@ -1,13 +1,12 @@
 <?php
 namespace Saki\Game;
 
-use Doctrine\Instantiator\Exception\InvalidArgumentException;
 use Saki\Command\Command;
 use Saki\Command\CommandProcessor;
 use Saki\Command\CommandSet;
 use Saki\Command\PlayerCommand;
 use Saki\Game\Meld\MeldList;
-use Saki\Game\Phase\NullPhaseState;
+use Saki\Game\Phase\InitPhaseState;
 use Saki\Game\Phase\OverPhaseState;
 use Saki\Game\Phase\PhaseState;
 use Saki\Game\Phase\PrivatePhaseState;
@@ -36,11 +35,11 @@ class Round {
     // round variable
     private $wall;
     private $turn;
-    /** @var PhaseState */
-    private $phaseState;
     private $openHistory;
     private $claimHistory;
     private $targetHolder;
+    /** @var PhaseState */
+    private $phaseState;
     // todo remove temp debug
     public $enableDecider = false;
 
@@ -59,7 +58,6 @@ class Round {
         // round variable
         $this->wall = new Wall($rule->getTileSet(), $rule->getPlayerType());
         $this->turn = Turn::createFirst();
-        $this->phaseState = new NullPhaseState();
         $this->openHistory = new OpenHistory();
         $this->claimHistory = new ClaimHistory();
         $this->targetHolder = new TargetHolder();
@@ -69,10 +67,11 @@ class Round {
             return new Area($initialSeatWind, $this);
         };
         $this->areaList = $rule->getPlayerType()->getSeatWindList($toArea);
+        $this->deal();
 
         // to private phase
+        $this->phaseState = new InitPhaseState($this);
         $this->toNextPhase();
-        $this->toNextPhase(); // todo better way?
     }
 
     /**
@@ -100,13 +99,13 @@ class Round {
         // round variable
         $this->wall->init();
         $this->turn = Turn::createFirst();
-        $this->phaseState = new NullPhaseState();
         $this->openHistory->reset();
         $this->claimHistory->reset();
         $this->targetHolder->init();
+        $this->deal();
 
         // to private phase
-        $this->toNextPhase();
+        $this->phaseState = new InitPhaseState($this);
         $this->toNextPhase();
     }
 
@@ -130,17 +129,17 @@ class Round {
         // round variable
         $this->wall->init();
         $this->turn = Turn::createFirst();
-        $this->phaseState = new NullPhaseState();
         $this->openHistory->reset();
         $this->claimHistory->reset();
         $this->targetHolder->init();
+        $this->deal();
 
         // to private phase
-        $this->toNextPhase();
+        $this->phaseState = new InitPhaseState($this);
         $this->toNextPhase();
     }
 
-    function deal() {
+    private function deal() {
         $dealResult = $this->getWall()->getDealResult();
         $acceptDeal = function (Area $area) use ($dealResult) {
             $initialTiles = $dealResult[$area->getSeatWind()->__toString()];
@@ -148,6 +147,18 @@ class Round {
             $area->setHand($newHand);
         };
         $this->areaList->walk($acceptDeal);
+    }
+
+
+    /**
+     * @param SeatWind $initialSeatWind
+     * @return Area
+     */
+    private function getInitialSeatWindArea(SeatWind $initialSeatWind) {
+        $isInitialSeatWind = function (Area $area) use ($initialSeatWind) {
+            return $area->getInitialSeatWind() == $initialSeatWind;
+        };
+        return $this->areaList->getSingle($isInitialSeatWind);
     }
 
     /**
@@ -165,39 +176,11 @@ class Round {
     }
 
     /**
-     * @param string $scriptLine
-     * @return Command|PlayerCommand
-     */
-    function parse(string $scriptLine) {
-        return $this->getProcessor()->getParser()
-            ->parseLine($scriptLine);
-    }
-
-    /**
+     * Sugar method.
      * @param array ...$scripts
      */
     function process(... $scripts) {
         $this->getProcessor()->process(... $scripts);
-    }
-
-    /**
-     * @param string $scriptLine
-     * @param SeatWind|null $requireActor
-     * @throws InvalidArgumentException
-     */
-    function processLine(string $scriptLine, SeatWind $requireActor = null) {
-        $command = $this->getProcessor()->getParser()
-            ->parseLine($scriptLine);
-        if ($requireActor) {
-            if (!$command instanceof PlayerCommand) {
-                throw new \InvalidArgumentException('not PlayerCommand.');
-            }
-
-            if (!$command->getActor() == $requireActor) {
-                throw new \InvalidArgumentException('not actor.');
-            }
-        }
-        $this->process($command->__toString());
     }
 
     /**
@@ -223,17 +206,6 @@ class Round {
             return $area->getSeatWind() == $seatWind;
         };
         return $this->areaList->getSingle($isSeatWind);
-    }
-
-    /**
-     * @param SeatWind $initialSeatWind
-     * @return Area
-     */
-    function getInitialSeatWindArea(SeatWind $initialSeatWind) {
-        $isInitialSeatWind = function (Area $area) use ($initialSeatWind) {
-            return $area->getInitialSeatWind() == $initialSeatWind;
-        };
-        return $this->areaList->getSingle($isInitialSeatWind);
     }
 
     /**
@@ -358,9 +330,9 @@ class Round {
             $this->phaseState->setCustomNextState($customPhaseState);
         }
 
-        $this->phaseState->leave($this);
-        $this->phaseState = $this->phaseState->getNextState($this);
-        $this->phaseState->enter($this);
+        $this->phaseState->leave();
+        $this->phaseState = $this->phaseState->getNextState();
+        $this->phaseState->enter();
     }
 
     /**
@@ -370,33 +342,6 @@ class Round {
     function isFirstTurnAndNoClaim(SeatWind $seatWind) {
         $fromTurn = new Turn(1, $seatWind);
         return $this->getTurn()->isFirstCircle()
-        && !$this->getClaimHistory()->hasClaim($fromTurn);
-    }
-
-    /**
-     * @return bool
-     */
-    function isGameOver() {
-        /** @var OverPhaseState $phaseState */
-        $phaseState = $this->phaseState;
-        return $phaseState->getPhase()->isOver()
-        && $phaseState->isGameOver($this);
-    }
-
-    // todo move into OverPhase?
-    function toNextRound() {
-        /** @var OverPhaseState $overPhaseState */
-        $overPhaseState = $this->phaseState;
-        if (!$overPhaseState->getPhase()->isOver()) {
-            throw new \InvalidArgumentException('Not over phase.');
-        }
-
-        if ($overPhaseState->isGameOver($this)) {
-            throw new \InvalidArgumentException('Game is over.');
-        }
-
-        $keepDealer = $overPhaseState->getResult()->isKeepDealer();
-        $isWin = $overPhaseState->getResult()->getResultType()->isWin();
-        $this->roll($keepDealer, $isWin);
+            && !$this->getClaimHistory()->hasClaim($fromTurn);
     }
 }

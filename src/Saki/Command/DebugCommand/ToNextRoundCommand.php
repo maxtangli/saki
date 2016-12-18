@@ -17,12 +17,11 @@ class ToNextRoundCommand extends DebugCommand {
 
     //region Command impl
     protected function executableImpl(Round $round) {
-        return $round->getPhase()->isOver()
-            && !$round->getPhaseState()->isGameOver($round);
+        return $round->getPhaseState()->canToNextRound();
     }
 
     protected function executeImpl(Round $round) {
-        $round->toNextRound();
+        $round->getPhaseState()->toNextRound();
     }
     //endregion
 }

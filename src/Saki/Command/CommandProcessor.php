@@ -2,6 +2,7 @@
 namespace Saki\Command;
 
 use Saki\Game\Round;
+use Saki\Game\SeatWind;
 
 /**
  * @package Saki\Command
@@ -48,5 +49,24 @@ class CommandProcessor {
             $command->execute();
         });
         $this->getProvider()->clearProvideAll();
+    }
+
+    /**
+     * @param string $scriptLine
+     * @param SeatWind|null $requireActor
+     * @throws \InvalidArgumentException
+     */
+    function processLine(string $scriptLine, SeatWind $requireActor = null) {
+        $command = $this->getParser()->parseLine($scriptLine);
+        if ($requireActor) {
+            if (!$command instanceof PlayerCommand) {
+                throw new \InvalidArgumentException('not PlayerCommand.');
+            }
+
+            if (!$command->getActor() == $requireActor) {
+                throw new \InvalidArgumentException('not actor.');
+            }
+        }
+        $this->process($command->__toString());
     }
 }

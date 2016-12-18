@@ -85,7 +85,7 @@ class CommandProvider {
         }
 
         // debug only todo remove
-        if ($round->isGameOver()) {
+        if ($round->getPhaseState()->isGameOver()) {
             $initCommand = new InitCommand($round);
             $allExecutableList->insertLast($initCommand);
         }

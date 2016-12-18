@@ -58,7 +58,6 @@ class RoundSerializer {
         $round = $this->getRound();
         $prevailing = $round->getPrevailing();
         $a = [
-            'isGameOver' => $round->isGameOver(),
             'prevailingWind' => $prevailing->getStatus()->getPrevailingWind()->__toString(),
             'prevailingWindTurn' => $prevailing->getStatus()->getPrevailingWindTurn(),
             'seatWindTurn' => $prevailing->getSeatWindTurn(),
@@ -133,8 +132,8 @@ class RoundSerializer {
         $round = $this->getRound();
 
         $a = [
-            'isGameOver' => $round->isGameOver(),
-            'isRoundOver' => $round->getPhase()->isOver(),
+            'isGameOver' => $round->getPhaseState()->isGameOver(),
+            'isRoundOver' => $round->getPhaseState()->isRoundOver(),
             'result' => null,
             'winReports' => [],
         ];

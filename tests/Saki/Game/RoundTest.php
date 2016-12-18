@@ -66,14 +66,14 @@ class RoundTest extends \SakiTestCase {
         );
         $round->process('tsumo E');
         $pointHolder->setPoint(SeatWind::fromString('E'), 25000);
-        $this->assertFalse($round->getPhaseState()->isGameOver($round));
+        $this->assertFalse($round->getPhaseState()->isGameOver());
 
         // point over 30000
         $pointHolder->setPoint(SeatWind::fromString('E'), 29999);
-        $this->assertFalse($round->getPhaseState()->isGameOver($round));
+        $this->assertFalse($round->getPhaseState()->isGameOver());
 
         $pointHolder->setPoint(SeatWind::fromString('E'), 30000);
-        $this->assertTrue($round->getPhaseState()->isGameOver($round));
+        $this->assertTrue($round->getPhaseState()->isGameOver());
     }
     //endregion
 
@@ -238,7 +238,7 @@ class RoundTest extends \SakiTestCase {
         $this->assertCount(1, $round->getWall()->getIndicatorWall()->getUraIndicatorList());
 
         // test toNextRound
-        $round->toNextRound();
+        $round->getPhaseState()->toNextRound();
         $this->assertPrivate();
         $this->assertEquals(SeatWind::createEast(), $round->getDealerArea()->getInitialSeatWind());
     }

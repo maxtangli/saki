@@ -73,7 +73,7 @@ abstract class PlayerCommand extends Command {
         }
 
         if ($round->getPhase()->isPublic()) {
-            $decider = $round->getPhaseState()->getCommandDecider($round);
+            $decider = $round->getPhaseState()->getCommandDecider();
             $validDecider = $decider->allowSubmit($this) || $decider->isDecidedCommand($this);
             if (!$validDecider) {
                 return false;
@@ -85,7 +85,7 @@ abstract class PlayerCommand extends Command {
 
     final protected function executeImpl(Round $round) {
         if ($round->getPhase()->isPublic()) {
-            $decider = $round->getPhaseState()->getCommandDecider($round);
+            $decider = $round->getPhaseState()->getCommandDecider();
 
             if ($decider->allowSubmit($this)) {
                 $decider->submit($this);

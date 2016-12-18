@@ -38,7 +38,7 @@ class NineNineDrawCommand extends PrivateCommand {
             ResultType::create(ResultType::NINE_NINE_DRAW)
         );
         $round->toNextPhase(
-            new OverPhaseState($result)
+            new OverPhaseState($round, $result)
         );
     }
     //endregion
