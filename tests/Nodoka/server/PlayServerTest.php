@@ -2,6 +2,7 @@
 
 use Nodoka\Server\MockClient;
 use Nodoka\Server\PlayServer;
+use Saki\Game\SeatWind;
 
 class PlayServerTest extends \SakiTestCase {
     /**
@@ -21,7 +22,7 @@ class PlayServerTest extends \SakiTestCase {
         $client1 = new MockClient();
         $playServer->onOpen($client1);
 
-        $tile = $playServer->getPlay()->getRound()->getDealerArea()
+        $tile = $playServer->getPlay()->getRound()->getArea(SeatWind::createEast())
             ->getHand()->getPublic()->getFirst();
         $command = "discard E $tile";
         $playServer->onMessage($client1, $command);

@@ -12,8 +12,8 @@ class FourWindDraw extends Draw {
     //region Draw impl
     protected function isDrawImpl(Round $round) {
 
-        $isFirstRound = $round->getTurn()->isFirstCircle();
-        $isFourSameWindDiscard = $round->getOpenHistory()->isFourSameWindDiscard();
+        $isFirstRound = $round->getTurnHolder()->getTurn()->isFirstCircle();
+        $isFourSameWindDiscard = $round->getTurnHolder()->getOpenHistory()->isFourSameWindDiscard();
         return $isFirstRound && $isFourSameWindDiscard;
     }
 

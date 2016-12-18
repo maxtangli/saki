@@ -160,25 +160,25 @@ class SakiTestCase extends \PHPUnit_Framework_TestCase {
 
     function assertLastOpen(string $tile) {
         $round = $this->getCurrentRound();
-        $openHistory = $round->getOpenHistory();
+        $openHistory = $round->getTurnHolder()->getOpenHistory();
         $this->assertEquals($tile, $openHistory->getLastOpen()->getTile());
     }
 
     function assertHasClaim(Turn $turn) {
         $round = $this->getCurrentRound();
-        $claimHistory = $round->getClaimHistory();
+        $claimHistory = $round->getTurnHolder()->getClaimHistory();
         $this->assertTrue($claimHistory->hasClaim($turn));
     }
 
     function assertHasNotClaim(Turn $turn) {
         $round = $this->getCurrentRound();
-        $claimHistory = $round->getClaimHistory();
+        $claimHistory = $round->getTurnHolder()->getClaimHistory();
         $this->assertFalse($claimHistory->hasClaim($turn));
     }
 
     function assertCurrentTurnChanged(string $seatWind = null, Turn $laterThanOldTurn = null) {
         $round = $this->getCurrentRound();
-        $currentTurn = $round->getTurn();
+        $currentTurn = $round->getTurnHolder()->getTurn();
 
         if ($seatWind !== null) {
             $this->assertEquals(SeatWind::fromString($seatWind), $currentTurn->getSeatWind());
@@ -191,7 +191,7 @@ class SakiTestCase extends \PHPUnit_Framework_TestCase {
 
     function assertCurrentTurnNotChanged(Turn $turn) {
         $round = $this->getCurrentRound();
-        $currentTurn = $round->getTurn();
+        $currentTurn = $round->getTurnHolder()->getTurn();
         $this->assertEquals($turn, $currentTurn);
     }
     //endregion

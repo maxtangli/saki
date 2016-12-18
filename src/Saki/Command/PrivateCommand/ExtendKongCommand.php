@@ -69,7 +69,7 @@ class ExtendKongCommand extends PrivateCommand {
     protected function getClaim() {
         return Claim::createExtendKong(
             $this->getActorArea(),
-            $this->getRound()->getTurn(),
+            $this->getRound()->getTurnHolder()->getTurn(),
             $this->getTile(),
             $this->getMeld()
         );

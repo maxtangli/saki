@@ -143,14 +143,16 @@ class Area {
      * @return bool
      */
     function isFirstTurnWin() {
+        $round = $this->getRound();
+
         $riichiStatus = $this->getRiichiStatus();
-        $currentTurn = $this->getRound()->getTurn();
+        $currentTurn = $round->getTurnHolder()->getTurn();
 
         if (!$riichiStatus->isFirstTurn($currentTurn)) {
             return false;
         }
 
-        $claimHistory = $this->getRound()->getClaimHistory();
+        $claimHistory = $round->getTurnHolder()->getClaimHistory();
         $noDeclareSinceRiichi = !$claimHistory->hasClaim($riichiStatus->getRiichiTurn());
         return $noDeclareSinceRiichi;
     }
@@ -159,7 +161,7 @@ class Area {
      * @return TileList
      */
     function getDiscard() {
-        return $this->getRound()->getOpenHistory()
+        return $this->getRound()->getTurnHolder()->getOpenHistory()
             ->getSelfDiscard($this->getSeatWind());
     }
 

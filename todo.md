@@ -23,8 +23,9 @@ rush  86-90 | 11.9h
 rush  91-95 | 13.3h
 rush  96-100| 16.1h
 rush 101-105|  7.6h
-rush 106-110|   ing
-     total  |449.0h + ing
+rush 106-110|  9.8h
+rush 111-115|   ing
+     total  |458.8h + ing
 
 ## rush history
 
@@ -1226,7 +1227,7 @@ rush 109 refactor: toJson 0.5h
 - [x] area.toJson() 0.2h
 - [x] result.toJson() 0.1h
 
-rush 110 refactor: PhaseState
+rush 110 refactor: PhaseState 0.8h
 
 - [x] refactor: remove NullPhaseState 0.2h
 - [x] refactor: move Round.processLine into Command 0.1h
@@ -1234,6 +1235,13 @@ rush 110 refactor: PhaseState
 - [x] refactor: PhaseState has $round 0.1h
 - [x] refactor: PhaseState remove needless $round 0.1h
 - [x] refactor: move isRoundOver/isGameOver into PhaseState 0.3h
+
+rush 111 refactor: Round
+
+- [x] refactor: introduce TurnHolder 0.3h
+- [x] refactor: introduce AreaList 0.2h
+
+- [ ] refactor: remove Round.debugInit
 
 - [ ] refactor: simplify roll(),debugInit(),toNextPhase()
 

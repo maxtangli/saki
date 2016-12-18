@@ -88,7 +88,7 @@ class PrivatePhaseState extends PhaseState {
     function enter() {
         $round = $this->getRound();
         $actor = $this->getActor();
-        $round->toSeatWind($actor);
+        $round->getTurnHolder()->toSeatWind($actor);
 
         if ($this->shouldDraw()) {
             $newTile = $round->getWall()->getDrawWall()
@@ -99,7 +99,7 @@ class PrivatePhaseState extends PhaseState {
         }
 
         if ($this->hasClaim()) {
-            $target = $this->target ?? $round->getOpenHistory()->getLastOpen()->toTarget();
+            $target = $this->target ?? $round->getTurnHolder()->getOpenHistory()->getLastOpen()->toTarget();
             $round->getTargetHolder()
                 ->setTarget($target);
             $this->claim->apply();

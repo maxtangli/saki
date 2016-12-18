@@ -84,7 +84,7 @@ class WinTarget {
      * @return OpenHistory
      */
     function getOpenHistory() {
-        return $this->getRound()->getOpenHistory();
+        return $this->getRound()->getTurnHolder()->getOpenHistory();
     }
 
     /**

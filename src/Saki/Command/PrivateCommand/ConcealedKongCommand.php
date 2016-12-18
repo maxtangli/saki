@@ -50,7 +50,7 @@ class ConcealedKongCommand extends PrivateCommand {
         $tiles = $this->getTileList()->toArray();
         return Claim::createConcealedKong(
             $this->getActorArea(),
-            $this->getRound()->getTurn(),
+            $this->getRound()->getTurnHolder()->getTurn(),
             $tiles,
             KongMeldType::create()
         );

@@ -27,8 +27,7 @@ class NineNineDrawCommand extends PrivateCommand {
 
     //region PrivateCommand impl
     protected function executablePlayerImpl(Round $round, Area $actorArea) {
-        return $round->getTurn()->isFirstCircle()
-        && !$round->getClaimHistory()->hasClaim()
+        return $round->getTurnHolder()->isFirstCycleAndNoClaim()
         && $actorArea->getHand()->getPrivate()->isNineKindsOfTermOrHonour();
     }
 

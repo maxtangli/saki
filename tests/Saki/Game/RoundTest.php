@@ -57,7 +57,8 @@ class RoundTest extends \SakiTestCase {
         $round->roll(false);
         $round->roll(false);
 
-        $area = $round->getCurrentArea();
+        $actor = $round->getCurrentSeatWind();
+        $area = $round->getArea($actor);
         $pointHolder = $round->getPointHolder();
 
         // E Player tsumo, but point not over 30000
@@ -115,7 +116,7 @@ class RoundTest extends \SakiTestCase {
     function testChow() {
         $round = $this->getInitRound();
 
-        $claimTurn = $round->getTurn();
+        $claimTurn = $round->getTurnHolder()->getTurn();
         $round->process(
             'mockHand E 3m; discard E 3m',
             'mockHand S 450m12346789p13s; chow S 4m0m'
@@ -155,7 +156,7 @@ class RoundTest extends \SakiTestCase {
     function testPung() {
         $round = $this->getInitRound();
 
-        $claimTurn = $round->getTurn();
+        $claimTurn = $round->getTurnHolder()->getTurn();
         $round->process(
             'mockHand E 5m; discard E 5m',
             'mockHand W 550m12346789p13s; pung W 5m0m'
@@ -172,7 +173,7 @@ class RoundTest extends \SakiTestCase {
     function testKong() {
         $round = $this->getInitRound();
 
-        $claimTurn = $round->getTurn();
+        $claimTurn = $round->getTurnHolder()->getTurn();
         $round->process(
             'mockHand E 5m; discard E 5m',
             'mockNextReplace 1p; mockHand W 550m23456789p13s; kong W 5m5m0m'
@@ -189,7 +190,7 @@ class RoundTest extends \SakiTestCase {
     function testConcealedKong() {
         $round = $this->getInitRound();
 
-        $claimTurn = $round->getTurn();
+        $claimTurn = $round->getTurnHolder()->getTurn();
         $round->process('mockNextReplace 1p; mockHand E 5550m23456789p13s; concealedKong E 5m5m5m0m');
 
         $this->assertPrivate('E');
@@ -209,7 +210,7 @@ class RoundTest extends \SakiTestCase {
         );
 
         // enter robKong phase
-        $claimTurn = $round->getTurn();
+        $claimTurn = $round->getTurnHolder()->getTurn();
         $round->process('extendKong S 0m 055m');
         $this->assertPublic();
         $this->assertFalse($round->getPhaseState()->allowClaim());
@@ -240,7 +241,7 @@ class RoundTest extends \SakiTestCase {
         // test toNextRound
         $round->getPhaseState()->toNextRound();
         $this->assertPrivate();
-        $this->assertEquals(SeatWind::createEast(), $round->getDealerArea()->getInitialSeatWind());
+        $this->assertEquals(SeatWind::createEast(), $round->getArea(SeatWind::createEast())->getInitialSeatWind());
     }
 
     function testRon() {

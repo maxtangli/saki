@@ -1,18 +1,13 @@
 <?php
 namespace Saki\Game;
 
-use Saki\Command\Command;
 use Saki\Command\CommandProcessor;
 use Saki\Command\CommandSet;
-use Saki\Command\PlayerCommand;
-use Saki\Game\Meld\MeldList;
 use Saki\Game\Phase\InitPhaseState;
 use Saki\Game\Phase\OverPhaseState;
 use Saki\Game\Phase\PhaseState;
 use Saki\Game\Phase\PrivatePhaseState;
 use Saki\Game\Phase\PublicPhaseState;
-use Saki\Game\Tile\TileList;
-use Saki\Util\ArrayList;
 use Saki\Win\WinReport;
 use Saki\Win\WinTarget;
 
@@ -25,18 +20,12 @@ class Round {
     // variable
     private $processor;
     private $prevailing;
-    /**
-     * An ArrayList of Area, same size with PlayerList, order by ascend initial SeatWind.
-     * @var ArrayList
-     */
     private $areaList;
     private $pointHolder;
     private $riichiHolder;
     // round variable
+    private $turnHolder;
     private $wall;
-    private $turn;
-    private $openHistory;
-    private $claimHistory;
     private $targetHolder;
     /** @var PhaseState */
     private $phaseState;
@@ -56,17 +45,12 @@ class Round {
         $this->pointHolder = new PointHolder($rule->getScoreStrategy()->getPointSetting());
 
         // round variable
+        $this->turnHolder = new TurnHolder();
         $this->wall = new Wall($rule->getTileSet(), $rule->getPlayerType());
-        $this->turn = Turn::createFirst();
-        $this->openHistory = new OpenHistory();
-        $this->claimHistory = new ClaimHistory();
         $this->targetHolder = new TargetHolder();
 
         // variable
-        $toArea = function (SeatWind $initialSeatWind) {
-            return new Area($initialSeatWind, $this);
-        };
-        $this->areaList = $rule->getPlayerType()->getSeatWindList($toArea);
+        $this->areaList = AreaList::create($this);
         $this->deal();
 
         // to private phase
@@ -89,18 +73,13 @@ class Round {
         // variable
         $this->processor->init();
         $this->prevailing = $this->prevailing->toRolled($keepDealer);
-        $roll = function (Area $area) use ($keepDealer) {
-            $area->roll($area->getSeatWind()->toRolled($keepDealer));
-        };
-        $this->areaList->walk($roll);
+        $this->areaList->roll($keepDealer);
         // $this->pointHolder no change
         $this->riichiHolder->roll($isWin);
 
         // round variable
+        $this->turnHolder->init();
         $this->wall->init();
-        $this->turn = Turn::createFirst();
-        $this->openHistory->reset();
-        $this->claimHistory->reset();
         $this->targetHolder->init();
         $this->deal();
 
@@ -113,24 +92,16 @@ class Round {
      * @param PrevailingStatus $prevailingStatus
      */
     function debugInit(PrevailingStatus $prevailingStatus) {
-        $nextDealerInitialSeatWind = $prevailingStatus->getInitialSeatWindOfDealer();
-        $nextDealerArea = $this->getInitialSeatWindArea($nextDealerInitialSeatWind);
-        $nextDealerSeatWind = $nextDealerArea->getSeatWind();
-
         // variable
         $this->processor->init();
         $this->prevailing = $this->prevailing->toDebugInitialized($prevailingStatus);
-        $this->areaList->walk(function (Area $area) use ($nextDealerSeatWind) {
-            $area->debugInit($area->getSeatWind()->toNextSelf($nextDealerSeatWind));
-        });
+        $this->areaList->debugInit($prevailingStatus);
         $this->pointHolder->init();
         $this->riichiHolder->init();
 
         // round variable
+        $this->turnHolder->init();
         $this->wall->init();
-        $this->turn = Turn::createFirst();
-        $this->openHistory->reset();
-        $this->claimHistory->reset();
         $this->targetHolder->init();
         $this->deal();
 
@@ -140,25 +111,7 @@ class Round {
     }
 
     private function deal() {
-        $dealResult = $this->getWall()->getDealResult();
-        $acceptDeal = function (Area $area) use ($dealResult) {
-            $initialTiles = $dealResult[$area->getSeatWind()->__toString()];
-            $newHand = new Hand(new TileList($initialTiles), new MeldList(), Target::createNull());
-            $area->setHand($newHand);
-        };
-        $this->areaList->walk($acceptDeal);
-    }
-
-
-    /**
-     * @param SeatWind $initialSeatWind
-     * @return Area
-     */
-    private function getInitialSeatWindArea(SeatWind $initialSeatWind) {
-        $isInitialSeatWind = function (Area $area) use ($initialSeatWind) {
-            return $area->getInitialSeatWind() == $initialSeatWind;
-        };
-        return $this->areaList->getSingle($isInitialSeatWind);
+        $this->areaList->deal($this->getWall()->getDealResult());
     }
 
     /**
@@ -176,14 +129,6 @@ class Round {
     }
 
     /**
-     * Sugar method.
-     * @param array ...$scripts
-     */
-    function process(... $scripts) {
-        $this->getProcessor()->process(... $scripts);
-    }
-
-    /**
      * @return Prevailing
      */
     function getPrevailing() {
@@ -191,35 +136,10 @@ class Round {
     }
 
     /**
-     * @return ArrayList
+     * @return AreaList
      */
     function getAreaList() {
         return $this->areaList;
-    }
-
-    /**
-     * @param SeatWind $seatWind
-     * @return Area
-     */
-    function getArea(SeatWind $seatWind) {
-        $isSeatWind = function (Area $area) use ($seatWind) {
-            return $area->getSeatWind() == $seatWind;
-        };
-        return $this->areaList->getSingle($isSeatWind);
-    }
-
-    /**
-     * @return Area
-     */
-    function getDealerArea() {
-        return $this->getArea(SeatWind::createEast());
-    }
-
-    /**
-     * @return Area
-     */
-    function getCurrentArea() {
-        return $this->getArea($this->getCurrentSeatWind());
     }
 
     /**
@@ -237,17 +157,17 @@ class Round {
     }
 
     /**
+     * @return TurnHolder
+     */
+    function getTurnHolder() {
+        return $this->turnHolder;
+    }
+
+    /**
      * @return Wall
      */
     function getWall() {
         return $this->wall;
-    }
-
-    /**
-     * @return Turn
-     */
-    function getTurn() {
-        return $this->turn;
     }
 
     /**
@@ -258,40 +178,6 @@ class Round {
     }
 
     /**
-     * @return Phase
-     */
-    function getPhase() {
-        return $this->getPhaseState()->getPhase();
-    }
-
-    /**
-     * @return SeatWind
-     */
-    function getCurrentSeatWind() {
-        return $this->getTurn()->getSeatWind();
-    }
-
-    /**
-     * @param SeatWind[] $excludes
-     * @return SeatWind[]
-     */
-    function getOtherSeatWinds(array $excludes) {
-        return SeatWind::createList($this->areaList->count())
-            ->remove($excludes)
-            ->toArray();
-    }
-
-    /**
-     * Roll to $seatWind.
-     * - If $seatWind is not current, handle CircleCount update.
-     * - Do nothing otherwise.
-     * @param SeatWind $seatWind
-     */
-    function toSeatWind(SeatWind $seatWind) {
-        $this->turn = $this->turn->toNextSeatWind($seatWind);
-    }
-
-    /**
      * @return TargetHolder
      */
     function getTargetHolder() {
@@ -299,20 +185,32 @@ class Round {
     }
 
     /**
-     * @return OpenHistory
+     * Sugar method.
+     * @param SeatWind $seatWind
+     * @return Area
      */
-    function getOpenHistory() {
-        return $this->openHistory;
+    function getArea(SeatWind $seatWind) {
+        return $this->getAreaList()->getArea($seatWind);
     }
 
     /**
-     * @return ClaimHistory
+     * Sugar method.
+     * @return Phase
      */
-    function getClaimHistory() {
-        return $this->claimHistory;
+    function getPhase() {
+        return $this->getPhaseState()->getPhase();
     }
 
     /**
+     * Sugar method.
+     * @return SeatWind
+     */
+    function getCurrentSeatWind() {
+        return $this->getTurnHolder()->getTurn()->getSeatWind();
+    }
+
+    /**
+     * Sugar method.
      * @param SeatWind $actor
      * @return WinReport
      */
@@ -336,12 +234,10 @@ class Round {
     }
 
     /**
-     * @param SeatWind $seatWind
-     * @return bool
+     * Sugar method.
+     * @param array ...$scripts
      */
-    function isFirstTurnAndNoClaim(SeatWind $seatWind) {
-        $fromTurn = new Turn(1, $seatWind);
-        return $this->getTurn()->isFirstCircle()
-            && !$this->getClaimHistory()->hasClaim($fromTurn);
+    function process(... $scripts) {
+        $this->getProcessor()->process(... $scripts);
     }
 }

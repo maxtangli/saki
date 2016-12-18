@@ -66,7 +66,7 @@ abstract class PublicClaimCommand extends PublicCommand {
     function getClaim() {
         return Claim::createPublic(
             $this->getActorArea(),
-            $this->getRound()->getTurn(),
+            $this->getRound()->getTurnHolder()->getTurn(),
             $this->getClaimTiles(),
             $this->getClaimMeldType(),
             $this->getActorArea()->getHand()->getTarget()

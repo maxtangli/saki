@@ -26,13 +26,13 @@ class CommandTest extends \SakiTestCase {
     function testSkip() {
         $round = $this->getInitRound();
 
-        $this->assertEquals('E', $round->getTurn()->getSeatWind());
+        $this->assertEquals('E', $round->getTurnHolder()->getTurn()->getSeatWind());
         $round->process('skip 1');
-        $this->assertEquals('S', $round->getTurn()->getSeatWind());
+        $this->assertEquals('S', $round->getTurnHolder()->getTurn()->getSeatWind());
         $this->assertTrue($round->getPhaseState()->getPhase()->isPrivate());
 
         $round->process('skip 2');
-        $this->assertEquals('N', $round->getTurn()->getSeatWind());
+        $this->assertEquals('N', $round->getTurnHolder()->getTurn()->getSeatWind());
         $this->assertTrue($round->getPhaseState()->getPhase()->isPrivate());
     }
 

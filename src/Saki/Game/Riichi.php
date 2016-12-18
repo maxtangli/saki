@@ -46,7 +46,7 @@ class Riichi extends Open {
 
         $area = $this->getArea();
         $round = $area->getRound();
-        $riichiStatus = new RiichiStatus($round->getTurn());
+        $riichiStatus = new RiichiStatus($round->getTurnHolder()->getTurn());
         $round->getRiichiHolder()
             ->setRiichiStatus($area->getSeatWind(), $riichiStatus);
         $round->getPointHolder()

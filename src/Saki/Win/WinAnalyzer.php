@@ -178,7 +178,7 @@ class WinAnalyzer {
             return false;
         }
 
-        $openHistory = $target->getOpenHistory();
+        $openHistory = $target->getRound()->getTurnHolder()->getOpenHistory();
         $isNgTile = function (Tile $ngTile) use ($waitingTileList) {
             return $waitingTileList->valueExist($ngTile);
         };

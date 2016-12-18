@@ -106,7 +106,7 @@ class PublicPhaseState extends PhaseState {
 
     function getDefaultNextState() {
         $round = $this->getRound();
-        $nextActor = $round->getTurn()->getSeatWind()->toNext();
+        $nextActor = $round->getTurnHolder()->getTurn()->getSeatWind()->toNext();
         $shouldDrawTile = true;
         return new PrivatePhaseState($round, $nextActor, $shouldDrawTile);
     }
@@ -115,7 +115,7 @@ class PublicPhaseState extends PhaseState {
         $round = $this->getRound();
 
         // set target
-        $target = $round->getOpenHistory()->getLastOpen()->toTarget();
+        $target = $round->getTurnHolder()->getOpenHistory()->getLastOpen()->toTarget();
         $round->getTargetHolder()->setTarget($target);
 
         // bottom of sea not allow claim

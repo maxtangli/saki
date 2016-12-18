@@ -95,7 +95,7 @@ class Open implements Immutable {
         $area->setHand($newHand);
 
         $round = $area->getRound();
-        $round->getOpenHistory()
-            ->record(new OpenRecord($round->getTurn(), $openTile, $this->isDiscard()));
+        $round->getTurnHolder()->getOpenHistory()
+            ->record(new OpenRecord($round->getTurnHolder()->getTurn(), $openTile, $this->isDiscard()));
     }
 }

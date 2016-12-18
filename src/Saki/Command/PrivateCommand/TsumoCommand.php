@@ -41,7 +41,7 @@ class TsumoCommand extends PrivateCommand {
         $winReport = $round->getWinReport($actor);
         $result = new WinResult(WinResultInput::createTsumo(
             [$actor, $winReport->getFanAndFu()],
-            $round->getOtherSeatWinds([$actor]),
+            $round->getAreaList()->getOtherSeatWinds([$actor]),
             $round->getRiichiHolder()->getRiichiPoints(),
             $round->getPrevailing()->getSeatWindTurn(),
             $winReport
