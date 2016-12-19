@@ -65,7 +65,7 @@ class FuTarget {
      * @return bool
      */
     function isSelfPhase() {
-        return $this->subTarget->getPhase()->isPrivate();
+        return $this->subTarget->getRound()->getPhase()->isPrivate();
     }
 
     /**
@@ -86,6 +86,6 @@ class FuTarget {
      * @return Tile
      */
     function getPrevailingWindTile() {
-        return $this->subTarget->getPrevailingWind()->getWindTile();
+        return $this->subTarget->getRound()->getPrevailing()->getWindTile();
     }
 }

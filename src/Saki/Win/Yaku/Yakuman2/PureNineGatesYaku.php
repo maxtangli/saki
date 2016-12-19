@@ -23,8 +23,8 @@ class PureNineGatesYaku extends Yaku {
     }
 
     protected function matchOther(WinSubTarget $subTarget) {
-        $targetTile = $subTarget->getTarget()->getTile();
-        return $subTarget->getComplete()->isNineGates(true, $targetTile);
+        $targetTile = $subTarget->getHand()->getTarget()->getTile();
+        return $subTarget->getHand()->getComplete()->isNineGates(true, $targetTile);
     }
 
     function getExcludedYakus() {

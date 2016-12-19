@@ -22,7 +22,7 @@ class RobbingAKongYaku extends Yaku {
     }
 
     protected function matchOther(WinSubTarget $subTarget) {
-        return $subTarget->getTarget()->isRobbingAKong();
+        return $subTarget->getHand()->getTarget()->isRobbingAKong();
     }
 }
 

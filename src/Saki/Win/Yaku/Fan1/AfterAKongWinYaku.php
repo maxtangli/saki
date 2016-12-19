@@ -22,7 +22,7 @@ class AfterAKongWinYaku extends Yaku {
     }
 
     protected function matchOther(WinSubTarget $subTarget) {
-        return $subTarget->getTarget()->isAfterAKong();
+        return $subTarget->getHand()->getTarget()->isAfterAKong();
     }
 }
 

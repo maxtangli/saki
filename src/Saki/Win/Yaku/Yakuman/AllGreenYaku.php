@@ -23,6 +23,6 @@ class AllGreenYaku extends Yaku {
     }
 
     protected function matchOther(WinSubTarget $subTarget) {
-        return $subTarget->getComplete()->isAllGreen();
+        return $subTarget->getHand()->getComplete()->isAllGreen();
     }
 }

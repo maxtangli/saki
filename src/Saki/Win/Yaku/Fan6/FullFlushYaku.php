@@ -23,7 +23,7 @@ class FullFlushYaku extends Yaku {
     }
 
     protected function matchOther(WinSubTarget $subTarget) {
-        return $subTarget->getComplete()->isFlush(true);
+        return $subTarget->getHand()->getComplete()->isFlush(true);
     }
 
     function getExcludedYakus() {

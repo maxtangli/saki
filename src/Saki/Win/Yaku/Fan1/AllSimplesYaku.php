@@ -22,6 +22,6 @@ class AllSimplesYaku extends Yaku {
     }
 
     protected function matchOther(WinSubTarget $subTarget) {
-        return $subTarget->getComplete()->isAllSimple();
+        return $subTarget->getHand()->getComplete()->isAllSimple();
     }
 }

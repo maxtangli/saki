@@ -22,6 +22,6 @@ class NineGatesYaku extends Yaku {
     }
 
     protected function matchOther(WinSubTarget $subTarget) {
-        return $subTarget->getComplete()->isNineGates(false);
+        return $subTarget->getHand()->getComplete()->isNineGates(false);
     }
 }

@@ -95,6 +95,14 @@ class Prevailing {
         return $this->seatWindTurn;
     }
 
+    /**
+     * Sugar method.
+     * @return Tile\Tile
+     */
+    function getWindTile() {
+        return $this->getStatus()->getPrevailingWind()->getWindTile();
+    }
+
     //region delegates of PrevailingContext
     /**
      * normal          | suddenDeath

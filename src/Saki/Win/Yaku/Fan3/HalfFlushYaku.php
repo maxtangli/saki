@@ -22,7 +22,7 @@ class HalfFlushYaku extends Yaku {
     }
 
     protected function matchOther(WinSubTarget $subTarget) {
-        return $subTarget->getComplete()->isFlush(false);
+        return $subTarget->getHand()->getComplete()->isFlush(false);
     }
 }
 

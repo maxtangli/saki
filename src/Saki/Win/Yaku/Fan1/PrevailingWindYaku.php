@@ -10,6 +10,6 @@ use Saki\Win\Yaku\AbstractValueTilesYaku;
  */
 class PrevailingWindYaku extends AbstractValueTilesYaku {
     function getValueTile(WinSubTarget $subTarget) {
-        return $subTarget->getPrevailingWind()->getWindTile();
+        return $subTarget->getRound()->getPrevailing()->getWindTile();
     }
 }

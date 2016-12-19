@@ -26,7 +26,7 @@ class PureThirteenOrphansYaku extends Yaku {
     }
 
     protected function matchOther(WinSubTarget $subTarget) {
-        $targetTile = $subTarget->getTarget()->getTile();
+        $targetTile = $subTarget->getHand()->getTarget()->getTile();
         return $subTarget->getAllMeldList()->isThirteenOrphan(true, $targetTile);
     }
 

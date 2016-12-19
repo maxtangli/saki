@@ -24,7 +24,7 @@ class BlessingOfEarthYaku extends Yaku {
     protected function matchOther(WinSubTarget $subTarget) {
         $actor = $subTarget->getActor();
         return $subTarget->getRound()->getTurnHolder()->isFirstTurnAndNoClaim($actor)
-        && $subTarget->getPhase()->isPrivate()
+        && $subTarget->getRound()->getPhase()->isPrivate()
         && $actor->isLeisureFamily();
     }
 }

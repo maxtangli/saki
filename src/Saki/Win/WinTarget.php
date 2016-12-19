@@ -30,8 +30,9 @@ class WinTarget {
         $this->actor = $actor;
 
         if (!$this->getActorArea()->isPhaseActor()) {
+            $phase = $round->getPhase();
             throw new \InvalidArgumentException(
-                sprintf('Invalid phase, expect[private or public phase] but given[%s].', $round->getPhase())
+                "Invalid phase, expect[private or public phase] but given[$phase]."
             );
         }
     }
@@ -59,35 +60,6 @@ class WinTarget {
     }
 
     /**
-     * @return PrevailingWind
-     */
-    function getPrevailingWind() {
-        return $this->getRound()->getPrevailing()
-            ->getStatus()->getPrevailingWind();
-    }
-
-    /**
-     * @return Phase
-     */
-    function getPhase() {
-        return $this->getRound()->getPhase();
-    }
-
-    /**
-     * @return Wall
-     */
-    function getWall() {
-        return $this->getRound()->getWall();
-    }
-
-    /**
-     * @return OpenHistory
-     */
-    function getOpenHistory() {
-        return $this->getRound()->getTurnHolder()->getOpenHistory();
-    }
-
-    /**
      * @return Area
      */
     function getActorArea() {
@@ -95,30 +67,10 @@ class WinTarget {
     }
 
     /**
-     * @return RiichiStatus
-     */
-    function getRiichiStatus() {
-        return $this->getActorArea()->getRiichiStatus();
-    }
-
-    /**
+     * Sugar method.
      * @return Hand
      */
     function getHand() {
         return $this->getActorArea()->getHand();
-    }
-
-    /**
-     * @return TileList
-     */
-    function getComplete() {
-        return $this->getHand()->getComplete();
-    }
-
-    /**
-     * @return Target
-     */
-    function getTarget() {
-        return $this->getHand()->getTarget();
     }
 }

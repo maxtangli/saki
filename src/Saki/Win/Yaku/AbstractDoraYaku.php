@@ -18,8 +18,8 @@ abstract class AbstractDoraYaku extends Yaku {
     }
 
     protected function getExistCountImpl(WinSubTarget $subTarget) {
-        $indicatorWall = $subTarget->getWall()->getIndicatorWall();
-        return $this->getDoraFanImpl($subTarget->getComplete(), $indicatorWall);
+        $indicatorWall = $subTarget->getRound()->getWall()->getIndicatorWall();
+        return $this->getDoraFanImpl($subTarget->getHand()->getComplete(), $indicatorWall);
     }
 
     function getRequiredSeries() {

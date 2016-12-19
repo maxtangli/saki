@@ -22,6 +22,6 @@ class FullyConcealedHandYaku extends Yaku {
     }
 
     protected function matchOther(WinSubTarget $subTarget) {
-        return $subTarget->getPhase()->isPrivate();
+        return $subTarget->getRound()->getPhase()->isPrivate();
     }
 }

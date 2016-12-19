@@ -1236,27 +1236,26 @@ rush 110 refactor: PhaseState 0.8h
 - [x] refactor: PhaseState remove needless $round 0.1h
 - [x] refactor: move isRoundOver/isGameOver into PhaseState 0.3h
 
-rush 111 refactor: Round
+rush 111 refactor: Round 0.8h
 
 - [x] refactor: introduce TurnHolder 0.3h
 - [x] refactor: introduce AreaList 0.2h
-
-- [ ] refactor: remove Round.debugInit
-
-- [ ] refactor: simplify roll(),debugInit(),toNextPhase()
+- [x] refactor: arrange Round 0.1h
+- [x] refactor: WinTarget 0.2h
 
 rush view: gameOver
+
+- [ ] analyze: confirm game over rule
+- [ ] test: game over rule
+- [ ] view: game over dialog
+
 rush discard: riichi flag and view
 rush toward 100% rules!
 
-- [ ] game over rule confirm & tests
 - [ ] multiple ron
 - [ ] 流局満貫
 - [ ] 責任払い
-
-rush refactor
-
-- [ ] introduce Validator 1.1h
+- [ ] refactor: introduce Validator 1.1h
 
 rush room
 

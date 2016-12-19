@@ -37,6 +37,7 @@ class WinSubTarget extends WinTarget {
     }
 
     /**
+     * Sugar method.
      * @return MeldList
      */
     function getAllMeldList() {

@@ -11,7 +11,7 @@ use Saki\Game\Phase\PublicPhaseState;
 use Saki\Win\WinReport;
 use Saki\Win\WinTarget;
 
-/** todo simplify roll(),debugInit(),toNextPhase()
+/**
  * @package Saki\Game
  */
 class Round {
@@ -20,13 +20,13 @@ class Round {
     // variable
     private $processor;
     private $prevailing;
-    private $areaList;
     private $pointHolder;
     private $riichiHolder;
     // round variable
     private $turnHolder;
-    private $wall;
     private $targetHolder;
+    private $wall;
+    private $areaList;
     /** @var PhaseState */
     private $phaseState;
     // todo remove temp debug
@@ -46,10 +46,8 @@ class Round {
 
         // round variable
         $this->turnHolder = new TurnHolder();
-        $this->wall = new Wall($rule->getTileSet(), $rule->getPlayerType());
         $this->targetHolder = new TargetHolder();
-
-        // variable
+        $this->wall = new Wall($rule->getTileSet(), $rule->getPlayerType());
         $this->areaList = AreaList::create($this);
         $this->deal();
 
@@ -73,14 +71,14 @@ class Round {
         // variable
         $this->processor->init();
         $this->prevailing = $this->prevailing->toRolled($keepDealer);
-        $this->areaList->roll($keepDealer);
         // $this->pointHolder no change
         $this->riichiHolder->roll($isWin);
 
         // round variable
         $this->turnHolder->init();
-        $this->wall->init();
         $this->targetHolder->init();
+        $this->wall->init();
+        $this->areaList->roll($keepDealer);
         $this->deal();
 
         // to private phase
@@ -95,14 +93,14 @@ class Round {
         // variable
         $this->processor->init();
         $this->prevailing = $this->prevailing->toDebugInitialized($prevailingStatus);
-        $this->areaList->debugInit($prevailingStatus);
         $this->pointHolder->init();
         $this->riichiHolder->init();
 
         // round variable
         $this->turnHolder->init();
-        $this->wall->init();
         $this->targetHolder->init();
+        $this->wall->init();
+        $this->areaList->debugInit($prevailingStatus);
         $this->deal();
 
         // to private phase
@@ -136,13 +134,6 @@ class Round {
     }
 
     /**
-     * @return AreaList
-     */
-    function getAreaList() {
-        return $this->areaList;
-    }
-
-    /**
      * @return PointHolder
      */
     function getPointHolder() {
@@ -164,6 +155,13 @@ class Round {
     }
 
     /**
+     * @return TargetHolder
+     */
+    function getTargetHolder() {
+        return $this->targetHolder;
+    }
+
+    /**
      * @return Wall
      */
     function getWall() {
@@ -171,17 +169,17 @@ class Round {
     }
 
     /**
+     * @return AreaList
+     */
+    function getAreaList() {
+        return $this->areaList;
+    }
+
+    /**
      * @return PhaseState|PrivatePhaseState|PublicPhaseState|OverPhaseState
      */
     function getPhaseState() {
         return $this->phaseState;
-    }
-
-    /**
-     * @return TargetHolder
-     */
-    function getTargetHolder() {
-        return $this->targetHolder;
     }
 
     /**

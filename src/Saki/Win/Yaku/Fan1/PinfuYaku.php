@@ -36,7 +36,7 @@ class PinfuYaku extends Yaku {
          */
         $isFourChowAndOnePair = $subTarget->getAllMeldList()->isFourChowAndOnePair();
 
-        $isAllSuit = $subTarget->getComplete()->isAllSuit();
+        $isAllSuit = $subTarget->getHand()->getComplete()->isAllSuit();
 
         $waitingType = Series::create(Series::FOUR_WIN_SET_AND_ONE_PAIR)
             ->getWaitingType($subTarget->getSubHand());

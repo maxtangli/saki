@@ -22,8 +22,8 @@ class BottomOfTheSeaMoonYaku extends Yaku {
     }
 
     protected function matchOther(WinSubTarget $subTarget) {
-        return $subTarget->getWall()->getDrawWall()->isEmpty()
-        && $subTarget->getPhase()->isPrivate();
+        return $subTarget->getRound()->getWall()->getDrawWall()->isEmpty()
+        && $subTarget->getRound()->getPhase()->isPrivate();
     }
 }
 

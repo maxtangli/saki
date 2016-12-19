@@ -151,7 +151,7 @@ class WinAnalyzer {
         }
 
         // case3: win by self or win by other
-        $winState = WinState::getTsumoOrOther($subTarget->getPhase()->isPrivate());
+        $winState = WinState::getTsumoOrOther($subTarget->getRound()->getPhase()->isPrivate());
 
         $waitingType = $series->getWaitingType($subTarget->getSubHand());
         $fuTarget = new FuTarget($subTarget, $yakuList, $waitingType);
@@ -174,7 +174,7 @@ class WinAnalyzer {
          */
 
         // A player who is furiten, can still win on a self-drawn tile
-        if ($target->getPhase()->isPrivate()) {
+        if ($target->getRound()->getPhase()->isPrivate()) {
             return false;
         }
 
@@ -191,7 +191,7 @@ class WinAnalyzer {
         }
 
         // reach furiten: other open TileList since self reach contains target tile
-        $riichiStatus = $target->getRiichiStatus();
+        $riichiStatus = $target->getActorArea()->getRiichiStatus();
         if ($riichiStatus->isRiichi()) { // ng case 2: since self reach
             $riichiTurn = $riichiStatus->getRiichiTurn();
             $otherOpenListSinceRiichi = $openHistory->getOtherOpen($mySeatWind, $riichiTurn);

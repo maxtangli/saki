@@ -22,7 +22,7 @@ class RiichiYaku extends Yaku {
     }
 
     protected function matchOther(WinSubTarget $subTarget) {
-        return $subTarget->getRiichiStatus()->isRiichi();
+        return $subTarget->getActorArea()->getRiichiStatus()->isRiichi();
     }
 }
 
