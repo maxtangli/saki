@@ -1236,12 +1236,26 @@ rush 110 refactor: PhaseState 0.8h
 - [x] refactor: PhaseState remove needless $round 0.1h
 - [x] refactor: move isRoundOver/isGameOver into PhaseState 0.3h
 
-rush 111 refactor: Round 0.8h
+rush 111 refactor: Round 1.9h
+
+- refactor: introduce Validator 1.1h
 
 - [x] refactor: introduce TurnHolder 0.3h
 - [x] refactor: introduce AreaList 0.2h
 - [x] refactor: arrange Round 0.1h
 - [x] refactor: WinTarget 0.2h
+
+rush 112 discard: riichi flag and view 1.7h
+
+- [x] analyze: 0.7h
+
+// 20 days passed
+
+- [x] refactor: OpenRecord.isDeclared 0.2h
+- [x] OpenHistory.getSelfDiscardDisplay: 0.7h
+- [x] Open.apply: isRiichi 0.1h
+
+- view: rotated discard // already done in claim!
 
 rush view: gameOver
 
@@ -1249,13 +1263,15 @@ rush view: gameOver
 - [ ] test: game over rule
 - [ ] view: game over dialog
 
-rush discard: riichi flag and view
 rush toward 100% rules!
 
+- [ ] test: blessing yaku and turn judge
 - [ ] multiple ron
 - [ ] 流局満貫
 - [ ] 責任払い
-- [ ] refactor: introduce Validator 1.1h
+- [ ] refactor: Open, Riichi
+
+rush code reading
 
 rush room
 

@@ -17,8 +17,7 @@ class Open implements Immutable {
      * @param Tile $openTile
      * @param bool $isDiscard
      */
-    function __construct(Area $area,
-                         Tile $openTile, bool $isDiscard) {
+    function __construct(Area $area, Tile $openTile, bool $isDiscard) {
         $this->area = $area;
         $this->openTile = $openTile;
         $this->isDiscard = $isDiscard;
@@ -94,8 +93,11 @@ class Open implements Immutable {
 
         $area->setHand($newHand);
 
-        $round = $area->getRound();
-        $round->getTurnHolder()->getOpenHistory()
-            ->record(new OpenRecord($round->getTurnHolder()->getTurn(), $openTile, $this->isDiscard()));
+        $turnHolder = $area->getRound()->getTurnHolder();
+        $isDiscard = $this->isDiscard();
+        $isRiichi = $this instanceof Riichi; // todo refactor temp solution
+        $openRecord = new OpenRecord($turnHolder->getTurn(), $openTile, $isDiscard, $isRiichi);
+        $turnHolder->getOpenHistory()
+            ->record($openRecord);
     }
 }

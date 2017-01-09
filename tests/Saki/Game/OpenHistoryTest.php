@@ -21,18 +21,22 @@ class OpenHistoryTest extends \SakiTestCase {
         );
     }
 
+    protected function setLastDiscardDeclared() {
+        $this->h->setLastDiscardDeclared();
+    }
+
     protected function assertGetLastOpenOrFalse($expectedStringOrBool, string $seatWind) {
         $actual = $this->h->getLastOpenTurnOrFalse(SeatWind::fromString($seatWind));
         $expected = is_bool($expectedStringOrBool) ? $expectedStringOrBool : Turn::fromString($expectedStringOrBool);
         $this->assertEquals($expected, $actual);
     }
 
-    protected function assertGetSelf(string $expectedTileList, string $seatWind) {
+    protected function assertGetSelfOpen(string $expectedTileList, string $seatWind) {
         $actual = $this->h->getSelfOpen(SeatWind::fromString($seatWind));
         $this->assertEquals($expectedTileList, $actual->__toString());
     }
 
-    protected function assertGetOther(string $expectedTileList, string $seatWind, string $fromTurn) {
+    protected function assertGetOtherOpen(string $expectedTileList, string $seatWind, string $fromTurn) {
         $actual = $this->h->getOtherOpen(SeatWind::fromString($seatWind), Turn::fromString($fromTurn));
         $this->assertEquals($expectedTileList, $actual->__toString());
     }
@@ -51,7 +55,7 @@ class OpenHistoryTest extends \SakiTestCase {
         $this->record('3N', '8m');
         $this->assertGetLastOpenOrFalse('3N', 'N');
 
-        $this->assertGetSelf('15m', 'E');
-        $this->assertGetOther('3467m', 'E', '1W');
+        $this->assertGetSelfOpen('15m', 'E');
+        $this->assertGetOtherOpen('3467m', 'E', '1W');
     }
 }

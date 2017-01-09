@@ -11,10 +11,9 @@ use Saki\Util\Immutable;
  * Inner class for OpenRecord.
  * @package Saki\Game
  */
-class OpenRecordType extends Enum {
+class OpenType extends Enum {
     const DISCARD = 0;
-    const EXTEND_KONG = 1;
-    const DECLARED = 2;
+    const EXTEND_KONG = 2;
 }
 
 /**
@@ -45,16 +44,26 @@ class OpenRecord implements Immutable {
     private $turn;
     private $tile;
     private $openType;
+    private $isRiichi;
+    private $isDeclared;
 
     /**
      * @param Turn $turn
      * @param Tile $tile
      * @param bool $isDiscard
+     * @param bool $isRiichi
      */
-    function __construct(Turn $turn, Tile $tile, bool $isDiscard) {
+    function __construct(Turn $turn, Tile $tile, bool $isDiscard, bool $isRiichi = false) {
+        $validIsRiichi = !$isRiichi || $isDiscard;
+        if (!$validIsRiichi) {
+            throw new \InvalidArgumentException();
+        }
+
         $this->turn = $turn;
         $this->tile = $tile;
-        $this->openType = OpenRecordType::create($isDiscard ? OpenRecordType::DISCARD : OpenRecordType::EXTEND_KONG);
+        $this->openType = OpenType::create($isDiscard ? OpenType::DISCARD : OpenType::EXTEND_KONG);
+        $this->isRiichi = $isRiichi;
+        $this->isDeclared = false;
     }
 
     /**
@@ -73,7 +82,7 @@ class OpenRecord implements Immutable {
             throw new \BadMethodCallException();
         }
         $record = new self($this->getTurn(), $this->getTile(), true);
-        $record->openType = OpenRecordType::create(OpenRecordType::DECLARED);
+        $record->isDeclared = true;
         return $record;
     }
 
@@ -110,7 +119,21 @@ class OpenRecord implements Immutable {
      * @return boolean
      */
     function isDiscard() {
-        return $this->openType->getValue() == OpenRecordType::DISCARD;
+        return $this->openType->getValue() == OpenType::DISCARD;
+    }
+
+    /**
+     * @return bool
+     */
+    function isRiichi() {
+        return $this->isRiichi;
+    }
+
+    /**
+     * @return bool
+     */
+    function isDeclared() {
+        return $this->isDeclared;
     }
 
     /**

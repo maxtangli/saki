@@ -158,11 +158,11 @@ class Area {
     }
 
     /**
-     * @return TileList
+     * @return array
      */
-    function getDiscard() {
+    function getDiscardDisplay() {
         return $this->getRound()->getTurnHolder()->getOpenHistory()
-            ->getSelfDiscard($this->getSeatWind());
+            ->getSelfDiscardDisplay($this->getSeatWind());
     }
 
     /**

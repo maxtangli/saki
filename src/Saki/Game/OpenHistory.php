@@ -44,7 +44,7 @@ class OpenHistory {
 
     /**
      * @param SeatWind $mySeatWind
-     * @return Turn
+     * @return Turn|false
      */
     function getLastOpenTurnOrFalse(SeatWind $mySeatWind) {
         $myList = $this->list->getCopy()->where(function (OpenRecord $record) use ($mySeatWind) {
@@ -103,23 +103,28 @@ class OpenHistory {
             $result->removeLast();
         }
 
-        return (new TileList())->fromSelect($result, function (OpenRecord $record) {
+        $getRecordTile = function (OpenRecord $record) {
             return $record->getTile();
-        });
+        };
+        return (new TileList())->fromSelect($result, $getRecordTile);
     }
 
     /**
+     * Used in: Area
      * @param SeatWind $seatWind
-     * @return TileList
+     * @return array
      */
-    function getSelfDiscard(SeatWind $seatWind) {
+    function getSelfDiscardDisplay(SeatWind $seatWind) {
         $isSelfDiscard = function (OpenRecord $record) use ($seatWind) {
-            return $record->isSelfDiscard($seatWind);
+            return $record->isSelfDiscard($seatWind) && !$record->isDeclared();
         };
-        $discardTiles = $this->list->getCopy()
-            ->where($isSelfDiscard)
-            ->toArray(OpenRecord::getToTileCallback());
-        return new TileList($discardTiles);
+        $discardRecordList = $this->list->getCopy()
+            ->where($isSelfDiscard);
+        $recordToJson = function (OpenRecord $record) {
+            $prefix = $record->isRiichi() ? '-' : '';
+            return $prefix . $record->getTile()->__toString();
+        };
+        return $discardRecordList->toArray($recordToJson);
     }
 
     /**

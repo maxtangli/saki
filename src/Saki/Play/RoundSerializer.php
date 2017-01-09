@@ -101,7 +101,7 @@ class RoundSerializer {
             'actor' => $actor->__toString(),
             'point' => $area->getPoint(),
             'isReach' => $area->getRiichiStatus()->isRiichi(),
-            'discard' => $area->getDiscard()->toArray(Utils::getToStringCallback()),
+            'discard' => $area->getDiscardDisplay(),
             'wall' => $area->getActorWall()->toJson(),
             'commands' => $commandList->toArray(Utils::getToStringCallback()),
             'public' => $handJson['public'],
