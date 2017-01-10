@@ -527,43 +527,69 @@ class YakuTest extends \SakiTestCase {
     }
 
     function testBlessingOfHeaven() {
+        // passed
         $round = $this->getInitRound();
-
         $round->process('mockHand E 123456789m12355s');
         $this->assertYakuList('E', [BlessingOfHeavenYaku::create()]);
 
         // failed if declared
+        $round = $this->getInitRound();
         $round->process('mockHand E 1111m; concealedKong E 1111m; mockHand E 123456789m55s');
         $this->assertYakuList('E', null, null, [BlessingOfHeavenYaku::create()]);
 
         // failed if not first turn
+        $round = $this->getInitRound();
+        $round->process('skip 4; mockHand E 123456789m12355s');
+        $this->assertYakuList('E', null, null, [BlessingOfHeavenYaku::create()]);
+
         // failed if not dealer
+        $round = $this->getInitRound();
+        $round->process('skip 1; mockHand S 123456789m12355s');
+        $this->assertYakuList('S', null, null, [BlessingOfHeavenYaku::create()]);
     }
 
     function testBlessingOfEarth() {
+        // passed
         $round = $this->getInitRound();
         $round->process('skip 1; mockHand S 123456789m12355s');
         $this->assertYakuList('S', [BlessingOfEarthYaku::create()]);
 
         // failed if declared
+        $round = $this->getInitRound();
+        $round->process('mockHand E 1111m; concealedKong E 1111m; skip 1; mockHand S 123456789m12355s');
+        $this->assertYakuList('S', null, null, [BlessingOfEarthYaku::create()]);
+
         // failed if not first turn
+        $round = $this->getInitRound();
+        $round->process('skip 1; skip 4; mockHand S 123456789m12355s');
+        $this->assertYakuList('S', null, null, [BlessingOfEarthYaku::create()]);
+
         // failed if not leisure
+        $round = $this->getInitRound();
+        $round->process('mockHand E 123456789m12355s');
+        $this->assertYakuList('E', null, null, [BlessingOfEarthYaku::create()]);
     }
 
     function testBlessingOfMan() {
+        // passed
         $round = $this->getInitRound();
         $round->process('mockHand E 5s; discard E 5s; mockHand S 123456789m1235s');
         $this->assertYakuList('S', [BlessingOfManYaku::create()]);
 
-        // failed if discard not empty
-        $round->process(
-            'passAll; mockHand S C; discard S C; passAll',
-            'mockHand S 123456789m1235s; mockHand W 5s; discard W 5s'
-        );
+        // failed if declared
+        $round = $this->getInitRound();
+        $round->process('mockHand E 11115s; concealedKong E 1111s; discard E 5s; mockHand S 123456789m1235s');
         $this->assertYakuList('S', null, null, [BlessingOfManYaku::create()]);
 
-        // failed if declared
         // failed if not first turn
+        $round = $this->getInitRound();
+        $round->process('skip 4; mockHand E 5s; discard E 5s; mockHand S 123456789m1235s');
+        $this->assertYakuList('S', null, null, [BlessingOfManYaku::create()]);
+
+        // failed if not before self turn
+        $round = $this->getInitRound();
+        $round->process('skip 2; mockHand W 5s; discard W 5s; mockHand S 123456789m1235s');
+        $this->assertYakuList('S', null, null, [BlessingOfManYaku::create()]);
     }
 
     function testThirteenOrphanTsumo() {

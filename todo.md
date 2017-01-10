@@ -1259,13 +1259,14 @@ rush 112 discard: riichi flag and view 1.7h
 
 rush view: gameOver
 
+- [x] bug fix: test and fix blessing yaku and turn judge 0.4h
+
 - [ ] analyze: confirm game over rule
 - [ ] test: game over rule
 - [ ] view: game over dialog
 
 rush toward 100% rules!
 
-- [ ] test: blessing yaku and turn judge
 - [ ] multiple ron
 - [ ] 流局満貫
 - [ ] 責任払い

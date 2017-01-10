@@ -22,9 +22,7 @@ class BlessingOfManYaku extends Yaku {
     }
 
     protected function matchOther(WinSubTarget $subTarget) {
-        return $subTarget->getRound()->getTurnHolder()->isFirstTurnAndNoClaim($subTarget->getActor())
-            && $subTarget->getRound()->getPhase()->isPublic()
-            && $subTarget->getRound()->getTurnHolder()->getOpenHistory()
-                ->getSelfOpen($subTarget->getActor())->isEmpty();
+        return $subTarget->getRound()->getTurnHolder()->isBeforeFirstTurnAndNoClaim($subTarget->getActor())
+            && $subTarget->getRound()->getPhase()->isPublic();
     }
 }

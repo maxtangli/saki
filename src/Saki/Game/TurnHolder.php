@@ -47,9 +47,17 @@ class TurnHolder {
      * @return bool
      */
     function isFirstTurnAndNoClaim(SeatWind $seatWind) {
-        $fromTurn = new Turn(1, $seatWind);
-        return $this->getTurn()->isFirstCircle()
-            && !$this->getClaimHistory()->hasClaim($fromTurn);
+        return $this->isFirstCycleAndNoClaim()
+            && $this->getTurn()->getSeatWind() == $seatWind;
+    }
+
+    /**
+     * @param SeatWind $seatWind
+     * @return bool
+     */
+    function isBeforeFirstTurnAndNoClaim(SeatWind $seatWind) {
+        return $this->isFirstCycleAndNoClaim()
+            && $this->getTurn()->getSeatWind()->isBefore($seatWind);
     }
 
     /**

@@ -491,7 +491,7 @@ concealedKong: fromRel=self
 - 九莲宝灯，NineGates：必定41牌型，门清，只有同一种花色的数牌，有1112345678999这13种数牌。
 - 天和，BlessingOfHeaven：任意牌型，第一巡，不存在吃碰杠宣言，个人阶段，庄家。
 - 地和，BlessingOfEarth：任意牌型，第一巡，不存在吃碰杠宣言，个人阶段，闲家。
-- 人和，BlessingOfMan：任意牌型，第一巡，不存在吃碰杠宣言，公共阶段，目标玩家舍牌区为空。
+- 人和，BlessingOfMan：任意牌型，第一巡，不存在吃碰杠宣言，公共阶段，当前玩家<目标玩家。
 - 四暗刻，FourConcealedPungs：41牌型，门清，有4个暗刻。
 
 - 四杠子，FourKongs：必定41牌型，有4个杠子。
