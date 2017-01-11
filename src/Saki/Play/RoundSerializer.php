@@ -130,16 +130,17 @@ class RoundSerializer {
      */
     function toResultJson() {
         $round = $this->getRound();
+        $phaseState = $round->getPhaseState();
 
         $a = [
-            'isGameOver' => $round->getPhaseState()->isGameOver(),
-            'isRoundOver' => $round->getPhaseState()->isRoundOver(),
+            'isGameOver' => $phaseState->isGameOver(),
+            'isRoundOver' => $phaseState->isRoundOver(),
             'result' => null,
             'winReports' => [],
         ];
 
         if ($a['isRoundOver']) {
-            $overPhaseResult = $round->getPhaseState()->getResult();
+            $overPhaseResult = $phaseState->getResult();
 
             $a['result'] = $overPhaseResult->__toString();
             $a['indicatorWall'] = $round->getWall()->getIndicatorWall()->toJson();
@@ -151,6 +152,10 @@ class RoundSerializer {
                 };
                 $a['winReports'] = $overPhaseResult->getWinReportList()
                     ->toArray($winReportToJson);
+            }
+
+            if ($a['isGameOver']) {
+                $a['finalScore'] = $phaseState->getFinalScore()->toJson();
             }
         }
 

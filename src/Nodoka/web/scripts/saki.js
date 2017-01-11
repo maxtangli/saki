@@ -106,10 +106,19 @@ Saki.DemoView.prototype = {
                     + actor + ':' + [a.pre, a.change, a.now].join(',') + '\n';
             });
 
+            if (result.isGameOver) {
+                var finalScoreText = '';
+                $.each(result.finalScore, function (notUsed, a) {
+                    finalScoreText = finalScoreText
+                        + [a.rank, a.seatWind, a.point, a.score].join(',') + '\n';
+                });
+            }
+
             $('.result').show();
             $('.indicatorWallContainer').html(this.indicatorWall(result.indicatorWall));
             $('.resultContainer').text(resultText);
             $('.lastChangeDetailContainer').text(lastChangeDetailText);
+            $('.finalScoreContainer').text(finalScoreText);
         } else {
             $('.result').hide();
         }

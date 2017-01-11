@@ -31,6 +31,18 @@ class PointItem implements Immutable {
     }
 
     /**
+     * @return array
+     */
+    function toJson() {
+        return [
+            'rank' => $this->getRank(),
+            'seatWind' => $this->getSeatWind()->__toString(),
+            'point' => $this->getPoint(),
+            'score' => $this->toScore(),
+        ];
+    }
+
+    /**
      * @param int $newPoint
      * @return PointItem
      */

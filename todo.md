@@ -1261,9 +1261,11 @@ rush view: gameOver
 
 - [x] bug fix: test and fix blessing yaku and turn judge 0.4h
 
+- [x] json: final score 0.2h
+- [x] view: final score 0.2h
+
 - [ ] analyze: confirm game over rule
 - [ ] test: game over rule
-- [ ] view: game over dialog
 
 rush toward 100% rules!
 

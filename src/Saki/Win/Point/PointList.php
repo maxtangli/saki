@@ -5,6 +5,7 @@ use Saki\Game\PointItem;
 use Saki\Game\SeatWind;
 use Saki\Util\ArrayList;
 use Saki\Util\Immutable;
+use Saki\Util\Utils;
 
 /**
  * @package Saki\Game
@@ -63,13 +64,22 @@ class PointList extends ArrayList implements Immutable {
     }
 
     /**
+     * @return array
+     */
+    function toJson() {
+        return $this->toOrderByRank()->toArray(
+            Utils::getMethodCallback('toJson')
+        );
+    }
+
+    /**
      * @return PointList
      */
     function toOrderByRank() {
         $getPointItemRank = function (PointItem $pointItem) {
             return $pointItem->getRank();
         };
-        return $this->getCopy()->orderByAscending($getPointItemRank);
+        return $this->toOrderBySeatWind()->orderByAscending($getPointItemRank);
     }
 
     /**
