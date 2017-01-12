@@ -112,6 +112,14 @@ class PrevailingContext implements Immutable {
         return $status->isSame($this->getSuddenDeathLast());
     }
 
+    /**
+     * @param PrevailingStatus $status
+     * @return bool
+     */
+    function isNormalLastOrSuddenDeath(PrevailingStatus $status) {
+        $this->assertValid($status);
+        return $this->isNormalLast($status) || $this->isSuddenDeath($status);
+    }
     //endregion
 
     //region impl

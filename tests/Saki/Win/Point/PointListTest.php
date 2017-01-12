@@ -40,7 +40,7 @@ class PointListTest extends \SakiTestCase {
         $facade = $round->getPointHolder()->getPointList();
 
         $this->assertFalse($facade->hasMinus());
-        $this->assertTrue($facade->hasTiledTop());
+        $this->assertFalse($facade->isSingleTop());
         $this->assertEquals(25000, $facade->getFirst()->getPoint());
     }
 }

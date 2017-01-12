@@ -115,8 +115,8 @@ class PointList extends ArrayList implements Immutable {
     /**
      * @return bool
      */
-    function hasTiledTop() {
-        return $this->getTopItemList()->count() >= 2;
+    function isSingleTop() {
+        return $this->getTopItemList()->count() == 1;
     }
 
     /**
@@ -124,6 +124,23 @@ class PointList extends ArrayList implements Immutable {
      */
     function getSingleTop() {
         return $this->getTopItemList()->getSingle();
+    }
+
+    /**
+     * @param int $point
+     * @return bool
+     */
+    function isSingleTopAndEnoughPoint(int $point) {
+        return $this->isSingleTop()
+            && $this->getSingleTop()->getPoint() >= $point;
+    }
+
+    /**
+     * @return bool
+     */
+    function isSingleTopAndDealer() {
+        return $this->isSingleTop()
+            && $this->getSingleTop()->getSeatWind()->isDealer();
     }
 
     /**

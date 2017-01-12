@@ -133,10 +133,8 @@ class RoundSerializer {
         $phaseState = $round->getPhaseState();
 
         $a = [
-            'isGameOver' => $phaseState->isGameOver(),
             'isRoundOver' => $phaseState->isRoundOver(),
-            'result' => null,
-            'winReports' => [],
+            'isGameOver' => $phaseState->isGameOver(),
         ];
 
         if ($a['isRoundOver']) {

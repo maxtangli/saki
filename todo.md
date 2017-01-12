@@ -1257,22 +1257,27 @@ rush 112 discard: riichi flag and view 1.7h
 
 - view: rotated discard // already done in claim!
 
-rush view: gameOver
-
-- [x] bug fix: test and fix blessing yaku and turn judge 0.4h
+rush 113 view: gameOver and finalScore
 
 - [x] json: final score 0.2h
 - [x] view: final score 0.2h
+- test: final score // already done in ScoreStrategyTest
 
-- [ ] analyze: confirm game over rule
+- [ ] analyze: confirm game over rule 0.1h
+- [x] refactor: isGameOver 0.2h
 - [ ] test: game over rule
+
+rush 114 refactor
+
+- [x] bug fix: test and fix blessing yaku and turn judge 0.4h
+- [x] refactor: remove json null fields 0.2h
+- [ ] refactor: Open, Riichi
 
 rush toward 100% rules!
 
 - [ ] multiple ron
-- [ ] 流局満貫
 - [ ] 責任払い
-- [ ] refactor: Open, Riichi
+- [ ] 流局満貫
 
 rush code reading
 

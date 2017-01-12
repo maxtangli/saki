@@ -156,5 +156,12 @@ class Prevailing {
     function isSuddenDeathLast() {
         return $this->getContext()->isSuddenDeathLast($this->getStatus());
     }
+
+    /**
+     * @return bool
+     */
+    function isNormalLastOrSuddenDeath() {
+        return $this->getContext()->isNormalLastOrSuddenDeath($this->getStatus());
+    }
     //endregion
 }

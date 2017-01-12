@@ -58,26 +58,28 @@ class Hand implements Immutable {
         $melded = $this->getMelded()->toJson();
         if ($mayViewHand) {
             $toTileData = function (Tile $tile) use ($commandList, $actor) {
-                $discardCommand = "discard $actor $tile";
-                $command = $commandList->valueExist($discardCommand)
-                    ? $discardCommand
-                    : null;
-                return [
+                $a = [
                     'tile' => $tile->__toString(),
-                    'command' => $command,
                 ];
+
+                $discardCommand = "discard $actor $tile";
+                if ($commandList->valueExist($discardCommand)) {
+                    $a['command'] = $discardCommand;
+                }
+
+                return $a;
             };
             $public = $this->getPublic()
                 ->orderByTileID()
                 ->toArray($toTileData);
             $target = $this->getTarget()->existAndIsCreator($actor)
                 ? $toTileData($this->getTarget()->getTile())
-                : ['tile' => 'X', 'command' => null];
+                : ['tile' => 'X'];
         } else {
-            $public = array_fill(0, $this->getPublic()->count(), ['tile' => 'O', 'command' => null]);
+            $public = array_fill(0, $this->getPublic()->count(), ['tile' => 'O']);
             $target = $this->getTarget()->existAndIsCreator($actor)
-                ? ['tile' => 'O', 'command' => null]
-                : ['tile' => 'X', 'command' => null];
+                ? ['tile' => 'O']
+                : ['tile' => 'X'];
         }
         return [
             'public' => $public,

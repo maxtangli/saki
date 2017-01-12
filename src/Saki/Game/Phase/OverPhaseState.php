@@ -68,29 +68,22 @@ class OverPhaseState extends PhaseState {
 
         if ($pointList->hasMinus()) {
             return true;
+        } // else not hasMinus
+
+        if ($prevailingCurrent->isNormalLastOrSuddenDeath()) {
+            if ($prevailingCurrent->isSuddenDeathLast()) {
+                return true;
+            } // else notSuddenDeathLast
+
+            if ($pointList->isSingleTopAndEnoughPoint(30000)) {
+                $isKeepDealer = $round->getPhaseState()->getResult()->isKeepDealer();
+                if (!$isKeepDealer || $pointList->isSingleTopAndDealer()) {
+                    return true;
+                }
+            }
         }
 
-        if ($prevailingCurrent->isNormalNotLast()) {
-            return false;
-        }
-
-        if ($prevailingCurrent->isSuddenDeathLast()) {
-            return true;
-        } // else isNormalLast or isSuddenDeath
-
-        if ($pointList->hasTiledTop()) {
-            return false;
-        }
-
-        $topItem = $pointList->getSingleTop();
-        $isTopEnoughPoint = $topItem->getPoint() >= 30000;
-        if (!$isTopEnoughPoint) {
-            return false;
-        } // else isTopPlayerEnoughPoint
-
-        $isDealerTop = $topItem->getSeatWind()->isDealer();
-        $result = $round->getPhaseState()->getResult();
-        return !($result->isKeepDealer()) || $isDealerTop;
+        return false;
     }
 
     function getPhase() {
