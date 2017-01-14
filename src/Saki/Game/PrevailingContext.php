@@ -123,7 +123,7 @@ class PrevailingContext implements Immutable {
     //endregion
 
     //region impl
-    protected function assertValid(PrevailingStatus $status) {
+    private function assertValid(PrevailingStatus $status) {
         if (!$this->valid($status)) {
             throw new \InvalidArgumentException();
         }
@@ -132,14 +132,14 @@ class PrevailingContext implements Immutable {
     /**
      * @return PrevailingStatus
      */
-    protected function getNormalLast() {
+    private function getNormalLast() {
         return new PrevailingStatus($this->getPrevailingType()->getNormalLast(), $this->getPlayerCount());
     }
 
     /**
      * @return PrevailingStatus
      */
-    protected function getSuddenDeathLast() {
+    private function getSuddenDeathLast() {
         return new PrevailingStatus($this->getPrevailingType()->getSuddenDeathLast(), $this->getPlayerCount());
     }
     //endregion

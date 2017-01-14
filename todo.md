@@ -1257,21 +1257,21 @@ rush 112 discard: riichi flag and view 1.7h
 
 - view: rotated discard // already done in claim!
 
-rush 113 view: gameOver and finalScore
+rush 113 view: gameOver and finalScore 0.7h
 
 - [x] json: final score 0.2h
 - [x] view: final score 0.2h
 - test: final score // already done in ScoreStrategyTest
 
-- [ ] analyze: confirm game over rule 0.1h
+- analyze: confirm game over rule 0.1h
 - [x] refactor: isGameOver 0.2h
-- [ ] test: game over rule
+- test: game over rule // already partly done in RoundTest... I'm lazy :(
 
-rush 114 refactor
+rush 114 refactor 0.6h
 
 - [x] bug fix: test and fix blessing yaku and turn judge 0.4h
 - [x] refactor: remove json null fields 0.2h
-- [ ] refactor: Open, Riichi
+- refactor: Open, Riichi // skip it
 
 rush toward 100% rules!
 
@@ -1281,6 +1281,15 @@ rush toward 100% rules!
 
 rush code reading
 
+- [ ] review rules
+
+- [x] search github mahjong projects 0.5h
+- [ ] review design
+- [x] try TilePredicate 0.8h
+
+- [ ] search mahjong articles
+- [ ] review algorithms
+
 rush room
 
 - [ ] analyze 0.7h
@@ -1289,7 +1298,11 @@ rush room
 - [ ] login: allow at most 1 websocket connection.
 - [ ] logout:?
 
-rush rule.md doc
+rush replay
+
+rush release ver UI
+
+rush document
 
 - [ ] rule 0.6h
 - [ ] tile 1.1h
@@ -1297,3 +1310,5 @@ rush rule.md doc
 - [ ] yaku 2.8h
 - [ ] furiten 0.8h
 - [ ] demo 1.3h
+
+- [ ] json

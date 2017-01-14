@@ -54,6 +54,13 @@ class Open implements Immutable {
     /**
      * @return bool
      */
+    function isRiichi() {
+        return $this instanceof Riichi;
+    }
+
+    /**
+     * @return bool
+     */
     function valid() {
         // valid SwapCalling
         // note: seems not good to place here
@@ -63,7 +70,6 @@ class Open implements Immutable {
         $phaseState = $round->getPhaseState();
         $openTile = $this->getOpenTile();
         if (!$swapCalling->allowOpen($phaseState, $openTile)) {
-//            throw new InvalidCommandException('', 'swap calling not allow open');
             return false;
         }
 
@@ -94,9 +100,12 @@ class Open implements Immutable {
         $area->setHand($newHand);
 
         $turnHolder = $area->getRound()->getTurnHolder();
-        $isDiscard = $this->isDiscard();
-        $isRiichi = $this instanceof Riichi; // todo refactor temp solution
-        $openRecord = new OpenRecord($turnHolder->getTurn(), $openTile, $isDiscard, $isRiichi);
+        $openRecord = new OpenRecord(
+            $turnHolder->getTurn(),
+            $openTile,
+            $this->isDiscard(),
+            $this->isRiichi()
+        );
         $turnHolder->getOpenHistory()
             ->record($openRecord);
     }

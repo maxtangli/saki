@@ -11,7 +11,7 @@ network    | 10%      | WebSocket supported by [Ratchet, a PHP library](http://s
 UI         | 10%      | HTML＆CSS＆JavaScript
 DB         | 0%       | KVS
 src reading| 0%       | read open source mahjong projects to improve
-release    | 0%       | expected to achieve in 2016
+release    | 0%       | expected to achieve in 2017.05
 
 ## demo
 
