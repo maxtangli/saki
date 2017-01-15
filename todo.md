@@ -1273,11 +1273,14 @@ rush 114 refactor 0.6h
 - [x] refactor: remove json null fields 0.2h
 - refactor: Open, Riichi // skip it
 
+rush 115 NagashiMangan
+
+- [ ] yaku 0.3h
+
 rush toward 100% rules!
 
+- [ ] pao
 - [ ] multiple ron
-- [ ] 責任払い
-- [ ] 流局満貫
 
 rush code reading
 
