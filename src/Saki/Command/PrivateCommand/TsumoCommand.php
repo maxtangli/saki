@@ -28,12 +28,16 @@ class TsumoCommand extends PrivateCommand {
 
     //region PrivateCommand impl
     protected function executablePlayerImpl(Round $round, Area $actorArea) {
+        $phaseState = $round->getPhaseState();
+        if ($phaseState->hasClaim() && $phaseState->getClaim()->isChowOrPung()) {
+            return false;
+        }
+
         $winReport = $round->getWinReport($this->getActor());
         return $winReport->getWinState()->getValue() == WinState::WIN_BY_SELF;
     }
 
     protected function executePlayerImpl(Round $round, Area $actorArea) {
-
         $actor = $this->getActor();
 
         $round->getWall()->getIndicatorWall()->openUraIndicators();

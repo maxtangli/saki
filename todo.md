@@ -1275,6 +1275,7 @@ rush 114 refactor 0.6h
 
 rush 115 NagashiMangan
 
+- [x] bug fix: tsumo after chow/pung 0.3h
 - [ ] yaku 0.3h
 
 rush toward 100% rules!

@@ -161,6 +161,13 @@ class Claim implements Immutable {
     /**
      * @return bool
      */
+    function isChowOrPung() {
+        return $this->isChow() || $this->isPung();
+    }
+
+    /**
+     * @return bool
+     */
     function isChowOrPungOrKong() {
         return $this->isChow() || $this->isPung() || $this->isKong();
     }

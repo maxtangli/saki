@@ -244,6 +244,30 @@ class RoundTest extends \SakiTestCase {
         $this->assertEquals(SeatWind::createEast(), $round->getArea(SeatWind::createEast())->getInitialSeatWind());
     }
 
+    function testTsumoNotAbleAfterChow() {
+        $this->getInitRound()->process(
+            'mockHand E 3m; discard E 3m',
+            'mockHand S 45m123456789p22s; chow S 45m'
+        );
+        $this->assertNotExecutable('tsumo S');
+    }
+
+    function testTsumoNotAbleAfterPung() {
+        $this->getInitRound()->process(
+            'mockHand E 3m; discard E 3m',
+            'mockHand S 33m123456789p22s; pung S 33m'
+        );
+        $this->assertNotExecutable('tsumo S');
+    }
+
+    function testTsumoAbleAfterKong() {
+        $this->getInitRound()->process(
+            'mockHand E 3m; discard E 3m',
+            'mockHand S 333m123456789p2s; mockNextReplace 2s; kong S 333m'
+        );
+        $this->assertExecutable('tsumo S');
+    }
+
     function testRon() {
         $this->getInitRound()->process(
             'mockHand E 4s; discard E 4s',
