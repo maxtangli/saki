@@ -71,7 +71,7 @@ class PointHolder {
     }
 
     /**
-     * @return array e.x. ['E' => ['pre' => 25000, 'change' => -1000, 'now' => 24000], ...]
+     * @return array e.g. ['E' => ['pre' => 25000, 'change' => -1000, 'now' => 24000], ...]
      */
     function getLastChangeDetail() {
         $result = [];

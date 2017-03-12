@@ -55,7 +55,7 @@ class StackList extends ArrayList {
     }
 
     /**
-     * @return array e.x. [['X', 'X'], ['X', '2s'], ['1s', '2s']]
+     * @return array e.g. [['X', 'X'], ['X', '2s'], ['1s', '2s']]
      */
     function toJson() {
         return $this->toArray(Utils::getMethodCallback('toJson'));
@@ -83,7 +83,7 @@ class StackList extends ArrayList {
         // E       S        W        N
         // 0       1        2        3
         // 0...16, 17...33, 34...50, 51...67
-        // e.x. dice 5, last 16, aliveFirst 11,
+        // e.g. dice 5, last 16, aliveFirst 11,
         //      replace 12...13, indicator 14...18, live 11...0,67...19
         $dealWindIndex = ($diceResult - 1) % 4;
         $last = ($dealWindIndex + 1) * 17 - 1;

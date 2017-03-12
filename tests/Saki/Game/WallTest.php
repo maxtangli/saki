@@ -40,7 +40,7 @@ class WallTest extends \SakiTestCase {
         // E       S        W        N
         // 0       1        2        3
         // 0...16, 17...33, 34...50, 51...67
-        // e.x. dice 5, last 16, aliveFirst 11,
+        // e.g. dice 5, last 16, aliveFirst 11,
         //      replace 12...13, indicator 14...18, live 11...0,67...19
         $stackList = StackList::fromTileList(TileSet::createStandard());
         $diceResult = 5;

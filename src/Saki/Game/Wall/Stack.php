@@ -29,7 +29,7 @@ class Stack {
     }
 
     /**
-     * @return array e.x. ['X', 'X'] or ['X', '2s'] or ['1s', '2s']
+     * @return array e.g. ['X', 'X'] or ['X', '2s'] or ['1s', '2s']
      */
     function toJson() {
         return [$this->getTop()->toJson(), $this->getBottom()->toJson()];

@@ -43,7 +43,7 @@ abstract class Result implements Immutable {
     }
 
     /**
-     * @return array An array to indicate point changes in format e.x. ['E' => -1000 ...].
+     * @return array An array to indicate point changes in format e.g. ['E' => -1000 ...].
      */
     function getPointChangeMap() {
         return $this->getPlayerType()->getSeatWindMap([$this, 'getPointChange']);

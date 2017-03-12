@@ -74,10 +74,10 @@ class TileList extends ArrayList {
      * @return string
      */
     function __toString() {
-        $s = ''; // e.x. 123mEEE456pCC
+        $s = ''; // e.g. 123mEEE456pCC
 
         // reverse iterate raw string and filter duplicated 'mps'
-        $rawString = implode('', $this->toArray()); // e.x. 1m2m3mEEE4p5p6pCC
+        $rawString = implode('', $this->toArray()); // e.g. 1m2m3mEEE4p5p6pCC
         $lastSuitType = false;
         $len = strlen($rawString);
         for ($i = $len - 1; $i >= 0; --$i) {
@@ -99,7 +99,7 @@ class TileList extends ArrayList {
 
     /**
      * @param bool $hide
-     * @return array e.x. ['1s', '2s']
+     * @return array e.g. ['1s', '2s']
      */
     function toJson(bool $hide = false) {
         return $hide

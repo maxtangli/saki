@@ -112,7 +112,7 @@ class RoundSerializer {
     }
 
     /**
-     * @return array e.x. ['prev' => 'E', 'self' => 'S', 'next' => 'W', 'towards' => 'N']
+     * @return array e.g. ['prev' => 'E', 'self' => 'S', 'next' => 'W', 'towards' => 'N']
      */
     function toRelationsJson() {
         $areaList = $this->getRound()->getAreaList();

@@ -84,7 +84,7 @@ class Wall {
 
     /**
      * @param PlayerType $playerType
-     * @return Tile[][] e.x. [E => [1s,2s...] ...]
+     * @return Tile[][] e.g. [E => [1s,2s...] ...]
      */
     private function deal(PlayerType $playerType) {
         $result = $playerType->getSeatWindMap([]);
@@ -163,7 +163,7 @@ class Wall {
     }
 
     /**
-     * @return Tile[][] e.x. [E => [1s,2s...] ...]
+     * @return Tile[][] e.g. [E => [1s,2s...] ...]
      */
     function getDealResult() {
         return $this->dealResult;

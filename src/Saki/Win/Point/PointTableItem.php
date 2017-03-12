@@ -74,7 +74,7 @@ class PointTableItem {
     }
 
     /**
-     * 切り上げ. e.x.640->700
+     * 切り上げ. e.g.640->700
      * @param int $rawPoint
      * @return int
      */
