@@ -24,8 +24,9 @@ rush  91-95 | 13.3h
 rush  96-100| 16.1h
 rush 101-105|  7.6h
 rush 106-110|  9.8h
-rush 111-115|   ing
-     total  |458.8h + ing
+rush 111-115|  7.7h
+rush 116-120|   ing
+     total  |466.5h + ing
 
 ## rush history
 
@@ -1273,15 +1274,21 @@ rush 114 refactor 0.6h
 - [x] refactor: remove json null fields 0.2h
 - refactor: Open, Riichi // skip it
 
-rush 115 NagashiMangan
+rush 115 NagashiMangan 2.8h
 
 - [x] bug fix: tsumo after chow/pung 0.3h
-- [ ] yaku 0.3h
 
-rush toward 100% rules!
+- yaku impl 1h // not yaku impl
+- [x] draw impl 0.9h // too slow! not so concentrated
+- [x] test 0.5h
 
-- [ ] pao
-- [ ] multiple ron
+- [x] refactor: remove ExhaustiveDraw.fromWaitingArray 0.1h
+
+rush 116 multiple ron
+
+- [ ] analyze
+
+rush pao
 
 rush code reading
 

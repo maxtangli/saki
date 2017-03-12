@@ -16,7 +16,8 @@ class DrawAnalyzer {
                 FourWindDraw::create(),
                 FourRiichiDraw::create(),
                 FourKongDraw::create(),
-                ExhaustiveDraw::create(), // low priority than FourRiichiDraw and FourKongDraw
+                NagashiManganDraw::create(),
+                ExhaustiveDraw::create(), // low priority than FourRiichiDraw, FourKongDraw, NagashiManganDraw
             ]);
         return self::$standardInstance;
     }

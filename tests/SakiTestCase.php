@@ -205,13 +205,17 @@ class SakiTestCase extends \PHPUnit_Framework_TestCase {
         $this->assertPhaseImpl(Phase::PUBLIC_PHASE, $currentSeatWind);
     }
 
-    function assertOver(int $resultTypeValue = null) {
+    function assertOver(int $resultTypeValue = null, bool $isKeepDealer = null) {
         $this->assertPhaseImpl(Phase::OVER_PHASE);
 
+        $result = $this->getCurrentRound()->getPhaseState()->getResult();
         if (isset($resultTypeValue)) {
             $expected = ResultType::create($resultTypeValue);
-            $actual = $this->getCurrentRound()->getPhaseState()->getResult()->getResultType();
-            $this->assertEquals($expected, $actual);
+            $this->assertEquals($expected, $result->getResultType());
+        }
+
+        if (isset($isKeepDealer)) {
+            $this->assertBool($isKeepDealer, $result->isKeepDealer());
         }
     }
 

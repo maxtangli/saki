@@ -16,6 +16,7 @@ class ResultType extends Enum {
     const FOUR_WIND_DRAW = 6;
     const FOUR_KONG_DRAW = 7;
     const FOUR_REACH_DRAW = 8;
+    const NAGASHIMANGAN_DRAW = 9;
 
     /**
      * @return bool
@@ -58,7 +59,9 @@ class ResultType extends Enum {
      * @return bool
      */
     function isDraw() {
-        return $this->isExhaustiveDraw() || $this->isAbortiveDraw();
+        return $this->isExhaustiveDraw()
+            || $this->isAbortiveDraw()
+            || $this->isNagashiManganDraw();
     }
 
     /**
@@ -79,6 +82,15 @@ class ResultType extends Enum {
             self::FOUR_WIND_DRAW,
             self::FOUR_KONG_DRAW,
             self::FOUR_REACH_DRAW
+        ]);
+    }
+
+    /**
+     * @return bool
+     */
+    function isNagashiManganDraw() {
+        return $this->inTargetValues([
+            self::NAGASHIMANGAN_DRAW
         ]);
     }
 }

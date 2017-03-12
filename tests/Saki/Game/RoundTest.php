@@ -1,6 +1,7 @@
 <?php
 
 use Saki\Game\Phase;
+use Saki\Game\Round;
 use Saki\Game\SeatWind;
 use Saki\Game\Tile\Tile;
 use Saki\Game\Tile\TileList;
@@ -352,6 +353,46 @@ class RoundTest extends \SakiTestCase {
         }
         $this->assertOver(ResultType::EXHAUSTIVE_DRAW);
         $this->assertPoints([25000 - 1000 + 3000, 25000 - 1000, 25000 - 1000, 25000 - 1000]);
+    }
+
+    function testNagashiManganDrawSingle() {
+        $round = $this->getInitRound();
+        $round->process('mockHand E 123456789m12355p; riichi E 5p');
+        $this->processNagashiMangan($round, ['N']);
+        $this->assertOver(ResultType::NAGASHIMANGAN_DRAW, true);
+        $this->assertPoints([25000 - 1000 - 4000, 25000 - 2000, 25000 - 2000, 25000 + 8000]);
+    }
+
+    function testNagashiManganDrawDouble() {
+        $round = $this->getInitRound();
+        $this->processNagashiMangan($round, ['W', 'N']);
+        $this->assertOver(ResultType::NAGASHIMANGAN_DRAW, false);
+        $this->assertPoints([25000 - 4000 - 4000, 25000 - 2000 - 2000, 25000 + 8000 - 2000, 25000 + 8000 - 2000]);
+    }
+
+    function testNagashiManganDrawTriple() {
+        $round = $this->getInitRound();
+        $this->processNagashiMangan($round, ['S', 'W', 'N']);
+        $this->assertOver(ResultType::NAGASHIMANGAN_DRAW, false);
+        $this->assertPoints([25000 - 4000 - 4000 - 4000, 25000 + 8000 - 2000 - 2000, 25000 + 8000 - 2000 - 2000, 25000 + 8000 - 2000 - 2000]);
+    }
+
+    function testNagashiManganDrawAll() {
+        $round = $this->getInitRound();
+        $this->processNagashiMangan($round, ['E', 'S', 'W', 'N']);
+        $this->assertOver(ResultType::NAGASHIMANGAN_DRAW, false);
+        $this->assertPoints([25000, 25000, 25000, 25000]);
+    }
+
+    private function processNagashiMangan(Round $round, array $actors) {
+        for ($phase = $round->getPhaseState()->getPhase(); $phase != Phase::createOver(); $phase = $round->getPhaseState()->getPhase()) {
+            $actorString = $round->getCurrentSeatWind()->__toString();
+            if ($phase->isPrivate() && in_array($actorString, $actors)) {
+                $round->process("mockHand $actorString 1m; discard $actorString 1m");
+            } else {
+                $round->process('skip 1');
+            }
+        }
     }
 
     function testFourRiichiDraw() {

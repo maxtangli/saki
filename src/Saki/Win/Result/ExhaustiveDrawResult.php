@@ -8,27 +8,16 @@ use Saki\Game\SeatWind;
  * @package Saki\Win\Result
  */
 class ExhaustiveDrawResult extends Result {
-    /**
-     * @param bool[] $waitingArray
-     * @return ExhaustiveDrawResult
-     */
-    static function fromWaitingArray(array $waitingArray) {
-        $keys = PlayerType::create(count($waitingArray))->getSeatWindList()->toArray();
-        $waitingMap = array_combine($keys, $waitingArray);
-        return new self($waitingMap);
-    }
-
     private $waitingMap;
 
     /**
      * @param array $waitingMap An array in format: ['E' => $isWaiting ...].
      */
     function __construct(array $waitingMap) {
-        // ignore validation
-        $this->waitingMap = $waitingMap;
         $playerType = PlayerType::create(count($waitingMap));
         $resultType = ResultType::create(ResultType::EXHAUSTIVE_DRAW);
         parent::__construct($playerType, $resultType);
+        $this->waitingMap = $waitingMap; // ignore validation
     }
 
     //region impl

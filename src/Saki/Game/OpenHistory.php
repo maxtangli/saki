@@ -128,6 +128,23 @@ class OpenHistory {
     }
 
     /**
+     * @param SeatWind $seatWind
+     * @return bool
+     */
+    function isNagashiManganDiscard(SeatWind $seatWind) {
+        $isSelf = function (OpenRecord $record) use($seatWind) {
+            return $record->getActor() == $seatWind;
+        };
+        $selfRecordList = $this->list->getCopy()
+            ->where($isSelf);
+
+        $isTermOrHonourDiscard = function (OpenRecord $record) use($seatWind) {
+            return $record->isDiscard() && $record->getTile()->isTermOrHonour();
+        };
+        return $selfRecordList->all($isTermOrHonourDiscard);
+    }
+
+    /**
      * Used in: FourWindDraw
      * @return bool
      */

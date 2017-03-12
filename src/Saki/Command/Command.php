@@ -85,7 +85,7 @@ abstract class Command {
         if ($executable !== true) {
             $e = $executable instanceof \Exception
                 ? $executable
-                : new \InvalidArgumentException('not executable');
+                : new \InvalidArgumentException('not executable: ' . $this->__toString());
             throw $e;
         }
 

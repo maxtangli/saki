@@ -9,7 +9,9 @@ use Saki\Game\SeatWind;
 use Saki\Util\ArrayList;
 use Saki\Win\Result\WinResult;
 use Saki\Win\Result\WinResultInput;
+use Saki\Win\WinReport;
 use Saki\Win\WinState;
+use Saki\Win\Yaku\YakuItemList;
 
 /**
  * @package Saki\Command\PublicCommand\PublicCommand
@@ -35,7 +37,6 @@ class RonCommand extends PublicCommand {
 
     protected function executePlayerImpl(Round $round, Area $actorArea) {
         $actor = $this->getActor();
-
         $winReport = $round->getWinReport($actor);
         $result = new WinResult(WinResultInput::createRon(
             [[$actor, $winReport->getFanAndFu()]],

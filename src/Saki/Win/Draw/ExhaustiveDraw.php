@@ -20,6 +20,9 @@ class ExhaustiveDraw extends Draw {
 
     protected function getResultImpl(Round $round) {
         $waitingAnalyzer = $round->getRule()->getWinAnalyzer()->getWaitingAnalyzer();
+        $keySelector = function (Area $area) {
+            return $area->getSeatWind()->__toString();
+        };
         $isWaiting = function (Area $area) use ($waitingAnalyzer) {
             $public = $area->getHand()->getPublic();
             $melded = $area->getHand()->getMelded();
@@ -27,8 +30,8 @@ class ExhaustiveDraw extends Draw {
             $isWaiting = $waitingTileList->isNotEmpty();
             return $isWaiting;
         };
-        $waitingArray = $round->getAreaList()->toArray($isWaiting);
-        $result = ExhaustiveDrawResult::fromWaitingArray($waitingArray);
+        $waitingMap = $round->getAreaList()->toMap($keySelector, $isWaiting);
+        $result = new ExhaustiveDrawResult($waitingMap);
         return $result;
     }
     //endregion

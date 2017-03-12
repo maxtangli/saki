@@ -1,5 +1,6 @@
 <?php
 
+use Saki\Game\PlayerType;
 use Saki\Game\SeatWind;
 use Saki\Win\Point\FanAndFu;
 use Saki\Win\Result\ExhaustiveDrawResult;
@@ -136,7 +137,9 @@ class WinResultTest extends \SakiTestCase {
      * @dataProvider provideExhaustiveResult
      */
     function testExhaustiveResult(array $pointChanges, array $waitingArray) {
-        $result = ExhaustiveDrawResult::fromWaitingArray($waitingArray);
+        $keys = PlayerType::create(count($waitingArray))->getSeatWindList()->toArray();
+        $waitingMap = array_combine($keys, $waitingArray);
+        $result = new ExhaustiveDrawResult($waitingMap);
         $this->assertResultPointChange($pointChanges[0], 'E', $result);
         $this->assertResultPointChange($pointChanges[1], 'S', $result);
         $this->assertResultPointChange($pointChanges[2], 'W', $result);
