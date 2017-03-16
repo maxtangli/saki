@@ -91,7 +91,7 @@ Saki.DemoView.prototype = {
 
         var result = jsonData.result;
         if (result.isRoundOver) {
-            if (result.winReports.length > 0) {
+            if (result.winReports) {
                 var report = result.winReports[0];
                 var resultText = result.result
                     + '\n' + [report.actor, report.fan + ' fan', report.fu + ' fu'].join(',')
