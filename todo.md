@@ -1284,15 +1284,21 @@ rush 115 NagashiMangan 2.8h
 
 - [x] refactor: remove ExhaustiveDraw.fromWaitingArray 0.1h
 
-rush 116 multiple ron
+rush 116 review and fix rules
 
-- [ ] analyze
+- [ ] review tenhou/man 1.8h
+- [ ] bug fix: nagashiMangan, no chow/pung/kong by other
+- [ ] bug fix: 立直后暗杠：要求不改变待牌。
+- [ ] bug fix: 河底牌不允许个人/公共的吃碰杠。
+- [ ] rule fix: 形式听牌：有。但手牌和宣告区存在4张牌时不视为待牌。
+- [ ] rule fix: 立直放冲：立直不成立，不支付立直棒。
 
+rush replay
+
+rush multiple ron
 rush pao
 
 rush code reading
-
-- [ ] review rules
 
 - [x] search github mahjong projects 0.5h
 - [ ] review design
@@ -1309,17 +1315,6 @@ rush room
 - [ ] login: allow at most 1 websocket connection.
 - [ ] logout:?
 
-rush replay
-
 rush release ver UI
 
-rush document
-
-- [ ] rule 0.6h
-- [ ] tile 1.1h
-- [ ] command 0.6h
-- [ ] yaku 2.8h
-- [ ] furiten 0.8h
-- [ ] demo 1.3h
-
-- [ ] json
+rush document 7.2h

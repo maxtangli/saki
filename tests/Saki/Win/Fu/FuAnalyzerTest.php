@@ -10,11 +10,11 @@ use Saki\Win\WinSubTarget;
 use Saki\Win\Yaku\YakuItemList;
 
 class FuAnalyzerTest extends \SakiTestCase {
-    function testFu() {
-        $public = TileList::fromString('12pCCFFF');
-        $targetTile = Tile::fromString('3p');
-        $handMeldList = MeldList::fromString('123p,CC,(FFF)');
-        $melded = MeldList::fromString('8888p,999m');
+    private function getFuResult(string $public, string $targetTile, string $handMeldList, string $melded) {
+        $public = TileList::fromString($public);
+        $targetTile = Tile::fromString($targetTile);
+        $handMeldList = MeldList::fromString($handMeldList);
+        $melded = MeldList::fromString($melded);
 
         $round = $this->getInitRound();
         $current = $round->getCurrentSeatWind();
@@ -30,6 +30,11 @@ class FuAnalyzerTest extends \SakiTestCase {
         $target = new FuTarget($subTarget, $yakuList, $waitingType);
         $analyzer = FuAnalyzer::create();
         $result = $analyzer->getResult($target);
+        return $result;
+    }
+
+    function testFu() {
+        $result = $this->getFuResult('12pCCFFF', '3p', '123p,CC,(FFF)', '8888p,999m');
 
         /**
          * 「中の対子＝2符」+「辺張待ち＝2符」+「發の暗刻＝8符」+「ツモ＝2符」+「八筒の明槓＝8符」+「九萬の明刻＝4符」
@@ -48,5 +53,10 @@ class FuAnalyzerTest extends \SakiTestCase {
         $this->assertEquals(2, $result->getTsumoFu());
         $this->assertEquals(46, $result->getRoughTotalFu());
         $this->assertEquals(50, $result->getTotalFu());
+    }
+
+    function testNotConcealedPinfu() {
+        $result = $this->getFuResult('123456789mE', 'E', '123m,456m,789m,EE', '123m');
+        $this->assertEquals(30, $result->getTotalFu());
     }
 }
