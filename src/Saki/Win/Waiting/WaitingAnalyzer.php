@@ -63,6 +63,7 @@ class WaitingAnalyzer {
     }
 
     /**
+     * Used in: Riichi
      * @param TileList $private
      * @param MeldList $melded
      * @param Tile $tile

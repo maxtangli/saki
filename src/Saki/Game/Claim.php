@@ -314,6 +314,30 @@ class Claim implements Immutable {
             return false;
         }
 
+        // concealedKong after riichi require
+        if ($this->isConcealedKong() && $area->getRiichiStatus()->isRiichi()) {
+            // 1. concealedKong tiles contains target tile
+            $targetTile = $hand->getTarget()->getTile();
+            $concealedKongContainTargetTile = $this->getToMeld()->toTileList()
+                ->valueExist($targetTile);
+            if (!$concealedKongContainTargetTile) {
+                return false;
+            }
+
+            // 2. waiting tiles not change after concealedKong
+            $waitingAnalyzer = $round->getRule()->getWinAnalyzer()->getWaitingAnalyzer();
+            $currentWaiting = $waitingAnalyzer->analyzePublic($hand->getPublic(), $hand->getMelded());
+
+            $newPublic = $hand->getPrivate()->remove($this->getToMeld()->toArray());
+            $newMelded = $hand->getMelded()->insertLast($this->getToMeld());
+            $newWaiting = $waitingAnalyzer->analyzePublic($newPublic, $newMelded);
+
+            $sameWaiting = ($currentWaiting == $newWaiting);
+            if (!$sameWaiting) {
+                return false;
+            }
+        }
+
         // able to create meld
         $validHand = $hand->getPrivate()->valueExist($this->getFromTiles(), Tile::getPrioritySelector()) // handle red
             && $hand->getMelded()->valueExist($this->getFromMeldOrNull() ?? [], Meld::getCompareKeySelector(true, true)); // handle red

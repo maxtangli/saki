@@ -1287,12 +1287,17 @@ rush 115 NagashiMangan 2.8h
 rush 116 review and fix rules
 
 - [x] review tenhou/man 1.8h
+
 - [x] bug fix: nagashiMangan not allow claimed 0.7h
+
 - [x] bug fix: chow/pung/kong require Wall.notEmpty 0.8h
-- [ ] bug fix: 立直后暗杠：要求不改变待牌。
+
+- [x] bug fix: concealedKong after riichi require waiting tiles no change 1h
+- [ ] refactor: Hand.afterClaim() 0.2h
+- [ ] doc: claim conditions
+
 - [ ] rule fix: 形式听牌：有。但手牌和宣告区存在4张牌时不视为待牌。
 - [ ] rule fix: 立直放冲：立直不成立，不支付立直棒。
-- [ ] refactor: Claim
 
 rush replay
 

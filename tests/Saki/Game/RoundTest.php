@@ -76,7 +76,7 @@ class RoundTest extends \SakiTestCase {
         $this->assertLastOpen('0p');
     }
 
-    function testDiscardWhenReach() {
+    function testDiscardWhenRiichi() {
         $round = $this->getInitRound();
         $round->process(
             'mockHand E 123456789p12347s; riichi E 7s; skip 4;',
@@ -100,11 +100,11 @@ class RoundTest extends \SakiTestCase {
         $this->assertExecutable('discard S 6s');
     }
 
-    function testReach() {
+    function testRiichi() {
         // todo
     }
 
-    function testChowPungKongRequireReach() {
+    function testChowPungKongRequireRiichi() {
         $round = $this->getInitRound();
         $round->process(
             'mockHand E 11123456789m239p; riichi E 9p',
@@ -219,6 +219,32 @@ class RoundTest extends \SakiTestCase {
         $this->assertExecutable('discard E 5p');
     }
 
+    function testConcealKongAfterRiichi() {
+        // ng if not contain target tile
+        $round = $this->getInitRound();
+        $round->process(
+            'mockHand E 111123789m1189pE; riichi E E',
+            'skipTo N false; mockNextDraw 4m; passAll'
+        );
+        $this->assertNotExecutable('concealedKong E 1111m');
+
+        // ng if waiting tiles will change
+        $round = $this->getInitRound();
+        $round->process(
+            'mockHand E 123456789m8999pE; riichi E E',
+            'skipTo N false; mockNextDraw 9p; passAll'
+        );
+        $this->assertNotExecutable('concealedKong E 9999p');
+
+        // ok if contain target tile and target tile not changed
+        $round = $this->getInitRound();
+        $round->process(
+            'mockHand E 111234789m1189pE; riichi E E',
+            'skipTo N false; mockNextDraw 1m; passAll'
+        );
+        $this->assertExecutable('concealedKong E 1111m');
+    }
+
     function testExtendKong() {
         $round = $this->getInitRound();
 
@@ -247,6 +273,14 @@ class RoundTest extends \SakiTestCase {
     }
 
     // todo test kong,concealedKong,extendKong require ReplaceWall not empty
+
+    function testRon() {
+        $this->getInitRound()->process(
+            'mockHand E 4s; discard E 4s',
+            'mockHand S 123m456m789m23s55s; ron S'
+        );
+        $this->assertOver(ResultType::WIN_BY_OTHER);
+    }
 
     function testTsumo() {
         $round = $this->getInitRound();
@@ -284,14 +318,6 @@ class RoundTest extends \SakiTestCase {
             'mockHand S 333m123456789p2s; mockNextReplace 2s; kong S 333m'
         );
         $this->assertExecutable('tsumo S');
-    }
-
-    function testRon() {
-        $this->getInitRound()->process(
-            'mockHand E 4s; discard E 4s',
-            'mockHand S 123m456m789m23s55s; ron S'
-        );
-        $this->assertOver(ResultType::WIN_BY_OTHER);
     }
     //endregion
 }

@@ -109,14 +109,14 @@ class YakuTest extends \SakiTestCase {
         $targetTile = $targetTileString !== null ? Tile::fromString($targetTileString) : $handMeldList[0][0];
 
         $currentSeatWind = SeatWind::fromString($currentSeatWindString ?? 'E');
-        $actorSeatWind = $actorString !== null ? SeatWind::fromString($actorString) : $currentSeatWind;
-        $isPrivate = $currentSeatWind == $actorSeatWind;
+        $actorSeatWind = ($actorString !== null ? SeatWind::fromString($actorString) : $currentSeatWind);
+        $isPrivate = ($currentSeatWind == $actorSeatWind);
 
         $prevailingStatus = new PrevailingStatus(PrevailingWind::fromString($prevailingWindString ?? 'E'), 1, 0);
 
         // init round, set phase
         $round = $this->getInitRound($prevailingStatus);
-        $skipToCommand = sprintf('skipTo %s %s', $currentSeatWind, $isPrivate);
+        $skipToCommand = sprintf('skipTo %s %s', $currentSeatWind, $isPrivate ? 'true' : 'false');
         $round->process($skipToCommand);
 
         // set hand

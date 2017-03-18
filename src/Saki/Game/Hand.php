@@ -3,6 +3,7 @@
 namespace Saki\Game;
 
 use Saki\Command\CommandProvided;
+use Saki\Game\Meld\Meld;
 use Saki\Game\Meld\MeldList;
 use Saki\Game\Tile\Tile;
 use Saki\Game\Tile\TileList;
@@ -109,6 +110,11 @@ class Hand implements Immutable {
 
         $newPublic = $public ?? $this->getPublic();
         $newMelded = $melded ?? $this->getMelded();
+        $validTileCount = ($newPublic->count() + $newMelded->getNormalizedTileCount() == 13);
+        if (!$validTileCount) {
+            throw new \InvalidArgumentException();
+        }
+
         $newTarget = $targetTile ?
             $this->getTarget()->toSetValue($targetTile) : // validate exist
             $this->getTarget();
