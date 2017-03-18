@@ -16,7 +16,6 @@ class PrivatePhaseState extends PhaseState {
     private $shouldDraw;
     private $claim;
     private $target;
-    private $allowClaim;
 
     /**
      * @param Round $round
@@ -35,7 +34,6 @@ class PrivatePhaseState extends PhaseState {
         $this->shouldDraw = $shouldDraw;
         $this->claim = $claim;
         $this->target = $target;
-        $this->allowClaim = true;
     }
 
     /**
@@ -73,7 +71,7 @@ class PrivatePhaseState extends PhaseState {
      * @return boolean
      */
     function allowClaim() {
-        return $this->allowClaim;
+        return true;
     }
 
     //region PhaseState impl

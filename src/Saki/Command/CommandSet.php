@@ -10,6 +10,7 @@ use Saki\Command\DebugCommand\MockNextReplaceCommand;
 use Saki\Command\DebugCommand\MockWallRemainCommand;
 use Saki\Command\DebugCommand\PassAllCommand;
 use Saki\Command\DebugCommand\SkipCommand;
+use Saki\Command\DebugCommand\SkipToLastCommand;
 use Saki\Command\DebugCommand\SkipToCommand;
 use Saki\Command\DebugCommand\ToNextRoundCommand;
 use Saki\Command\PrivateCommand\ConcealedKongCommand;
@@ -60,6 +61,7 @@ class CommandSet extends ArrayList {
                 MockWallRemainCommand::class,
                 PassAllCommand::class,
                 SkipCommand::class,
+                SkipToLastCommand::class,
                 SkipToCommand::class,
                 ToNextRoundCommand::class,
             ]);

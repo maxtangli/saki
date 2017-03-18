@@ -1,7 +1,5 @@
 <?php
 
-use Saki\Game\Phase;
-use Saki\Game\Round;
 use Saki\Game\SeatWind;
 use Saki\Game\Tile\Tile;
 use Saki\Game\Tile\TileList;
@@ -41,14 +39,6 @@ class RoundTest extends \SakiTestCase {
         $this->assertEquals('2m123456789p1234s', $handS->getPrivate()->toSortedString(true));
         $this->assertEquals('2m', $handS->getTarget()->getTile()->toFormatString(true));
         $this->assertEquals('123456789p1234s', $handS->getPublic()->toSortedString(true));
-    }
-
-    function testNew() {
-        // todo
-    }
-
-    function testRoll() {
-        // todo
     }
 
     function testGameOver() {
@@ -114,6 +104,33 @@ class RoundTest extends \SakiTestCase {
         // todo
     }
 
+    function testChowPungKongRequireReach() {
+        $round = $this->getInitRound();
+        $round->process(
+            'mockHand E 11123456789m239p; riichi E 9p',
+            'skipTo N true; mockHand N 1m; discard N 1m'
+        );
+        $this->assertNotExecutable('chow E 23m');
+        $this->assertNotExecutable('pung E 11m');
+        $this->assertNotExecutable('kong E 111m');
+    }
+
+    function testChowPungKongRequireWallNotEmpty() {
+        $round = $this->getInitRound();
+        $round->process('skipToLast');
+
+        $current = $round->getCurrentSeatWind();
+        $round->process(
+            "mockHand $current 1m; discard $current 1m"
+        );
+
+        $next = $current->toNext();
+        $round->process("mockHand $next 11123m");
+        $this->assertNotExecutable("chow $next 23m");
+        $this->assertNotExecutable("pung $next 11m");
+        $this->assertNotExecutable("kong $next 111m");
+    }
+
     function testChow() {
         $round = $this->getInitRound();
 
@@ -142,7 +159,7 @@ class RoundTest extends \SakiTestCase {
         $this->assertNotExecutable('chow W 45m');
     }
 
-    function testChowSwapCalling() {
+    function testChowRequireNotSwapCalling() {
         $round = $this->getInitRound();
         $round->process(
             'mockHand E 1111s; concealedKong E 1111s',
@@ -229,7 +246,7 @@ class RoundTest extends \SakiTestCase {
         $this->assertExecutable('discard S 5p');
     }
 
-    // todo test not kong able
+    // todo test kong,concealedKong,extendKong require ReplaceWall not empty
 
     function testTsumo() {
         $round = $this->getInitRound();
@@ -275,10 +292,6 @@ class RoundTest extends \SakiTestCase {
             'mockHand S 123m456m789m23s55s; ron S'
         );
         $this->assertOver(ResultType::WIN_BY_OTHER);
-    }
-
-    function testMultiRon() {
-        // todo
     }
     //endregion
 }

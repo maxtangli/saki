@@ -1288,10 +1288,11 @@ rush 116 review and fix rules
 
 - [x] review tenhou/man 1.8h
 - [x] bug fix: nagashiMangan not allow claimed 0.7h
+- [x] bug fix: chow/pung/kong require Wall.notEmpty 0.8h
 - [ ] bug fix: 立直后暗杠：要求不改变待牌。
-- [ ] bug fix: 河底牌不允许个人/公共的吃碰杠。
 - [ ] rule fix: 形式听牌：有。但手牌和宣告区存在4张牌时不视为待牌。
 - [ ] rule fix: 立直放冲：立直不成立，不支付立直棒。
+- [ ] refactor: Claim
 
 rush replay
 

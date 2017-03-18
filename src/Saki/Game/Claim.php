@@ -286,11 +286,17 @@ class Claim implements Immutable {
             return false;
         }
 
-        // chow, pong, kong commands require not riichi
-        if ($this->isChowOrPungOrKong() &&
-            $area->getRiichiStatus()->isRiichi()
-        ) {
-            return false;
+        // chow, pong, kong commands
+        if ($this->isChowOrPungOrKong()) {
+            // require not riichi
+            if ($area->getRiichiStatus()->isRiichi()) {
+                return false;
+            }
+
+            // require wall remain
+            if ($round->getWall()->getDrawWall()->isEmpty()) {
+                return false;
+            }
         }
 
         // chow commands require SwapCalling.executable

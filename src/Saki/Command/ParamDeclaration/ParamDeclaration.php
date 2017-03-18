@@ -15,7 +15,10 @@ abstract class ParamDeclaration {
         $valid = count($paramDeclarations) == count($paramStrings);
         if (!$valid) {
             throw new \InvalidArgumentException(
-                sprintf(implode($paramStrings).',',get_called_class())
+                sprintf('Invalid command $paramDeclarations[%s] for $paramStrings[%s].'
+                    , implode($paramDeclarations)
+                    , implode($paramStrings)
+                )
             );
         }
 
