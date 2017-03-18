@@ -158,10 +158,14 @@ class SakiTestCase extends \PHPUnit_Framework_TestCase {
         }
     }
 
-    function assertLastOpen(string $tile) {
+    function assertLastOpen(string $tile, bool $isDeclared = null) {
         $round = $this->getCurrentRound();
-        $openHistory = $round->getTurnHolder()->getOpenHistory();
-        $this->assertEquals($tile, $openHistory->getLastOpen()->getTile());
+        $openRecord = $round->getTurnHolder()->getOpenHistory()
+            ->getLastOpen();
+        $this->assertEquals($tile, $openRecord->getTile());
+        if (isset($isDeclared)) {
+            $this->assertBool($isDeclared, $openRecord->isDeclared());
+        }
     }
 
     function assertHasClaim(Turn $turn) {

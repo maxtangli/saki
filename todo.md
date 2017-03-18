@@ -1286,8 +1286,8 @@ rush 115 NagashiMangan 2.8h
 
 rush 116 review and fix rules
 
-- [ ] review tenhou/man 1.8h
-- [ ] bug fix: nagashiMangan, no chow/pung/kong by other
+- [x] review tenhou/man 1.8h
+- [x] bug fix: nagashiMangan not allow claimed 0.7h
 - [ ] bug fix: 立直后暗杠：要求不改变待牌。
 - [ ] bug fix: 河底牌不允许个人/公共的吃碰杠。
 - [ ] rule fix: 形式听牌：有。但手牌和宣告区存在4张牌时不视为待牌。

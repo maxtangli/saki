@@ -4,6 +4,7 @@ namespace Saki\Game;
 
 use Saki\Game\Tile\TileList;
 use Saki\Util\ArrayList;
+use Saki\Util\Utils;
 
 /**
  * History of open tiles.
@@ -132,16 +133,19 @@ class OpenHistory {
      * @return bool
      */
     function isNagashiManganDiscard(SeatWind $seatWind) {
-        $isSelf = function (OpenRecord $record) use($seatWind) {
-            return $record->getActor() == $seatWind;
+        // 1.荒牌平局時に、自分の捨て牌がすべて么九牌であること
+        // 2.かつ、自身が捨てたすべての么九牌が1枚も鳴かれていないこと
+        $isSelfDiscard = function (OpenRecord $record) use($seatWind) {
+            return $record->isSelfDiscard($seatWind);
         };
-        $selfRecordList = $this->list->getCopy()
-            ->where($isSelf);
+        $selfDiscardRecordList = $this->list->getCopy()
+            ->where($isSelfDiscard);
 
         $isTermOrHonourDiscard = function (OpenRecord $record) use($seatWind) {
-            return $record->isDiscard() && $record->getTile()->isTermOrHonour();
+            return $record->getTile()->isTermOrHonour()
+                && !$record->isDeclared();
         };
-        return $selfRecordList->all($isTermOrHonourDiscard);
+        return $selfDiscardRecordList->all($isTermOrHonourDiscard);
     }
 
     /**

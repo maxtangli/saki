@@ -41,7 +41,8 @@ class SkipToCommand extends DebugCommand {
             if ($phase->isPrivate()) {
                 $actor = $round->getCurrentSeatWind();
                 $area = $round->getArea($actor);
-                $tile = $area->getHand()->getTarget()->getTile();
+                $hand = $area->getHand();
+                $tile = $hand->getTarget()->getTile();
                 $round->process("discard $actor $tile");
             } elseif ($phase->isPublic()) {
                 $round->process('passAll');

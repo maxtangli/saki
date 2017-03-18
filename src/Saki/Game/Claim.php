@@ -356,10 +356,12 @@ class Claim implements Immutable {
         $newHand = new Hand($newPublic, $newMelded, $newTarget);
         $area->setHand($newHand);
 
-        if (!$hand->getTarget()->isOwner($this->getActor())) {
-            $round->getTurnHolder()->getOpenHistory()->setLastDiscardDeclared();
+        if (!$hand->getTarget()->isCreator($this->getActor())) {
+            $round->getTurnHolder()->getOpenHistory()
+                ->setLastDiscardDeclared();
         }
 
-        $round->getTurnHolder()->getClaimHistory()->recordClaim($this->getTurn());
+        $round->getTurnHolder()->getClaimHistory()
+            ->recordClaim($this->getTurn());
     }
 }
