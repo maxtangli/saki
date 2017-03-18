@@ -12,6 +12,7 @@ use Saki\Game\Meld\WeakChowMeldType;
 use Saki\Game\Meld\WeakThirteenOrphanMeldType;
 use Saki\Game\Tile\Tile;
 use Saki\Game\Tile\TileList;
+use Saki\Util\Utils;
 use Saki\Win\Series\SeriesAnalyzer;
 
 /**
@@ -74,13 +75,13 @@ class WaitingAnalyzer {
         $futureWaitingList = $this->analyzePrivateBuffer[$key]
             ?? $this->analyzePrivate($private, $melded);
 
-        $isWaiting = $futureWaitingList->count() > 0;
+        $isWaiting = $futureWaitingList->isNotEmpty();
         if (!$isWaiting) {
             return false;
         }
 
-        $isValidTile = $futureWaitingList->discardExist($tile);
-        if (!$isValidTile) {
+        $validTile = $futureWaitingList->discardExist($tile);
+        if (!$validTile) {
             return false;
         }
 
@@ -151,6 +152,7 @@ class WaitingAnalyzer {
 
             $waiting->concat($setListWaiting);
         }
+
         return $waiting->distinct()->orderByTileID();
         /**
          * An alternative simple but slow algorithm,

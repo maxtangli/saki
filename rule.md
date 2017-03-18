@@ -9,12 +9,10 @@
 
 - Mahjong International League/Riichi Competition Rules http://mahjong-mil.org/riichirules2016.pdf
 - 日本プロ麻雀連盟/競技ルール http://www.ma-jan.or.jp/guide/game_rule.html
-- 天鳳 http://tenhou.net/
+- 天鳳 http://tenhou.net/man
 - wiki/麻雀のルール https://ja.wikipedia.org/wiki/麻雀のルール
 
 # Saki的规则采用
-
-规则采用标准：群众喜闻乐见、常用、简单。
 
 点数与终局
 
@@ -49,7 +47,7 @@
 - 起和：1番。
 - 自摸平和：有。
 - 振听立直：有。
-- 立直放冲：立直不成立，不支付立直棒。
+- （未实装）立直放冲：立直不成立，不支付立直棒。
 - 立直后暗杠：要求不改变待牌。
 - （未实装）两家和：结算，供托转移给上家，庄家和牌连庄。
 - （未实装）三家和：结算，供托转移给上家，庄家和牌连庄。（天凤：途中流局，连庄）
@@ -61,7 +59,7 @@
 流局规则
 
 - 荒牌流局：庄家听牌连庄。
-- 形式听牌：有。但手牌和宣告区存在4张牌时不视为待牌。
+- 形式听牌：有。（天凤：有，但纯手牌含4张的牌不视为听牌）
 - 不听罚符：总计3000点。
 - 流局满贯：有。按满贯自摸和结算点数，多家同时成立时分别结算。庄家听牌连庄。
 - 九种九牌：途中流局，连庄。
@@ -89,24 +87,26 @@
 ## 牌的组合，*Meld
 
 - 对子，Pair：2张相同的牌的组合。
-
+- 面子，Set：顺子、刻子、杠子的总称。
 - 顺子，Chow：3张花色相同、数值连续的牌的组合。
 - 刻子，Pung：3张相同的牌的组合。
 - 杠子，Kong：4张相同的牌的组合。
-- 面子，Set：顺子、刻子、杠子的总称。
+- 明刻, Pung
+- 暗刻, ConcealedPung
+- 明杠, Kong
+- 暗杠, ConcealedKong
 
 ## 局中的牌
 
-- 骰子，Dice：产生随机数1～6的道具，共2个。
-
 - 游戏，Game
-- 局，Hand
+- 局，Round
 
 - 场风，PrevailingWind
 - 自风，SeatWind
 - 庄家，Dealer
 - 闲家，LeisureFamily
 
+- 骰子，Dice：产生随机数1～6的道具，共2个。
 - 牌墩，Stack：山牌的组成单位，由上、下两枚牌，各自的打开状态组成。
 - 山牌，Wall
 - 王牌，DeadWall
@@ -120,15 +120,10 @@
 - 巡目，*CircleCount
 - 当前自风，*CurrentSeatWind：
 - 当前阶段，*CurrentPhase：个人阶段，公共阶段。
-
 - 回合，Turn：（巡目，当前自风）。
 
 - 手牌, Hand
 - 宣告区，Melded
-- 明刻, Pung
-- 暗刻, ConcealedPung
-- 明杠, Kong
-- 暗杠, ConcealedKong
 
 # 流程
 

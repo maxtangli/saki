@@ -32,8 +32,8 @@ class Round {
     // todo remove temp debug
     public $enableDecider = false;
 
-    function __construct() {
-        $rule = new Rule();
+    function __construct(Rule $customRule = null) {
+        $rule = $customRule ?? new Rule();
 
         // immutable
         $this->rule = $rule;

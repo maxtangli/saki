@@ -1284,7 +1284,7 @@ rush 115 NagashiMangan 2.8h
 
 - [x] refactor: remove ExhaustiveDraw.fromWaitingArray 0.1h
 
-rush 116 review and fix rules
+rush 116 review and fix rules 6.9h
 
 - [x] review tenhou/man 1.8h
 
@@ -1296,19 +1296,22 @@ rush 116 review and fix rules
 - refactor: Hand.afterClaim() 0.4h
 - [x] doc: claim conditions 0.7h
 
-- [ ] rule fix: 形式听牌：有。但手牌和宣告区存在4张牌时不视为待牌。
-- [ ] rule fix: 立直放冲：立直不成立，不支付立直棒。
+- (canceled)rule fix: waiting tile for riichi is ng if public already contains 4 0.7h
+- (canceled)try TilePredicate 0.8h
 
-rush replay
+rush riichi cancel by ron
+
+- [ ] refactor: extendKong phase
+- [ ] rule fix: 立直放冲：立直不成立，不支付立直棒。
 
 rush multiple ron
 rush pao
+rush replay
 
 rush code reading
 
 - [x] search github mahjong projects 0.5h
 - [ ] review design
-- [x] try TilePredicate 0.8h
 
 - [ ] search mahjong articles
 - [ ] review algorithms
