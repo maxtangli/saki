@@ -328,12 +328,13 @@ class Claim implements Immutable {
             $waitingAnalyzer = $round->getRule()->getWinAnalyzer()->getWaitingAnalyzer();
             $currentWaiting = $waitingAnalyzer->analyzePublic($hand->getPublic(), $hand->getMelded());
 
-            $newPublic = $hand->getPrivate()->remove($this->getToMeld()->toArray());
+            $newPublic = $hand->getPrivate()->remove(
+                $this->getToMeld()->toArray(), Tile::getPrioritySelector()
+            );
             $newMelded = $hand->getMelded()->insertLast($this->getToMeld());
             $newWaiting = $waitingAnalyzer->analyzePublic($newPublic, $newMelded);
 
-            $sameWaiting = ($currentWaiting == $newWaiting);
-            if (!$sameWaiting) {
+            if ($currentWaiting != $newWaiting) {
                 return false;
             }
         }

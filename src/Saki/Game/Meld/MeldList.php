@@ -76,11 +76,6 @@ class MeldList extends ArrayList {
      */
     function toJson() {
         return $this->json;
-//
-//        $meldToStringArray = function (Meld $meld) {
-//            return $meld->toJson();
-//        };
-//        return $this->toArray($meldToStringArray);
     }
 
     /**
@@ -266,11 +261,11 @@ class MeldList extends ArrayList {
         $map = []; // [1 => ['s' => true] ...]
         foreach ($this as $pungOrKong) {
             /** @var Tile $firstTile */
-            $fistTile = $pungOrKong[0];
-            $number = $fistTile->getNumber();
-            $tileTypeString = $fistTile->getTileType()->__toString();
+            $firstTile = $pungOrKong[0];
+            $number = $firstTile->getNumber();
+            $tileTypeString = $firstTile->getTileType()->__toString();
             $map[$number][$tileTypeString] = true;
-            if (count($map[$fistTile->getNumber()]) == 3) {
+            if (count($map[$firstTile->getNumber()]) == 3) {
                 return true;
             }
         }

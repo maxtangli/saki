@@ -1293,8 +1293,8 @@ rush 116 review and fix rules
 - [x] bug fix: chow/pung/kong require Wall.notEmpty 0.8h
 
 - [x] bug fix: concealedKong after riichi require waiting tiles no change 1h
-- [ ] refactor: Hand.afterClaim() 0.2h
-- [ ] doc: claim conditions
+- refactor: Hand.afterClaim() 0.4h
+- [x] doc: claim conditions 0.7h
 
 - [ ] rule fix: 形式听牌：有。但手牌和宣告区存在4张牌时不视为待牌。
 - [ ] rule fix: 立直放冲：立直不成立，不支付立直棒。
