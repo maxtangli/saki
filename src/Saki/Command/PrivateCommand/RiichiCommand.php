@@ -4,6 +4,7 @@ namespace Saki\Command\PrivateCommand;
 use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
 use Saki\Command\ParamDeclaration\TileParamDeclaration;
 use Saki\Game\Area;
+use Saki\Game\Phase\PublicPhaseState;
 use Saki\Game\Riichi;
 use Saki\Game\Round;
 use Saki\Game\SeatWind;
@@ -47,8 +48,13 @@ class RiichiCommand extends PrivateCommand {
     }
 
     protected function executePlayerImpl(Round $round, Area $actorArea) {
-        $this->getRiichi()->apply();
-        $round->toNextPhase();
+        // set target tile
+        $riichi = $this->getRiichi();
+        $riichi->apply();
+
+        // to riichi public phase
+        $nextPhase = PublicPhaseState::createRiichi($round, $riichi);
+        $round->toNextPhase($nextPhase);
     }
     //endregion
 }

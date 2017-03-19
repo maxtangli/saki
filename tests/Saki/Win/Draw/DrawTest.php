@@ -6,68 +6,6 @@ use Saki\Game\Tile\TileList;
 use Saki\Win\Result\ResultType;
 
 class DrawTest extends \SakiTestCase {
-    function testNotFourKongDrawBySamePlayer() {
-        $round = $this->getInitRound();
-        $round->process(
-            'mockHand E 1111s; concealedKong E 1s1s1s1s',
-            'mockHand E 1111s; concealedKong E 1s1s1s1s',
-            'mockHand E 1111s; concealedKong E 1s1s1s1s',
-            'mockHand E 1111s; concealedKong E 1s1s1s1s',
-            'mockHand E 1s; discard E 1s; passAll'
-        );
-        $this->assertPrivate('S');
-    }
-
-    function testFourKongDrawByConcealedKong() {
-        $round = $this->getInitRound();
-        $round->process(
-            'mockHand E 1111s1m; concealedKong E 1s1s1s1s; discard E 1m; passAll',
-            'mockHand S 1111s1m; concealedKong S 1s1s1s1s; discard S 1m; passAll',
-            'mockHand W 1111s1m; concealedKong W 1s1s1s1s; discard W 1m; passAll',
-            'mockHand N 1111s1m; concealedKong N 1s1s1s1s; discard N 1m; passAll'
-        );
-        $this->assertOver(ResultType::FOUR_KONG_DRAW);
-    }
-
-    function testFourKongDrawByExtendKong() {
-        $round = $this->getInitRound();
-        $round->process(
-            'mockHand E 1m; discard E 1m; passAll',
-            'mockHand S 1111s1m; concealedKong S 1s1s1s1s; discard S 1m; passAll',
-            'mockHand W 1111s1m; concealedKong W 1s1s1s1s; discard W 1m; passAll',
-            'mockHand N 1111s1m; concealedKong N 1s1s1s1s; discard N 1m',
-            'mockHand E 111m1p; pung E 1m1m; extendKong E 1m 111m; passAll; discard E 1p; passAll'
-        );
-        $this->assertOver(ResultType::FOUR_KONG_DRAW);
-    }
-
-    function testFourKongDrawByKong() {
-        $round = $this->getInitRound();
-        $round->process(
-            'mockHand E 1111s1m; concealedKong E 1s1s1s1s; discard E 1m; passAll',
-            'mockHand S 1111s1m; concealedKong S 1s1s1s1s; discard S 1m; passAll',
-            'mockHand W 1111s1m; concealedKong W 1s1s1s1s; discard W 1m',
-            'mockHand E 1111m; kong E 1m1m1m'
-        );
-        $this->assertPrivate();
-
-        $round->process('discard E 1m; passAll');
-        $this->assertOver(ResultType::FOUR_KONG_DRAW);
-    }
-
-    function testNineNineDraw() {
-        $round = $this->getInitRound();
-
-        $validTileList = TileList::fromString('19m19p15559sESWNC');
-        $this->assertTrue($validTileList->isNineKindsOfTermOrHonour());
-
-        $round->process('mockHand E 19m19p15559sESWNC; nineNineDraw E');
-        $this->assertOver(ResultType::NINE_NINE_DRAW);
-
-        $round->process('toNextRound');
-        $this->assertPrivate();
-    }
-
     function testExhaustiveDraw() {
         $round = $this->getInitRound();
         $round->process('mockHand E 123456789m12355p; riichi E 5p');
@@ -133,15 +71,17 @@ class DrawTest extends \SakiTestCase {
         }
     }
 
-    function testFourRiichiDraw() {
+    function testNineNineDraw() {
         $round = $this->getInitRound();
-        $round->process(
-            'mockHand E 123456789m12357s; riichi E 7s; passAll',
-            'mockHand S 123456789m12357s; riichi S 7s; passAll',
-            'mockHand W 123456789m12357s; riichi W 7s; passAll',
-            'mockHand N 123456789m12357s; riichi N 7s; passAll'
-        );
-        $this->assertOver(ResultType::FOUR_REACH_DRAW);
+
+        $validTileList = TileList::fromString('19m19p15559sESWNC');
+        $this->assertTrue($validTileList->isNineKindsOfTermOrHonour());
+
+        $round->process('mockHand E 19m19p15559sESWNC; nineNineDraw E');
+        $this->assertOver(ResultType::NINE_NINE_DRAW);
+
+        $round->process('toNextRound');
+        $this->assertPrivate();
     }
 
     function testFourWindDraw() {
@@ -153,5 +93,65 @@ class DrawTest extends \SakiTestCase {
             'mockHand N E; discard N E; passAll'
         );
         $this->assertOver(ResultType::FOUR_WIND_DRAW);
+    }
+
+    function testFourRiichiDraw() {
+        $round = $this->getInitRound();
+        $round->process(
+            'mockHand E 123456789m12357s; riichi E 7s; passAll',
+            'mockHand S 123456789m12357s; riichi S 7s; passAll',
+            'mockHand W 123456789m12357s; riichi W 7s; passAll',
+            'mockHand N 123456789m12357s; riichi N 7s; passAll'
+        );
+        $this->assertOver(ResultType::FOUR_REACH_DRAW);
+    }
+
+    function testNotFourKongDrawBySamePlayer() {
+        $round = $this->getInitRound();
+        $round->process(
+            'mockHand E 1111s; concealedKong E 1s1s1s1s',
+            'mockHand E 1111s; concealedKong E 1s1s1s1s',
+            'mockHand E 1111s; concealedKong E 1s1s1s1s',
+            'mockHand E 1111s; concealedKong E 1s1s1s1s',
+            'mockHand E 1s; discard E 1s; passAll'
+        );
+        $this->assertPrivate('S');
+    }
+
+    function testFourKongDrawByKong() {
+        $round = $this->getInitRound();
+        $round->process(
+            'mockHand E 1111s1m; concealedKong E 1s1s1s1s; discard E 1m; passAll',
+            'mockHand S 1111s1m; concealedKong S 1s1s1s1s; discard S 1m; passAll',
+            'mockHand W 1111s1m; concealedKong W 1s1s1s1s; discard W 1m',
+            'mockHand E 1111m; kong E 1m1m1m'
+        );
+        $this->assertPrivate();
+
+        $round->process('discard E 1m; passAll');
+        $this->assertOver(ResultType::FOUR_KONG_DRAW);
+    }
+
+    function testFourKongDrawByExtendKong() {
+        $round = $this->getInitRound();
+        $round->process(
+            'mockHand E 1m; discard E 1m; passAll',
+            'mockHand S 1111s1m; concealedKong S 1s1s1s1s; discard S 1m; passAll',
+            'mockHand W 1111s1m; concealedKong W 1s1s1s1s; discard W 1m; passAll',
+            'mockHand N 1111s1m; concealedKong N 1s1s1s1s; discard N 1m',
+            'mockHand E 111m1p; pung E 1m1m; extendKong E 1m 111m; passAll; discard E 1p; passAll'
+        );
+        $this->assertOver(ResultType::FOUR_KONG_DRAW);
+    }
+
+    function testFourKongDrawByConcealedKong() {
+        $round = $this->getInitRound();
+        $round->process(
+            'mockHand E 1111s1m; concealedKong E 1s1s1s1s; discard E 1m; passAll',
+            'mockHand S 1111s1m; concealedKong S 1s1s1s1s; discard S 1m; passAll',
+            'mockHand W 1111s1m; concealedKong W 1s1s1s1s; discard W 1m; passAll',
+            'mockHand N 1111s1m; concealedKong N 1s1s1s1s; discard N 1m; passAll'
+        );
+        $this->assertOver(ResultType::FOUR_KONG_DRAW);
     }
 }

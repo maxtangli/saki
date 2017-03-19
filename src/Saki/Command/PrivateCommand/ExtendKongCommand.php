@@ -88,12 +88,11 @@ class ExtendKongCommand extends PrivateCommand {
         $open = new Open($actorArea, $tile, false);
         $open->apply();
 
-        // to RobbingPublicPhase
+        // to robbing public phase
         $claim = $this->getClaim();
         $target = new Target($tile, TargetType::create(TargetType::KEEP), $actorArea->getSeatWind());
-        $round->toNextPhase(
-            PublicPhaseState::createRobbing($round, $actor, $claim, $target)
-        );
+        $nextPhase = PublicPhaseState::createRobbing($round, $actor, $claim, $target);
+        $round->toNextPhase($nextPhase);
     }
     //endregion
 }

@@ -101,7 +101,28 @@ class RoundTest extends \SakiTestCase {
     }
 
     function testRiichi() {
-        // todo
+        $round = $this->getInitRound();
+
+        $round->process('mockHand E 123456789m1234pE; riichi E E');
+        $this->assertPublic('E');
+        $this->assertRiichi(false, 'E');
+        $this->assertPoint(25000, 'E');
+
+        $round->process('passAll');
+        $this->assertPrivate('S');
+        $this->assertRiichi(true, 'E');
+        $this->assertPoint(25000 - 1000, 'E');
+    }
+
+    function testRiichiCanceledByRon() {
+        $round = $this->getInitRound();
+
+        $round->process(
+            'mockHand E 123456789m1234pE; riichi E E',
+            'mockHand S 123456789m123pE; ron S'
+        );
+        $this->assertOver(ResultType::WIN_BY_OTHER);
+        $this->assertRiichi(false, 'E');
     }
 
     function testChowPungKongRequireRiichi() {

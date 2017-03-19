@@ -1299,10 +1299,10 @@ rush 116 review and fix rules 6.9h
 - (canceled)rule fix: waiting tile for riichi is ng if public already contains 4 0.7h
 - (canceled)try TilePredicate 0.8h
 
-rush riichi cancel by ron
+rush 117 riichi cancel by ron 1.5h
 
-- [ ] refactor: extendKong phase
-- [ ] rule fix: 立直放冲：立直不成立，不支付立直棒。
+- refactor: extendKong phase 0.8h
+- [x] rule fix: riichi.postApply 0.7h
 
 rush multiple ron
 rush pao

@@ -8,8 +8,8 @@
 参考资料
 
 - Mahjong International League/Riichi Competition Rules http://mahjong-mil.org/riichirules2016.pdf
-- 日本プロ麻雀連盟/競技ルール http://www.ma-jan.or.jp/guide/game_rule.html
 - 天鳳 http://tenhou.net/man
+- 日本プロ麻雀連盟/競技ルール http://www.ma-jan.or.jp/guide/game_rule.html
 - wiki/麻雀のルール https://ja.wikipedia.org/wiki/麻雀のルール
 
 # Saki的规则采用
@@ -17,7 +17,7 @@
 点数与终局
 
 - 配点：持点25000返点30000，顺位马10-20。
-- 供托：游戏结束时转移给首位。
+- 供托：每本场300点，游戏结束时转移给首位。
 - 终了结算：按1000点四舍五入，按（点数，座次）排位。
 - 打飞：有，有玩家小于0点时终了。
 - 加时赛：东风战南入，东南战西入。有玩家满30000点终了。
@@ -38,6 +38,7 @@
 - 人和：有，要求第一次自摸前。（天凤：无）
 - 累计役满：有，13番以上。
 - 累计多倍役满：有，13番以上时，役满倍数为floor(番数/13)。（天凤：无）
+- 国士无双抢暗杠：无。
 - 国士无双十三面待：有，双倍役满。（天凤：役满）
 - 四暗刻单骑：有，双倍役满。（天凤：役满）
 - 纯正九宝莲灯：有，双倍役满。（天凤：役满）
@@ -47,8 +48,9 @@
 - 起和：1番。
 - 自摸平和：有。
 - 振听立直：有。
+- 空听立直：有。
 - （未实装）立直放冲：立直不成立，不支付立直棒。
-- 立直后暗杠：要求不改变待牌。
+- 立直后暗杠：有，要求不改变待牌。
 - （未实装）两家和：结算，供托转移给上家，庄家和牌连庄。
 - （未实装）三家和：结算，供托转移给上家，庄家和牌连庄。（天凤：途中流局，连庄）
 - （未实装）大三元确定：有。
@@ -64,13 +66,12 @@
 - 流局满贯：有。按满贯自摸和结算点数，多家同时成立时分别结算。庄家听牌连庄。
 - 九种九牌：途中流局，连庄。
 - 四风连打：途中流局，连庄。
-- 四开杠：途中流局，连庄。
 - 四家立直：途中流局，连庄。
+- 四开杠：途中流局，连庄。
 
 # 术语
 
-## 牌
-
+牌
 - 牌，Tile：游戏的基本元素，分为数牌和字牌两种类别，分为34种，每种4张，共136张。
 
 - 数牌，Suit：牌的两种类别之一，由花色和数值两种元素构成的牌，分为27种，每种4张，共108张。
@@ -84,7 +85,7 @@
 - 老头牌，Term：数值为1或9的数牌，包括：1m、9m、1p、9p、1s、9s，共6种。
 - 幺九牌，TermOrHonour：老头牌和字牌的总称，包括：1m、9m、1p、9p、1s、9s、E、S、W、N、C、P、F，共16种。
 
-## 牌的组合，*Meld
+牌的组合，*Meld
 
 - 对子，Pair：2张相同的牌的组合。
 - 面子，Set：顺子、刻子、杠子的总称。
@@ -96,7 +97,7 @@
 - 明杠, Kong
 - 暗杠, ConcealedKong
 
-## 局中的牌
+局中的牌
 
 - 游戏，Game
 - 局，Round
@@ -203,7 +204,35 @@ PlayerCommand.getExecutableList()
 - 大明杠，Kong：public + target -> declare, toPrivate(actor, draw=false)
 - 荣和，Ron：toOver(result)
 
-## 指令执行的前置条件
+## 公共阶段的指令优先级
+
+setAble actor, command
+1. buffer.actor is empty
+2. candidate is null, or command>candidate
+
+priority: 荣和>碰=大明杠>吃>pass
+
+set actor,command
+- if pass: buffer.actor=command
+- otherwise: clear buffer, buffer.actor=command, candidate = command
+
+if buffer.full
+- if all pass，return passAll
+- otherwise, return candidate
+
+## 公共阶段的无用指令跳过
+
+// skip AI private actor
+if private phase && actor.isAI
+  execute random discard
+
+// skip all public actor's needless single pass commands
+if public phase && decider on
+  commands = provider.get where public actor
+    for all actor where commands=[pass] or actor.isAI
+      execute pass
+
+## 指令的前置条件
 
 吃，Chow
 - 指定牌+目标牌构成牌型
@@ -234,7 +263,12 @@ PlayerCommand.getExecutableList()
 - 不可能立直
 - 岭上牌残数>0
 
-## 杠指令流程
+## 指令的执行流程
+
+立直
+1. 个人阶段，设目标牌，设公共阶段callback
+2. 公共阶段
+3. 离开公共阶段（非前往结束阶段时，设置立直状态和支付立直棒）
 
 大明杠
 1. 他家公共阶段，杠宣言成立
@@ -250,59 +284,6 @@ PlayerCommand.getExecutableList()
 3. 离开抢杠公共阶段（无四开杠途流）
 4. 杠者不摸牌个人阶段
 5. 杠宣言成立
-
-## 公共阶段的指令优先级
-
-setAble actor, command
-1. buffer.actor is empty
-2. candidate is null, or command>candidate
-
-priority: 荣和>碰=大明杠>吃>pass
-
-set actor,command
-- if pass: buffer.actor=command
-- otherwise: clear buffer, buffer.actor=command, candidate = command
-
-if buffer.full
-- if all pass，return passAll
-- otherwise, return candidate
-
-## 公共阶段的无用指令跳过
-
-// skip AI private actor
-if private phase && actor.isAI
-  execute random discard
-
-// skip all public actor's needless single pass commands
-if public phase && decider on
-  commands = provider.get where public actor
-    for all actor where commands=[pass] or actor.isAI
-      execute pass
-
-## 副露的表示
-
-chow: fromRel=prev
-- 排序后，把 目标牌 移动到 fromRel位置
-- 45+6s: -6s,4s,5s
-- 46+5s: -5s,4s,6s
-- 56+4s: -4s,5s,6s
-
-pung: fromRel=other
-- 排序后，把 目标牌 移动到 fromRel位置
-- 55s+0s: [-0s,5s,5s] [5s,-0s,5s] [5s,5s,-0s]
-
-kong: fromRel=other
-- 排序后，把 目标牌 移动到 fromRel位置
-- 555s+0s: [-0s,5s,5s,5s] [5s,-0s,5s,5s] [5s,5s,5s,-0s]
-
-extendKong: fromRel=other+self
-- 在原json基础上，把 目标牌 放在 原fromRel位置
-- 55s+0s+5s: [-5s,-0s,5s,5s] [5s,-5s,-0s,5s] [5s,5s,-5s,-0s]
-
-concealedKong: fromRel=self
-- 排序后，把 赤牌 交换到 pos=1，隐藏两端
-- 5555s: O,5s,5s,O
-- 5500s: O,0s,0s,O
 
 # 流局的判定
 
@@ -335,6 +316,31 @@ concealedKong: fromRel=self
 
 - 四家立直：有4家立直。
 - 三家和：有3家发出了和牌指令。
+
+## 副露的表示
+
+chow: fromRel=prev
+- 排序后，把 目标牌 移动到 fromRel位置
+- 45+6s: -6s,4s,5s
+- 46+5s: -5s,4s,6s
+- 56+4s: -4s,5s,6s
+
+pung: fromRel=other
+- 排序后，把 目标牌 移动到 fromRel位置
+- 55s+0s: [-0s,5s,5s] [5s,-0s,5s] [5s,5s,-0s]
+
+kong: fromRel=other
+- 排序后，把 目标牌 移动到 fromRel位置
+- 555s+0s: [-0s,5s,5s,5s] [5s,-0s,5s,5s] [5s,5s,5s,-0s]
+
+extendKong: fromRel=other+self
+- 在原json基础上，把 目标牌 放在 原fromRel位置
+- 55s+0s+5s: [-5s,-0s,5s,5s] [5s,-5s,-0s,5s] [5s,5s,-5s,-0s]
+
+concealedKong: fromRel=self
+- 排序后，把 赤牌 交换到 pos=1，隐藏两端
+- 5555s: O,5s,5s,O
+- 5500s: O,0s,0s,O
 
 # 和牌的判定
 
@@ -440,8 +446,8 @@ concealedKong: fromRel=self
 
 基本额（仅四人情形）
 
-- 胜者收入：
-- 败者支付：
+- 胜者收入
+- 败者支付
 
 场棒
 

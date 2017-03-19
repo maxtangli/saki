@@ -80,34 +80,37 @@ class PrivatePhaseState extends PhaseState {
     }
 
     function getDefaultNextState() {
-        return PublicPhaseState::create($this->getRound());
+        return new PublicPhaseState($this->getRound());
     }
 
     function enter() {
         $round = $this->getRound();
         $actor = $this->getActor();
+
+        // turn changed
         $round->getTurnHolder()->toSeatWind($actor);
 
+        // set target by draw
         if ($this->shouldDraw()) {
             $newTile = $round->getWall()->getDrawWall()
                 ->outNext();
             $newTarget = new Target($newTile, TargetType::create(TargetType::DRAW), $actor);
-            $round->getTargetHolder()
-                ->setTarget($newTarget);
+            $round->getTargetHolder()->setTarget($newTarget);
         }
 
+        // set target by public claim
         if ($this->hasClaim()) {
             $target = $this->target ?? $round->getTurnHolder()->getOpenHistory()->getLastOpen()->toTarget();
-            $round->getTargetHolder()
-                ->setTarget($target);
+            $round->getTargetHolder()->setTarget($target);
             $this->claim->apply();
         }
     }
 
     function leave() {
+        // clear target
         if (!$this->getNextState()->getPhase()->isOver()) {
-            $this->getRound()->getTargetHolder()
-                ->setTarget(Target::createNull());
+            $round = $this->getRound();
+            $round->getTargetHolder()->setTarget(Target::createNull());
         }
     }
     //endregion

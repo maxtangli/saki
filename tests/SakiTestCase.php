@@ -198,6 +198,11 @@ class SakiTestCase extends \PHPUnit_Framework_TestCase {
         $currentTurn = $round->getTurnHolder()->getTurn();
         $this->assertEquals($turn, $currentTurn);
     }
+
+    function assertRiichi(bool $isRiichi, string $seatWind) {
+        $area = $this->getCurrentRound()->getArea(SeatWind::fromString($seatWind));
+        $this->assertBool($isRiichi, $area->getRiichiStatus()->isRiichi());
+    }
     //endregion
 
     //region Phase

@@ -7,9 +7,12 @@ use Saki\Game\Tile\Tile;
  * @package Saki\Game
  */
 class Riichi extends Open {
+    private $turnForPostProcessing;
+
     //region override Open
     function __construct(Area $area, Tile $openTile) {
         parent::__construct($area, $openTile, true);
+        $this->turnForPostProcessing = $area->getRound()->getTurnHolder()->getTurn();
     }
 
     function valid() {
@@ -43,14 +46,17 @@ class Riichi extends Open {
 
     function apply() {
         parent::apply();
+//        $this->postApply();
+    }
+    //endregion
 
+    function postApply() {
         $area = $this->getArea();
         $round = $area->getRound();
-        $riichiStatus = new RiichiStatus($round->getTurnHolder()->getTurn());
+        $riichiStatus = new RiichiStatus($this->turnForPostProcessing);
         $round->getRiichiHolder()
             ->setRiichiStatus($area->getSeatWind(), $riichiStatus);
         $round->getPointHolder()
             ->setPointChange($this->getActor(), -1000);
     }
-    //endregion
 }

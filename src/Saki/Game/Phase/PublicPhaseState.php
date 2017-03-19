@@ -6,6 +6,7 @@ use Saki\Command\CommandDecider;
 use Saki\Command\MockCommandDecider;
 use Saki\Game\Claim;
 use Saki\Game\Phase;
+use Saki\Game\Riichi;
 use Saki\Game\Round;
 use Saki\Game\SeatWind;
 use Saki\Game\Target;
@@ -22,8 +23,9 @@ class PublicPhaseState extends PhaseState {
      * @return PublicPhaseState
      */
     static function createRobbing(Round $round, SeatWind $actor, Claim $claim, Target $target) {
-        list($allowClaim, $isRobbing) = [false, true];
-        $phase = new self($round, $allowClaim, $isRobbing);
+        $phase = new self($round);
+        $phase->allowClaim = false;
+        $phase->isRobbing = true;
         $phase->setCustomNextState(
             new PrivatePhaseState($round, $actor, false, $claim, $target)
         );
@@ -32,27 +34,32 @@ class PublicPhaseState extends PhaseState {
 
     /**
      * @param Round $round
+     * @param Riichi $riichi
      * @return PublicPhaseState
      */
-    static function create(Round $round) {
-        list($allowClaim, $isRobbing) = [true, false];
-        return new self($round, $allowClaim, $isRobbing);
+    static function createRiichi(Round $round, Riichi $riichi) {
+        $phase = new self($round);
+        $phase->riichi = $riichi;
+        return $phase;
     }
 
     private $decider;
     private $allowClaim;
     private $isRobbing;
+    /** @var Riichi */
+    private $riichi;
 
     /**
      * @param Round $round
-     * @param bool $allowClaim
-     * @param bool $isRobbing
      */
-    function __construct(Round $round, bool $allowClaim, bool $isRobbing) {
+    function __construct(Round $round) {
         parent::__construct($round);
         $this->decider = null;
-        $this->allowClaim = $allowClaim;
-        $this->isRobbing = $isRobbing;
+        // robbing fields
+        $this->allowClaim = true;
+        $this->isRobbing = false;
+        // riichi fields
+        $this->riichi = null;
     }
 
     /**
@@ -85,13 +92,15 @@ class PublicPhaseState extends PhaseState {
     /**
      * @return bool
      */
-    protected function handleDraw() {
+    private function handleDraw() {
         $round = $this->getRound();
         $drawAnalyzer = $round->getRule()->getDrawAnalyzer();
         $drawOrFalse = $drawAnalyzer->analyzeDrawOrFalse($round);
         if ($drawOrFalse !== false) {
             $drawResult = $drawOrFalse->getResult($round);
-            $this->setCustomNextState(new OverPhaseState($round, $drawResult));
+            $this->setCustomNextState(
+                new OverPhaseState($round, $drawResult)
+            );
             return true;
         } else {
             // do nothing
@@ -106,7 +115,8 @@ class PublicPhaseState extends PhaseState {
 
     function getDefaultNextState() {
         $round = $this->getRound();
-        $nextActor = $round->getTurnHolder()->getTurn()->getSeatWind()->toNext();
+        $nextActor = $round->getTurnHolder()->getTurn()
+            ->getSeatWind()->toNext();
         $shouldDrawTile = true;
         return new PrivatePhaseState($round, $nextActor, $shouldDrawTile);
     }
@@ -115,23 +125,26 @@ class PublicPhaseState extends PhaseState {
         $round = $this->getRound();
 
         // set target
-        $target = $round->getTurnHolder()->getOpenHistory()->getLastOpen()->toTarget();
+        $target = $round->getTurnHolder()->getOpenHistory()
+            ->getLastOpen()->toTarget();
         $round->getTargetHolder()->setTarget($target);
-
-        // bottom of sea not allow claim
-        if ($round->getWall()->getDrawWall()->isEmpty()) {
-            $this->allowClaim = false;
-        }
     }
 
     function leave() {
         $round = $this->getRound();
+        $isOver = $this->getNextState()->getPhase()->isOver();
 
+        // riichi is handled before handleDraw() to support FourRiichiDraw
+        if (isset($this->riichi) && !$isOver) {
+            $this->riichi->postApply();
+        }
+
+        // handle draw
         $this->handleDraw();
 
-        if (!$this->getNextState()->getPhase()->isOver()) {
-            $round->getTargetHolder()
-                ->setTarget(Target::createNull());
+        // clear target
+        if (!$isOver) {
+            $round->getTargetHolder()->setTarget(Target::createNull());
         }
     }
     //endregion

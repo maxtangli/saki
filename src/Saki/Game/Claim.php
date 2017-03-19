@@ -286,32 +286,33 @@ class Claim implements Immutable {
             return false;
         }
 
-        // chow, pong, kong commands
-        if ($this->isChowOrPungOrKong()) {
-            // require not riichi
-            if ($area->getRiichiStatus()->isRiichi()) {
-                return false;
-            }
+        // require wall remain
+        if ($round->getWall()->getDrawWall()->isEmpty()) {
+            return false;
+        }
 
-            // require wall remain
-            if ($round->getWall()->getDrawWall()->isEmpty()) {
+        // chow, pong, kong commands require not riichi
+        if ($this->isChowOrPungOrKong()) {
+            if ($area->getRiichiStatus()->isRiichi()) {
                 return false;
             }
         }
 
         // chow commands require SwapCalling.executable
-        $swapCalling = $round->getRule()->getSwapCalling();
-        if ($this->isChow()
-            && !$swapCalling->allowChow($hand->getPublic(), $hand->getTarget()->getTile(), $toMeld)
-        ) {
-            return false;
+        if ($this->isChow()) {
+            $validSwapCalling = $round->getRule()->getSwapCalling()
+                ->allowChow($hand->getPublic(), $hand->getTarget()->getTile(), $toMeld);
+            if (!$validSwapCalling) {
+                return false;
+            }
         }
 
         // kong commands require ableDrawReplacement
-        if ($this->isKong()
-            && !$round->getWall()->getReplaceWall()->ableOutNext()
-        ) {
-            return false;
+        if ($this->isKong()) {
+            $validReplaceWall = $round->getWall()->getReplaceWall()->ableOutNext();
+            if (!$validReplaceWall) {
+                return false;
+            }
         }
 
         // concealedKong after riichi require
@@ -334,7 +335,8 @@ class Claim implements Immutable {
             $newMelded = $hand->getMelded()->insertLast($this->getToMeld());
             $newWaiting = $waitingAnalyzer->analyzePublic($newPublic, $newMelded);
 
-            if ($currentWaiting != $newWaiting) {
+            $keepWaitingTiles = ($currentWaiting == $newWaiting);
+            if (!$keepWaitingTiles) {
                 return false;
             }
         }

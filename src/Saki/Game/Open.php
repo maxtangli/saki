@@ -89,6 +89,7 @@ class Open implements Immutable {
         }
         $openTile = $this->getOpenTile();
 
+        // set hand
         $area = $this->getArea();
         $hand = $area->getHand();
         $newPublic = $hand->getPrivate()
@@ -96,9 +97,9 @@ class Open implements Immutable {
         $newMelded = $hand->getMelded();
         $newTarget = Target::createNull();
         $newHand = new Hand($newPublic, $newMelded, $newTarget);
-
         $area->setHand($newHand);
 
+        // record open
         $turnHolder = $area->getRound()->getTurnHolder();
         $openRecord = new OpenRecord(
             $turnHolder->getTurn(),
