@@ -16,7 +16,7 @@ class WinResultTest extends \SakiTestCase {
      * @param int $riichiChange
      * @param int $seatChange
      */
-    protected function assertWinResultPointChange(
+    private function assertWinResultPointChange(
         int $tableChange, int $riichiChange, int $seatChange,
         WinResult $result, string $actorString
     ) {
@@ -29,6 +29,11 @@ class WinResultTest extends \SakiTestCase {
         $this->assertEquals($totalChange, $result->getPointChange($actor));
 
         $this->assertEquals($totalChange, $result->getPointChangeMap()[$actor->__toString()]);
+    }
+
+    private function assertResultPointChange(int $pointChange, string $seatWind, Result $result) {
+        $actual = $result->getPointChange(SeatWind::fromString($seatWind));
+        $this->assertEquals($pointChange, $actual);
     }
 
     /**
@@ -109,7 +114,7 @@ class WinResultTest extends \SakiTestCase {
         ], $result);
     }
 
-    function testMultipleRon() {
+    function testDoubleRon() {
         $input = WinResultInput::createRon(
             [[SeatWind::createEast(), new FanAndFu(1, 40)], [SeatWind::createSouth(), new FanAndFu(2, 40)]],
             SeatWind::createWest(),
@@ -124,11 +129,6 @@ class WinResultTest extends \SakiTestCase {
             [-2000 - 2600, 0, -300 - 300],
             [0, 0, 0],
         ], $result);
-    }
-
-    private function assertResultPointChange(int $pointChange, string $seatWind, Result $result) {
-        $actual = $result->getPointChange(SeatWind::fromString($seatWind));
-        $this->assertEquals($pointChange, $actual);
     }
 
     /**

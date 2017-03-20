@@ -1,11 +1,10 @@
 <?php
 namespace Saki\Command;
 
-use Saki\Command\PublicCommand\PublicCommand;
-
 class MockCommandDecider implements CommandDecider {
     private $candidate;
 
+    //region CommandDecider impl
     function clear() {
         $this->candidate = null;
     }
@@ -21,18 +20,19 @@ class MockCommandDecider implements CommandDecider {
         return $this->candidate;
     }
 
-    function isDecidedCommand(PublicCommand $publicCommand) {
-        return $this->decided() && $this->getDecided() == $publicCommand;
+    function isDecidedCommand(Command $command) {
+        return $this->decided() && $this->getDecided() == $command;
     }
 
-    function allowSubmit(PublicCommand $publicCommand) {
+    function allowSubmit(Command $command) {
         return !$this->decided();
     }
 
-    function submit(PublicCommand $publicCommand) {
-        if (!$this->allowSubmit($publicCommand)) {
+    function submit(Command $command) {
+        if (!$this->allowSubmit($command)) {
             throw new \InvalidArgumentException();
         }
-        $this->candidate = $publicCommand;
+        $this->candidate = $command;
     }
+    //endregion
 }

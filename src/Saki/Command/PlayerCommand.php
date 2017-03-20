@@ -94,15 +94,15 @@ abstract class PlayerCommand extends Command {
             if ($decider->decided()) {
                 if ($decider->isDecidedCommand($this)) {
                     $decider->clear();
-                    return $this->executePlayerImpl($round, $this->getActorArea());
+                    $this->executePlayerImpl($round, $this->getActorArea());
                 } else {
-                    return $decider->getDecided()->execute();
+                    $decider->getDecided()->execute();
                 }
             } else {
-                return true;
+                // do nothing
             }
         } else {
-            return $this->executePlayerImpl($round, $this->getActorArea());
+            $this->executePlayerImpl($round, $this->getActorArea());
         }
     }
     //endregion
@@ -118,7 +118,6 @@ abstract class PlayerCommand extends Command {
     /**
      * @param Round $round
      * @param Area $actorArea
-     * @return
      */
     abstract protected function executePlayerImpl(Round $round, Area $actorArea);
     //endregion

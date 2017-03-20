@@ -49,10 +49,9 @@
 - 自摸平和：有。
 - 振听立直：有。
 - 空听立直：有。
-- （未实装）立直放冲：立直不成立，不支付立直棒。
+- 立直放冲：立直不成立，不支付立直棒。
 - 立直后暗杠：有，要求不改变待牌。
-- （未实装）两家和：结算，供托转移给上家，庄家和牌连庄。
-- （未实装）三家和：结算，供托转移给上家，庄家和牌连庄。（天凤：途中流局，连庄）
+- 两家和：结算，供托转移给上家，庄家和牌连庄。
 - （未实装）大三元确定：有。
 - （未实装）大四喜确定：有。
 - （未实装）四杠子确定：有。（天凤：无）
@@ -68,6 +67,7 @@
 - 四风连打：途中流局，连庄。
 - 四家立直：途中流局，连庄。
 - 四开杠：途中流局，连庄。
+- （未实装）三家和：途中流局，连庄。
 
 # 术语
 
@@ -206,11 +206,12 @@ PlayerCommand.getExecutableList()
 
 ## 公共阶段的指令优先级
 
-setAble actor, command
-1. buffer.actor is empty
-2. candidate is null, or command>candidate
+指令决定
+1.各玩家的可选指令集：至少含pass。
+2.各玩家发出指令，直至填满buffer。玩家只能发出pass或不低于当前bufferCandidate的指令，只能发出1次指令。
+3.buffer填满后，生成最终指令。
 
-priority: 荣和>碰=大明杠>吃>pass
+优先级：ron>pung=kong>chow>pass
 
 set actor,command
 - if pass: buffer.actor=command

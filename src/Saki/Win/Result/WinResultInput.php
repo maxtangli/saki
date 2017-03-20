@@ -16,7 +16,7 @@ class WinResultInput {
      * @param array $others
      * @param int $riichiPoints
      * @param int $seatWindTurn
-     * @param WinReport|null $winReportForView 
+     * @param WinReport|null $winReportForView
      * @return WinResultInput
      */
     static function createTsumo($winnerPair, array $others, int $riichiPoints, int $seatWindTurn, WinReport $winReportForView = null) {
@@ -127,11 +127,22 @@ class WinResultInput {
      * @return ResultType
      */
     function getResultType() {
-        return ResultType::create(
-            $this->isTsumo()
-                ? ResultType::WIN_BY_SELF
-                : ResultType::WIN_BY_OTHER
-        );
+        if ($this->isTsumo()) {
+            $v = ResultType::WIN_BY_SELF;
+        } else {
+            switch ($this->getWinnerCount()) {
+                case 1:
+                    $v = ResultType::WIN_BY_OTHER;
+                    break;
+                case 2:
+                    $v = ResultType::DOUBLE_WIN_BY_OTHER;
+                    break;
+                default:
+                    throw new \LogicException();
+            }
+        }
+
+        return ResultType::create($v);
     }
 
     /**

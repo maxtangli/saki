@@ -1,7 +1,7 @@
 <?php
 namespace Saki\Game\Phase;
 
-use Saki\Command\BufferCommandDecider;
+use Saki\Command\BufferedCommandDecider;
 use Saki\Command\CommandDecider;
 use Saki\Command\MockCommandDecider;
 use Saki\Game\Claim;
@@ -69,7 +69,7 @@ class PublicPhaseState extends PhaseState {
         $round = $this->getRound();
         if (is_null($this->decider)) {
             $this->decider = $round->enableDecider
-                ? new BufferCommandDecider($round->getRule()->getPlayerType(), $round->getProcessor()->getParser())
+                ? new BufferedCommandDecider($round->getRule()->getPlayerType(), $round->getProcessor()->getParser())
                 : new MockCommandDecider();
         }
         return $this->decider;

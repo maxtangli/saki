@@ -1,6 +1,5 @@
 <?php
 namespace Saki\Command;
-use Saki\Command\PublicCommand\PublicCommand;
 
 /**
  * @package Saki\Command
@@ -14,24 +13,25 @@ interface CommandDecider {
     function decided();
 
     /**
-     * @return PublicCommand
+     * @return Command
      */
     function getDecided();
 
     /**
-     * @param PublicCommand $publicCommand
+     * @param Command $command
      * @return bool
      */
-    function isDecidedCommand(PublicCommand $publicCommand);
+    function isDecidedCommand(Command $command);
 
     /**
-     * @param PublicCommand $publicCommand
+     * @param Command $command
      * @return bool
      */
-    function allowSubmit(PublicCommand $publicCommand);
+    function allowSubmit(Command $command);
 
     /**
-     * @param PublicCommand $publicCommand
+     * @param Command $command
+     * @return
      */
-    function submit(PublicCommand $publicCommand);
+    function submit(Command $command);
 }

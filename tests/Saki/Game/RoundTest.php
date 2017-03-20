@@ -303,6 +303,19 @@ class RoundTest extends \SakiTestCase {
         $this->assertOver(ResultType::WIN_BY_OTHER);
     }
 
+    function testDoubleRon() {
+        $round = $this->getInitRound();
+        $round->enableDecider = true;
+        $round->process(
+            'mockHand E 4s; discard E 4s',
+            'mockHand S 123m456m789m23s55s; ron S',
+            'mockHand W 123m456m789m23s55s; ron W',
+            'pass N'
+        );
+        $this->assertOver(ResultType::DOUBLE_WIN_BY_OTHER, false);
+        // todo test points, dealer
+    }
+
     function testTsumo() {
         $round = $this->getInitRound();
 

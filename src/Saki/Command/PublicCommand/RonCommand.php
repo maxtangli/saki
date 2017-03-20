@@ -26,7 +26,6 @@ class RonCommand extends PublicCommand {
         $otherParamsList = new ArrayList([[]]);
         return $otherParamsList;
     }
-
     //endregion
 
     //region PublicCommand impl

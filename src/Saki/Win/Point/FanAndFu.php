@@ -38,7 +38,8 @@ class FanAndFu implements Immutable {
      * @return string
      */
     function __toString() {
-        return implode(',', $this->toArray());
+        list($fan, $fu) = [$this->getFan(), $this->getFu()];
+        return "fan $fan,fu $fu";
     }
 
     /**

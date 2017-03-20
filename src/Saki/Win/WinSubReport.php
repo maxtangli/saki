@@ -44,6 +44,14 @@ class WinSubReport {
     }
 
     /**
+     * @return string
+     */
+    function __toString() {
+        list($actor, $winState, $fanAndFu) = [$this->getActor(), $this->getWinState(), $this->getFanAndFu()];
+        return "$actor,$winState,$fanAndFu";
+    }
+
+    /**
      * @return SeatWind
      */
     function getActor() {

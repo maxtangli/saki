@@ -2,7 +2,7 @@
 
 use Saki\Command\DebugCommand\MockHandCommand;
 use Saki\Command\PrivateCommand\DiscardCommand;
-use Saki\Command\BufferCommandDecider;
+use Saki\Command\BufferedCommandDecider;
 use Saki\Game\Phase;
 use Saki\Game\SeatWind;
 use Saki\Game\Tile\Tile;
@@ -46,11 +46,9 @@ class CommandTest extends \SakiTestCase {
         $this->assertPrivate('S');
 
         // test replace
-        $round->process('skip 3; mockHand E 1m; discard E 1m; mockHand S 23m; mockHand W 11m');
         $round->process(
-            'pass N; pass W; chow S 23m',
-            'pass N; pung W 11m',
-            'pass N; pass S'
+            'skip 3; mockHand E 1m; discard E 1m; mockHand S 23m; mockHand W 11m',
+            'pass N; pung W 11m; chow S 23m'
         );
         $this->assertPrivate('W');
     }

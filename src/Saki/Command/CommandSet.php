@@ -2,6 +2,7 @@
 
 namespace Saki\Command;
 
+use Saki\Command\DebugCommand\DoubleRonCommand;
 use Saki\Command\DebugCommand\InitCommand;
 use Saki\Command\DebugCommand\MockIndicatorWallCommand;
 use Saki\Command\DebugCommand\MockHandCommand;
@@ -53,6 +54,7 @@ class CommandSet extends ArrayList {
                 PassCommand::class,
                 RonCommand::class,
                 // debug
+                DoubleRonCommand::class,
                 InitCommand::class,
                 MockIndicatorWallCommand::class,
                 MockHandCommand::class,

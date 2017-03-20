@@ -101,7 +101,6 @@ abstract class Command {
 
     /**
      * @param Round $round
-     * @return
      */
     abstract protected function executeImpl(Round $round);
     //endregion

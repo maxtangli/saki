@@ -10,13 +10,13 @@ class ResultType extends Enum {
     const WIN_BY_SELF = 0;
     const WIN_BY_OTHER = 1;
     const DOUBLE_WIN_BY_OTHER = 2;
-    const TRIPLE_WIN_BY_OTHER = 3;
-    const EXHAUSTIVE_DRAW = 4;
-    const NINE_NINE_DRAW = 5;
-    const FOUR_WIND_DRAW = 6;
-    const FOUR_KONG_DRAW = 7;
-    const FOUR_REACH_DRAW = 8;
-    const NAGASHIMANGAN_DRAW = 9;
+    const EXHAUSTIVE_DRAW = 3;
+    const NINE_NINE_DRAW = 4;
+    const FOUR_WIND_DRAW = 5;
+    const FOUR_KONG_DRAW = 6;
+    const FOUR_REACH_DRAW = 7;
+    const NAGASHIMANGAN_DRAW = 8;
+    const TRIPLE_WIN_DRAW = 9;
 
     /**
      * @return bool
@@ -41,17 +41,6 @@ class ResultType extends Enum {
         return $this->inTargetValues([
             self::WIN_BY_OTHER,
             self::DOUBLE_WIN_BY_OTHER,
-            self::TRIPLE_WIN_BY_OTHER
-        ]);
-    }
-
-    /**
-     * @return bool
-     */
-    function isMultiRon() {
-        return $this->inTargetValues([
-            self::DOUBLE_WIN_BY_OTHER,
-            self::TRIPLE_WIN_BY_OTHER
         ]);
     }
 
@@ -61,7 +50,8 @@ class ResultType extends Enum {
     function isDraw() {
         return $this->isExhaustiveDraw()
             || $this->isAbortiveDraw()
-            || $this->isNagashiManganDraw();
+            || $this->isNagashiManganDraw()
+            || $this->isTripleWinDraw();
     }
 
     /**
@@ -91,6 +81,15 @@ class ResultType extends Enum {
     function isNagashiManganDraw() {
         return $this->inTargetValues([
             self::NAGASHIMANGAN_DRAW
+        ]);
+    }
+
+    /**
+     * @return bool
+     */
+    function isTripleWinDraw() {
+        return $this->inTargetValues([
+            self::TRIPLE_WIN_DRAW
         ]);
     }
 }
