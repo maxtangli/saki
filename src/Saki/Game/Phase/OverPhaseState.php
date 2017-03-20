@@ -71,13 +71,17 @@ class OverPhaseState extends PhaseState {
         } // else not hasMinus
 
         if ($prevailingCurrent->isNormalLastOrSuddenDeath()) {
-            if ($prevailingCurrent->isSuddenDeathLast()) {
-                return true;
-            } // else notSuddenDeathLast
+            $isKeepDealer = $round->getPhaseState()->getResult()->isKeepDealer();
+            if ($isKeepDealer) {
+                if ($pointList->isDealerSingleTopAndEnoughPoint(30000)) {
+                    return true;
+                }
+            } else {
+                if ($prevailingCurrent->isSuddenDeathLast()) {
+                    return true;
+                }
 
-            if ($pointList->isSingleTopAndEnoughPoint(30000)) {
-                $isKeepDealer = $round->getPhaseState()->getResult()->isKeepDealer();
-                if (!$isKeepDealer || $pointList->isSingleTopAndDealer()) {
+                if ($pointList->isTopEnoughPoint(30000)) {
                     return true;
                 }
             }

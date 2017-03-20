@@ -1304,7 +1304,7 @@ rush 117 riichi cancel by ron 1.5h
 - refactor: extendKong phase 0.8h
 - [x] rule fix: riichi.postApply 0.7h
 
-rush 118 double ron win, triple ron draw
+rush 118 double ron win, triple ron draw 3.3h
 
 - [x] analyze: decider, command 0.5h
 - [x] DoubleRonCommand 0.3h
@@ -1315,9 +1315,10 @@ rush 118 double ron win, triple ron draw
 
 - [x] issue: buffer vs command candidates 0.3h
 
-- [ ] bug fix: ranking when same points exist
+- [x] bug fix: ranking when same points exist 0.5h
 
-rush pao
+rush 119 pao -> 100% rule
+
 rush replay
 
 rush code reading

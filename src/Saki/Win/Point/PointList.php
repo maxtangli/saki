@@ -113,40 +113,37 @@ class PointList extends ArrayList implements Immutable {
     }
 
     /**
-     * @return bool
-     */
-    function isSingleTop() {
-        return $this->getTopItemList()->count() == 1;
-    }
-
-    /**
-     * @return PointItem
-     */
-    function getSingleTop() {
-        return $this->getTopItemList()->getSingle();
-    }
-
-    /**
+     * Used in: isGameOver.
      * @param int $point
      * @return bool
      */
-    function isSingleTopAndEnoughPoint(int $point) {
-        return $this->isSingleTop()
-            && $this->getSingleTop()->getPoint() >= $point;
+    function isDealerSingleTopAndEnoughPoint(int $point) {
+        $topItemList = $this->getTopItemList();
+        if ($topItemList->count() != 1) {
+            return false;
+        }
+        /** @var PointItem $singleTop */
+        $singleTop = $topItemList->getSingle();
+        return $singleTop->getPoint() >= $point
+            && $singleTop->getSeatWind()->isDealer();
     }
 
     /**
+     * Used in: isGameOver.
+     * @param int $point
      * @return bool
      */
-    function isSingleTopAndDealer() {
-        return $this->isSingleTop()
-            && $this->getSingleTop()->getSeatWind()->isDealer();
+    function isTopEnoughPoint(int $point) {
+        $enoughPoint = function (PointItem $pointItem) use($point) {
+            return $pointItem->getPoint() >= $point;
+        };
+        return $this->any($enoughPoint);
     }
 
     /**
      * @return ArrayList
      */
-    protected function getTopItemList() {
+    private function getTopItemList() {
         $getPointItemRank = function (PointItem $pointItem) {
             return $pointItem->getRank();
         };

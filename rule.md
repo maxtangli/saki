@@ -164,6 +164,16 @@
 - 进入：1.记录结果，修改分数。
 - 离开：1.进入空阶段。
 
+游戏结束判定
+如果有点数<0的玩家，游戏结束
+如果是AllLast或加时赛
+    如果连庄
+        如果有点数>=30000的玩家，庄家点数唯一最大，游戏结束
+    如果非连庄
+        如果是加时赛的最后一局，游戏结束
+        如果有点数>=30000的玩家，游戏结束
+
+
 ## 指令类型
 
 系统指令
@@ -204,7 +214,7 @@ PlayerCommand.getExecutableList()
 - 大明杠，Kong：public + target -> declare, toPrivate(actor, draw=false)
 - 荣和，Ron：toOver(result)
 
-## 公共阶段的指令优先级
+## 公共阶段的指令决定
 
 指令决定
 1.可选指令集：pass，其它优先级不低于当前bufferCandidate的指令。

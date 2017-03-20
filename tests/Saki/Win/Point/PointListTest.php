@@ -31,7 +31,7 @@ class PointListTest extends \SakiTestCase {
             ['S', 22200, 3],
             ['N', 22200, 4],
         ], $f);
-        $this->assertPointItem('E', 31100, 1, $f->getSingleTop());
+        $this->assertPointItem('E', 31100, 1, $f->getFirst());
     }
 
     function testPointList() {
@@ -40,7 +40,6 @@ class PointListTest extends \SakiTestCase {
         $facade = $round->getPointHolder()->getPointList();
 
         $this->assertFalse($facade->hasMinus());
-        $this->assertFalse($facade->isSingleTop());
         $this->assertEquals(25000, $facade->getFirst()->getPoint());
     }
 }
