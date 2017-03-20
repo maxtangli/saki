@@ -67,7 +67,7 @@
 - 四风连打：途中流局，连庄。
 - 四家立直：途中流局，连庄。
 - 四开杠：途中流局，连庄。
-- （未实装）三家和：途中流局，连庄。
+- 三家和：途中流局，连庄。
 
 # 术语
 
@@ -207,19 +207,15 @@ PlayerCommand.getExecutableList()
 ## 公共阶段的指令优先级
 
 指令决定
-1.各玩家的可选指令集：至少含pass。
-2.各玩家发出指令，直至填满buffer。玩家只能发出pass或不低于当前bufferCandidate的指令，只能发出1次指令。
-3.buffer填满后，生成最终指令。
+1.可选指令集：pass，其它优先级不低于当前bufferCandidate的指令。
+2.所有玩家发出1次可选指令。每次接收指令后，更新bufferCandidate，随之更新各玩家的可选指令集。
+3.所有玩家发出过指令后，生成并执行最终指令。
 
 优先级：ron>pung=kong>chow>pass
-
-set actor,command
-- if pass: buffer.actor=command
-- otherwise: clear buffer, buffer.actor=command, candidate = command
-
-if buffer.full
-- if all pass，return passAll
-- otherwise, return candidate
+特殊处理
+- passAll
+- doubleRon
+- tripleRon
 
 ## 公共阶段的无用指令跳过
 

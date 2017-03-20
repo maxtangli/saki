@@ -14,6 +14,7 @@ use Saki\Command\DebugCommand\SkipCommand;
 use Saki\Command\DebugCommand\SkipToLastCommand;
 use Saki\Command\DebugCommand\SkipToCommand;
 use Saki\Command\DebugCommand\ToNextRoundCommand;
+use Saki\Command\DebugCommand\TripleRonCommand;
 use Saki\Command\PrivateCommand\ConcealedKongCommand;
 use Saki\Command\PrivateCommand\DiscardCommand;
 use Saki\Command\PrivateCommand\ExtendKongCommand;
@@ -40,6 +41,20 @@ class CommandSet extends ArrayList {
      */
     static function createStandard() {
         self::$standardInstance = self::$standardInstance ?? new self([
+                // debug
+                InitCommand::class,
+                DoubleRonCommand::class,
+                MockIndicatorWallCommand::class,
+                MockHandCommand::class,
+                MockNextDrawCommand::class,
+                MockNextReplaceCommand::class,
+                MockWallRemainCommand::class,
+                PassAllCommand::class,
+                SkipCommand::class,
+                SkipToLastCommand::class,
+                SkipToCommand::class,
+                ToNextRoundCommand::class,
+                TripleRonCommand::class,
                 // private
                 DiscardCommand::class,
                 ConcealedKongCommand::class,
@@ -53,19 +68,6 @@ class CommandSet extends ArrayList {
                 KongCommand::class,
                 PassCommand::class,
                 RonCommand::class,
-                // debug
-                DoubleRonCommand::class,
-                InitCommand::class,
-                MockIndicatorWallCommand::class,
-                MockHandCommand::class,
-                MockNextDrawCommand::class,
-                MockNextReplaceCommand::class,
-                MockWallRemainCommand::class,
-                PassAllCommand::class,
-                SkipCommand::class,
-                SkipToLastCommand::class,
-                SkipToCommand::class,
-                ToNextRoundCommand::class,
             ]);
         return self::$standardInstance;
     }

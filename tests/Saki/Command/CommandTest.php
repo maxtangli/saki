@@ -47,9 +47,16 @@ class CommandTest extends \SakiTestCase {
 
         // test replace
         $round->process(
-            'skip 3; mockHand E 1m; discard E 1m; mockHand S 23m; mockHand W 11m',
-            'pass N; pung W 11m; chow S 23m'
+            'skipTo E true; mockHand E 1m; discard E 1m; mockHand S 23m; mockHand W 11m',
+            'pass N; chow S 23m; pung W 11m'
         );
         $this->assertPrivate('W');
+
+        // test not executable by priority
+        $round->process(
+            'skipTo E true; mockHand E 1m; discard E 1m; mockHand S 23m; mockHand W 11m',
+            'pass N; pung W 11m'
+        );
+        $this->assertNotExecutable('chow S 23m');
     }
 }

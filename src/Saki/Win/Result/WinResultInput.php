@@ -128,14 +128,14 @@ class WinResultInput {
      */
     function getResultType() {
         if ($this->isTsumo()) {
-            $v = ResultType::WIN_BY_SELF;
+            $v = ResultType::TSUMO_WIN;
         } else {
             switch ($this->getWinnerCount()) {
                 case 1:
-                    $v = ResultType::WIN_BY_OTHER;
+                    $v = ResultType::RON_WIN;
                     break;
                 case 2:
-                    $v = ResultType::DOUBLE_WIN_BY_OTHER;
+                    $v = ResultType::DOUBLE_RON_WIN;
                     break;
                 default:
                     throw new \LogicException();

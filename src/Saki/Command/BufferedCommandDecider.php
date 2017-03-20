@@ -65,7 +65,8 @@ class BufferedCommandDecider implements CommandDecider {
      * @return bool
      */
     function allowSubmit(Command $command) {
-        return $this->buffer->isEmpty($command);
+        return $this->buffer->isEmpty($command)
+            && ($command instanceof PassCommand || $this->candidate->betterCandidate($command));
     }
 
     /**
@@ -77,7 +78,10 @@ class BufferedCommandDecider implements CommandDecider {
         }
 
         $this->buffer->set($command);
-        $this->candidate->tryUpdateCandidate($command);
+
+        if ($this->candidate->betterCandidate($command)) {
+            $this->candidate->updateCandidate($command);
+        }
     }
 }
 
@@ -119,19 +123,28 @@ class CommandDeciderCandidate {
      * @param Command $new
      * @return bool
      */
-    function tryUpdateCandidate(Command $new) {
+    function betterCandidate(Command $new) {
+        return $new instanceof RonCommand
+            || $this->comparePriority($new, $this->candidate) == 1;
+    }
+
+    /**
+     * @param Command $new
+     */
+    function updateCandidate(Command $new) {
+        if (!$this->betterCandidate($new)) {
+            throw new \InvalidArgumentException();
+        }
+
         $candidate = $this->candidate;
         if ($new instanceof RonCommand && $candidate instanceof RonCommand) {
             $this->candidate = $this->createDoubleRonCommand($new, $candidate);
-            return true;
         } elseif ($new instanceof RonCommand && $candidate instanceof DoubleRonCommand) {
             $this->candidate = $this->createTripleRonCommand($new, $candidate);
-            return true;
         } elseif ($this->comparePriority($new, $candidate) == 1) {
             $this->candidate = $new;
-            return true;
         } else {
-            return false;
+            throw new \LogicException();
         }
     }
 

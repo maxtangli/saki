@@ -38,13 +38,24 @@ class CommandProviderTest extends \SakiTestCase {
         }
     }
 
-    function testProvidePass() {
+    function testProvideWhenDeciderOn() {
         $round = $this->getInitRound();
         $round->enableDecider = true;
+
+        // pass
         $round->process('mockHand E 1s; discard E 1s');
         $this->assertExecutableList(['pass S'], true, 'S');
         $this->assertExecutableList(['pass W'], true, 'W');
         $this->assertExecutableList(['pass N'], true, 'N');
+
+        // priority
+        $round->process(
+            'skipTo E true; mockHand E 1m; discard E 1m; mockHand S 23m; mockHand W 11m',
+            'pass N'
+        );
+        $this->assertExecutableList(['chow S 23m'], true, 'S');
+        $round->process('pung W 11m');
+        $this->assertExecutableList(['chow S 23m'], false, 'S');
     }
 
     /**

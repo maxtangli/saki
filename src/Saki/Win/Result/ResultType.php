@@ -7,40 +7,25 @@ use Saki\Util\Enum;
  * @package Saki\Win\Result
  */
 class ResultType extends Enum {
-    const WIN_BY_SELF = 0;
-    const WIN_BY_OTHER = 1;
-    const DOUBLE_WIN_BY_OTHER = 2;
+    const TSUMO_WIN = 0;
+    const RON_WIN = 1;
+    const DOUBLE_RON_WIN = 2;
     const EXHAUSTIVE_DRAW = 3;
     const NINE_NINE_DRAW = 4;
     const FOUR_WIND_DRAW = 5;
     const FOUR_KONG_DRAW = 6;
     const FOUR_REACH_DRAW = 7;
     const NAGASHIMANGAN_DRAW = 8;
-    const TRIPLE_WIN_DRAW = 9;
+    const TRIPLE_RON_DRAW = 9;
 
     /**
      * @return bool
      */
     function isWin() {
-        return $this->isTsumo() || $this->isRon();
-    }
-
-    /**
-     * @return bool
-     */
-    function isTsumo() {
         return $this->inTargetValues([
-            self::WIN_BY_SELF
-        ]);
-    }
-
-    /**
-     * @return bool
-     */
-    function isRon() {
-        return $this->inTargetValues([
-            self::WIN_BY_OTHER,
-            self::DOUBLE_WIN_BY_OTHER,
+            self::TSUMO_WIN,
+            self::RON_WIN,
+            self::DOUBLE_RON_WIN,
         ]);
     }
 
@@ -89,7 +74,7 @@ class ResultType extends Enum {
      */
     function isTripleWinDraw() {
         return $this->inTargetValues([
-            self::TRIPLE_WIN_DRAW
+            self::TRIPLE_RON_DRAW
         ]);
     }
 }

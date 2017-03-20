@@ -121,7 +121,7 @@ class RoundTest extends \SakiTestCase {
             'mockHand E 123456789m1234pE; riichi E E',
             'mockHand S 123456789m123pE; ron S'
         );
-        $this->assertOver(ResultType::WIN_BY_OTHER);
+        $this->assertOver(ResultType::RON_WIN);
         $this->assertRiichi(false, 'E');
     }
 
@@ -300,7 +300,7 @@ class RoundTest extends \SakiTestCase {
             'mockHand E 4s; discard E 4s',
             'mockHand S 123m456m789m23s55s; ron S'
         );
-        $this->assertOver(ResultType::WIN_BY_OTHER);
+        $this->assertOver(ResultType::RON_WIN);
     }
 
     function testDoubleRon() {
@@ -312,8 +312,20 @@ class RoundTest extends \SakiTestCase {
             'mockHand W 123m456m789m23s55s; ron W',
             'pass N'
         );
-        $this->assertOver(ResultType::DOUBLE_WIN_BY_OTHER, false);
+        $this->assertOver(ResultType::DOUBLE_RON_WIN, false);
         // todo test points, dealer
+    }
+
+    function testTripleRon() {
+        $round = $this->getInitRound();
+        $round->enableDecider = true;
+        $round->process(
+            'mockHand E 4s; discard E 4s',
+            'mockHand S 123m456m789m23s55s; ron S',
+            'mockHand W 123m456m789m23s55s; ron W',
+            'mockHand N 123m456m789m23s55s; ron N'
+        );
+        $this->assertOver(ResultType::TRIPLE_RON_DRAW, true);
     }
 
     function testTsumo() {

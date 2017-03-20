@@ -1304,16 +1304,16 @@ rush 117 riichi cancel by ron 1.5h
 - refactor: extendKong phase 0.8h
 - [x] rule fix: riichi.postApply 0.7h
 
-rush 118 double ron
+rush 118 double ron win, triple ron draw
 
 - [x] analyze: decider, command 0.5h
 - [x] DoubleRonCommand 0.3h
-- [ ] adapt buffer 1.2h // todo rename public command
-- [ ] test
+- [x] adapt buffer 1.5h
+- [x] TripleRonDrawResult 0.1h
+- [x] TripleRonCommand 0.1h
+- [x] test
 
-rush 119 triple ron
-
-- [ ] TripleRonCommand
+- [x] issue: buffer vs command candidates 0.3h
 
 - [ ] bug fix: ranking when same points exist
 
