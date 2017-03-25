@@ -1336,10 +1336,11 @@ rush 119 pao
 
 - [x] analyze 0.3h
 - [x] pao trigger: big three dragons 1h
-- [ ] pao trigger: big four winds
-- [ ] pao trigger: four kongs
+- [x] pao trigger: big four winds
+- [x] pao trigger: four kongs 0.2h
+- [x] refactor: PaoAnalyzer 0.2h
+
 - [ ] pao trigger: after a kong
-- [ ] refactor
 
 // --- 100% rule completed! ---
 

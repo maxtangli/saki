@@ -1,4 +1,5 @@
 <?php
+
 namespace Saki\Game;
 
 use Saki\Game\Meld\Meld;
@@ -6,8 +7,6 @@ use Saki\Game\Meld\MeldType;
 use Saki\Game\Tile\Tile;
 use Saki\Util\Immutable;
 use Saki\Util\Utils;
-use Saki\Win\Pao\Pao;
-use Saki\Win\Pao\PaoType;
 
 /**
  * @package Saki\Game
@@ -172,13 +171,6 @@ class Claim implements Immutable {
      */
     function isChowOrPungOrKong() {
         return $this->isChow() || $this->isPung() || $this->isKong();
-    }
-
-    /**
-     * @return bool
-     */
-    function isPungOrKong() {
-        return $this->isPung() || $this->isKong();
     }
 
     /**
@@ -369,6 +361,7 @@ class Claim implements Immutable {
         $round = $area->getRound();
         $hand = $area->getHand();
 
+        // handle hand: private or public
         $newPrivateOrPublic = $hand->getPrivate()->getCopy()
             ->remove($this->getFromTiles(), Tile::getPrioritySelector());
         if ($newPrivateOrPublic->getSize()->isPrivate()) {
@@ -385,6 +378,7 @@ class Claim implements Immutable {
             throw new \LogicException();
         }
 
+        // handle hand: meld
         $newMelded = $hand->getMelded()->getCopy();
         $fromMeld = $this->getFromMeldOrNull();
         if (isset($fromMeld)) {
@@ -398,6 +392,7 @@ class Claim implements Immutable {
         $newHand = new Hand($newPublic, $newMelded, $newTarget);
         $area->setHand($newHand);
 
+        // handle history
         if (!$hand->getTarget()->isCreator($this->getActor())) {
             $round->getTurnHolder()->getOpenHistory()
                 ->setLastDiscardDeclared();
@@ -406,17 +401,15 @@ class Claim implements Immutable {
         $round->getTurnHolder()->getClaimHistory()
             ->recordClaim($this->getTurn());
 
-        // pao
-        if ($this->isPungOrKong()) {
-            $isBigThreeDragon = $newMelded->isThreeDragon(true);
-            $isPungOrKongDragon = $this->getToMeld()->getFirst()->isDragon();
-            if ($isBigThreeDragon && $isPungOrKongDragon) {
-                $from = $this->fromRelation->toOther($this->getActor());
-                $to = $this->getActor();
-                $type = PaoType::create(PaoType::BIG_THREE_DRAGONS_PAO);
-                $pao = new Pao($from, $to, $type);
-                $this->getArea()->setPao($pao);
-            }
+        // handle pao
+        $paoAnalyzer = $round->getRule()->getPaoAnalyzer();
+        $pao = $paoAnalyzer->analyzeClaimPaoOrFalse(
+            $this->fromRelation->toOther($this->getActor()),
+            $this->getActor(),
+            $newMelded
+        );
+        if ($pao !== false) {
+            $this->getArea()->setPao($pao);
         }
     }
 }

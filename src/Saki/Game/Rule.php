@@ -4,6 +4,7 @@ namespace Saki\Game;
 use Saki\Game\Tile\TileSet;
 use Saki\Util\Immutable;
 use Saki\Win\Draw\DrawAnalyzer;
+use Saki\Win\Pao\PaoAnalyzer;
 use Saki\Win\Score\CompositeScoreStrategy;
 use Saki\Win\Score\OkaScoreStrategy;
 use Saki\Win\Score\RankUmaScoreStrategy;
@@ -25,6 +26,7 @@ class Rule implements Immutable {
     // generated
     private $winAnalyzer;
     private $drawAnalyzer;
+    private $paoAnalyzer;
 
     /**
      * default: 4 player, east game, 25000-30000 initial point,
@@ -48,6 +50,7 @@ class Rule implements Immutable {
         // generated
         $this->winAnalyzer = new WinAnalyzer($this->yakuSet);
         $this->drawAnalyzer = DrawAnalyzer::createStandard();
+        $this->paoAnalyzer = PaoAnalyzer::create();
     }
 
     /**
@@ -104,5 +107,12 @@ class Rule implements Immutable {
      */
     function getDrawAnalyzer() {
         return $this->drawAnalyzer;
+    }
+
+    /**
+     * @return PaoAnalyzer
+     */
+    function getPaoAnalyzer() {
+        return $this->paoAnalyzer;
     }
 }

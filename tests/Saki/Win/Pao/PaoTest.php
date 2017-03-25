@@ -15,4 +15,34 @@ class PaoTest extends \SakiTestCase {
             25000 - 48000
         ]);
     }
+
+    function testBigFourWindsPao() {
+        $round = $this->getInitRound();
+        $round->process(
+            'mockHand E EEEESSSSWWWW; concealedKong E EEEE; concealedKong E SSSS; concealedKong E WWWW',
+            'skipTo N true; mockHand N N; discard N N; mockHand E NN; pung E NN',
+            'skip 4; mockHand E 11s; tsumo E'
+        );
+        $this->assertPoints([
+            25000 + 48000,
+            25000,
+            25000,
+            25000 - 48000
+        ]);
+    }
+
+    function testFourKongsPao() {
+        $round = $this->getInitRound();
+        $round->process(
+            'mockHand E EEEESSSSWWWW; concealedKong E EEEE; concealedKong E SSSS; concealedKong E WWWW',
+            'skipTo N true; mockHand N 1m; discard N 1m; mockHand E 111m; kong E 111m',
+            'skip 4; mockHand E 11s; tsumo E'
+        );
+        $this->assertPoints([
+            25000 + 48000,
+            25000,
+            25000,
+            25000 - 48000
+        ]);
+    }
 }

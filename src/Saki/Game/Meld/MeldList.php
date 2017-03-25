@@ -405,7 +405,7 @@ class MeldList extends ArrayList {
      */
     function isFourWinds(bool $isBig) {
 //        $this->assertCompletePrivateHandCount();
-        $windMeldList = $this->where(function (Meld $meld) {
+        $windMeldList = $this->getCopy()->where(function (Meld $meld) {
             return $meld[0]->getTileType()->isWind();
         });
         $pairCount = $windMeldList->getCount($this->getPredicate([PairMeldType::create()]));
