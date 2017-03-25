@@ -1,3 +1,13 @@
+## milestone
+
+- [x] 2015.06.02: first commit
+- [x] 2016.09.10: host demo in aws ec2
+- [x] 2017.01.11: 95% rule, html&css demo
+- [ ] 100% rule
+- [ ] 100% network and user data
+- [ ] 100% UI
+- [ ] infra
+
 ## rush statistics
 
 rush        | hours
@@ -1317,17 +1327,26 @@ rush 118 double ron win, triple ron draw 3.3h
 
 - [x] bug fix: ranking when same points exist 0.5h
 
-rush 119 pao -> 100% rule
+rush 119 pao
 
-rush replay
+- [x] analyze 0.1h
+- [x] add pao class 0.2h
+- [x] add pao into WinResult: tsumo 100%, ron 50% 2h // a mess, should dig out the pattern first
+- [ ] refactor
+
+- [ ] add pao trigger in Commands
+
+// --- 100% rule completed! ---
 
 rush code reading
 
 - [x] search github mahjong projects 0.5h
-- [ ] review design
+- review design
 
-- [ ] search mahjong articles
+- [ ] search mahjong impl articles
 - [ ] review algorithms
+
+rush replay
 
 rush room
 

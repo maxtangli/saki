@@ -2,6 +2,10 @@
 
 use Saki\Game\PlayerType;
 use Saki\Game\SeatWind;
+use Saki\Util\ArrayList;
+use Saki\Win\Pao\Pao;
+use Saki\Win\Pao\PaoList;
+use Saki\Win\Pao\PaoType;
 use Saki\Win\Point\FanAndFu;
 use Saki\Win\Result\ExhaustiveDrawResult;
 use Saki\Win\Result\Result;
@@ -40,12 +44,28 @@ class WinResultTest extends \SakiTestCase {
      * @param array $expected
      * @param WinResult $result
      */
-    protected function assertAllPointChange(array $expected, WinResult $result) {
+    private function assertAllPointChange(array $expected, WinResult $result) {
         foreach ($expected as $i => list($tableChange, $riichiChange, $seatChange)) {
             $actor = SeatWind::fromIndex($i + 1);
             $this->assertWinResultPointChange($tableChange, $riichiChange, $seatChange,
                 $result, $actor);
         }
+    }
+
+    /**
+     * @param array $a
+     * @return PaoList
+     */
+    private function getPaoList(array $a) {
+        $createPao = function (array $a) {
+            list($from, $to) = $a;
+            return new Pao(SeatWind::fromString($from),
+                SeatWind::fromString($to),
+                PaoType::create(PaoType::AFTER_A_KONG_PAO));
+        };
+        return (new PaoList())->fromSelect(
+            (new ArrayList($a))->select($createPao)
+        );
     }
 
     function testDealerTsumo() {
@@ -61,6 +81,22 @@ class WinResultTest extends \SakiTestCase {
             [-700, 0, -100],
             [-700, 0, -100],
             [-700, 0, -100],
+        ], $result);
+
+        $input = WinResultInput::createTsumo(
+            [SeatWind::createEast(), new FanAndFu(1, 40)],
+            [SeatWind::createSouth(), SeatWind::createWest(), SeatWind::createNorth()],
+            1000,
+            1,
+            null,
+            $this->getPaoList([['S', 'E']])
+        );
+        $result = new WinResult($input);
+        $this->assertAllPointChange([
+            [2100, 1000, 300],
+            [-2100, 0, -300],
+            [0, 0, 0],
+            [0, 0, 0],
         ], $result);
     }
 
@@ -79,6 +115,23 @@ class WinResultTest extends \SakiTestCase {
             [0, 0, 0],
             [0, 0, 0],
         ], $result);
+
+        $input = WinResultInput::createRon(
+            [[SeatWind::createEast(), new FanAndFu(1, 40)]],
+            SeatWind::createSouth(),
+            [SeatWind::createWest(), SeatWind::createNorth()],
+            1000,
+            1,
+            null,
+            $this->getPaoList([['W', 'E']])
+        );
+        $result = new WinResult($input);
+        $this->assertAllPointChange([
+            [2000, 1000, 300],
+            [-1000, 0, -150],
+            [-1000, 0, -150],
+            [0, 0, 0],
+        ], $result);
     }
 
     function testLeisureTsumo() {
@@ -94,6 +147,22 @@ class WinResultTest extends \SakiTestCase {
             [2700, 1000, 300],
             [-700, 0, -100],
             [-700, 0, -100],
+        ], $result);
+
+        $input = WinResultInput::createTsumo(
+            [SeatWind::createSouth(), new FanAndFu(2, 40)],
+            [SeatWind::createEast(), SeatWind::createWest(), SeatWind::createNorth()],
+            1000,
+            1,
+            null,
+            $this->getPaoList([['W', 'S']])
+        );
+        $result = new WinResult($input);
+        $this->assertAllPointChange([
+            [0, 0, 0],
+            [2700, 1000, 300],
+            [-2700, 0, -300],
+            [0, 0, 0],
         ], $result);
     }
 
@@ -112,6 +181,23 @@ class WinResultTest extends \SakiTestCase {
             [-2600, 0, -300],
             [0, 0, 0],
         ], $result);
+
+        $input = WinResultInput::createRon(
+            [[SeatWind::createSouth(), new FanAndFu(2, 40)]],
+            SeatWind::createWest(),
+            [SeatWind::createEast(), SeatWind::createNorth()],
+            1000,
+            1,
+            null,
+            $this->getPaoList([['E', 'S']])
+        );
+        $result = new WinResult($input);
+        $this->assertAllPointChange([
+            [-1300, 0, -150],
+            [2600, 1000, 300],
+            [-1300, 0, -150],
+            [0, 0, 0],
+        ], $result);
     }
 
     function testDoubleRon() {
@@ -128,6 +214,23 @@ class WinResultTest extends \SakiTestCase {
             [2600, 0, 300],
             [-2000 - 2600, 0, -300 - 300],
             [0, 0, 0],
+        ], $result);
+
+        $input = WinResultInput::createRon(
+            [[SeatWind::createEast(), new FanAndFu(1, 40)], [SeatWind::createSouth(), new FanAndFu(2, 40)]],
+            SeatWind::createWest(),
+            [SeatWind::createNorth()],
+            1000,
+            1,
+            null,
+            $this->getPaoList([['N', 'S']])
+        );
+        $result = new WinResult($input);
+        $this->assertAllPointChange([
+            [2000, 1000, 300],
+            [2600, 0, 300],
+            [-2000 - 1300, 0, -300 - 150],
+            [0 - 1300, 0, 0 - 150],
         ], $result);
     }
 

@@ -1,4 +1,5 @@
 <?php
+
 namespace Saki\Win\Result;
 
 use Saki\Game\SeatWind;
@@ -21,7 +22,7 @@ class WinResult extends Result {
     /**
      * @return WinResultInput
      */
-    protected function getInput() {
+    private function getInput() {
         return $this->input;
     }
 
@@ -31,7 +32,7 @@ class WinResult extends Result {
     function getWinReportList() {
         return $this->getInput()->getWinReportList();
     }
-    
+
     //region impl
     function isKeepDealer() {
         // Dealer is winner
@@ -41,10 +42,9 @@ class WinResult extends Result {
 
     function getPointChange(SeatWind $seatWind) {
         return $this->getTableChange($seatWind)
-        + $this->getRiichiChange($seatWind)
-        + $this->getSeatChange($seatWind);
+            + $this->getRiichiChange($seatWind)
+            + $this->getSeatChange($seatWind);
     }
-
     //endregion
 
     /**
@@ -58,20 +58,52 @@ class WinResult extends Result {
         $input = $this->getInput();
         $isTsumo = $input->isTsumo();
         $item = $input->getItem($seatWind);
+        $paoList = $input->getPaoList();
+
         if ($item->isWinner()) {
             $winnerItem = $item;
             return $winnerItem->getPointTableItem()
                 ->getWinnerPointChange($isTsumo, $winnerItem->isDealer());
-        } elseif ($item->isLoser()) {
-            $loserItem = $item;
-            $selector = function (WinResultInputItem $winnerItem) use ($isTsumo, $loserItem) {
-                return $winnerItem->getPointTableItem()
-                    ->getLoserPointChange($isTsumo, $winnerItem->isDealer(), $loserItem->isDealer());
-            };
-            return $input->getWinnerItemList()->getSum($selector);
-        } else {
-            return 0;
         }
+
+        $getPay = function (WinResultInputItem $winnerItem) use ($isTsumo, $item, $paoList) {
+            $paoRatio = $this->getPaoRatioOrFalse($item, $winnerItem);
+            if ($paoRatio !== false) {
+                $winnerPoint = $winnerItem->getPointTableItem()
+                    ->getWinnerPointChange($isTsumo, $winnerItem->isDealer());
+                return intval(-$winnerPoint * $paoRatio);
+            }
+
+            if ($item->isLoser()) {
+                $loserPointChange = $winnerItem->getPointTableItem()
+                    ->getLoserPointChange($isTsumo, $winnerItem->isDealer(), $item->isDealer());
+                return $loserPointChange;
+            }
+
+            return 0;
+        };
+        return $input->getWinnerItemList()->getSum($getPay);
+    }
+
+    private function getPaoRatioOrFalse(WinResultInputItem $fromItem, WinResultInputItem $winnerItem) {
+        if (!$winnerItem->isWinner()) {
+            throw new \InvalidArgumentException();
+        }
+
+        $input = $this->getInput();
+        $paoList = $input->getPaoList();
+        $isTsumo = $input->isTsumo();
+        if ($paoList->existTo($winnerItem->getSeatWind())) {
+            $isPao = $paoList->existPair($fromItem->getSeatWind(), $winnerItem->getSeatWind());
+            if ($isTsumo) {
+                $ratio = $isPao ? 1 : 0;
+            } else {
+                $ratio = ($fromItem->isLoser() ? 0.5 : 0) + ($isPao ? 0.5 : 0);
+            }
+            return $ratio;
+        }
+
+        return false;
     }
 
     /**
@@ -101,12 +133,23 @@ class WinResult extends Result {
         $total = $input->getSeatWindTurn() * 300; // always dividable by 1/2/3
         if ($item->isWinner()) {
             return intval($total);
-        } elseif ($item->isLoser()) {
-            return $input->isTsumo()
-                ? -intval($total / $input->getLoserCount())
-                : -intval($total * $input->getWinnerCount());
-        } else {
-            return 0;
         }
+
+        $getPay = function (WinResultInputItem $winnerItem) use ($item, $total) {
+            $paoRatio = $this->getPaoRatioOrFalse($item, $winnerItem);
+            if ($paoRatio !== false) {
+                return -$total * $paoRatio;
+            }
+
+            $input = $this->getInput();
+            if ($item->isLoser()) {
+                return $input->isTsumo()
+                    ? -intval($total / $input->getLoserCount())
+                    : -intval($total);
+            }
+
+            return 0;
+        };
+        return $this->getInput()->getWinnerItemList()->getSum($getPay);
     }
 }
