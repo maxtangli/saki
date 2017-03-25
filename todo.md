@@ -1332,9 +1332,14 @@ rush 119 pao
 - [x] analyze 0.1h
 - [x] add pao class 0.2h
 - [x] add pao into WinResult: tsumo 100%, ron 50% 2h // a mess, should dig out the pattern first
-- [ ] refactor
+- [x] refactor 0.2h
 
-- [ ] add pao trigger in Commands
+- [x] analyze 0.3h
+- [x] pao trigger: big three dragons 1h
+- [ ] pao trigger: big four winds
+- [ ] pao trigger: four kongs
+- [ ] pao trigger: after a kong
+- [ ] refactor
 
 // --- 100% rule completed! ---
 

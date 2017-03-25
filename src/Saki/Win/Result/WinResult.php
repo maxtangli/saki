@@ -34,6 +34,7 @@ class WinResult extends Result {
     }
 
     //region impl
+
     function isKeepDealer() {
         // Dealer is winner
         return $this->getInput()->getItem(SeatWind::createEast())
@@ -45,6 +46,7 @@ class WinResult extends Result {
             + $this->getRiichiChange($seatWind)
             + $this->getSeatChange($seatWind);
     }
+
     //endregion
 
     /**
@@ -52,13 +54,9 @@ class WinResult extends Result {
      * @return int
      */
     function getTableChange(SeatWind $seatWind) {
-        // winner: $pointItem->getWinnerChange()
-        // loser: sum each winner.$pointItem->getLoserChange()
-        // irrelevant: 0
         $input = $this->getInput();
         $isTsumo = $input->isTsumo();
         $item = $input->getItem($seatWind);
-        $paoList = $input->getPaoList();
 
         if ($item->isWinner()) {
             $winnerItem = $item;
@@ -66,8 +64,8 @@ class WinResult extends Result {
                 ->getWinnerPointChange($isTsumo, $winnerItem->isDealer());
         }
 
-        $getPay = function (WinResultInputItem $winnerItem) use ($isTsumo, $item, $paoList) {
-            $paoRatio = $this->getPaoRatioOrFalse($item, $winnerItem);
+        $getPay = function (WinResultInputItem $winnerItem) use ($isTsumo, $item) {
+            $paoRatio = $this->getInput()->getPaoRatioOrFalse($item, $winnerItem);
             if ($paoRatio !== false) {
                 $winnerPoint = $winnerItem->getPointTableItem()
                     ->getWinnerPointChange($isTsumo, $winnerItem->isDealer());
@@ -85,34 +83,11 @@ class WinResult extends Result {
         return $input->getWinnerItemList()->getSum($getPay);
     }
 
-    private function getPaoRatioOrFalse(WinResultInputItem $fromItem, WinResultInputItem $winnerItem) {
-        if (!$winnerItem->isWinner()) {
-            throw new \InvalidArgumentException();
-        }
-
-        $input = $this->getInput();
-        $paoList = $input->getPaoList();
-        $isTsumo = $input->isTsumo();
-        if ($paoList->existTo($winnerItem->getSeatWind())) {
-            $isPao = $paoList->existPair($fromItem->getSeatWind(), $winnerItem->getSeatWind());
-            if ($isTsumo) {
-                $ratio = $isPao ? 1 : 0;
-            } else {
-                $ratio = ($fromItem->isLoser() ? 0.5 : 0) + ($isPao ? 0.5 : 0);
-            }
-            return $ratio;
-        }
-
-        return false;
-    }
-
     /**
      * @param SeatWind $seatWind
      * @return int
      */
     function getRiichiChange(SeatWind $seatWind) {
-        // nearest winner: $riichiPoints
-        // not nearest winner, loser, irrelevant: 0
         $input = $this->getInput();
         return $input->isNearestWinner($seatWind)
             ? $input->getRiichiPoints()
@@ -124,28 +99,26 @@ class WinResult extends Result {
      * @return int
      */
     function getSeatChange(SeatWind $seatWind) {
-        // total = seatWindTurn * 300
-        // winner: total
-        // loser: tsumo ? - total / loserCount : total * winnerCount
-        // irrelevant: 0
         $input = $this->getInput();
         $item = $input->getItem($seatWind);
-        $total = $input->getSeatWindTurn() * 300; // always dividable by 1/2/3
+        $perWinnerTotal = $input->getSeatWindTurn() * 300; // always dividable by 1/2/3
+
         if ($item->isWinner()) {
-            return intval($total);
+            return intval($perWinnerTotal);
         }
 
-        $getPay = function (WinResultInputItem $winnerItem) use ($item, $total) {
-            $paoRatio = $this->getPaoRatioOrFalse($item, $winnerItem);
+        $getPay = function (WinResultInputItem $winnerItem) use ($item, $perWinnerTotal) {
+            $input = $this->getInput();
+
+            $paoRatio = $input->getPaoRatioOrFalse($item, $winnerItem);
             if ($paoRatio !== false) {
-                return -$total * $paoRatio;
+                return -$perWinnerTotal * $paoRatio;
             }
 
-            $input = $this->getInput();
             if ($item->isLoser()) {
                 return $input->isTsumo()
-                    ? -intval($total / $input->getLoserCount())
-                    : -intval($total);
+                    ? -intval($perWinnerTotal / $input->getLoserCount())
+                    : -intval($perWinnerTotal);
             }
 
             return 0;

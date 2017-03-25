@@ -231,4 +231,29 @@ class WinResultInput {
         };
         return $this->getItemList()->getCount($isLoser);
     }
+
+    /**
+     * @param WinResultInputItem $fromItem
+     * @param WinResultInputItem $winnerItem
+     * @return bool|float|int
+     */
+    function getPaoRatioOrFalse(WinResultInputItem $fromItem, WinResultInputItem $winnerItem) {
+        if (!$winnerItem->isWinner()) {
+            throw new \InvalidArgumentException();
+        }
+
+        $paoList = $this->getPaoList();
+        $isTsumo = $this->isTsumo();
+        if ($paoList->existTo($winnerItem->getSeatWind())) {
+            $isPao = $paoList->existPair($fromItem->getSeatWind(), $winnerItem->getSeatWind());
+            if ($isTsumo) {
+                $ratio = $isPao ? 1 : 0;
+            } else {
+                $ratio = ($fromItem->isLoser() ? 0.5 : 0) + ($isPao ? 0.5 : 0);
+            }
+            return $ratio;
+        }
+
+        return false;
+    }
 }

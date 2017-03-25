@@ -6,6 +6,8 @@ use Saki\Game\Meld\MeldType;
 use Saki\Game\Tile\Tile;
 use Saki\Util\Immutable;
 use Saki\Util\Utils;
+use Saki\Win\Pao\Pao;
+use Saki\Win\Pao\PaoType;
 
 /**
  * @package Saki\Game
@@ -170,6 +172,13 @@ class Claim implements Immutable {
      */
     function isChowOrPungOrKong() {
         return $this->isChow() || $this->isPung() || $this->isKong();
+    }
+
+    /**
+     * @return bool
+     */
+    function isPungOrKong() {
+        return $this->isPung() || $this->isKong();
     }
 
     /**
@@ -396,5 +405,18 @@ class Claim implements Immutable {
 
         $round->getTurnHolder()->getClaimHistory()
             ->recordClaim($this->getTurn());
+
+        // pao
+        if ($this->isPungOrKong()) {
+            $isBigThreeDragon = $newMelded->isThreeDragon(true);
+            $isPungOrKongDragon = $this->getToMeld()->getFirst()->isDragon();
+            if ($isBigThreeDragon && $isPungOrKongDragon) {
+                $from = $this->fromRelation->toOther($this->getActor());
+                $to = $this->getActor();
+                $type = PaoType::create(PaoType::BIG_THREE_DRAGONS_PAO);
+                $pao = new Pao($from, $to, $type);
+                $this->getArea()->setPao($pao);
+            }
+        }
     }
 }

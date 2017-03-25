@@ -355,8 +355,6 @@ concealedKong: fromRel=self
 - 荣和Ron
 - 自摸和Tsumo
 - 两家和*DoubleRon
-- 三家和*TripleRon
-- 包牌：大三元确定，大四喜确定，四杠子确定，大明杠岭上开花。
 
 ## 和牌条件
 
@@ -467,8 +465,12 @@ concealedKong: fromRel=self
 包
 
 - 存在包时，自摸由包玩家全额支付（基本额+场棒），放冲由包玩家和放冲玩家各半支付（基本额+场棒）。
-- 自摸impl：原分摊，现包玩家
-- 放冲impl：原total，现放冲+0.5*total,包+0.5*total
+- 自摸impl：原分摊，现包玩家。
+- 放冲impl：原total，现放冲+0.5*total,包+0.5*total。
+- 大三元确定：碰或杠时，已存在2种三元牌副露，对象是第4种三元牌副露。
+- 大四喜确定：碰或杠时，已存在3种风牌副露，对象是第4种风牌副露。
+- 四杠子确定：杠时，已存在三个杠子，对象是杠子。
+- 大明杠岭上开花：自摸和时，有岭上开花役，最后一个副露来自其它玩家。
 
 ## 游戏结束结算
 
@@ -499,7 +501,6 @@ concealedKong: fromRel=self
 - 门清自摸，FullyConcealedHand：任意牌型，门清，自摸和。
 - 平和，Pinfu：41牌型，门清，有4个顺子，有1个非幺九牌对子，听牌类型是两面待。
 - 一杯口，PureDoubleChow：41牌型，门清，有至少2个相同的顺子。
-
 - 断幺九，AllSimples：任意牌型，没有幺九牌。
 - 役牌-中，*DragonPungRed：任意牌型，有1个中的刻子或杠子。
 - 役牌-白，*DragonPungWhite：任意牌型，有1个白的刻子或杠子。
@@ -515,7 +516,6 @@ concealedKong: fromRel=self
 
 - 双立直，*DoubleRiichi：任意牌型，门清，本局中已经宣告立直，且立直时为第一巡。不记立直。
 - 七对子，SevenPairs：七对子牌型，门清，有7个不同的对子。符数固定为25符。
-
 - 三色同顺，MixedTripleChow：41牌型，非门清减1番，有3个不同花色、相同数值的顺子。
 - 一气通贯，PureStraight：41牌型，非门清减1番，有任意一种以下3个顺子的集合：123m+456m+789m，或者123p+456p+789p，或者123s+456s+789s。
 - 混全带幺九，OutsideHand：41牌型，非门清减1番，有至少1个顺子，每个面子和对子都有至少1张幺九牌。
@@ -529,7 +529,6 @@ concealedKong: fromRel=self
 ### 3番役，ThreeFanYaku
 
 - 二杯口，TwicePureDoubleChow：41牌型，门清，有4个顺子，其中有2个相同、另外2个相同且和前2个不同。
-
 - 混一色，HalfFlush：任意牌型，有至少1张字牌，除字牌外只有同1种花色数牌。
 - 纯全带幺九，TerminalsInAllSets：41牌型，非门清减1番，有至少1个顺子，每个面子和对子都有至少1张老头牌。
 
@@ -545,7 +544,6 @@ concealedKong: fromRel=self
 - 地和，BlessingOfEarth：任意牌型，第一巡，不存在吃碰杠宣言，个人阶段，闲家。
 - 人和，BlessingOfMan：任意牌型，第一巡，不存在吃碰杠宣言，公共阶段，当前玩家<目标玩家。
 - 四暗刻，FourConcealedPungs：41牌型，门清，有4个暗刻。
-
 - 四杠子，FourKongs：必定41牌型，有4个杠子。
 - 绿一色，AllGreen：必定41牌型，只有以下牌：2s、3s、4s、6s、8s、发。
 - 字一色，AllTerminals：任意牌型，只有字牌。

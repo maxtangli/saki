@@ -4,6 +4,7 @@ use Saki\Game\Meld\MeldList;
 use Saki\Game\Tile\Tile;
 use Saki\Game\Tile\TileList;
 use Saki\Util\ArrayList;
+use Saki\Win\Pao\PaoList;
 
 /**
  * @package Saki\Game
@@ -63,17 +64,6 @@ class AreaList extends ArrayList {
     }
 
     /**
-     * @param SeatWind $initialSeatWind
-     * @return Area
-     */
-    private function getInitialSeatWindArea(SeatWind $initialSeatWind) {
-        $isInitialSeatWind = function (Area $area) use ($initialSeatWind) {
-            return $area->getInitialSeatWind() == $initialSeatWind;
-        };
-        return $this->getSingle($isInitialSeatWind);
-    }
-
-    /**
      * @param SeatWind $seatWind
      * @return Area
      */
@@ -92,5 +82,20 @@ class AreaList extends ArrayList {
         return SeatWind::createList($this->count())
             ->remove($excludes)
             ->toArray();
+    }
+
+    /**
+     * @param SeatWind[] $winners
+     * @return PaoList
+     */
+    function generatePaoList(array $winners) {
+        $paoList = new PaoList();
+        foreach ($winners as $seatWind) {
+            $area = $this->getArea($seatWind);
+            if ($area->hasPao()) {
+                $paoList->insertLast($area->getPao());
+            }
+        }
+        return $paoList;
     }
 }

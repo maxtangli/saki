@@ -17,6 +17,12 @@ class Pao {
      * @param PaoType $paoType
      */
     function __construct(SeatWind $fromSeatWind, SeatWind $toSeatWind, PaoType $paoType) {
+        if ($fromSeatWind == $toSeatWind) {
+            throw new \InvalidArgumentException(
+                "Invalid Pao: \$fromSeatWind[$fromSeatWind]==\$toSeatWind[$toSeatWind]"
+            );
+        }
+
         $this->from = $fromSeatWind;
         $this->to = $toSeatWind;
         $this->paoType = $paoType;

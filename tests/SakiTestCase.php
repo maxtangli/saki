@@ -243,7 +243,7 @@ class SakiTestCase extends \PHPUnit\Framework\TestCase {
     function assertPoint(int $point, string $seatWind) {
         $actual = $this->getCurrentRound()->getPointHolder()
             ->getPoint(SeatWind::fromString($seatWind));
-        $this->assertEquals($point, $actual);
+        $this->assertEquals($point, $actual, "Failed asserting $seatWind point.");
     }
 
     function assertPoints(array $points) {

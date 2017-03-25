@@ -327,7 +327,7 @@ class MeldList extends ArrayList {
      * @return bool
      */
     function isThreeOrFourKongs(bool $isFour) {
-        $this->assertCompletePrivateHandCount();
+//        $this->assertCompletePrivateHandCount();
         $n = $isFour ? 4 : 3;
         $kongCount = $this->getCount($this->getPredicate([KongMeldType::create()]));
         return $kongCount == $n;
@@ -390,7 +390,7 @@ class MeldList extends ArrayList {
      * @return bool
      */
     function isThreeDragon(bool $isBig) {
-        $this->assertCompletePrivateHandCount();
+//        $this->assertCompletePrivateHandCount();
         $dragonMeldList = $this->getCopy()->where(function (Meld $meld) {
             return $meld[0]->getTileType()->isDragon();
         });
@@ -404,7 +404,7 @@ class MeldList extends ArrayList {
      * @return bool
      */
     function isFourWinds(bool $isBig) {
-        $this->assertCompletePrivateHandCount();
+//        $this->assertCompletePrivateHandCount();
         $windMeldList = $this->where(function (Meld $meld) {
             return $meld[0]->getTileType()->isWind();
         });

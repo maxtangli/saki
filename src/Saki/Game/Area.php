@@ -2,6 +2,7 @@
 namespace Saki\Game;
 
 use Saki\Game\Tile\TileList;
+use Saki\Win\Pao\Pao;
 
 /**
  * @package Saki\Game
@@ -15,6 +16,7 @@ class Area {
     private $seatWind;
     // round variable
     private $handHolder;
+    private $pao;
 
     /**
      * @param SeatWind $initialSeatWind
@@ -25,6 +27,7 @@ class Area {
         $this->round = $round;
         $this->seatWind = $initialSeatWind;
         $this->handHolder = new HandHolder($round->getTargetHolder(), $initialSeatWind);
+        $this->pao = null;
     }
 
     /**
@@ -40,6 +43,7 @@ class Area {
     function roll(SeatWind $seatWind) {
         $this->seatWind = $seatWind;
         $this->handHolder->init($seatWind);
+        $this->pao = null;
     }
 
     /**
@@ -48,6 +52,7 @@ class Area {
     function debugInit(SeatWind $seatWind) {
         $this->seatWind = $seatWind;
         $this->handHolder->init($seatWind);
+        $this->pao = null;
     }
 
     /**
@@ -129,6 +134,33 @@ class Area {
      */
     function setHand(Hand $hand) {
         $this->handHolder->setHand($hand);
+    }
+
+    /**
+     * @return bool
+     */
+    function hasPao() {
+        return isset($this->pao);
+    }
+
+    /**
+     * @return Pao
+     */
+    function getPao() {
+        if (!$this->hasPao()) {
+            throw new \BadMethodCallException();
+        }
+        return $this->pao;
+    }
+
+    /**
+     * @param Pao $pao
+     */
+    function setPao(Pao $pao) {
+        if ($this->hasPao()) {
+            throw new \BadMethodCallException();
+        }
+        $this->pao = $pao;
     }
 
     /**

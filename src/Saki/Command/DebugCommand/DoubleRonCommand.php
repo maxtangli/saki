@@ -52,7 +52,8 @@ class DoubleRonCommand extends DebugCommand {
             $round->getAreaList()->getOtherSeatWinds([$actorList[0], $actorList[1], $round->getCurrentSeatWind()]),
             $round->getRiichiHolder()->getRiichiPoints(),
             $round->getPrevailing()->getSeatWindTurn(),
-            $winReportList->toArray()
+            $winReportList->toArray(),
+            $round->getAreaList()->generatePaoList($actorList->toArray())
         ));
         $round->toNextPhase(
             new OverPhaseState($round, $result)
