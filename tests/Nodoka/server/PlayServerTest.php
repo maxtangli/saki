@@ -26,6 +26,7 @@ class PlayServerTest extends \SakiTestCase {
             ->getHand()->getPublic()->getFirst();
         $command = "discard E $tile";
         $playServer->onMessage($client1, $command);
+        $this->assertTrue(true); // todo
     }
 
     function testViewerAssign() {

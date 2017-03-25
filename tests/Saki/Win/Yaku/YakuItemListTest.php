@@ -12,15 +12,15 @@ class YakuItemListTest extends \SakiTestCase {
         $this->assertEquals(0, $l->count());
     }
     
-    function testConcealed() {
-        // todo
-    }
-
-    function testExcluded() {
-        // todo
-    }
-
-    function testYakumanExcluded() {
-        // todo
-    }
+//    function testConcealed() {
+//        // todo
+//    }
+//
+//    function testExcluded() {
+//        // todo
+//    }
+//
+//    function testYakumanExcluded() {
+//        // todo
+//    }
 }

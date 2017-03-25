@@ -61,9 +61,6 @@ class RoundTest extends \SakiTestCase {
         $this->assertFalse($round->getPhaseState()->isGameOver());
 
         // point over 30000
-        $pointHolder->setPoint(SeatWind::fromString('E'), 29999);
-        $this->assertFalse($round->getPhaseState()->isGameOver());
-
         $pointHolder->setPoint(SeatWind::fromString('E'), 30000);
         $this->assertTrue($round->getPhaseState()->isGameOver());
     }

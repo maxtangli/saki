@@ -27,7 +27,7 @@ class PassArgumentArrayMock {
     }
 }
 
-class PhpTest extends \PHPUnit_Framework_TestCase {
+class PhpTest extends \PHPUnit\Framework\TestCase {
     function testOperatorEq() {
         $a = new EqMockA();
         $a2 = new EqMockA();

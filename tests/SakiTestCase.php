@@ -9,7 +9,7 @@ use Saki\Game\Turn;
 use Saki\Util\ArrayList;
 use Saki\Win\Result\ResultType;
 
-class SakiTestCase extends \PHPUnit_Framework_TestCase {
+class SakiTestCase extends \PHPUnit\Framework\TestCase {
     //region PHPUnit_Framework_TestCase override
     static function assertEquals($expected, $actual, $message = '', $delta = 0.0, $maxDepth = 10, $canonicalize = false, $ignoreCase = false) {
         if ($message === '' && is_object($expected) && is_object($actual)) {

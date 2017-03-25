@@ -4,21 +4,21 @@ use Saki\Win\Point\FanAndFu;
 use Saki\Win\Point\PointTable;
 
 class PointTableTest extends \SakiTestCase {
-    function testDealerSample() {
-        $result = PointTable::create()->getDealerSample();
-        $var_export = var_export($result, true);
-        $file = __DIR__ . '/dealerSample.txt';
-//        file_put_contents($file, $var_export);
-//        $this->assertEquals(file_get_contents($file), $var_export);
-    }
-
-    function testLeisureSample() {
-        $result = PointTable::create()->getLeisureSample();
-        $var_export = var_export($result, true);
-        $file = __DIR__ . '/leisureSample.txt';
-//        file_put_contents($file, $var_export);
-//        $this->assertEquals(file_get_contents($file), $var_export);
-    }
+//    function testDealerSample() {
+//        $result = PointTable::create()->getDealerSample();
+//        $var_export = var_export($result, true);
+//        $file = __DIR__ . '/dealerSample.txt';
+////        file_put_contents($file, $var_export);
+////        $this->assertEquals(file_get_contents($file), $var_export);
+//    }
+//
+//    function testLeisureSample() {
+//        $result = PointTable::create()->getLeisureSample();
+//        $var_export = var_export($result, true);
+//        $file = __DIR__ . '/leisureSample.txt';
+////        file_put_contents($file, $var_export);
+////        $this->assertEquals(file_get_contents($file), $var_export);
+//    }
 
     function testItem() {
         $fanAndFu = new FanAndFu(1, 40);

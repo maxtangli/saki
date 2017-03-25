@@ -31,9 +31,10 @@ class MeldListTest extends \SakiTestCase {
      */
     function testFromString($s, $valid) {
         if (!$valid) {
-            return;
+            $this->assertFalse(MeldList::validString($s));
+        } else {
+            $this->assertSame($s, MeldList::fromString($s)->__toString(), "\$s[$s]");
         }
-        $this->assertSame($s, MeldList::fromString($s)->__toString(), "\$s[$s]");
     }
 
     function testTileExist() {

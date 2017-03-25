@@ -85,7 +85,7 @@ class WallTest extends \SakiTestCase {
         static::assertEquals($tileCount, $liveWall->getRemainTileCount());
     }
 
-    function testActorWall() {
-        // todo
-    }
+//    function testActorWall() {
+//        // todo
+//    }
 }
