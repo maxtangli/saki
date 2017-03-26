@@ -310,7 +310,6 @@ class RoundTest extends \SakiTestCase {
             'pass N'
         );
         $this->assertOver(ResultType::DOUBLE_RON_WIN, false);
-        // todo test points, dealer
     }
 
     function testTripleRon() {

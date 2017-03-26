@@ -8,7 +8,7 @@ use Saki\Util\ArrayList;
  */
 class YakuItemList extends ArrayList {
     /**
-     * @return $this
+     * @return ArrayList
      */
     function toYakuList() {
         $toYaku = function (YakuItem $yakuItem) {

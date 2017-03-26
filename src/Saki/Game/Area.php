@@ -16,6 +16,7 @@ class Area {
     private $seatWind;
     // round variable
     private $handHolder;
+    /** @var Pao|null */
     private $pao;
 
     /**

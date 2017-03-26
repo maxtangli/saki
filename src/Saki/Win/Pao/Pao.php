@@ -1,4 +1,5 @@
 <?php
+
 namespace Saki\Win\Pao;
 
 use Saki\Game\SeatWind;

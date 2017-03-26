@@ -60,7 +60,7 @@ class Round {
      * @return string
      */
     function __toString() {
-        return 'Round._toString(): todo.';
+        return 'Round.';
     }
 
     /**

@@ -39,14 +39,6 @@ class PaoAnalyzer extends Singleton {
             }
         }
 
-        if ($toMeld->isKong(false)) {
-            $isFourKongs = $newMelded->isThreeOrFourKongs(true);
-            if ($isFourKongs) {
-                $type = PaoType::create(PaoType::FOUR_KONGS_PAO);
-                return new Pao($from, $to, $type);
-            }
-        }
-
         return false;
     }
 }

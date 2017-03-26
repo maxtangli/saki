@@ -1,4 +1,5 @@
 <?php
+
 namespace Saki\Command\PrivateCommand;
 
 use Saki\Command\ParamDeclaration\SeatWindParamDeclaration;
@@ -7,9 +8,11 @@ use Saki\Game\Phase\OverPhaseState;
 use Saki\Game\Round;
 use Saki\Game\SeatWind;
 use Saki\Util\ArrayList;
+use Saki\Win\Pao\Pao;
 use Saki\Win\Result\WinResult;
 use Saki\Win\Result\WinResultInput;
 use Saki\Win\WinState;
+use Saki\Win\Yaku\Fan1\AfterAKongWinYaku;
 
 /**
  * @package Saki\Command\PrivateCommand\PrivateCommand
@@ -39,10 +42,12 @@ class TsumoCommand extends PrivateCommand {
 
     protected function executePlayerImpl(Round $round, Area $actorArea) {
         $actor = $this->getActor();
+        $winReport = $round->getWinReport($actor);
 
+        // open ura indicators
         $round->getWall()->getIndicatorWall()->openUraIndicators();
 
-        $winReport = $round->getWinReport($actor);
+        // to over phase
         $result = new WinResult(WinResultInput::createTsumo(
             [$actor, $winReport->getFanAndFu()],
             $round->getAreaList()->getOtherSeatWinds([$actor]),

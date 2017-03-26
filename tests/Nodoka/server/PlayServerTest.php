@@ -79,8 +79,6 @@ class PlayServerTest extends \SakiTestCase {
     }
 
     private function assertViewer(string $expected, MockClient $client) {
-        // todo
-
         $json = $client->getLastReceived();
         $jsonSelfActor = $json->relations->self;
         $this->assertEquals($expected, $jsonSelfActor);

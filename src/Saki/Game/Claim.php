@@ -211,7 +211,7 @@ class Claim implements Immutable {
     /**
      * @return Turn
      */
-    function getTurn() {
+    function getPublicTurn() {
         return $this->turn;
     }
 
@@ -392,14 +392,14 @@ class Claim implements Immutable {
         $newHand = new Hand($newPublic, $newMelded, $newTarget);
         $area->setHand($newHand);
 
-        // handle history
+        // handle open and claim history
         if (!$hand->getTarget()->isCreator($this->getActor())) {
             $round->getTurnHolder()->getOpenHistory()
                 ->setLastDiscardDeclared();
         }
 
         $round->getTurnHolder()->getClaimHistory()
-            ->recordClaim($this->getTurn());
+            ->recordClaim($this->getPublicTurn());
 
         // handle pao
         $paoAnalyzer = $round->getRule()->getPaoAnalyzer();

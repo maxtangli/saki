@@ -11,16 +11,4 @@ class YakuItemListTest extends \SakiTestCase {
         $l->normalize();
         $this->assertEquals(0, $l->count());
     }
-    
-//    function testConcealed() {
-//        // todo
-//    }
-//
-//    function testExcluded() {
-//        // todo
-//    }
-//
-//    function testYakumanExcluded() {
-//        // todo
-//    }
 }

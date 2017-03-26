@@ -3,9 +3,10 @@
 - [x] 2015.06.02: first commit
 - [x] 2016.09.10: host demo in aws ec2
 - [x] 2017.01.11: 95% rule, html&css demo
-- [ ] 100% rule
-- [ ] 100% network and user data
+- [x] 2017.03.26: 100% rule
+- [ ] 100% network
 - [ ] 100% UI
+- [ ] 100% user data
 - [ ] infra
 
 ## rush statistics
@@ -1327,7 +1328,7 @@ rush 118 double ron win, triple ron draw 3.3h
 
 - [x] bug fix: ranking when same points exist 0.5h
 
-rush 119 pao
+rush 119 pao 5.4h
 
 - [x] analyze 0.1h
 - [x] add pao class 0.2h
@@ -1340,17 +1341,26 @@ rush 119 pao
 - [x] pao trigger: four kongs 0.2h
 - [x] refactor: PaoAnalyzer 0.2h
 
-- [ ] pao trigger: after a kong
+- pao trigger: after a kong 1.2h // give up...
 
 // --- 100% rule completed! ---
 
-rush code reading
+rush 120 code reading
+
+- document 7.2h
 
 - [x] search github mahjong projects 0.5h
-- review design
+
+- [ ] remove to-dos 0.2h
 
 - [ ] search mahjong impl articles
 - [ ] review algorithms
+
+rush 121 design review
+
+- Tile.isRedDora: better to introduce 2 classes, to avoid confusion.
+- Area.melded: better to contain history info of each meld.
+- Claim: better to split into classes.
 
 rush replay
 
@@ -1361,7 +1371,3 @@ rush room
 - [ ] register: email, nickname, password.
 - [ ] login: allow at most 1 websocket connection.
 - [ ] logout:?
-
-rush release ver UI
-
-rush document 7.2h

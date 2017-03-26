@@ -1,4 +1,5 @@
 <?php
+
 namespace Saki\Game;
 
 use Saki\Util\ArrayList;

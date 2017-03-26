@@ -61,7 +61,7 @@ class WinResultTest extends \SakiTestCase {
             list($from, $to) = $a;
             return new Pao(SeatWind::fromString($from),
                 SeatWind::fromString($to),
-                PaoType::create(PaoType::AFTER_A_KONG_PAO));
+                PaoType::create(PaoType::BIG_THREE_DRAGONS_PAO));
         };
         return (new PaoList())->fromSelect(
             (new ArrayList($a))->select($createPao)
