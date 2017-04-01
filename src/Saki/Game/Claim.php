@@ -83,7 +83,6 @@ class Claim implements Immutable {
      * @return array
      */
     function toJson() {
-        // todo split into sub classes
         $l = $this->getToMeld()->toArrayList();
         if ($this->isChowOrPungOrKong()) {
             // move target tile to relation position

@@ -1,12 +1,13 @@
 <?php
+
 namespace Saki\Win;
 
+use Saki\Game\Meld\ChowMeldType;
 use Saki\Game\Meld\MeldList;
 use Saki\Game\Meld\MeldListAnalyzer;
 use Saki\Game\Meld\PairMeldType;
-use Saki\Game\Meld\ChowMeldType;
-use Saki\Game\Meld\ThirteenOrphanMeldType;
 use Saki\Game\Meld\PungMeldType;
+use Saki\Game\Meld\ThirteenOrphanMeldType;
 use Saki\Game\Tile\Tile;
 use Saki\Game\Tile\TileList;
 use Saki\Util\ArrayList;
@@ -82,7 +83,7 @@ class WinAnalyzer {
      */
     function analyze(WinTarget $target) {
         $hand = $target->getHand();
-        
+
         // 1. handTileList target -> handMeldList's List
         $handTileList = $hand->getPrivate();
         $handMeldListList = $this->getHandMeldListAnalyzer()
@@ -105,7 +106,6 @@ class WinAnalyzer {
          * final yakuList     = best subResult.yakuList
          * final fu      = best subResult.fu
          * final winState     = best subResult.winState + handle furiten
-         * todo add waiting-but-not-win case?
          */
 
         /** @var WinSubReport $targetSubResult */

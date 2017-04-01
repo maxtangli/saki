@@ -108,7 +108,6 @@ abstract class Yaku extends Singleton {
             return true;
         }
 
-        // todo move getSeries into $subTarget
         $allMeldList = $subTarget->getAllMeldList();
         $seriesExist = function (Series $series) use ($allMeldList) {
             return $series->existIn($allMeldList);

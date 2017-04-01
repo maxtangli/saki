@@ -5,6 +5,8 @@ use Saki\Game\Meld\MeldList;
 use Saki\Game\Round;
 use Saki\Game\SeatWind;
 use Saki\Game\SubHand;
+use Saki\Util\ArrayList;
+use Saki\Win\Series\Series;
 
 /**
  * @package Saki\Win

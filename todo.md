@@ -1345,16 +1345,15 @@ rush 119 pao 5.4h
 
 // --- 100% rule completed! ---
 
-rush 120 code reading
+rush 120 refactor, code reading
 
 - document 7.2h
 
-- [x] search github mahjong projects 0.5h
-
-- [x] remove to-dos 0.3h
+- [x] remove to-dos 0.8h
 - [x] test: KongRequireReplaceWallNotEmpty 0.2h
 - [x] test: isGameOver 0.7h
 
+- [x] search github mahjong projects 0.5h
 - [ ] search mahjong impl articles
 - [ ] review algorithms
 

@@ -10,9 +10,7 @@ use Saki\Util\Utils;
 /**
  * @package Saki\Game
  */
-class PointList extends ArrayList implements Immutable {
-//    use ReadonlyArrayList; // todo support readonly and toOrdered() both
-
+class PointList extends ArrayList {
     /**
      * @param int[] $pointMap ['E' => $point, ...]
      * @return PointList

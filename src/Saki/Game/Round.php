@@ -30,7 +30,7 @@ class Round {
     private $areaList;
     /** @var PhaseState */
     private $phaseState;
-    // todo remove temp debug
+    // temp solution to keep tons of existed test cases working after Decider added in late development.
     public $enableDecider = false;
 
     function __construct(Rule $customRule = null) {

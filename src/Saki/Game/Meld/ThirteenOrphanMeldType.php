@@ -38,11 +38,11 @@ class ThirteenOrphanMeldType extends MeldType {
     }
 
     protected function validFaces(TileList $validCountTileList) {
-//        $target = $validCountTileList->getCopy()->orderByTileID(); // error todo better design of getCopy()
-        $target = (new TileList())->fromSelect($validCountTileList)->orderByTileID();
-        return $this->getAllPossibleTileLists()->any(function (TileList $tileList) use ($target) {
+        $target = $validCountTileList->getCopy()->orderByTileID();
+        $matchTarget = function (TileList $tileList) use ($target) {
             return $tileList->__toString() == $target->__toString();
-        });
+        };
+        return $this->getAllPossibleTileLists()->any($matchTarget);
     }
 
     protected function getPossibleTileLists(Tile $firstTile) {

@@ -97,7 +97,6 @@ class WaitingAnalyzer {
      * @return FutureWaitingList
      */
     function analyzePrivate(TileList $private, MeldList $melded) {
-        // todo validate complete
         $valid = $private->getSize()->isPrivate();
         if (!$valid) {
             throw new \InvalidArgumentException();
@@ -132,24 +131,18 @@ class WaitingAnalyzer {
      * @return TileList unique sorted waiting tile list
      */
     function analyzePublic(TileList $public, MeldList $melded) {
-        // todo validate public, complete
+        // ignore: validate public, complete
+
         // break public into possible MeldLists
         // where each MeldList contains at most 1 WeakMeldType
         $orderedHand = $public->getCopy()->orderByTileID();
         $setListList = $this->getPublicMeldListAnalyzer()
             ->analyzeMeldListList($orderedHand);
-//        foreach ($setListList as $setList) {
-//            echo $setList."\n";
-//        }
 
         // collect each MeldList's waiting as final waiting
         $waiting = new TileList();
         foreach ($setListList as $setList) {
-//            MsTimer::create()->restart();
             $setListWaiting = $this->getSetListWaiting($setList, $melded, $waiting);
-//            $ms = MsTimer::create()->restart();
-//            echo "$setList: $ms.\n";
-
             $waiting->concat($setListWaiting);
         }
 
@@ -206,11 +199,8 @@ class WaitingAnalyzer {
             return $weakList;
         }
 
-        // otherwise: empty. todo strict prove
+        // otherwise: empty.
         return new MeldList();
-//        throw new \LogicException(
-//            sprintf('Invalid logic. $setList[%s].', $setList)
-//        );
     }
 
     /**
