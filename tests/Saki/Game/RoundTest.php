@@ -41,28 +41,91 @@ class RoundTest extends \SakiTestCase {
         $this->assertEquals('123456789p1234s', $handS->getPublic()->toSortedString(true));
     }
 
-    function testGameOver() {
-        // to E Round N Dealer
+    function testGameOverFirst() {
+        // first round
         $round = $this->getInitRound();
-        $round->roll(false);
-        $round->roll(false);
-        $round->roll(false);
 
-        $actor = $round->getCurrentSeatWind();
-        $area = $round->getArea($actor);
+        // n: E tsumo
         $pointHolder = $round->getPointHolder();
+        $round->process('mockHand E 123456789m12355s; tsumo E');
+        $this->assertNotGameOver();
 
-        // E Player tsumo, but point not over 30000
-        $area->setHand(
-            $area->getHand()->toHand(TileList::fromString('13m456m789m123s55s'), null, Tile::fromString('2m'))
-        );
-        $round->process('tsumo E');
-        $pointHolder->setPoint(SeatWind::fromString('E'), 25000);
-        $this->assertFalse($round->getPhaseState()->isGameOver());
-
-        // point over 30000
+        // n: point over 30000 in first round
         $pointHolder->setPoint(SeatWind::fromString('E'), 30000);
-        $this->assertTrue($round->getPhaseState()->isGameOver());
+        $this->assertNotGameOver();
+
+        // n: point 0 is not
+        $pointHolder->setPoint(SeatWind::fromString('E'), 25000);
+        $pointHolder->setPoint(SeatWind::fromString('S'), 0);
+        $this->assertNotGameOver();
+
+        // y: point < 0
+        $pointHolder->setPoint(SeatWind::fromString('S'), -1);
+        $this->assertGameOver();
+    }
+
+    function testGameOverLastKeepDealer() {
+        // last round
+        $round = $this->getInitRound();
+        $round->roll(false, false, 3);
+
+        // E tsumo -> keep dealer
+        $pointHolder = $round->getPointHolder();
+        $round->process('mockHand E 123456789m12355s; tsumo E');
+
+        // n: point not over 30000
+        $pointHolder->setPoint(SeatWind::fromString('E'), 25000);
+        $this->assertNotGameOver();
+
+        // n: dealer point over 30000 but not single
+        $pointHolder->setPoint(SeatWind::fromString('E'), 30000);
+        $pointHolder->setPoint(SeatWind::fromString('S'), 30000);
+        $this->assertNotGameOver();
+
+        // y: dealer point over 30000 and single
+        $pointHolder->setPoint(SeatWind::fromString('E'), 30000);
+        $pointHolder->setPoint(SeatWind::fromString('S'), 25000);
+        $this->assertGameOver();
+
+        // n: other is top
+        $pointHolder->setPoint(SeatWind::fromString('E'), 25000);
+        $pointHolder->setPoint(SeatWind::fromString('S'), 30000);
+        $this->assertGameOver();
+    }
+
+    function testGameOverLastNotKeepDealer() {
+        // last round
+        $round = $this->getInitRound();
+        $round->roll(false, false, 3);
+
+        // S tsumo -> not keep dealer
+        $pointHolder = $round->getPointHolder();
+        $round->process('skip 1; mockHand S 123456789m12355s; tsumo S');
+
+        // n: no over 30000
+        $pointHolder->setPoint(SeatWind::fromString('S'), 25000);
+        $this->assertNotGameOver();
+
+        // y: top over 30000 and single
+        $pointHolder->setPoint(SeatWind::fromString('S'), 30000);
+        $this->assertGameOver();
+
+        // y: top over 30000 and not single
+        $pointHolder->setPoint(SeatWind::fromString('E'), 30000);
+        $pointHolder->setPoint(SeatWind::fromString('S'), 30000);
+        $this->assertGameOver();
+    }
+
+    function testGameOverSuddenDeathLast() {
+        // last round
+        $round = $this->getInitRound();
+        $round->roll(false, false, 7);
+
+        // y: no over 30000
+        $pointHolder = $round->getPointHolder();
+        $round->process('skip 1; mockHand S 123456789m12355s; tsumo S');
+        $pointHolder->setPoint(SeatWind::fromString('S'), 25000);
+        $this->assertGameOver();
     }
     //endregion
 
@@ -201,7 +264,7 @@ class RoundTest extends \SakiTestCase {
         $this->assertPrivate('W');
         $this->assertHasClaim($claimTurn);
         $this->assertCurrentTurnChanged('W', $claimTurn);
-        $this->assertHand('12346789p13s5m', '550m', '5m'); // todo should not be 5m but 3s
+        $this->assertHand('12346789p13s5m', '550m', '5m'); // no mind, let json ignore keep target
 
         $this->assertExecutable('discard W 5m');
     }
@@ -285,7 +348,7 @@ class RoundTest extends \SakiTestCase {
         $this->assertPrivate('S');
         $this->assertHasClaim($claimTurn);
         $this->assertCurrentTurnNotChanged($claimTurn);
-        $this->assertHand('23456789p13s1p', '5500m', '1p'); // todo right order of Meld?
+        $this->assertHand('23456789p13s1p', '5500m', '1p');
 
         $this->assertExecutable('discard S 5p');
     }

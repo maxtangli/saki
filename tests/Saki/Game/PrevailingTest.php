@@ -12,6 +12,5 @@ class PrevailingTest extends \SakiTestCase {
         $this->assertFalse($round->getPrevailing()->isSuddenDeathLast());
         
         $this->assertEquals('E,4th,0 continue', $current->__toString());
-        // todo detailed test
     }
 }

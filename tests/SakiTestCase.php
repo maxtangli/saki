@@ -228,6 +228,16 @@ class SakiTestCase extends \PHPUnit\Framework\TestCase {
         }
     }
 
+    function assertGameOver() {
+        $this->assertOver()
+        && $this->assertTrue($this->getCurrentRound()->getPhaseState()->isGameOver());
+    }
+
+    function assertNotGameOver() {
+        $this->assertOver()
+        && $this->assertFalse($this->getCurrentRound()->getPhaseState()->isGameOver());
+    }
+
     private function assertPhaseImpl(int $phaseValue, string $expectedCurrentSeatWind = null) {
         $round = $this->getCurrentRound();
 

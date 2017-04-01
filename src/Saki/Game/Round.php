@@ -1,4 +1,5 @@
 <?php
+
 namespace Saki\Game;
 
 use Saki\Command\CommandProcessor;
@@ -66,24 +67,28 @@ class Round {
     /**
      * @param bool $keepDealer
      * @param bool $isWin
+     * @param int $count
      */
-    function roll(bool $keepDealer, bool $isWin = false) {
-        // variable
-        $this->processor->init();
-        $this->prevailing = $this->prevailing->toRolled($keepDealer);
-        // $this->pointHolder no change
-        $this->riichiHolder->roll($isWin);
+    function roll(bool $keepDealer, bool $isWin = false, int $count = 1) {
+        $todo = $count;
+        while ($todo--) {
+            // variable
+            $this->processor->init();
+            $this->prevailing = $this->prevailing->toRolled($keepDealer);
+            // $this->pointHolder no change
+            $this->riichiHolder->roll($isWin);
 
-        // round variable
-        $this->turnHolder->init();
-        $this->targetHolder->init();
-        $this->wall->init();
-        $this->areaList->roll($keepDealer);
-        $this->deal();
+            // round variable
+            $this->turnHolder->init();
+            $this->targetHolder->init();
+            $this->wall->init();
+            $this->areaList->roll($keepDealer);
+            $this->deal();
 
-        // to private phase
-        $this->phaseState = new InitPhaseState($this);
-        $this->toNextPhase();
+            // to private phase
+            $this->phaseState = new InitPhaseState($this);
+            $this->toNextPhase();
+        }
     }
 
     /**
