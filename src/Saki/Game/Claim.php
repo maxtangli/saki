@@ -308,8 +308,8 @@ class Claim implements Immutable {
             }
         }
 
-        // kong commands require ableDrawReplacement
-        if ($this->isKong()) {
+        // kong/concealedKong/extendKong require ableDrawReplacement
+        if ($this->isKong() || $this->isConcealedKong() || $this->isExtendKong()) {
             $validReplaceWall = $round->getWall()->getReplaceWall()->ableOutNext();
             if (!$validReplaceWall) {
                 return false;

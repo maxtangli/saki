@@ -1352,6 +1352,7 @@ rush 120 code reading
 - [x] search github mahjong projects 0.5h
 
 - [ ] remove to-dos 0.2h
+- [x] testKongRequireReplaceWallNotEmpty 0.2h
 
 - [ ] search mahjong impl articles
 - [ ] review algorithms

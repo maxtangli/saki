@@ -290,7 +290,27 @@ class RoundTest extends \SakiTestCase {
         $this->assertExecutable('discard S 5p');
     }
 
-    // todo test kong,concealedKong,extendKong require ReplaceWall not empty
+    function testKongRequireReplaceWallNotEmpty() {
+        $round = $this->getInitRound();
+        $round->process(
+            'mockHand E 1111s; concealedKong E 1s1s1s1s',
+            'mockHand E 1111s; concealedKong E 1s1s1s1s',
+            'mockHand E 1111s; concealedKong E 1s1s1s1s',
+            'mockHand E 1111s; concealedKong E 1s1s1s1s'
+        );
+
+        // kong
+        $round->process('mockHand E 1s; discard E 1s; mockHand S 111s');
+        $this->assertNotExecutable('kong S 111s');
+
+        // concealedKong
+        $round->process('passAll; mockHand S 1111s');
+        $this->assertNotExecutable('concealedKong S 1111s');
+
+        // extendKong
+        $round->process('mockHand S 1s; discard S 1s; mockHand W 111s; pung W 11s');
+        $this->assertNotExecutable('extendKong W 1s 111s');
+    }
 
     function testRon() {
         $this->getInitRound()->process(
