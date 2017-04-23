@@ -1353,19 +1353,21 @@ rush 120 refactor, code reading
 - [x] test: KongRequireReplaceWallNotEmpty 0.2h
 - [x] test: isGameOver 0.7h
 
-- [x] search github mahjong projects 0.5h
+- [x] search github mahjong projects 0.5h // find nothing :(
+
 - [ ] search mahjong impl articles
 - [ ] review algorithms
 
-rush 121 design review
-
+design review
 - Tile.isRedDora: better to introduce 2 classes, to avoid confusion.
 - Area.melded: better to contain history info of each meld.
 - Claim: better to split into classes.
 
-rush replay
+rush 121 replay
 
 rush room
+
+- [x] try photon 1.5h
 
 - [ ] analyze 0.7h
 
