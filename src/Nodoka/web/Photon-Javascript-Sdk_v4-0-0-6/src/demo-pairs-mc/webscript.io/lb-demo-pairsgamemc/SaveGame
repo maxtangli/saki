@@ -1,4 +1,0 @@
-local x = json.parse(request.body)
-log(x)
-storage["game:" .. x.GameId] = request.body
-return {status = 0, message="SaveGame: OK"}
