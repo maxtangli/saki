@@ -16,6 +16,13 @@ class DicePair {
     }
 
     /**
+     * @return string
+     */
+    function __toString() {
+        return sprintf("%s+%s", $this->diceList[0], $this->diceList[1]);
+    }
+
+    /**
      * @return array
      */
     function getDices() {

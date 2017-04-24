@@ -36,8 +36,9 @@ rush  96-100| 16.1h
 rush 101-105|  7.6h
 rush 106-110|  9.8h
 rush 111-115|  7.7h
-rush 116-120|   ing
-     total  |466.5h + ing
+rush 116-120|   27h
+rush 121-125|   ing
+     total  |493.5h + ing
 
 ## rush history
 
@@ -1345,7 +1346,7 @@ rush 119 pao 5.4h
 
 // --- 100% rule completed! ---
 
-rush 120 refactor, code reading
+rush 120 refactor, code reading 9.9h
 
 - document 7.2h
 
@@ -1355,15 +1356,18 @@ rush 120 refactor, code reading
 
 - [x] search github mahjong projects 0.5h // find nothing :(
 
-- [ ] search mahjong impl articles
-- [ ] review algorithms
+- search mahjong impl articles 0.5h
+- review algorithms
 
 design review
 - Tile.isRedDora: better to introduce 2 classes, to avoid confusion.
 - Area.melded: better to contain history info of each meld.
 - Claim: better to split into classes.
 
-rush 121 replay
+rush replay
+
+- [x] locate random 0.1h // mix tile, roll dice
+- [ ] analyze 0.3h
 
 rush room
 

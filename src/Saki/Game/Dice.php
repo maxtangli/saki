@@ -13,6 +13,13 @@ class Dice {
     }
 
     /**
+     * @return string
+     */
+    function __toString() {
+        return "{$this->getNumber()}";
+    }
+
+    /**
      * @return int
      */
     function getNumber() {

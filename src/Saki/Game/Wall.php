@@ -2,6 +2,7 @@
 namespace Saki\Game;
 
 use Saki\Game\Tile\Tile;
+use Saki\Game\Tile\TileList;
 use Saki\Game\Tile\TileSet;
 use Saki\Game\Wall\IndicatorWall;
 use Saki\Game\Wall\LiveWall;
@@ -17,6 +18,7 @@ class Wall {
     private $tileSet;
     private $playerType;
     // variable
+    private $initialTileList;
     private $dicePair;
     private $stackList;
     private $drawWall;
@@ -56,10 +58,10 @@ class Wall {
         $this->stackList->walk($initStack);
 
         // 1.Mix the tiles
-        $tileList = $this->tileSet->toTileList()->shuffle();
+        $this->initialTileList = $this->tileSet->toTileList()->shuffle();
 
         // 2.Building the wall
-        $chunkList = new ArrayList($tileList->toChunks(2));
+        $chunkList = new ArrayList($this->initialTileList->toChunks(2));
         $setChunk = function (Stack $stack, array $chunk) {
             $stack->setTileChunk($chunk);
             return $stack;
@@ -121,6 +123,13 @@ class Wall {
      */
     function getTileSet() {
         return $this->tileSet;
+    }
+
+    /**
+     * @return TileList
+     */
+    function getInitialTileList() {
+        return $this->initialTileList;
     }
 
     /**
