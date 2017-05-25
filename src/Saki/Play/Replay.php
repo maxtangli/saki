@@ -14,3 +14,15 @@ class ReplayPlayer {
 class ReplayRecorder {
     // generate Replay by push command
 }
+
+interface User {
+
+}
+
+class Lobby {
+
+}
+
+class Table {
+
+}

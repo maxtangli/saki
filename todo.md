@@ -1364,17 +1364,21 @@ design review
 - Area.melded: better to contain history info of each meld.
 - Claim: better to split into classes.
 
+// --- toward 100% network ---
+
+rush 121 lobbyServer
+
+- [x] try photon 1.5h
+
+- [x] analyze 0.7h
+- [x] server scratch + dummy auth 1h
+- [ ] table management
+- [ ] play start&over
+- [ ] handling lost connection
+- [ ] true auth
+- [ ] refactoring
+
 rush replay
 
 - [x] locate random 0.1h // mix tile, roll dice
 - [ ] analyze 0.3h
-
-rush room
-
-- [x] try photon 1.5h
-
-- [ ] analyze 0.7h
-
-- [ ] register: email, nickname, password.
-- [ ] login: allow at most 1 websocket connection.
-- [ ] logout:?
