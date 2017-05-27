@@ -24,13 +24,23 @@ class LobbyServerTest extends \SakiTestCase {
         $this->assertEquals('Koromo', $server->getUser($client)->username);
     }
 
-    function testTableJoinAndLeave() {
+    function testTable() {
         $server = $this->lobbyServer;
         $client = $this->client1;
         $tableId = 0;
+
         $server->onMessage($client, "tableJoin $tableId");
-        $this->assertEquals(1, $server->getTableById($tableId)->getUserCount());
+        $table = $server->getTableById($tableId);
+        $this->assertEquals(1, $table->getUserCount());
+
+        $this->assertEquals(0, $table->getReadyCount());
+        $server->onMessage($client, "tableReady");
+        $this->assertEquals(1, $table->getReadyCount());
+
+        $server->onMessage($client, "tableUnready");
+        $this->assertEquals(0, $table->getReadyCount());
+
         $server->onMessage($client, 'tableLeave');
-        $this->assertEquals(0, $server->getTableById($tableId)->getUserCount());
+        $this->assertEquals(0, $table->getUserCount());
     }
 }

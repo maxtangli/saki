@@ -1373,9 +1373,9 @@ rush 121 lobbyServer
 - [x] analyze 0.7h
 - [x] server scratch + dummy auth 1h
 
-- [x] table: join, leave. 1h
-- [ ] table: ready, unready.
-- [ ] table: json.
+- [x] table: join, leave 1h
+- [x] table: ready, unready 0.5h
+- [ ] tableList: refactor, json
 
 - [ ] play start&over
 - [ ] handling lost connection
