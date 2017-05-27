@@ -1375,12 +1375,13 @@ rush 121 lobbyServer
 
 - [x] table: join, leave 1h
 - [x] table: ready, unready 0.5h
-- [ ] tableList: refactor, json
+- [x] table: error handling, allReady->start->over 1.2h
 
-- [ ] play start&over
-- [ ] handling lost connection
+- [ ] irregular: lost connection->reconnect
+- [ ] irregular: request error handling
+
 - [ ] true auth
-- [ ] refactoring
+- [ ] refactor
 
 rush replay
 

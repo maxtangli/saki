@@ -4,6 +4,7 @@ namespace Nodoka\server;
 
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
+use Saki\Play\Play;
 use Saki\Util\ArrayList;
 
 class LobbyServer implements MessageComponentInterface {
@@ -13,14 +14,7 @@ class LobbyServer implements MessageComponentInterface {
 
     function __construct($debugError = false) {
         $this->debugError = $debugError;
-
-        $tableCount = 100;
-        $idToTable = function ($id) {
-            return new Table($id);
-        };
-        $this->tableList = (new ArrayList(range(0, $tableCount - 1)))
-            ->select($idToTable);
-
+        $this->tableList = new TableList(100);
         $this->users = new \SplObjectStorage();
     }
 
@@ -89,6 +83,70 @@ class LobbyServer implements MessageComponentInterface {
     }
 
     /**
+     * @return TableList
+     */
+    function getTableList() {
+        return $this->tableList;
+    }
+
+    function auth(User $user, $username) {
+        // todo secure auth
+        $user->username = $username;
+    }
+
+    function tableInfoList(User $user) {
+        $tables = ['dummyTable1', 'dummyTable2'];
+        $this->send($user->conn, $tables);
+    }
+
+    function tableJoin(User $user, $tableId) {
+        $this->tableList->getTableById($tableId)->join($user);
+    }
+
+    function tableLeave(User $user) {
+        $this->tableList->getTableByUser($user)->leave($user);
+    }
+
+    function tableReady(User $user) {
+        $this->tableList->getTableByUser($user)->ready($user);
+    }
+
+    function tableUnready(User $user) {
+        $this->tableList->getTableByUser($user)->unready($user);
+    }
+
+    function tablePlay(User $user, ...$roundCommandTokens) {
+        $commandLine = implode(' ', $roundCommandTokens);
+        $this->tableList->getTableByUser($user)
+            ->getPlay()->tryExecute($user, $commandLine);
+    }
+}
+
+class User {
+    /** @var ConnectionInterface */
+    public $conn;
+    public $username;
+
+    function __construct() {
+    }
+
+    function __toString() {
+        return 'user';
+    }
+}
+
+class TableList {
+    private $tableList;
+
+    function __construct($tableCount) {
+        $idToTable = function ($id) {
+            return new Table($id);
+        };
+        $this->tableList = (new ArrayList(range(0, $tableCount - 1)))
+            ->select($idToTable);
+    }
+
+    /**
      * @param int $id
      * @return Table
      */
@@ -106,51 +164,13 @@ class LobbyServer implements MessageComponentInterface {
         };
         return $this->tableList->getSingle($userExist);
     }
-
-    function auth(User $user, $username) {
-        // todo secure auth
-        $user->username = $username;
-    }
-
-    function tableList(User $user) {
-        $tables = ['dummyTable1', 'dummyTable2'];
-        $this->send($user->conn, $tables);
-    }
-
-    function tableJoin(User $user, $tableId) {
-        $this->getTableById($tableId)->join($user);
-    }
-
-    function tableLeave(User $user) {
-        $this->getTableByUser($user)->leave($user);
-    }
-
-    function tableReady(User $user) {
-        $this->getTableByUser($user)->ready($user);
-    }
-
-    function tableUnready(User $user) {
-        $this->getTableByUser($user)->unready($user);
-    }
-}
-
-class User {
-    /** @var ConnectionInterface */
-    public $conn;
-    public $username;
-
-    function __construct() {
-    }
-
-    function __toString() {
-        return 'user';
-    }
 }
 
 class Table {
     private $id;
     private $userList;
     private $readyFlags;
+    private $play;
 
     /**
      * @param int $id
@@ -159,6 +179,7 @@ class Table {
         $this->id = $id;
         $this->userList = new ArrayList();
         $this->readyFlags = new \SplObjectStorage();
+        $this->play = null;
     }
 
     function __toString() {
@@ -194,6 +215,16 @@ class Table {
         return $this->getReadyCount() == $this->getSeatCount();
     }
 
+    function isStarted() {
+        return isset($this->play);
+    }
+
+    function assertNotStarted() {
+        if ($this->isStarted()) {
+            throw new \LogicException("[$this] is started.");
+        }
+    }
+
     function userExist(User $user) {
         return $this->userList->valueExist($user);
     }
@@ -204,25 +235,72 @@ class Table {
     }
 
     function join(User $user) {
+        $this->assertNotStarted();
         if ($this->isFull()) {
-            throw new \LogicException("$this is full.");
+            throw new \LogicException("[$this] is full.");
         }
         $this->userList->insertLast($user);
         $this->readyFlags[$user] = false;
     }
 
     function leave(User $user) {
+        $this->assertNotStarted();
         $this->userList->remove($user); // validate exist
         $this->readyFlags->detach($user);
     }
 
     function ready(User $user) {
+        $this->assertNotStarted();
         $this->userList->getIndex($user); // validate exist
         $this->readyFlags[$user] = true;
+
+        if ($this->isFullReady()) {
+            $this->start();
+        }
     }
 
     function unready(User $user) {
+        $this->assertNotStarted();
         $this->userList->getIndex($user); // validate exist
         $this->readyFlags[$user] = false;
+    }
+
+    function allUnready() {
+        $this->assertNotStarted();
+        foreach ($this->userList as $user) {
+            $this->readyFlags[$user] = false;
+        }
+    }
+
+    function start() {
+        if (!$this->isFullReady()) {
+            throw new \LogicException("[$this] is not full ready.");
+        }
+
+        $play = new Play();
+        $randomIndexes = (new ArrayList(range(0, $this->getUserCount() - 1)))->shuffle();
+        foreach ($randomIndexes as $index) {
+            $user = $this->userList[$index];
+            $play->join($user);
+        }
+        $this->play = $play;
+    }
+
+    /**
+     * @return Play
+     */
+    function getPlay() {
+        if (!$this->isStarted()) {
+            throw new \LogicException("[$this] is not started.");
+        }
+        return $this->play;
+    }
+
+    function finish() {
+        if (!$this->isStarted()) {
+            throw new \LogicException("[$this] is not started.");
+        }
+        $this->play = null;
+        $this->allUnready();
     }
 }
