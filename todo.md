@@ -1372,7 +1372,11 @@ rush 121 lobbyServer
 
 - [x] analyze 0.7h
 - [x] server scratch + dummy auth 1h
-- [ ] table management
+
+- [x] table: join, leave. 1h
+- [ ] table: ready, unready.
+- [ ] table: json.
+
 - [ ] play start&over
 - [ ] handling lost connection
 - [ ] true auth
