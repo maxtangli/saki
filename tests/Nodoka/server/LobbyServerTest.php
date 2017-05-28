@@ -30,13 +30,37 @@ class LobbyServerTest extends \SakiTestCase {
         $this->lobbyServer->onOpen($this->client2);
         $this->lobbyServer->onOpen($this->client3);
         $this->lobbyServer->onOpen($this->client4);
+        $this->lobbyServer->onMessage($this->client1, 'auth client1');
+        $this->lobbyServer->onMessage($this->client2, 'auth client2');
+        $this->lobbyServer->onMessage($this->client3, 'auth client3');
+        $this->lobbyServer->onMessage($this->client4, 'auth client4');
+    }
+
+    /**
+     * @return \Nodoka\server\Table
+     */
+    private function joinAndReady() {
+        $server = $this->lobbyServer;
+        $tableId = 0;
+        $table = $server->getTableList()->getTableById($tableId);
+
+        $server->onMessage($this->client1, "tableJoin $tableId");
+        $server->onMessage($this->client2, "tableJoin $tableId");
+        $server->onMessage($this->client3, "tableJoin $tableId");
+        $server->onMessage($this->client4, "tableJoin $tableId");
+        $server->onMessage($this->client1, "tableReady");
+        $server->onMessage($this->client2, "tableReady");
+        $server->onMessage($this->client3, "tableReady");
+        $server->onMessage($this->client4, "tableReady");
+
+        return $table;
     }
 
     function testAuth() {
         $server = $this->lobbyServer;
         $client = $this->client1;
         $server->onMessage($client, 'auth Koromo');
-        $this->assertEquals('Koromo', $server->getUser($client)->username);
+        $this->assertEquals('Koromo', $server->getAuthorizedUser($client)->getUsername());
     }
 
     function testTablePrepare() {
@@ -64,24 +88,14 @@ class LobbyServerTest extends \SakiTestCase {
      */
     function testTableStart() {
         $server = $this->lobbyServer;
-        $tableId = 0;
-        $table = $server->getTableList()->getTableById($tableId);
-
-        $server->onMessage($this->client1, "tableJoin $tableId");
-        $server->onMessage($this->client2, "tableJoin $tableId");
-        $server->onMessage($this->client3, "tableJoin $tableId");
-        $server->onMessage($this->client4, "tableJoin $tableId");
-        $server->onMessage($this->client1, "tableReady");
-        $server->onMessage($this->client2, "tableReady");
-        $server->onMessage($this->client3, "tableReady");
-        $server->onMessage($this->client4, "tableReady");
+        $table = $this->joinAndReady();
         $this->assertTrue($table->isStarted());
 
         /** @var Participant $participant */
         $participant = $table->getPlay()->getParticipantList(SeatWind::createEast())->getSingle();
-        /** @var User $client */
+        /** @var User $user */
         $user = $participant->getUserKey();
-        $client = $user->conn;
+        $client = $user->getConn();
 
         $tile1 = $table->getPlay()->getRound()
             ->getArea(SeatWind::createEast())->getHand()
@@ -93,4 +107,35 @@ class LobbyServerTest extends \SakiTestCase {
         $this->assertFalse($table->isStarted());
         $this->assertFalse($table->isFullReady());
     }
+
+    /**
+     * @depends testTableStart
+     */
+    function testReconnect() {
+        $server = $this->lobbyServer;
+        $table = $this->joinAndReady();
+        $client1 = $this->client1;
+        $user1 = $server->getAuthorizedUser($client1);
+
+        $this->assertEquals(4, $table->getUserCount());
+
+        $server->onClose($client1);
+        $this->assertEquals(4, $table->getUserCount());
+        $this->assertFalse($user1->isConnected());
+        $this->assertTrue($server->getTableList()->inTable($user1->getId()));
+
+        $client1Reconnect = new MockClient();
+        $server->onOpen($client1Reconnect);
+        $server->onMessage($client1Reconnect, "auth {$user1->getUsername()}");
+        $user1Reconnect = $server->getAuthorizedUser($client1Reconnect);
+        $this->assertSame($user1, $user1Reconnect);
+        $this->assertTrue($user1->isConnected());
+    }
+
+//    /**
+//     * @depends testTableStart
+//     */
+//    function testKickLostConnections() {
+//
+//    }
 }

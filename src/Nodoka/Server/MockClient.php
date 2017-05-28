@@ -19,8 +19,7 @@ class MockClient implements ConnectionInterface {
     public $resourceId;
 
     function __construct() {
-        $this->lastReceived = '';
-        $this->resourceId = static::generateResourceId();
+        $this->clear();
     }
 
     /**
@@ -28,6 +27,11 @@ class MockClient implements ConnectionInterface {
      */
     function __toString() {
         return $this->resourceId;
+    }
+
+    function clear() {
+        $this->lastReceived = '';
+        $this->resourceId = static::generateResourceId();
     }
 
     /**
@@ -52,14 +56,14 @@ class MockClient implements ConnectionInterface {
      */
     function send($data) {
         $this->setLastReceived($data);
-        return $this; // right?
+        return $this;
     }
 
     /**
      * Close the connection
      */
     function close() {
-        // do nothing
+        $this->clear();
     }
     //endregion
 }

@@ -1366,7 +1366,7 @@ design review
 
 // --- toward 100% network ---
 
-rush 121 lobbyServer
+rush 121 lobbyServer 5.9h
 
 - [x] try photon 1.5h
 
@@ -1377,11 +1377,14 @@ rush 121 lobbyServer
 - [x] table: ready, unready 0.5h
 - [x] table: error handling, allReady->start->over 1.2h
 
-- [ ] irregular: lost connection->reconnect
-- [ ] irregular: request error handling
+rush 122 handle lost connection
 
-- [ ] true auth
-- [ ] refactor
+- [x] irregular: lost connection->reconnect 2.2h
+
+- [ ] json&view
+- [ ] AIClient for lost connections
+
+rush 123 serious auth
 
 rush replay
 
