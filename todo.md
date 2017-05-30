@@ -1381,6 +1381,8 @@ rush 122 handle lost connection
 
 - [x] irregular: lost connection->reconnect 2.2h
 
+- [x] json: tableInfoList 0.6h
+
 - [ ] json&view
 - [ ] AIClient for lost connections
 

@@ -6,6 +6,7 @@ use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
 use Saki\Play\Play;
 use Saki\Util\ArrayList;
+use Saki\Util\Utils;
 
 class LobbyServer implements MessageComponentInterface {
     private $debugError;
@@ -15,7 +16,7 @@ class LobbyServer implements MessageComponentInterface {
 
     function __construct($debugError = false) {
         $this->debugError = $debugError;
-        $this->tableList = new TableList(100);
+        $this->tableList = new TableList(1);
         $this->authorizedUsers = new \SplObjectStorage();
         $this->lostConnectionUsers = new \SplObjectStorage();
     }
@@ -155,9 +156,8 @@ class LobbyServer implements MessageComponentInterface {
      * @param User $user
      */
     function tableInfoList(User $user) {
-        // todo json
-        $tables = ['dummyTable1', 'dummyTable2'];
-        $this->send($user->getConn(), $tables);
+        $json = $this->getTableList()->toJson();
+        $this->send($user->getConn(), $json);
     }
 
     /**
@@ -263,7 +263,7 @@ class TableList {
     /**
      * @param int $tableCount
      */
-    function __construct($tableCount) {
+    function __construct(int $tableCount) {
         $idToTable = function ($id) {
             return new Table($id);
         };
@@ -276,6 +276,13 @@ class TableList {
      */
     function __toString() {
         return $this->tableList->__toString();
+    }
+
+    /**
+     * @return array
+     */
+    function toJson() {
+        return $this->tableList->toArray(Utils::getMethodCallback('toJson'));
     }
 
     /**
@@ -344,8 +351,7 @@ class TableList {
  */
 class Table {
     private $id;
-    private $userList;
-    private $readyFlags;
+    private $tableUserList;
     private $play;
 
     /**
@@ -353,8 +359,7 @@ class Table {
      */
     function __construct(int $id) {
         $this->id = $id;
-        $this->userList = new ArrayList();
-        $this->readyFlags = new \SplObjectStorage();
+        $this->tableUserList = new ArrayList();
         $this->play = null;
     }
 
@@ -363,6 +368,17 @@ class Table {
      */
     function __toString() {
         return "table {$this->getId()}";
+    }
+
+    /**
+     * @return array
+     */
+    function toJson() {
+        return [
+            'id' => $this->getId(),
+            'tableUserList' => $this->tableUserList->toArray(Utils::getMethodCallback('toJson')),
+            'isStarted' => $this->isStarted()
+        ];
     }
 
     /**
@@ -383,7 +399,7 @@ class Table {
      * @return int
      */
     function getUserCount() {
-        return $this->userList->count();
+        return $this->tableUserList->count();
     }
 
     /**
@@ -397,12 +413,8 @@ class Table {
      * @return int
      */
     function getReadyCount() {
-        $n = 0;
-        foreach ($this->readyFlags as $user) {
-            $ready = $this->readyFlags[$user];
-            if ($ready) ++$n;
-        }
-        return $n;
+        return $this->tableUserList->getCount(
+            Utils::getMethodCallback('isReady'));
     }
 
     /**
@@ -430,10 +442,22 @@ class Table {
      * @return User
      */
     function getInTableUserOrFalse($userId) {
-        $match = function (User $user) use ($userId) {
-            return $user->getId() == $userId;
+        $match = function (TableUser $user) use ($userId) {
+            return $user->getUser()->getId() == $userId;
         };
-        return $this->userList->getSingleOrDefault($match, false);
+        $tableUser = $this->tableUserList->getSingleOrDefault($match, false);
+        return $tableUser !== false ? $tableUser->getUser() : false;
+    }
+
+    /**
+     * @param User $user
+     * @return TableUser
+     */
+    private function getTableUser(User $user) {
+        $match = function (TableUser $tableUser) use ($user) {
+            return $tableUser->getUser() === $user;
+        };
+        return $this->tableUserList->getSingle($match);
     }
 
     /**
@@ -444,8 +468,7 @@ class Table {
         if ($this->isFull()) {
             throw new \LogicException("[$this] is full.");
         }
-        $this->userList->insertLast($user);
-        $this->readyFlags[$user] = false;
+        $this->tableUserList->insertLast(new TableUser($user));
     }
 
     /**
@@ -453,8 +476,7 @@ class Table {
      */
     function leave(User $user) {
         $this->assertNotStarted();
-        $this->userList->remove($user); // validate exist
-        $this->readyFlags->detach($user);
+        $this->tableUserList->remove($this->getTableUser($user)); // validate exist
     }
 
     /**
@@ -462,8 +484,7 @@ class Table {
      */
     function ready(User $user) {
         $this->assertNotStarted();
-        $this->userList->getIndex($user); // validate exist
-        $this->readyFlags[$user] = true;
+        $this->getTableUser($user)->setReady(true); // validate exist
 
         if ($this->isFullReady()) {
             $this->start();
@@ -475,15 +496,15 @@ class Table {
      */
     function unready(User $user) {
         $this->assertNotStarted();
-        $this->userList->getIndex($user); // validate exist
-        $this->readyFlags[$user] = false;
+        $this->getTableUser($user)->setReady(false); // validate exist
     }
 
     function allUnready() {
         $this->assertNotStarted();
-        foreach ($this->userList as $user) {
-            $this->readyFlags[$user] = false;
-        }
+        $unready = function (TableUser $tableUser) {
+            $tableUser->setReady(false);
+        };
+        $this->tableUserList->walk($unready);
     }
 
     function kickLostConnections() {
@@ -491,11 +512,11 @@ class Table {
             return;
         }
 
-        $isLostConnection = function (User $user) {
-            return !$user->isConnected();
+        $isLostConnection = function (TableUser $tableUser) {
+            return !$tableUser->getUser()->isConnected();
         };
-        $this->userList->toArrayList()
-            ->where($isLostConnection)
+        $this->tableUserList
+            ->toArrayList()->where($isLostConnection)
             ->walk([$this, 'leave']);
     }
 
@@ -507,7 +528,7 @@ class Table {
         $play = new Play();
         $randomIndexes = (new ArrayList(range(0, $this->getUserCount() - 1)))->shuffle();
         foreach ($randomIndexes as $index) {
-            $user = $this->userList[$index];
+            $user = $this->tableUserList[$index]->getUser();
             $play->join($user);
         }
         $this->play = $play;
@@ -530,5 +551,52 @@ class Table {
         $this->play = null;
         $this->allUnready();
         $this->kickLostConnections(); // todo move into server?
+    }
+}
+
+/**
+ * @package Nodoka\server
+ */
+class TableUser {
+    private $user;
+    private $ready;
+
+    /**
+     * @param $user
+     */
+    function __construct(User $user) {
+        $this->user = $user;
+        $this->ready = false;
+    }
+
+    /**
+     * @return array
+     */
+    function toJson() {
+        return [
+            'username' => $this->getUser()->getUsername(),
+            'ready' => $this->isReady()
+        ];
+    }
+
+    /**
+     * @return User
+     */
+    function getUser() {
+        return $this->user;
+    }
+
+    /**
+     * @return bool
+     */
+    function isReady() {
+        return $this->ready;
+    }
+
+    /**
+     * @param bool $ready
+     */
+    function setReady(bool $ready) {
+        $this->ready = $ready;
     }
 }

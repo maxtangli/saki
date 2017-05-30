@@ -10,13 +10,13 @@ use Saki\Play\Participant;
 class LobbyServerTest extends \SakiTestCase {
     /** @var LobbyServer */
     private $lobbyServer;
-    /** @var ConnectionInterface */
+    /** @var MockClient */
     private $client1;
-    /** @var ConnectionInterface */
+    /** @var MockClient */
     private $client2;
-    /** @var ConnectionInterface */
+    /** @var MockClient */
     private $client3;
-    /** @var ConnectionInterface */
+    /** @var MockClient */
     private $client4;
 
     protected function setUp() {
@@ -73,10 +73,13 @@ class LobbyServerTest extends \SakiTestCase {
         $this->assertEquals(1, $table->getUserCount());
 
         $this->assertEquals(0, $table->getReadyCount());
-        $server->onMessage($client, "tableReady");
+        $server->onMessage($client, 'tableReady');
         $this->assertEquals(1, $table->getReadyCount());
 
-        $server->onMessage($client, "tableUnready");
+        $server->onMessage($client, 'tableInfoList');
+        $this->assertTrue($client->getLastReceived()[$tableId]->tableUserList[0]->ready);
+
+        $server->onMessage($client, 'tableUnready');
         $this->assertEquals(0, $table->getReadyCount());
 
         $server->onMessage($client, 'tableLeave');
