@@ -1,4 +1,5 @@
 <?php
+
 namespace Nodoka\Server;
 
 use Ratchet\ConnectionInterface;

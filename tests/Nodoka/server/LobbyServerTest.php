@@ -3,7 +3,6 @@
 use Nodoka\server\LobbyServer;
 use Nodoka\Server\MockClient;
 use Nodoka\server\User;
-use Ratchet\ConnectionInterface;
 use Saki\Game\SeatWind;
 use Saki\Play\Participant;
 

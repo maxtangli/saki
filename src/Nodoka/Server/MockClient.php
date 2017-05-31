@@ -1,4 +1,5 @@
 <?php
+
 namespace Nodoka\Server;
 
 use Ratchet\ConnectionInterface;
@@ -49,6 +50,7 @@ class MockClient implements ConnectionInterface {
     }
 
     //region ConnectionInterface impl
+
     /**
      * Send data to the connection
      * @param  string $data

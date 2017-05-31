@@ -1380,13 +1380,21 @@ rush 121 lobbyServer 5.9h
 rush 122 handle lost connection
 
 - [x] irregular: lost connection->reconnect 2.2h
-
 - [x] json: tableInfoList 0.6h
 
-- [ ] json&view
-- [ ] AIClient for lost connections
+- [ ] handle AI client
+
+rush 123 etc
+
+- [ ] refactor 0.5h
 
 rush 123 serious auth
+
+rush lobby ui
+
+- login
+- tableList -> allPrepared
+- play
 
 rush replay
 
