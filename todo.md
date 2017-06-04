@@ -1384,11 +1384,17 @@ rush 122 handle lost connection
 
 - [ ] handle AI client
 
-rush 123 etc
+rush etc
 
 - [ ] refactor 0.5h
 
-rush 123 serious auth
+rush user persistence
+
+- [x] setup mongodb: extension=php_mongodb.dll 0.5h
+- [ ] user model
+- [ ] config file
+
+rush serious auth
 
 rush lobby ui
 

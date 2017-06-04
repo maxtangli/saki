@@ -3,7 +3,8 @@
     "phpunit/phpunit": "6.0.*"
   },
   "require": {
-    "cboden/ratchet": "0.3.*"
+    "cboden/ratchet": "0.3.*",
+    "mongodb/mongodb": "*"
   },
   "autoload": {
     "psr-4": {
