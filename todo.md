@@ -1382,11 +1382,12 @@ rush 122 handle lost connection
 - [x] irregular: lost connection->reconnect 2.2h
 - [x] json: tableInfoList 0.6h
 
-- [ ] handle AI client
+- [ ] handle AI client 1h
 
 rush etc
 
-- [ ] refactor 0.5h
+- [x] refactor: etc. 0.5h
+- [x] refactor: separate connection logic 0.4h
 
 rush user persistence
 

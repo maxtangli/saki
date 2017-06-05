@@ -45,15 +45,12 @@ class LobbyServer implements MessageComponentInterface {
             $table = $this->getTableList()->getTable($user->getId());
             if ($table->isStarted()) {
                 // keep table playing and expect king's return
-                $user->setConn(new AIClient());
             } else {
                 // leave table since lost connection
                 $table->leave($user);
-                $user->setConn(null);
             }
         } else {
             // not in table, do nothing
-            $user->setConn(null);
         }
 
         unset($this->authorizedUsers[$conn]);
@@ -76,8 +73,11 @@ class LobbyServer implements MessageComponentInterface {
 
             $cmd = array_shift($tokens);
             $params = $tokens;
-            $firstParam = ($cmd == 'auth' ? $from : $this->getAuthorizedUser($from));
-            array_unshift($params, $firstParam);
+            if ($cmd == 'auth') {
+                array_unshift($params, $from);
+            } else {
+                array_unshift($params, $from, $this->getAuthorizedUser($from));
+            }
 
             if (!$this->validCommand($cmd)) {
                 throw new \InvalidArgumentException("Invalid message $msg");
@@ -106,6 +106,20 @@ class LobbyServer implements MessageComponentInterface {
             throw new \LogicException("user not exist for $conn");
         }
         return $this->authorizedUsers[$conn];
+    }
+
+    /**
+     * @param User $user
+     * @return ConnectionInterface
+     */
+    function getConnectionByUser(User $user) {
+        /** @var ConnectionInterface $conn */
+        foreach ($this->authorizedUsers as $conn) {
+            if ($this->authorizedUsers[$conn] === $user) {
+                return $conn;
+            }
+        }
+        throw new \InvalidArgumentException("\$user[$user] not existed.");
     }
 
     /**
@@ -148,54 +162,66 @@ class LobbyServer implements MessageComponentInterface {
             $user = new User($username);
         }
 
-        $user->setConn($conn);
         $this->authorizedUsers[$conn] = $user;
     }
 
     /**
+     * @param ConnectionInterface $conn
      * @param User $user
      */
-    function tableInfoList(User $user) {
+    function tableInfoList(ConnectionInterface $conn, User $user) {
         $json = $this->getTableList()->toJson();
-        $this->send($user->getConn(), $json);
+        $this->send($conn, $json);
     }
 
     /**
+     * @param ConnectionInterface $conn
      * @param User $user
      * @param int $tableId
      */
-    function tableJoin(User $user, $tableId) {
-        $this->tableList->getTableById($tableId)->join($user);
+    function tableJoin(ConnectionInterface $conn, User $user, $tableId) {
+        $this->getTableList()->getTableById($tableId)->join($user);
     }
 
     /**
+     * @param ConnectionInterface $conn
      * @param User $user
      */
-    function tableLeave(User $user) {
+    function tableLeave(ConnectionInterface $conn, User $user) {
         $this->getTableList()->getTable($user->getId())->leave($user);
     }
 
     /**
+     * @param ConnectionInterface $conn
      * @param User $user
      */
-    function tableReady(User $user) {
+    function tableReady(ConnectionInterface $conn, User $user) {
         $this->getTableList()->getTable($user->getId())->ready($user);
     }
 
     /**
+     * @param ConnectionInterface $conn
      * @param User $user
      */
-    function tableUnready(User $user) {
+    function tableUnready(ConnectionInterface $conn, User $user) {
         $this->getTableList()->getTable($user->getId())->unready($user);
     }
 
     /**
+     * @param ConnectionInterface $conn
      * @param User $user
      * @param string[] ...$roundCommandTokens
      */
-    function tablePlay(User $user, ...$roundCommandTokens) {
+    function tablePlay(ConnectionInterface $conn, User $user, ...$roundCommandTokens) {
         $commandLine = implode(' ', $roundCommandTokens);
-        $this->getTableList()->getTable($user->getId())
-            ->getPlay()->tryExecute($user, $commandLine);
+        $table = $this->getTableList()->getTable($user->getId());
+        $play = $table->getPlay();
+
+        $play->tryExecute($user, $commandLine);
+
+        if ($play->getRound()->getPhaseState()->isGameOver()) {
+            // kick lost connection users in table
+            // todo
+        }
     }
 }

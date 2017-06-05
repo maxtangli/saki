@@ -1,5 +1,7 @@
 <?php
+
 namespace Saki\Play;
+
 use Nodoka\Server\AIClient;
 
 /**

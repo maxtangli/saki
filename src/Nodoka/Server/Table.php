@@ -167,18 +167,18 @@ class Table {
         $this->tableUserList->walk($unready);
     }
 
-    function kickLostConnections() {
-        if ($this->isStarted()) {
-            return;
-        }
-
-        $isLostConnection = function (TableUser $tableUser) {
-            return !$tableUser->getUser()->isConnected();
-        };
-        $this->tableUserList
-            ->toArrayList()->where($isLostConnection)
-            ->walk([$this, 'leave']);
-    }
+//    function kickLostConnections() {
+//        if ($this->isStarted()) {
+//            return;
+//        }
+//
+//        $isLostConnection = function (TableUser $tableUser) {
+//            return !$tableUser->getUser()->isConnected();
+//        };
+//        $this->tableUserList
+//            ->toArrayList()->where($isLostConnection)
+//            ->walk([$this, 'leave']);
+//    }
 
     function start() {
         if (!$this->isFullReady()) {
@@ -210,6 +210,5 @@ class Table {
         }
         $this->play = null;
         $this->allUnready();
-        $this->kickLostConnections(); // todo move into server?
     }
 }

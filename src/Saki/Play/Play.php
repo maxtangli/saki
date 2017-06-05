@@ -1,4 +1,5 @@
 <?php
+
 namespace Saki\Play;
 
 use Saki\Game\Round;
@@ -60,6 +61,9 @@ class Play {
      * @return Participant
      */
     function getParticipant($userKey) {
+        if (!isset($this->participants[$userKey])) {
+            throw new \InvalidArgumentException();
+        }
         return $this->participants[$userKey];
     }
 
@@ -112,7 +116,6 @@ class Play {
      */
     function tryExecute($userKey, string $commandLine) {
         // todo check role
-
         $this->getRound()->getProcessor()->processLine($commandLine);
     }
 }

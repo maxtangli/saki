@@ -97,7 +97,7 @@ class LobbyServerTest extends \SakiTestCase {
         $participant = $table->getPlay()->getParticipantList(SeatWind::createEast())->getSingle();
         /** @var User $user */
         $user = $participant->getUserKey();
-        $client = $user->getConn();
+        $client = $server->getConnectionByUser($user);
 
         $tile1 = $table->getPlay()->getRound()
             ->getArea(SeatWind::createEast())->getHand()
@@ -123,7 +123,6 @@ class LobbyServerTest extends \SakiTestCase {
 
         $server->onClose($client1);
         $this->assertEquals(4, $table->getUserCount());
-        $this->assertFalse($user1->isConnected());
         $this->assertTrue($server->getTableList()->inTable($user1->getId()));
 
         $client1Reconnect = new MockClient();
@@ -131,7 +130,6 @@ class LobbyServerTest extends \SakiTestCase {
         $server->onMessage($client1Reconnect, "auth {$user1->getUsername()}");
         $user1Reconnect = $server->getAuthorizedUser($client1Reconnect);
         $this->assertSame($user1, $user1Reconnect);
-        $this->assertTrue($user1->isConnected());
     }
 
 //    /**
