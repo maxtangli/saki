@@ -79,6 +79,15 @@ class Play {
     }
 
     /**
+     * @param $userKeys
+     */
+    function joinAll($userKeys) {
+        foreach ($userKeys as $userKey) {
+            $this->join($userKey);
+        }
+    }
+
+    /**
      * @param $userKey
      */
     function leave($userKey) {

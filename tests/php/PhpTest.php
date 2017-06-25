@@ -72,6 +72,16 @@ class PhpTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals([0, 1, 2, 3], $a); // number key rearrange after splice
     }
 
+    function testUnset() {
+        $a = [];
+        unset($a['k']); // if not existed, nothing will be done
+        $this->assertEquals([], $a);
+
+        $a['k'] = 1;
+        unset($a['k']);
+        $this->assertEquals([], $a);
+    }
+
     function testExplode() {
         $a = explode(',', '');
         $this->assertSame([''], $a);

@@ -1377,31 +1377,40 @@ rush 121 lobbyServer 5.9h
 - [x] table: ready, unready 0.5h
 - [x] table: error handling, allReady->start->over 1.2h
 
-rush 122 handle lost connection
+rush 122 handle lost connection 2.8h
 
 - [x] irregular: lost connection->reconnect 2.2h
 - [x] json: tableInfoList 0.6h
 
-- [ ] handle AI client 1h
-
-rush etc
+rush 123 lobby etc 0.9h
 
 - [x] refactor: etc. 0.5h
 - [x] refactor: separate connection logic 0.4h
+
+rush 124 redesign a simplest lobby
+
+- [x] remove table logic 0.3h
+- [x] refactor User 0.5h
+
+- [ ] room matching 0.5h
+
+rush serious auth
+
+rush AI for lost connection
+
+- [ ] handle AI client 1h
+
+rush lobby ui
+
+- login
+- lobby
+- play
 
 rush user persistence
 
 - [x] setup mongodb: extension=php_mongodb.dll 0.5h
 - [ ] user model
 - [ ] config file
-
-rush serious auth
-
-rush lobby ui
-
-- login
-- tableList -> allPrepared
-- play
 
 rush replay
 
