@@ -13,10 +13,11 @@ class MockClient implements ConnectionInterface {
      */
     private static function generateResourceId() {
         static $nextId = 1;
-        return 'AI-' . $nextId++;
+        return 'Mock-' . $nextId++;
     }
 
-    private $lastReceived;
+    /** @var string[] */
+    private $receivedHistory;
     public $resourceId;
 
     function __construct() {
@@ -31,22 +32,37 @@ class MockClient implements ConnectionInterface {
     }
 
     function clear() {
-        $this->lastReceived = '';
+        $this->receivedHistory = [];
         $this->resourceId = static::generateResourceId();
     }
 
     /**
-     * @return array
+     * @return string[]
      */
-    function getLastReceived() {
-        return json_decode($this->lastReceived);
+    function getReceivedHistory() {
+        return $this->receivedHistory;
     }
 
     /**
-     * @param null $lastReceived
+     * @param int $index
+     * @param bool $decode
+     * @return mixed|string
      */
-    function setLastReceived($lastReceived) {
-        $this->lastReceived = $lastReceived;
+    function getReceived($index = -1, $decode = true) {
+        $actualIndex = $index >= 0 ? $index : count($this->receivedHistory) + $index;
+        $data = $this->receivedHistory[$actualIndex];
+        return $decode ? json_decode($data) : $data;
+    }
+
+    /**
+     * @param string $received
+     */
+    function pushReceived(string $received) {
+        $this->receivedHistory[] = $received;
+    }
+
+    function clearReceived() {
+        $this->receivedHistory = [];
     }
 
     //region ConnectionInterface impl
@@ -57,7 +73,7 @@ class MockClient implements ConnectionInterface {
      * @return \Ratchet\ConnectionInterface
      */
     function send($data) {
-        $this->setLastReceived($data);
+        $this->pushReceived($data);
         return $this;
     }
 

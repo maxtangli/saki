@@ -9,6 +9,7 @@ use Saki\Util\Singleton;
  * @package Nodoka\Server
  */
 class NullClient extends Singleton implements ConnectionInterface {
+    //region ConnectionInterface impl
     function send($data) {
         // do nothing
     }
@@ -16,4 +17,5 @@ class NullClient extends Singleton implements ConnectionInterface {
     function close() {
         // do nothing
     }
+    //endregion
 }

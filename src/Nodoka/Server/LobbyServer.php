@@ -12,6 +12,7 @@ class LobbyServer implements MessageComponentInterface {
     private $debugError;
     private $authenticator;
     private $users;
+    private $room;
 
     /**
      * @param bool $debugError
@@ -20,6 +21,7 @@ class LobbyServer implements MessageComponentInterface {
         $this->debugError = $debugError;
         $this->authenticator = new NullAuthenticator();
         $this->users = new \SplObjectStorage();
+        $this->room = new Room();
     }
 
     /**
@@ -35,6 +37,13 @@ class LobbyServer implements MessageComponentInterface {
      */
     function getUser(ConnectionInterface $conn) {
         return $this->users[$conn];
+    }
+
+    /**
+     * @return Room
+     */
+    function getRoom() {
+        return $this->room;
     }
 
     //region MessageComponentInterface impl
@@ -91,6 +100,8 @@ class LobbyServer implements MessageComponentInterface {
     function validCommand($command) {
         return in_array($command, [
             'auth',
+            'join',
+            'leave',
         ]);
     }
 
@@ -114,6 +125,33 @@ class LobbyServer implements MessageComponentInterface {
 
         $mockId = $username;
         $user->setAuthorized($mockId, $username);
+
+        $user->sendResponseOk();
+    }
+
+    /**
+     * @param User $user
+     */
+    function onMessageJoin(User $user) {
+        $this->getRoom()->joinMatching($user);
+        $user->sendResponseOk();
+
+        $play = $this->getRoom()->doMatching();
+        if ($play !== false) {
+            /** @var User[] $users */
+            $users = $play->getUserKeys();
+            foreach ($users as $user) {
+                $user->sendJson($play->getJson($user));
+            }
+        }
+    }
+
+    /**
+     * @param User $user
+     */
+    function onMessageLeave(User $user) {
+        $this->getRoom()->leaveMatching($user);
+        $user->sendResponseOk();
     }
 
     /**

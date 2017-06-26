@@ -1394,8 +1394,11 @@ rush 124 redesign a simplest lobby
 
 - [x] websocket auth: wss + plain username&password 0.3h
 
-- [ ] room matching 0.5h
+- [x] room matching 1.2h
+- [x] test: MockClient receivedHistory 0.4h
+
 - [ ] handle lost connection come back
+
 - [ ] handle lost connection AI 1h
 
 rush lobby ui

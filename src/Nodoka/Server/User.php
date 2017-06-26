@@ -66,6 +66,21 @@ class User implements ConnectionInterface {
     //endregion
 
     /**
+     * @param array $data
+     * @return ConnectionInterface
+     */
+    function sendJson(array $data) {
+        return $this->send(json_encode($data));
+    }
+
+    /**
+     * @return ConnectionInterface
+     */
+    function sendResponseOk() {
+        return $this->sendJson(['response' => 'ok']);
+    }
+
+    /**
      * @return bool
      */
     function isAuthorized() {

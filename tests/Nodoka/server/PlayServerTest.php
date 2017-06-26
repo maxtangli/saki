@@ -74,12 +74,11 @@ class PlayServerTest extends \SakiTestCase {
         $this->assertCommands(true, $client1);
         $this->assertCommands(false, $client5);
         $this->assertCommands(false, $client6);
-
         // todo player no see other's public, target
     }
 
     private function assertViewer(string $expected, MockClient $client) {
-        $json = $client->getLastReceived();
+        $json = $client->getReceived();
         $jsonSelfActor = $json->relations->self;
         $this->assertEquals($expected, $jsonSelfActor);
 
@@ -88,7 +87,7 @@ class PlayServerTest extends \SakiTestCase {
     }
 
     private function assertCommands(bool $exist, MockClient $client) {
-        $json = $client->getLastReceived();
+        $json = $client->getReceived();
         $actor = $json->relations->self;
         $jsonCommands = $json->areas->$actor->commands;
         $this->assertExist($exist, $jsonCommands);
