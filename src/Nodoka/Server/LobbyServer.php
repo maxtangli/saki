@@ -4,6 +4,7 @@ namespace Nodoka\Server;
 
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
+use Saki\Play\Play;
 
 /**
  * @package Nodoka\Server
@@ -99,9 +100,7 @@ class LobbyServer implements MessageComponentInterface {
      */
     function validCommand($command) {
         return in_array($command, [
-            'auth',
-            'join',
-            'leave',
+            'auth', 'join', 'leave', 'play'
         ]);
     }
 
@@ -138,11 +137,7 @@ class LobbyServer implements MessageComponentInterface {
 
         $play = $this->getRoom()->doMatching();
         if ($play !== false) {
-            /** @var User[] $users */
-            $users = $play->getUserKeys();
-            foreach ($users as $user) {
-                $user->sendJson($play->getJson($user));
-            }
+            $this->sendPlay($play);
         }
     }
 
@@ -160,7 +155,19 @@ class LobbyServer implements MessageComponentInterface {
      */
     function onMessagePlay(User $user, ...$roundCommandTokens) {
         $commandLine = implode(' ', $roundCommandTokens);
-        $play = null; // todo
+        $play = $this->getRoom()->getPlay($user);
+        $play->tryExecute($user, $commandLine);
+
+        $this->sendPlay($play);
+    }
+
+    // todo move into Play?
+    private function sendPlay(Play $play) {
+        /** @var User[] $users */
+        $users = $play->getUserKeys();
+        foreach ($users as $user) {
+            $user->sendJson($play->getJson($user));
+        }
     }
     //endregion
 }

@@ -2,6 +2,9 @@
 
 use Nodoka\Server\LobbyServer;
 use Nodoka\Server\MockClient;
+use Nodoka\Server\User;
+use Saki\Game\SeatWind;
+use Saki\Play\Participant;
 
 class LobbyServerTest extends \SakiTestCase {
     /** @var LobbyServer */
@@ -46,12 +49,33 @@ class LobbyServerTest extends \SakiTestCase {
 
     function testMatching() {
         $server = $this->lobbyServer;
-        $server->onMessage($this->client1, 'join');
-        $server->onMessage($this->client2, 'join');
-        $server->onMessage($this->client3, 'join');
-        $server->onMessage($this->client4, 'join');
-        $this->assertResponseOk($this->clients, 0);
-        $this->assertResponseRound($this->clients, 1);
+        $clients = $this->clients;
+        foreach ($clients as $client) {
+            $server->onMessage($client, 'join');
+        }
+        $this->assertResponseOk($clients, 0);
+        $this->assertResponseRound($clients, 'E', 1);
+    }
+
+    function testPlay() {
+        $server = $this->lobbyServer;
+        $clients = $this->clients;
+        foreach ($clients as $client) {
+            $server->onMessage($client, 'join');
+            $client->clearReceived();
+        }
+
+        $play = $server->getRoom()->getPlay($server->getUser($clients[1]));
+        // todo get userKeys in ESWN order
+        /** @var Participant $participantE */
+        $participantE = $play->getParticipantList(SeatWind::createEast())->getSingle();
+        /** @var User $userE */
+        $userE = $participantE->getUserKey();
+        $clientE = $userE->getConnection();
+        $server->onMessage($clientE, 'play mockHand E E');
+        $server->onMessage($clientE, 'play discard E E');
+        $server->onMessage($clientE, 'play passAll');
+        $this->assertResponseRound($clients, 'S');
     }
 
     /**
@@ -66,11 +90,13 @@ class LobbyServerTest extends \SakiTestCase {
 
     /**
      * @param MockClient[] $clients
+     * @param string $current
      * @param int $index
      */
-    static function assertResponseRound(array $clients, $index = -1) {
+    static function assertResponseRound(array $clients, string $current = 'E', $index = -1) {
         foreach ($clients as $client) {
             static::assertTrue(isset($client->getReceived($index)->round), implode("\n", $client->getReceivedHistory()));
+            static::assertEquals($current, $client->getReceived($index)->round->current);
         }
     }
 }

@@ -1396,6 +1396,8 @@ rush 124 redesign a simplest lobby
 
 - [x] room matching 1.2h
 - [x] test: MockClient receivedHistory 0.4h
+- [x] play 0.5h
+- [ ] refactor: play
 
 - [ ] handle lost connection come back
 

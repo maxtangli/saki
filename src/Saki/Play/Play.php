@@ -12,15 +12,15 @@ use Saki\Util\Utils;
  */
 class Play {
     private $round;
-    private $participants;
     private $roleManager;
+    private $participants;
 
     function __construct() {
         $round = new Round();
-        $this->round = $round;
         $round->enableDecider = true;
-        $this->participants = new \SplObjectStorage();
+        $this->round = $round;
         $this->roleManager = new RoleManager($round->getRule()->getPlayerType());
+        $this->participants = new \SplObjectStorage();
     }
 
     /**

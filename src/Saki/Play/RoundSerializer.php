@@ -64,6 +64,7 @@ class RoundSerializer {
             'pointSticks' => $round->getRiichiHolder()->getRiichiPointsSticks(),
             'wall' => $round->getWall()->toJson(),
             'phase' => $round->getPhase()->__toString(),
+            'current' => $round->getCurrentSeatWind()->__toString(),
         ];
         return $a;
     }
