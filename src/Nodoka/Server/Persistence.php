@@ -1,11 +1,11 @@
 <?php
 
-namespace Nodoka\server;
+namespace Nodoka\Server;
 
 use MongoDB;
 
 /**
- * @package Nodoka\server
+ * @package Nodoka\Server
  */
 class Persistence {
     private $collection;
@@ -28,7 +28,7 @@ class Persistence {
             throw new \InvalidArgumentException("\$username[$username] not existed.");
         }
 
-        return new User($username);
+        return new User(NullClient::create());
     }
 
     /**

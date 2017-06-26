@@ -1,21 +1,23 @@
 <?php
 
-namespace Nodoka\server;
+namespace Nodoka\Server;
 
 use Ratchet\ConnectionInterface;
 
 /**
- * @package Nodoka\server
+ * @package Nodoka\Server
  */
 class User implements ConnectionInterface {
-    private $username;
     private $connection;
     private $authorized;
+    private $id;
+    private $username;
 
-    function __construct(string $username, ConnectionInterface $connection) {
-        $this->username = $username;
+    function __construct(ConnectionInterface $connection) {
         $this->connection = $connection;
         $this->authorized = false;
+        $this->id = sprintf('guest-%s-%s', date('YmdHis'), rand());
+        $this->username = 'unknown';
     }
 
     /**
@@ -26,10 +28,10 @@ class User implements ConnectionInterface {
     }
 
     /**
-     * @return int|string
+     * @return string
      */
     function getId() {
-        return $this->username;
+        return $this->id;
     }
 
     /**
@@ -61,7 +63,6 @@ class User implements ConnectionInterface {
     function close() {
         return $this->getConnection()->close();
     }
-
     //endregion
 
     /**
@@ -72,9 +73,12 @@ class User implements ConnectionInterface {
     }
 
     /**
+     * @param string $id
      * @param string $username
      */
-    function auth(string $username) {
+    function setAuthorized(string $id, string $username) {
+        $this->id = $id;
         $this->username = $username;
+        $this->authorized = true;
     }
 }

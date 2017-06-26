@@ -1,11 +1,11 @@
 <?php
 
-namespace Nodoka\server;
+namespace Nodoka\Server;
 
 use Saki\Play\Play;
 
 /**
- * @package Nodoka\server
+ * @package Nodoka\Server
  */
 class Room {
     private $matchingUserList;

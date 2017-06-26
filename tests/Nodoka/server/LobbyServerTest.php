@@ -1,8 +1,8 @@
 <?php
 
-use Nodoka\server\LobbyServer;
+use Nodoka\Server\LobbyServer;
 use Nodoka\Server\MockClient;
-use Nodoka\server\User;
+use Nodoka\Server\User;
 use Saki\Game\SeatWind;
 use Saki\Play\Participant;
 
@@ -29,16 +29,16 @@ class LobbyServerTest extends \SakiTestCase {
         $this->lobbyServer->onOpen($this->client2);
         $this->lobbyServer->onOpen($this->client3);
         $this->lobbyServer->onOpen($this->client4);
-        $this->lobbyServer->onMessage($this->client1, 'auth client1');
-        $this->lobbyServer->onMessage($this->client2, 'auth client2');
-        $this->lobbyServer->onMessage($this->client3, 'auth client3');
-        $this->lobbyServer->onMessage($this->client4, 'auth client4');
+        $this->lobbyServer->onMessage($this->client1, 'auth client1 pw');
+        $this->lobbyServer->onMessage($this->client2, 'auth client2 pw');
+        $this->lobbyServer->onMessage($this->client3, 'auth client3 pw');
+        $this->lobbyServer->onMessage($this->client4, 'auth client4 pw');
     }
 
     function testAuth() {
         $server = $this->lobbyServer;
         $client = $this->client1;
-        $server->onMessage($client, 'auth Koromo');
+        $server->onMessage($client, 'auth Koromo pw');
         $this->assertEquals('Koromo', $server->getUser($client)->getUsername());
     }
 }

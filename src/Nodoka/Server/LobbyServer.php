@@ -1,19 +1,24 @@
 <?php
 
-namespace Nodoka\server;
+namespace Nodoka\Server;
 
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
 
 /**
- * @package Nodoka\server
+ * @package Nodoka\Server
  */
 class LobbyServer implements MessageComponentInterface {
     private $debugError;
+    private $authenticator;
     private $users;
 
+    /**
+     * @param bool $debugError
+     */
     function __construct($debugError = false) {
         $this->debugError = $debugError;
+        $this->authenticator = new NullAuthenticator();
         $this->users = new \SplObjectStorage();
     }
 
@@ -34,7 +39,7 @@ class LobbyServer implements MessageComponentInterface {
 
     //region MessageComponentInterface impl
     function onOpen(ConnectionInterface $conn) {
-        $user = new User('unknown', $conn);
+        $user = new User($conn);
         $this->users[$conn] = $user;
     }
 
@@ -66,6 +71,10 @@ class LobbyServer implements MessageComponentInterface {
                 throw new \InvalidArgumentException("Invalid message $msg");
             }
 
+            if (!$user->isAuthorized() && $cmd !== 'auth') {
+                throw new \InvalidArgumentException('Not authorized.');
+            }
+
             $function = 'onMessage' . ucfirst($cmd);
             call_user_func_array([$this, $function], $params);
         } catch (\Exception $e) {
@@ -74,6 +83,7 @@ class LobbyServer implements MessageComponentInterface {
     }
     //endregion
 
+    //region message handlers
     /**
      * @param $command
      * @return bool
@@ -85,13 +95,25 @@ class LobbyServer implements MessageComponentInterface {
     }
 
     /**
+     * auth by plain text password via wss connection.
+     *
+     * for Apache, configuration is required to support wss.
+     * https://stackoverflow.com/questions/16979793/php-ratchet-websocket-ssl-connect
+     *
      * @param User $user
      * @param $username
-     * @throws \Exception
+     * @param $password
      */
-    function onMessageAuth(User $user, $username) {
-        // todo real auth
-        $user->auth($username);
+    function onMessageAuth(User $user, $username, $password) {
+        $valid = $this->authenticator->authenticate($username, $password);
+        if (!$valid) {
+            $e = new \InvalidArgumentException('Invalid username or password.');
+            $this->onError($user->getConnection(), $e);
+            return;
+        }
+
+        $mockId = $username;
+        $user->setAuthorized($mockId, $username);
     }
 
     /**
@@ -102,4 +124,5 @@ class LobbyServer implements MessageComponentInterface {
         $commandLine = implode(' ', $roundCommandTokens);
         $play = null; // todo
     }
+    //endregion
 }

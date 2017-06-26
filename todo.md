@@ -1392,13 +1392,11 @@ rush 124 redesign a simplest lobby
 - [x] remove table logic 0.3h
 - [x] refactor User 0.5h
 
+- [x] websocket auth: wss + plain username&password 0.3h
+
 - [ ] room matching 0.5h
-
-rush serious auth
-
-rush AI for lost connection
-
-- [ ] handle AI client 1h
+- [ ] handle lost connection come back
+- [ ] handle lost connection AI 1h
 
 rush lobby ui
 
