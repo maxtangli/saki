@@ -94,4 +94,25 @@ class Room {
         }
         return $this->playList[$user->getId()];
     }
+
+    /**
+     * @param $userId
+     * @return User
+     */
+    function getPlayingUser($userId) {
+        if (!isset($this->playList[$userId])) {
+            throw new \InvalidArgumentException();
+        }
+
+        /** @var Play $play */
+        $play = $this->playList[$userId];
+        /** @var User $user */
+        foreach ($play->getUserKeys() as $user) {
+            if ($user->getId() == $userId) {
+                return $user;
+            }
+        }
+
+        throw new \InvalidArgumentException();
+    }
 }

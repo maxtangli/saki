@@ -1399,7 +1399,7 @@ rush 124 redesign a simplest lobby
 - [x] play 0.5h
 - [x] validate role for command: actor 0.3h
 
-- [ ] handle lost connection come back
+- [x] handle lost connection come back 0.5h
 - [ ] handle lost connection AI 1h
 
 - [ ] validate role for command: allowDebug

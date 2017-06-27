@@ -78,6 +78,26 @@ class LobbyServerTest extends \SakiTestCase {
         $this->assertResponseRound($clients, 'S');
     }
 
+    function testLostConnection() {
+        $server = $this->lobbyServer;
+        $clients = $this->clients;
+        foreach ($clients as $client) {
+            $server->onMessage($client, 'join');
+            $client->clearReceived();
+        }
+
+        $client1 = $clients[1];
+        $server->onClose($client1);
+
+        $client1Return = new MockClient();
+        $server->onOpen($client1Return);
+        $server->onMessage($client1Return, 'auth client1 pw');
+        $this->assertResponseOk([$client1Return], 0);
+        $this->assertResponseRound([$client1Return], 'E', 1);
+        $otherClients = array_slice($clients, 1);
+        $this->assertResponseRound($otherClients);
+    }
+
     /**
      * @param MockClient[] $clients
      * @param int $index

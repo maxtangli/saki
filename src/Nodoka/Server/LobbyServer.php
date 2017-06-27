@@ -41,6 +41,21 @@ class LobbyServer implements MessageComponentInterface {
     }
 
     /**
+     * @param ConnectionInterface $conn
+     * @param User $user
+     */
+    private function registerConnection(ConnectionInterface $conn, User $user) {
+        $this->users[$conn] = $user;
+    }
+
+    /**
+     * @param ConnectionInterface $conn
+     */
+    private function unRegisterConnection(ConnectionInterface $conn) {
+        unset($this->users[$conn]);
+    }
+
+    /**
      * @return Room
      */
     function getRoom() {
@@ -50,11 +65,18 @@ class LobbyServer implements MessageComponentInterface {
     //region MessageComponentInterface impl
     function onOpen(ConnectionInterface $conn) {
         $user = new User($conn);
-        $this->users[$conn] = $user;
+        $this->registerConnection($conn, $user);
     }
 
     function onClose(ConnectionInterface $conn) {
-        unset($this->users[$conn]);
+        // handle lost connection for playing
+        /** @var User $user */
+        $user = $this->getUser($conn);
+        if ($this->getRoom()->isPlaying($user)) {
+            $user->setConnection(NullClient::create()); // todo replace with AIClient
+        }
+
+        $this->unRegisterConnection($conn);
     }
 
     function onError(ConnectionInterface $conn, \Exception $e) {
@@ -115,17 +137,30 @@ class LobbyServer implements MessageComponentInterface {
      * @param $password
      */
     function onMessageAuth(User $user, $username, $password) {
+        $connection = $user->getConnection();
+
         $valid = $this->authenticator->authenticate($username, $password);
         if (!$valid) {
             $e = new \InvalidArgumentException('Invalid username or password.');
-            $this->onError($user->getConnection(), $e);
+            $this->onError($connection, $e);
             return;
         }
 
         $mockId = $username;
         $user->setAuthorized($mockId, $username);
-
         $user->sendResponseOk();
+
+        // todo refine this temp solution, consider login time etc.
+        // handle come back after lost connection
+        if ($this->getRoom()->isPlaying($user)) {
+            $originUser = $this->getRoom()->getPlayingUser($user->getId());
+            $originUser->setConnection($connection);
+            $this->registerConnection($connection, $originUser);
+
+            // notice all users that hero's come back
+            $play = $this->getRoom()->getPlay($originUser);
+            $this->sendPlay($play);
+        }
     }
 
     /**
@@ -157,7 +192,6 @@ class LobbyServer implements MessageComponentInterface {
         $commandLine = implode(' ', $roundCommandTokens);
         $play = $this->getRoom()->getPlay($user);
         $play->tryExecute($user, $commandLine);
-
         $this->sendPlay($play);
     }
 

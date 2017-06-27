@@ -50,6 +50,13 @@ class MockClient implements ConnectionInterface {
      */
     function getReceived($index = -1, $decode = true) {
         $actualIndex = $index >= 0 ? $index : count($this->receivedHistory) + $index;
+        if (!isset($this->receivedHistory[$actualIndex])) {
+            throw new \InvalidArgumentException(
+                sprintf("Invalid actualIndex[$actualIndex] of index[$index] for receivedHistory[%s].",
+                    implode("\n", $this->receivedHistory))
+            );
+        }
+
         $data = $this->receivedHistory[$actualIndex];
         return $decode ? json_decode($data) : $data;
     }
