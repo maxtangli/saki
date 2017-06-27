@@ -124,7 +124,13 @@ class Play {
      * @param string $commandLine
      */
     function tryExecute($userKey, string $commandLine) {
-        // todo check role
-        $this->getRound()->getProcessor()->processLine($commandLine);
+        $role = $this->getParticipant($userKey)->getRole();
+        if (!$role->isPlayer()) {
+            throw new \InvalidArgumentException('not player.');
+        }
+
+        $requireActor = $role->getViewer();
+        $allowDebugCommand = true; // todo
+        $this->getRound()->getProcessor()->processLine($commandLine, $requireActor, $allowDebugCommand);
     }
 }

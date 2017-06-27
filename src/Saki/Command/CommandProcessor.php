@@ -1,6 +1,8 @@
 <?php
+
 namespace Saki\Command;
 
+use Saki\Command\DebugCommand\DebugCommand;
 use Saki\Game\Round;
 use Saki\Game\SeatWind;
 
@@ -54,19 +56,28 @@ class CommandProcessor {
     /**
      * @param string $scriptLine
      * @param SeatWind|null $requireActor
-     * @throws \InvalidArgumentException
+     * @param bool $allowDebugCommand
      */
-    function processLine(string $scriptLine, SeatWind $requireActor = null) {
+    function processLine(string $scriptLine, SeatWind $requireActor = null, $allowDebugCommand = true) {
         $command = $this->getParser()->parseLine($scriptLine);
-        if ($requireActor) {
-            if (!$command instanceof PlayerCommand) {
-                throw new \InvalidArgumentException('not PlayerCommand.');
-            }
 
-            if (!$command->getActor() == $requireActor) {
-                throw new \InvalidArgumentException('not actor.');
+        if ($command instanceof DebugCommand) {
+            if (!$allowDebugCommand) {
+                throw new \InvalidArgumentException(
+                    "Invalid command: DebugCommand[$command] is not allowed."
+                );
             }
+        } elseif ($command instanceof PlayerCommand) {
+            $validActor = !isset($requireActor) || $command->getActor()->isSame($requireActor);
+            if (!$validActor) {
+                throw new \InvalidArgumentException(
+                    "Invalid command: [$command] do not match actor [$requireActor]."
+                );
+            }
+        } else {
+            throw new \LogicException();
         }
+
         $this->process($command->__toString());
     }
 }

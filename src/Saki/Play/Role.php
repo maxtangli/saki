@@ -56,7 +56,7 @@ class Role {
      * @return bool
      */
     function isViewer(SeatWind $seatWind) {
-        return $this->getViewer() == $seatWind;
+        return $this->getViewer()->isSame($seatWind);
     }
 
     /**
