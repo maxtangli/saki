@@ -98,6 +98,10 @@ class LobbyServerTest extends \SakiTestCase {
         $this->assertResponseRound($otherClients);
     }
 
+    function testAI() {
+        // todo
+    }
+
     /**
      * @param MockClient[] $clients
      * @param int $index

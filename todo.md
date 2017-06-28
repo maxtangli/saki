@@ -1400,16 +1400,21 @@ rush 124 redesign a simplest lobby
 - [x] validate role for command: actor 0.3h
 
 - [x] handle lost connection come back 0.5h
-- [ ] handle lost connection AI 1h
-
-- [ ] validate role for command: allowDebug
-- [ ] refactor: play
+- [ ] handle lost connection AI 1.7h
+- [ ] round option: skip redundant pass
 
 rush lobby ui
 
 - login
 - lobby
 - play
+
+rush refactor lobby
+
+- [ ] remove PlayServer and related Play methods
+
+- [ ] validate role for command: allowDebug
+- [ ] refactor: play
 
 rush user persistence
 

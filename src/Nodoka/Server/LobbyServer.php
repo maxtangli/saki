@@ -193,6 +193,15 @@ class LobbyServer implements MessageComponentInterface {
         $play = $this->getRoom()->getPlay($user);
         $play->tryExecute($user, $commandLine);
         $this->sendPlay($play);
+
+        $action = AI::create()->tryAI($play);
+        if ($action !== false) {
+            /** @var User $user */
+            $user = $action[0];
+            $nextCommand = $action[1];
+            $message = "play $nextCommand";
+            $this->onMessage($user->getConnection(), $message);
+        }
     }
 
     // todo move into Play?
@@ -205,3 +214,4 @@ class LobbyServer implements MessageComponentInterface {
     }
     //endregion
 }
+
