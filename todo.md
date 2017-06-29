@@ -1387,7 +1387,7 @@ rush 123 lobby etc 0.9h
 - [x] refactor: etc. 0.5h
 - [x] refactor: separate connection logic 0.4h
 
-rush 124 redesign a simplest lobby
+rush 124 redesign a simplest lobby 6.4h
 
 - [x] remove table logic 0.3h
 - [x] refactor User 0.5h
@@ -1402,18 +1402,16 @@ rush 124 redesign a simplest lobby
 - [x] handle lost connection come back 0.5h
 - [x] handle lost connection AI 2.4h
 
-- [ ] refactor: null client should behave same register
-- [ ] round option: skip redundant pass
-
-rush lobby ui
-
-- login
-- lobby
-- play
-
 rush refactor lobby
 
+- [x] lobby ui: login rush 0.8h
+
+- [ ] server: error handling for call_user_func_array
+
 - [ ] remove PlayServer and related Play methods
+
+- [ ] refactor: null client should behave same register
+- [ ] round option: skip redundant pass
 
 - [ ] validate role for command: allowDebug
 - [ ] refactor: play

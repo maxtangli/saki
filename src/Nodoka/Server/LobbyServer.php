@@ -112,6 +112,7 @@ class LobbyServer implements MessageComponentInterface {
             }
 
             $function = 'onMessage' . ucfirst($cmd);
+            // todo handle Fatal error for invalid params count
             call_user_func_array([$this, $function], $params);
         } catch (\Exception $e) {
             $this->onError($conn, $e);

@@ -79,6 +79,8 @@ Saki.DemoView.prototype = {
     render: function (jsonData) {
         Saki.debug('view.render()');
 
+        if (!jsonData.round) return;
+
         // todo clean code
         var roundData = jsonData.round;
         $('.prevailingWindContainer').html(this.actor(roundData.prevailingWind));
@@ -177,10 +179,10 @@ Saki.DemoView.prototype = {
             .attr({
                 class: 'command',
                 type: 'button',
-                value: commandData,
+                value: commandData
             })
             .click(function () {
-                return send(this.value);
+                return send('play ' + this.value);
             });
     },
     /*-- wall --*/
@@ -239,7 +241,7 @@ Saki.DemoView.prototype = {
             .html(tileData)
             .attr('command', tileData.command)
             .click(function () {
-                var command = $(this).attr('command');
+                var command = 'play ' + $(this).attr('command');
                 return command ? send(command) : false;
             });
     },
@@ -262,12 +264,20 @@ Saki.DemoView.prototype.constructor = Saki.DemoView;
         var view = new Saki.DemoView(game);
         game.open();
 
-        $('.command').click(function () {
+        $('.lobbyMessage').click(function () {
             game.send(this.value);
         });
 
+        $('#loginButton').click(function () {
+            game.send('auth ' + $('#loginUsername').val() + ' ' + $('#loginPassword').val());
+        });
+
+        $('.command').click(function () {
+            game.send('play' + this.value);
+        });
+
         $('#debugButton').click(function () {
-            game.send($('#debugText').val());
+            game.send('play' + $('#debugText').val());
         });
     });
 
