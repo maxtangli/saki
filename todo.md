@@ -1400,7 +1400,9 @@ rush 124 redesign a simplest lobby
 - [x] validate role for command: actor 0.3h
 
 - [x] handle lost connection come back 0.5h
-- [ ] handle lost connection AI 1.7h
+- [x] handle lost connection AI 2.4h
+
+- [ ] refactor: null client should behave same register
 - [ ] round option: skip redundant pass
 
 rush lobby ui

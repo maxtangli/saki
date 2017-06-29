@@ -4,6 +4,7 @@ namespace Nodoka\Server;
 
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
+use Saki\Command\Command;
 use Saki\Play\Play;
 
 /**
@@ -72,11 +73,14 @@ class LobbyServer implements MessageComponentInterface {
         // handle lost connection for playing
         /** @var User $user */
         $user = $this->getUser($conn);
-        if ($this->getRoom()->isPlaying($user)) {
-            $user->setConnection(NullClient::create()); // todo replace with AIClient
-        }
 
         $this->unRegisterConnection($conn);
+
+        if ($this->getRoom()->isPlaying($user)) {
+            $play = $this->getRoom()->getPlay($user);
+            $user->setConnection(NullClient::create()); // todo replace with AIClient
+            $this->tryAI($play);
+        }
     }
 
     function onError(ConnectionInterface $conn, \Exception $e) {
@@ -194,14 +198,7 @@ class LobbyServer implements MessageComponentInterface {
         $play->tryExecute($user, $commandLine);
         $this->sendPlay($play);
 
-        $action = AI::create()->tryAI($play);
-        if ($action !== false) {
-            /** @var User $user */
-            $user = $action[0];
-            $nextCommand = $action[1];
-            $message = "play $nextCommand";
-            $this->onMessage($user->getConnection(), $message);
-        }
+        $this->tryAI($play);
     }
 
     // todo move into Play?
@@ -210,6 +207,19 @@ class LobbyServer implements MessageComponentInterface {
         $users = $play->getUserKeys();
         foreach ($users as $user) {
             $user->sendJson($play->getJson($user));
+        }
+    }
+
+    private function tryAI(Play $play) {
+        $action = AI::create()->tryAI($play);
+        if ($action !== false) {
+            /** @var User $user */
+            $user = $action[0];
+            /** @var Command $nextCommand */
+            $nextCommand = $action[1];
+            $roundCommandTokens = explode(' ', $nextCommand->__toString());
+            $params = array_merge([$user], $roundCommandTokens);
+            call_user_func_array([$this, 'onMessagePlay'], $params);
         }
     }
     //endregion

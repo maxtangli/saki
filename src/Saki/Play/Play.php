@@ -41,7 +41,7 @@ class Play {
      * @param SeatWind $viewer
      * @param bool $includeViewer
      * @param bool $isPlayer
-     * @return ArrayList
+     * @return ArrayList ArrayList of Participant order by player ESWN and viewer ESWN.
      */
     function getParticipantList(SeatWind $viewer = null, bool $includeViewer = true, bool $isPlayer = null) {
         $match = function (Participant $participant) use ($viewer, $includeViewer, $isPlayer) {
@@ -50,9 +50,15 @@ class Play {
             $matchPlayer = is_null($isPlayer) || $role->isPlayer() === $isPlayer;
             return $matchViewer && $matchPlayer;
         };
+        $getOrderKey = function (Participant $participant) {
+            $viewerIndex = $participant->getRole()->getViewer()->getIndex();
+            $playerIndex = $participant->getRole()->isPlayer() ? 0 : 10;
+            return $viewerIndex + $playerIndex;
+        };
         $participantList = (new ArrayList($this->getUserKeys()))
             ->select([$this, 'getParticipant'])
-            ->where($match);
+            ->where($match)
+            ->orderByAscending($getOrderKey);
         return $participantList;
     }
 

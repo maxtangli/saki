@@ -3,7 +3,6 @@
 use Nodoka\Server\LobbyServer;
 use Nodoka\Server\MockClient;
 use Nodoka\Server\User;
-use Saki\Game\SeatWind;
 use Saki\Play\Participant;
 
 class LobbyServerTest extends \SakiTestCase {
@@ -66,9 +65,8 @@ class LobbyServerTest extends \SakiTestCase {
         }
 
         $play = $server->getRoom()->getPlay($server->getUser($clients[1]));
-        // todo get userKeys in ESWN order
         /** @var Participant $participantE */
-        $participantE = $play->getParticipantList(SeatWind::createEast())->getSingle();
+        $participantE = $play->getParticipantList()->getFirst();
         /** @var User $userE */
         $userE = $participantE->getUserKey();
         $clientE = $userE->getConnection();
@@ -99,7 +97,46 @@ class LobbyServerTest extends \SakiTestCase {
     }
 
     function testAI() {
-        // todo
+        $server = $this->lobbyServer;
+        $clients = $this->clients;
+        foreach ($clients as $client) {
+            $server->onMessage($client, 'join');
+            $client->clearReceived();
+        }
+
+        $play = $server->getRoom()->getPlay($server->getUser($clients[1]));
+        $toConnection = function (Participant $participant) {
+            /** @var User $user */
+            $user = $participant->getUserKey();
+            return $user->getConnection();
+        };
+        list($clientE, $clientS, $clientW, $clientN) = $play->getParticipantList()
+            ->toArray($toConnection);
+
+        // ai triggered by lost connection
+        // private phase ai
+        $server->onClose($clientE);
+        $this->assertResponseRound([$clientS, $clientW, $clientN]);
+
+        // public phase ai pass
+        $server->onClose($clientW);
+        $server->onClose($clientN);
+        $server->onMessage($clientS, 'play pass S');
+        $this->assertResponseRound([$clientS], 'S');
+
+        // solo play
+        $server->onMessage($clientS, 'play mockHand S S');
+        $server->onMessage($clientS, 'play discard S S');
+        $this->assertResponseRound([$clientS], 'W');
+
+        $server->onMessage($clientS, 'play pass S');
+        $this->assertResponseRound([$clientS], 'N');
+
+        $server->onMessage($clientS, 'play pass S');
+        $this->assertResponseRound([$clientS], 'E');
+
+        $server->onMessage($clientS, 'play pass S');
+        $this->assertResponseRound([$clientS], 'S');
     }
 
     /**
