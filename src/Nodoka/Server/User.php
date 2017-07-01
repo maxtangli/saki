@@ -67,17 +67,23 @@ class User implements ConnectionInterface {
 
     /**
      * @param array $data
-     * @return ConnectionInterface
      */
     function sendJson(array $data) {
-        return $this->send(json_encode($data));
+        $this->send(json_encode($data));
+    }
+
+    function sendResponseOk() {
+        $this->sendJson(['response' => 'ok']);
     }
 
     /**
-     * @return ConnectionInterface
+     * @param string $message
      */
-    function sendResponseOk() {
-        return $this->sendJson(['response' => 'ok']);
+    function sendResponseError(string $message) {
+        $this->sendJson([
+            'response' => 'error',
+            'message' => $message
+        ]);
     }
 
     /**

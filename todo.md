@@ -1413,13 +1413,16 @@ rush 125 refactor lobby
 - [x] round option: skip redundant pass 1.6h
 - [x] bug fix: invalid Pass command provided in ui 0.6h // cache issue
 
-- [ ] security: force wss connection
-- [ ] refactor: null client should behave same register
+- [x] refactor: null client register 0.4h
+- [x] bug fix: catch error for call_user_func_array in lobby server 0.7h // php7 throwable!
 
-- [ ] bug fix: error handling for call_user_func_array
+- [ ] bug fix: viewer should bind initialSeatWind
+
+- [ ] security: force wss connection
 
 - [ ] validate role for command: allowDebug
 - [ ] refactor: play
+- [ ] refactor: AI action send by AIClient to be nature.
 
 rush user persistence
 

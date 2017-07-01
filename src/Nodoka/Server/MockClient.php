@@ -3,22 +3,15 @@
 namespace Nodoka\Server;
 
 use Ratchet\ConnectionInterface;
+use Saki\Util\Utils;
 
 /**
  * @package Nodoka\Server
  */
 class MockClient implements ConnectionInterface {
-    /**
-     * @return int
-     */
-    private static function generateResourceId() {
-        static $nextId = 1;
-        return 'Mock-' . $nextId++;
-    }
-
+    public $resourceId;
     /** @var string[] */
     private $receivedHistory;
-    public $resourceId;
 
     function __construct() {
         $this->clear();
@@ -33,7 +26,7 @@ class MockClient implements ConnectionInterface {
 
     function clear() {
         $this->receivedHistory = [];
-        $this->resourceId = static::generateResourceId();
+        $this->resourceId = Utils::generateRandomToken('Mock');
     }
 
     /**

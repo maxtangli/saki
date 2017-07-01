@@ -45,7 +45,6 @@ class CommandProcessor {
      * @param string[] ...$scripts
      */
     function process(... $scripts) {
-        var_dump($scripts);
         $script = implode('; ', $scripts);
         $commands = $this->getParser()->parseScript($script);
         array_walk($commands, function (Command $command) {

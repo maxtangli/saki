@@ -28,7 +28,7 @@ class Persistence {
             throw new \InvalidArgumentException("\$username[$username] not existed.");
         }
 
-        return new User(NullClient::create());
+        return new User(new NullClient());
     }
 
     /**

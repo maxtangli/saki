@@ -6,6 +6,8 @@ namespace Saki\Util;
  * @package Saki\Util
  */
 class Utils {
+    private static $tokenNum = 1;
+
     /**
      * @param int $v
      * @param int $n
@@ -58,6 +60,31 @@ class Utils {
 
         $lastPart = str_replace($actualRemove, '', $lastPart);
         return $lastPart;
+    }
+
+    /**
+     * @param int $n
+     * @return string
+     */
+    static function getNumberSuffix(int $n) {
+        if (!Utils::inRange($n, 1, 4)) {
+            throw new \InvalidArgumentException('Not implemented.');
+        }
+        $m = [
+            1 => 'st',
+            2 => 'nd',
+            3 => 'rd',
+            4 => 'th'
+        ];
+        return $m[$n];
+    }
+
+    /**
+     * @param string $prefix
+     * @return string
+     */
+    static function generateRandomToken(string $prefix) {
+        return sprintf('%s-%s-%s', $prefix, date('Ymdhis'), static::$tokenNum++);
     }
 
     /**
@@ -120,23 +147,6 @@ class Utils {
         return function ($value) use ($method) {
             return $value->$method();
         };
-    }
-
-    /**
-     * @param int $n
-     * @return string
-     */
-    static function getNumberSuffix(int $n) {
-        if (!Utils::inRange($n, 1, 4)) {
-            throw new \InvalidArgumentException('Not implemented.');
-        }
-        $m = [
-            1 => 'st',
-            2 => 'nd',
-            3 => 'rd',
-            4 => 'th'
-        ];
-        return $m[$n];
     }
 
     private function __construct() {

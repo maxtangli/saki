@@ -3,7 +3,6 @@
 use Nodoka\Server\LobbyServer;
 use Nodoka\Server\MockClient;
 use Nodoka\Server\User;
-use Saki\Game\SeatWind;
 use Saki\Play\Participant;
 
 class LobbyServerTest extends \SakiTestCase {
@@ -42,9 +41,27 @@ class LobbyServerTest extends \SakiTestCase {
     function testAuth() {
         $server = $this->lobbyServer;
         $client = $this->client1;
+        $server->onClose($client);
+        $server->onOpen($client);
         $server->onMessage($client, 'auth Koromo pw');
         $this->assertEquals('Koromo', $server->getUser($client)->getUsername());
         $this->assertResponseOk([$client]);
+    }
+
+    function testMessageError() {
+        $server = new LobbyServer();
+        $client = new MockClient();
+        $server->onOpen($client);
+        try {
+            ob_start();
+            $server->onMessage($client, 'auth Koromo');
+            ob_end_clean();
+        } catch (\Throwable $e) {
+            ob_end_flush();
+            $this->fail('Failed to assert no throw when debugError=false.');
+        }
+
+        $this->assertResponseError([$client]);
     }
 
     function testMatching() {
@@ -92,7 +109,7 @@ class LobbyServerTest extends \SakiTestCase {
         $server->onOpen($client1Return);
         $server->onMessage($client1Return, 'auth client1 pw');
         $this->assertResponseOk([$client1Return], 0);
-        $this->assertResponseRound([$client1Return], 'E', 1);
+        $this->assertResponseRound([$client1Return], null, 1);
         $otherClients = array_slice($clients, 1);
         $this->assertResponseRound($otherClients);
     }
@@ -153,13 +170,25 @@ class LobbyServerTest extends \SakiTestCase {
 
     /**
      * @param MockClient[] $clients
+     * @param int $index
+     */
+    static function assertResponseError(array $clients, $index = -1) {
+        foreach ($clients as $client) {
+            static::assertEquals('error', $client->getReceived($index)->response);
+        }
+    }
+
+    /**
+     * @param MockClient[] $clients
      * @param string $current
      * @param int $index
      */
-    static function assertResponseRound(array $clients, string $current = 'E', $index = -1) {
+    static function assertResponseRound(array $clients, string $current = null, $index = -1) {
         foreach ($clients as $client) {
             static::assertTrue(isset($client->getReceived($index)->round), implode("\n", $client->getReceivedHistory()));
-            static::assertEquals($current, $client->getReceived($index)->round->current);
+            if (isset($current)) {
+                static::assertEquals($current, $client->getReceived($index)->round->current);
+            }
         }
     }
 }

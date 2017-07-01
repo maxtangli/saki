@@ -70,25 +70,36 @@ class LobbyServer implements MessageComponentInterface {
     }
 
     function onClose(ConnectionInterface $conn) {
-        // handle lost connection for playing
         /** @var User $user */
         $user = $this->getUser($conn);
 
         $this->unRegisterConnection($conn);
 
+        // handle lost connection for playing
         if ($this->getRoom()->isPlaying($user)) {
             $play = $this->getRoom()->getPlay($user);
-            $user->setConnection(NullClient::create()); // todo replace with AIClient
+
+            $aiClient = new NullClient();
+            $user->setConnection($aiClient);
+            $this->registerConnection($aiClient, $user);
+
             $this->tryAI($play);
         }
     }
 
     function onError(ConnectionInterface $conn, \Exception $e) {
+        $this->onThrowable($conn, $e);
+    }
+
+    function onThrowable(ConnectionInterface $conn, \Throwable $e) {
         if ($this->isDebugError()) {
             throw $e;
         } else {
             echo "onError: " . $e->getMessage() . "\n";
         }
+
+        $user = $this->getUser($conn);
+        $user->sendResponseError($e->getMessage());
     }
 
     function onMessage(ConnectionInterface $conn, $msg) {
@@ -103,19 +114,22 @@ class LobbyServer implements MessageComponentInterface {
             $cmd = array_shift($tokens);
             $params = array_merge([$user], $tokens);
 
-            if (!$this->validCommand($cmd)) {
+            if (!$this->validCommandName($cmd)) {
                 throw new \InvalidArgumentException("Invalid message $msg");
             }
 
-            if (!$user->isAuthorized() && $cmd !== 'auth') {
+            if ($cmd == 'auth' && $user->isAuthorized()) {
+                throw new \InvalidArgumentException('Already authorized.');
+            }
+
+            if ($cmd !== 'auth' && !$user->isAuthorized()) {
                 throw new \InvalidArgumentException('Not authorized.');
             }
 
             $function = 'onMessage' . ucfirst($cmd);
-            // todo handle Fatal error for invalid params count
             call_user_func_array([$this, $function], $params);
-        } catch (\Exception $e) {
-            $this->onError($conn, $e);
+        } catch (\Throwable $e) {
+            $this->onThrowable($conn, $e);
         }
     }
     //endregion
@@ -125,7 +139,7 @@ class LobbyServer implements MessageComponentInterface {
      * @param $command
      * @return bool
      */
-    function validCommand($command) {
+    function validCommandName($command) {
         return in_array($command, [
             'auth', 'join', 'leave', 'play'
         ]);
@@ -146,9 +160,7 @@ class LobbyServer implements MessageComponentInterface {
 
         $valid = $this->authenticator->authenticate($username, $password);
         if (!$valid) {
-            $e = new \InvalidArgumentException('Invalid username or password.');
-            $this->onError($connection, $e);
-            return;
+            throw new \InvalidArgumentException('Invalid username or password.');
         }
 
         $mockId = $username;
@@ -218,9 +230,9 @@ class LobbyServer implements MessageComponentInterface {
             $user = $action[0];
             /** @var Command $nextCommand */
             $nextCommand = $action[1];
-            $roundCommandTokens = explode(' ', $nextCommand->__toString());
-            $params = array_merge([$user], $roundCommandTokens);
-            call_user_func_array([$this, 'onMessagePlay'], $params);
+
+            $message = 'play ' . $nextCommand;
+            $this->onMessage($user->getConnection(), $message);
         }
     }
     //endregion
