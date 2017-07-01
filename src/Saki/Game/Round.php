@@ -16,8 +16,10 @@ use Saki\Win\WinTarget;
  * @package Saki\Game
  */
 class Round {
-    // immutable
+    // immutable config
     private $rule;
+    // mutable config
+    private $debugConfig;
     // variable
     private $processor;
     private $prevailing;
@@ -30,14 +32,15 @@ class Round {
     private $areaList;
     /** @var PhaseState */
     private $phaseState;
-    // temp solution to keep tons of existed test cases working after Decider added in late development.
-    public $enableDecider = false;
 
     function __construct(Rule $customRule = null) {
         $rule = $customRule ?? new Rule();
 
-        // immutable
+        // immutable config
         $this->rule = $rule;
+
+        // mutable config
+        $this->debugConfig = new DebugConfig();
 
         // variable
         $this->processor = new CommandProcessor($this, CommandSet::createStandard());
@@ -122,6 +125,13 @@ class Round {
      */
     function getRule() {
         return $this->rule;
+    }
+
+    /**
+     * @return DebugConfig
+     */
+    function getDebugConfig() {
+        return $this->debugConfig;
     }
 
     /**

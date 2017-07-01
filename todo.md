@@ -1409,9 +1409,13 @@ rush 125 refactor lobby
 - [x] refactor: remove PlayServer and related Play methods 0.1h
 - [x] refactor: remove viewer logic in play.getParticipantList 0.6h
 
-- [ ] bug fix: error handling for call_user_func_array
+- [x] refactor: move decider into DebugConfig 0.7h
+- [ ] round option: skip redundant pass 0.2h
+
+- [ ] security: force wss connection
 - [ ] refactor: null client should behave same register
-- [ ] round option: skip redundant pass
+
+- [ ] bug fix: error handling for call_user_func_array
 
 - [ ] validate role for command: allowDebug
 - [ ] refactor: play

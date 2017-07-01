@@ -385,7 +385,7 @@ class RoundTest extends \SakiTestCase {
 
     function testDoubleRon() {
         $round = $this->getInitRound();
-        $round->enableDecider = true;
+        $round->getDebugConfig()->setEnableDecider(true);
         $round->process(
             'mockHand E 4s; discard E 4s',
             'mockHand S 123m456m789m23s55s; ron S',
@@ -397,7 +397,7 @@ class RoundTest extends \SakiTestCase {
 
     function testTripleRon() {
         $round = $this->getInitRound();
-        $round->enableDecider = true;
+        $round->getDebugConfig()->setEnableDecider(true);
         $round->process(
             'mockHand E 4s; discard E 4s',
             'mockHand S 123m456m789m23s55s; ron S',

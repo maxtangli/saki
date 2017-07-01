@@ -40,7 +40,7 @@ class CommandProviderTest extends \SakiTestCase {
 
     function testProvideWhenDeciderOn() {
         $round = $this->getInitRound();
-        $round->enableDecider = true;
+        $round->getDebugConfig()->setEnableDecider(true);
 
         // pass
         $round->process('mockHand E 1s; discard E 1s');

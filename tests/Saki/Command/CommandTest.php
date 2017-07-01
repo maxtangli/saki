@@ -38,7 +38,7 @@ class CommandTest extends \SakiTestCase {
 
     function testDecider() {
         $round = $this->getInitRound();
-        $round->enableDecider = true;
+        $round->getDebugConfig()->setEnableDecider(true);
         $round->process('mockHand E 1m; discard E 1m');
 
         // test passAll

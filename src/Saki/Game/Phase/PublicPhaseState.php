@@ -68,7 +68,7 @@ class PublicPhaseState extends PhaseState {
     function getCommandDecider() {
         $round = $this->getRound();
         if (is_null($this->decider)) {
-            $this->decider = $round->enableDecider
+            $this->decider = $round->getDebugConfig()->isEnableDecider()
                 ? new BufferedCommandDecider($round->getRule()->getPlayerType(), $round->getProcessor()->getParser())
                 : new MockCommandDecider();
         }
