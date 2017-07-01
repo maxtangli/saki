@@ -127,6 +127,43 @@ class RoundTest extends \SakiTestCase {
         $pointHolder->setPoint(SeatWind::fromString('S'), 25000);
         $this->assertGameOver();
     }
+
+    function testSkipTrivialPass() {
+        $round = $this->getInitRound();
+
+        // SakiTestCase setting
+        $debugConfig = $round->getDebugConfig();
+        $this->assertFalse($debugConfig->isEnableDecider());
+        $this->assertFalse($debugConfig->isSkipTrivialPass());
+
+        // this test case setting
+        $debugConfig->enableDecider(true);
+        $this->assertTrue($debugConfig->isEnableDecider());
+        $this->assertTrue($debugConfig->isSkipTrivialPass());
+
+        // assert trivial pass skipped
+        $round->process(
+            'mockHand S 123456789m1235s; mockHand W 123456789m1235s; mockHand N 123456789m1235s',
+            'mockHand E E; discard E E'
+        );
+        $this->assertPrivate('S');
+
+        // assert public phase
+        $oldProvideAll = $round->getProcessor()->getProvider()->provideAll();
+        $round->process(
+            'mockHand E 123456789m1235s; mockHand W 123456789m12sSS; mockHand N 123456789m1235s',
+            'mockHand S S; discard S S'
+        );
+        $this->assertPublic('S');
+        $this->assertNotExecutable('pass E');
+        $this->assertCommandProviderEmpty('E');
+        $this->assertNotExecutable('pass N');
+        $this->assertCommandProviderEmpty('N');
+        $this->assertExecutable('pass W');
+
+        $round->process('pass W');
+        $this->assertPrivate('W');
+    }
     //endregion
 
     //region Command
@@ -385,7 +422,7 @@ class RoundTest extends \SakiTestCase {
 
     function testDoubleRon() {
         $round = $this->getInitRound();
-        $round->getDebugConfig()->setEnableDecider(true);
+        $round->getDebugConfig()->enableDecider(false);
         $round->process(
             'mockHand E 4s; discard E 4s',
             'mockHand S 123m456m789m23s55s; ron S',
@@ -397,7 +434,7 @@ class RoundTest extends \SakiTestCase {
 
     function testTripleRon() {
         $round = $this->getInitRound();
-        $round->getDebugConfig()->setEnableDecider(true);
+        $round->getDebugConfig()->enableDecider(false);
         $round->process(
             'mockHand E 4s; discard E 4s',
             'mockHand S 123m456m789m23s55s; ron S',

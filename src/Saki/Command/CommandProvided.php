@@ -1,5 +1,6 @@
 <?php
 namespace Saki\Command;
+use Saki\Command\PublicCommand\PassCommand;
 use Saki\Game\SeatWind;
 use Saki\Util\ArrayList;
 use Saki\Util\Utils;
@@ -18,6 +19,13 @@ class CommandProvided {
     }
 
     /**
+     * @return string
+     */
+    function __toString() {
+        return implode(';', $this->actorCommands);
+    }
+
+    /**
      * @param SeatWind $actor
      * @param string $commandClass
      * @return ArrayList
@@ -27,5 +35,19 @@ class CommandProvided {
         return $commandList
             ->getCopy()
             ->where(Utils::toClassPredicate($commandClass));
+    }
+
+    /**
+     * @return ArrayList
+     */
+    function getTrivialPassList() {
+        $result = new ArrayList();
+        foreach ($this->actorCommands as $commandList) {
+            if ($commandList->count() == 1
+                && $commandList->getFirst() instanceof PassCommand) {
+                $result->insertLast($commandList->getFirst());
+            }
+        }
+        return $result;
     }
 }

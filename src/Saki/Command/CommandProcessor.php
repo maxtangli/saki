@@ -45,12 +45,15 @@ class CommandProcessor {
      * @param string[] ...$scripts
      */
     function process(... $scripts) {
+        var_dump($scripts);
         $script = implode('; ', $scripts);
         $commands = $this->getParser()->parseScript($script);
         array_walk($commands, function (Command $command) {
+            // to ensure isSkipTrivialPass handler access latest provider data
+            $this->getProvider()->clearProvideAll();
+
             $command->execute();
         });
-        $this->getProvider()->clearProvideAll();
     }
 
     /**

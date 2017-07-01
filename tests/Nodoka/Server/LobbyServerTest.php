@@ -3,6 +3,7 @@
 use Nodoka\Server\LobbyServer;
 use Nodoka\Server\MockClient;
 use Nodoka\Server\User;
+use Saki\Game\SeatWind;
 use Saki\Play\Participant;
 
 class LobbyServerTest extends \SakiTestCase {
@@ -65,6 +66,7 @@ class LobbyServerTest extends \SakiTestCase {
         }
 
         $play = $server->getRoom()->getPlay($server->getUser($clients[1]));
+        $play->getRound()->getDebugConfig()->enableDecider(false);
         $participantE = $play->getCurrentParticipant();
         /** @var User $userE */
         $userE = $participantE->getUserKey();
@@ -104,6 +106,7 @@ class LobbyServerTest extends \SakiTestCase {
         }
 
         $play = $server->getRoom()->getPlay($server->getUser($clients[1]));
+        $play->getRound()->getDebugConfig()->enableDecider(false);
         $toConnection = function (Participant $participant) {
             /** @var User $user */
             $user = $participant->getUserKey();

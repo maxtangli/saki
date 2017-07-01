@@ -9,6 +9,7 @@ use Saki\Game\Phase\OverPhaseState;
 use Saki\Game\Phase\PhaseState;
 use Saki\Game\Phase\PrivatePhaseState;
 use Saki\Game\Phase\PublicPhaseState;
+use Saki\Util\Utils;
 use Saki\Win\WinReport;
 use Saki\Win\WinTarget;
 
@@ -253,6 +254,15 @@ class Round {
         $this->phaseState->leave();
         $this->phaseState = $this->phaseState->getNextState();
         $this->phaseState->enter();
+
+        if ($this->getDebugConfig()->isSkipTrivialPass()) {
+            if ($this->phaseState->getPhase()->isPublic()) {
+                $trivialPassList = $this->getProcessor()->getProvider()->provideAll()
+                    ->getTrivialPassList()
+                    ->toArray(Utils::getToStringCallback());
+                call_user_func_array([$this, 'process'], $trivialPassList);
+            }
+        }
     }
 
     /**

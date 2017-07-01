@@ -104,7 +104,7 @@ class SakiTestCase extends \PHPUnit\Framework\TestCase {
         self::$round->debugInit($prevailingStatus ?? PrevailingStatus::createFirst());
 
         // temp solution to keep tons of existed test cases working after Decider added in late development.
-        self::$round->getDebugConfig()->setEnableDecider(false);
+        self::$round->getDebugConfig()->disableDecider();
 
         return self::$round;
     }
@@ -138,6 +138,11 @@ class SakiTestCase extends \PHPUnit\Framework\TestCase {
             $message = sprintf('Failed asserting that Command[%s] is not executable.', $line);
             $this->assertFalse($command->executable(), $message);
         }
+    }
+
+    function assertCommandProviderEmpty(string $seatWind) {
+        $provider = $this->getCurrentRound()->getProcessor()->getProvider();
+        $this->assertEmpty($provider->provideActorAll(SeatWind::fromString($seatWind)));
     }
     //endregion
 

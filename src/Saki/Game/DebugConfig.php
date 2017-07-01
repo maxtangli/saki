@@ -22,15 +22,6 @@ class DebugConfig {
     }
 
     /**
-     * @param bool $enableDecider
-     * @return $this
-     */
-    function setEnableDecider($enableDecider) {
-        $this->enableDecider = $enableDecider;
-        return $this;
-    }
-
-    /**
      * @return bool
      */
     function isSkipTrivialPass() {
@@ -39,9 +30,22 @@ class DebugConfig {
 
     /**
      * @param bool $skipTrivialPass
+     */
+    function enableDecider(bool $skipTrivialPass) {
+        $this->enableDecider = true;
+        $this->skipTrivialPass = $skipTrivialPass;
+    }
+
+    function disableDecider() {
+        $this->enableDecider = false;
+        $this->skipTrivialPass = false;
+    }
+
+    /**
+     * @param bool $skipTrivialPass
      * @return $this
      */
-    function setSkipTrivialPass($skipTrivialPass) {
+    function setSkipTrivialPass(bool $skipTrivialPass) {
         $this->skipTrivialPass = $skipTrivialPass;
         return $this;
     }

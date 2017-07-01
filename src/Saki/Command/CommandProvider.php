@@ -5,6 +5,7 @@ use React\EventLoop\Timer\Timer;
 use Saki\Command\DebugCommand\InitCommand;
 use Saki\Command\DebugCommand\ToNextRoundCommand;
 use Saki\Command\PrivateCommand\RiichiCommand;
+use Saki\Command\PublicCommand\PassCommand;
 use Saki\Game\Round;
 use Saki\Game\SeatWind;
 use Saki\Util\ArrayList;

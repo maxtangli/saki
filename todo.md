@@ -1410,7 +1410,8 @@ rush 125 refactor lobby
 - [x] refactor: remove viewer logic in play.getParticipantList 0.6h
 
 - [x] refactor: move decider into DebugConfig 0.7h
-- [ ] round option: skip redundant pass 0.2h
+- [x] round option: skip redundant pass 1.6h
+- [x] bug fix: invalid Pass command provided in ui 0.6h // cache issue
 
 - [ ] security: force wss connection
 - [ ] refactor: null client should behave same register
