@@ -2,6 +2,7 @@
 namespace Saki\Game;
 
 use Saki\Util\Enum;
+use Saki\Util\Utils;
 
 /**
  * @package Saki\Game
@@ -20,10 +21,12 @@ class PlayerType extends Enum {
 
     /**
      * @param callable $selector
+     * @param SeatWind[] $excludes
      * @return \Saki\Util\ArrayList
      */
-    function getSeatWindList(callable $selector = null) {
+    function getSeatWindList(callable $selector = null, array $excludes = []) {
         return SeatWind::createList($this->getValue())
+            ->remove($excludes)
             ->toArrayList($selector);
     }
 

@@ -1,4 +1,5 @@
 <?php
+
 namespace Saki\Play;
 
 use Saki\Game\PlayerType;

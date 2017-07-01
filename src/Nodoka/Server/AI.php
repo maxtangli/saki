@@ -13,7 +13,7 @@ use Saki\Util\Utils;
 
 class AI extends Singleton {
     function tryAI(Play $play) {
-        $playerParticipantList = $play->getParticipantList(null, true, true);
+        $playerParticipantList = $play->getParticipantList();
         if ($this->isAllAI($playerParticipantList)) {
             return false;
         }
@@ -28,8 +28,7 @@ class AI extends Singleton {
         // if private actor is AI, return random DiscardCommand
         if ($round->getPhase()->isPrivate()) {
             /** @var Participant $currentParticipant */
-            $currentParticipant = $play->getParticipantList($currentActor, true, true)
-                ->getSingle();
+            $currentParticipant = $play->getCurrentParticipant();
             if (!$this->isAI($currentParticipant)) {
                 return false;
             }
@@ -43,7 +42,7 @@ class AI extends Singleton {
 
         // if any public actor is AI, return its PassCommand
         if ($round->getPhase()->isPublic()) {
-            $publicParticipantList = $play->getParticipantList($currentActor, false, true);
+            $publicParticipantList = $play->getNotCurrentParticipantList();
             /** @var Participant $publicParticipant */
             foreach ($publicParticipantList as $publicParticipant) {
                 if ($this->isAI($publicParticipant)) {

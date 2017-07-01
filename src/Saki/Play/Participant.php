@@ -2,8 +2,6 @@
 
 namespace Saki\Play;
 
-use Nodoka\Server\AIClient;
-
 /**
  * @package Saki\Play
  */
@@ -57,13 +55,5 @@ class Participant {
      */
     function getRoundSerializer() {
         return $this->roundSerializer;
-    }
-
-    /**
-     * @return bool
-     */
-    function isAI() {
-        // todo remove client logic
-        return $this->getUserKey() instanceof AIClient;
     }
 }

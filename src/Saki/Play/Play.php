@@ -3,7 +3,6 @@
 namespace Saki\Play;
 
 use Saki\Game\Round;
-use Saki\Game\SeatWind;
 use Saki\Util\ArrayList;
 use Saki\Util\Utils;
 
@@ -38,28 +37,41 @@ class Play {
     }
 
     /**
-     * @param SeatWind $viewer
-     * @param bool $includeViewer
-     * @param bool $isPlayer
-     * @return ArrayList ArrayList of Participant order by player ESWN and viewer ESWN.
+     * @param array|null $viewers
+     * @return ArrayList ArrayList of Participant order by player ESWN.
      */
-    function getParticipantList(SeatWind $viewer = null, bool $includeViewer = true, bool $isPlayer = null) {
-        $match = function (Participant $participant) use ($viewer, $includeViewer, $isPlayer) {
+    function getParticipantList(array $viewers = null) {
+        $actualViewers = isset($viewers) ? new ArrayList($viewers) : $this->getRound()->getRule()->getPlayerType()->getSeatWindList();
+        $match = function (Participant $participant) use ($actualViewers) {
             $role = $participant->getRole();
-            $matchViewer = is_null($viewer) || ($role->isViewer($viewer) == $includeViewer);
-            $matchPlayer = is_null($isPlayer) || $role->isPlayer() === $isPlayer;
-            return $matchViewer && $matchPlayer;
+            return $role->isPlayer() && $actualViewers->valueExist($role->getViewer());
         };
         $getOrderKey = function (Participant $participant) {
-            $viewerIndex = $participant->getRole()->getViewer()->getIndex();
-            $playerIndex = $participant->getRole()->isPlayer() ? 0 : 10;
-            return $viewerIndex + $playerIndex;
+            return $participant->getRole()->getViewer()->getIndex();
         };
         $participantList = (new ArrayList($this->getUserKeys()))
             ->select([$this, 'getParticipant'])
             ->where($match)
             ->orderByAscending($getOrderKey);
         return $participantList;
+    }
+
+    /**
+     * @return Participant
+     */
+    function getCurrentParticipant() {
+        return $this->getParticipantList(
+            [$this->getRound()->getCurrentSeatWind()]
+        )->getSingle();
+    }
+
+    /**
+     * @return ArrayList ArrayList of Participant order by player ESWN.
+     */
+    function getNotCurrentParticipantList() {
+        return $this->getParticipantList(
+            $this->getRound()->getNotCurrentSeatWindList()->toArray()
+        );
     }
 
     /**
@@ -70,7 +82,9 @@ class Play {
         if (!isset($this->participants[$userKey])) {
             throw new \InvalidArgumentException();
         }
-        return $this->participants[$userKey];
+        /** @var Participant $participant */
+        $participant = $this->participants[$userKey];
+        return $participant;
     }
 
     /**
@@ -110,8 +124,7 @@ class Play {
         $roundJson = $this->getParticipant($userKey)
             ->getRoundSerializer()
             ->toAllJson();
-
-        // temp
+        
         $keySelector = function (Participant $participant) {
             return $participant->getRole()->getViewer()->__toString();
         };

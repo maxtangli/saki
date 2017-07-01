@@ -213,6 +213,15 @@ class Round {
     }
 
     /**
+     * sugar method.
+     * @return \Saki\Util\ArrayList
+     */
+    function getNotCurrentSeatWindList() {
+        return $this->getRule()->getPlayerType()
+            ->getSeatWindList(null, [$this->getCurrentSeatWind()]);
+    }
+
+    /**
      * Sugar method.
      * @param SeatWind $actor
      * @return WinReport

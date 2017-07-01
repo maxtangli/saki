@@ -65,8 +65,7 @@ class LobbyServerTest extends \SakiTestCase {
         }
 
         $play = $server->getRoom()->getPlay($server->getUser($clients[1]));
-        /** @var Participant $participantE */
-        $participantE = $play->getParticipantList()->getFirst();
+        $participantE = $play->getCurrentParticipant();
         /** @var User $userE */
         $userE = $participantE->getUserKey();
         $clientE = $userE->getConnection();

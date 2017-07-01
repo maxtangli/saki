@@ -1402,14 +1402,14 @@ rush 124 redesign a simplest lobby 6.4h
 - [x] handle lost connection come back 0.5h
 - [x] handle lost connection AI 2.4h
 
-rush refactor lobby
+rush 125 refactor lobby
 
 - [x] lobby ui: login rush 0.8h
 
-- [ ] server: error handling for call_user_func_array
+- [x] refactor: remove PlayServer and related Play methods 0.1h
+- [x] refactor: remove viewer logic in play.getParticipantList 0.6h
 
-- [ ] remove PlayServer and related Play methods
-
+- [ ] bug fix: error handling for call_user_func_array
 - [ ] refactor: null client should behave same register
 - [ ] round option: skip redundant pass
 
