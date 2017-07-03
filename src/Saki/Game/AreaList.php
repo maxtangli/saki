@@ -75,13 +75,14 @@ class AreaList extends ArrayList {
     }
 
     /**
-     * @param SeatWind[] $excludes
-     * @return SeatWind[]
+     * @param SeatWind $initial
+     * @return Area
      */
-    function getOtherSeatWinds(array $excludes) {
-        return SeatWind::createList($this->count())
-            ->remove($excludes)
-            ->toArray();
+    function getAreaByInitial(SeatWind $initial) {
+        $isInitial = function (Area $area) use ($initial) {
+            return $area->getInitialSeatWind() == $initial;
+        };
+        return $this->getSingle($isInitial);
     }
 
     /**

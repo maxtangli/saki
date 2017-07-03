@@ -7,7 +7,7 @@ use Saki\Play\RoundSerializer;
 class RoundSerializerTest extends \SakiTestCase {
     function testJson() {
         $round = $this->getInitRound();
-        $privilege = Role::createPlayer(SeatWind::createEast());
+        $privilege = Role::createPlayer($round, SeatWind::createEast());
         $serializer = new RoundSerializer($round, $privilege);
 
         $a = $serializer->toAllJson();

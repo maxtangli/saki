@@ -1,38 +1,45 @@
 <?php
+
 namespace Saki\Play;
 
 use Saki\Game\Relation;
+use Saki\Game\Round;
 use Saki\Game\SeatWind;
 
 /**
  * @package Saki\Play
  */
 class Role {
-    private $viewer;
+    private $round;
+    private $initialSeatWind;
     private $isPlayer;
 
     /**
-     * @param SeatWind $self
+     * @param Round $round
+     * @param SeatWind $initialSeatWind
      * @return Role
      */
-    static function createPlayer(SeatWind $self) {
-        return new self($self, true);
+    static function createPlayer(Round $round, SeatWind $initialSeatWind) {
+        return new self($round, $initialSeatWind, true);
     }
 
     /**
-     * @param SeatWind $self
+     * @param Round $round
+     * @param SeatWind $initialSeatWind
      * @return Role
      */
-    static function createViewer(SeatWind $self) {
-        return new self($self, false);
+    static function createViewer(Round $round, SeatWind $initialSeatWind) {
+        return new self($round, $initialSeatWind, false);
     }
 
     /**
-     * @param SeatWind $self
+     * @param Round $round
+     * @param SeatWind $initialSeatWind
      * @param bool $isPlayer
      */
-    protected function __construct(SeatWind $self, bool $isPlayer) {
-        $this->viewer = $self;
+    protected function __construct(Round $round, SeatWind $initialSeatWind, bool $isPlayer) {
+        $this->round = $round;
+        $this->initialSeatWind = $initialSeatWind;
         $this->isPlayer = $isPlayer;
     }
 
@@ -41,22 +48,31 @@ class Role {
      */
     function __toString() {
         $prefix = $this->isPlayer() ? 'player' : 'viewer';
-        return $prefix . '-' . $this->getViewer();
+        return $prefix . '-' . $this->getActor();
     }
 
     /**
      * @return SeatWind
      */
-    function getViewer() {
-        return $this->viewer;
+    function getInitialSeatWind() {
+        return $this->initialSeatWind;
+    }
+
+    /**
+     * @return SeatWind
+     */
+    function getActor() {
+        return $this->round->getAreaList()
+            ->getAreaByInitial($this->initialSeatWind)
+            ->getSeatWind();
     }
 
     /**
      * @param SeatWind $seatWind
      * @return bool
      */
-    function isViewer(SeatWind $seatWind) {
-        return $this->getViewer()->isSame($seatWind);
+    function isActor(SeatWind $seatWind) {
+        return $this->getActor()->isSame($seatWind);
     }
 
     /**
@@ -64,7 +80,7 @@ class Role {
      * @return Relation
      */
     function getRelation(SeatWind $seatWind) {
-        return Relation::createByOther($seatWind, $this->getViewer());
+        return Relation::createByOther($seatWind, $this->getActor());
     }
 
     /**
@@ -79,7 +95,7 @@ class Role {
      * @return bool
      */
     function mayViewHand(SeatWind $seatWind) {
-        return $this->isPlayer() ? $this->isViewer($seatWind) : true;
+        return $this->isPlayer() ? $this->isActor($seatWind) : true;
     }
 
     /**
@@ -87,6 +103,6 @@ class Role {
      * @return bool
      */
     function mayExecute(SeatWind $seatWind) {
-        return $this->isPlayer() ? $this->isViewer($seatWind) : false;
+        return $this->isPlayer() ? $this->isActor($seatWind) : false;
     }
 }

@@ -3,6 +3,7 @@
 namespace Saki\Play;
 
 use Saki\Game\Round;
+use Saki\Game\SeatWind;
 use Saki\Util\ArrayList;
 use Saki\Util\Utils;
 
@@ -11,14 +12,39 @@ use Saki\Util\Utils;
  */
 class Play {
     private $round;
-    private $roleManager;
     private $participants;
 
-    function __construct() {
+    function __construct(array $userKeys) {
         $round = new Round();
         $this->round = $round;
-        $this->roleManager = new RoleManager($round->getRule()->getPlayerType());
         $this->participants = new \SplObjectStorage();
+
+        $this->joinAll($userKeys);
+    }
+
+    /**
+     * @param $userKeys
+     */
+    private function joinAll($userKeys) {
+        $round = $this->round;
+
+        $userKeyList = new ArrayList($userKeys);
+
+        $toRole = function (SeatWind $seatWind) use ($round) {
+            return Role::createPlayer($round, $seatWind);
+        };
+        $roleList = $round->getRule()->getPlayerType()->getSeatWindList($toRole);
+
+        $toParticipant = function ($userKey, Role $role) use ($round) {
+            $serializer = new RoundSerializer($round, $role);
+            return new Participant($userKey, $role, $serializer);
+        };
+        $participantList = (new ArrayList())->fromMapping($userKeyList, $roleList, $toParticipant);
+
+        $registerParticipant = function (Participant $participant) {
+            $this->participants[$participant->getUserKey()] = $participant;
+        };
+        $participantList->walk($registerParticipant);
     }
 
     /**
@@ -36,17 +62,30 @@ class Play {
     }
 
     /**
-     * @param array|null $viewers
+     * @param $userKey
+     * @return Participant
+     */
+    function getParticipant($userKey) {
+        if (!isset($this->participants[$userKey])) {
+            throw new \InvalidArgumentException();
+        }
+        /** @var Participant $participant */
+        $participant = $this->participants[$userKey];
+        return $participant;
+    }
+
+    /**
+     * @param array|null $actors
      * @return ArrayList ArrayList of Participant order by player ESWN.
      */
-    function getParticipantList(array $viewers = null) {
-        $actualViewers = isset($viewers) ? new ArrayList($viewers) : $this->getRound()->getRule()->getPlayerType()->getSeatWindList();
-        $match = function (Participant $participant) use ($actualViewers) {
+    function getParticipantList(array $actors = null) {
+        $actualActors = isset($actors) ? new ArrayList($actors) : $this->getRound()->getRule()->getPlayerType()->getSeatWindList();
+        $match = function (Participant $participant) use ($actualActors) {
             $role = $participant->getRole();
-            return $role->isPlayer() && $actualViewers->valueExist($role->getViewer());
+            return $role->isPlayer() && $actualActors->valueExist($role->getActor());
         };
         $getOrderKey = function (Participant $participant) {
-            return $participant->getRole()->getViewer()->getIndex();
+            return $participant->getRole()->getActor()->getIndex();
         };
         $participantList = (new ArrayList($this->getUserKeys()))
             ->select([$this, 'getParticipant'])
@@ -75,57 +114,15 @@ class Play {
 
     /**
      * @param $userKey
-     * @return Participant
-     */
-    function getParticipant($userKey) {
-        if (!isset($this->participants[$userKey])) {
-            throw new \InvalidArgumentException();
-        }
-        /** @var Participant $participant */
-        $participant = $this->participants[$userKey];
-        return $participant;
-    }
-
-    /**
-     * @param $userKey
-     * @param Role $role
-     */
-    function join($userKey, Role $role = null) {
-        $actualRole = $this->roleManager->assign($role);
-        $serializer = new RoundSerializer($this->getRound(), $actualRole);
-        $participant = new Participant($userKey, $actualRole, $serializer);
-        $this->participants[$userKey] = $participant;
-    }
-
-    /**
-     * @param $userKeys
-     */
-    function joinAll($userKeys) {
-        foreach ($userKeys as $userKey) {
-            $this->join($userKey);
-        }
-    }
-
-    /**
-     * @param $userKey
-     */
-    function leave($userKey) {
-        $participant = $this->getParticipant($userKey);
-        unset($this->participants[$userKey]);
-        $this->roleManager->recycle($participant->getRole());
-    }
-
-    /**
-     * @param $userKey
      * @return array
      */
     function getJson($userKey) {
         $roundJson = $this->getParticipant($userKey)
             ->getRoundSerializer()
             ->toAllJson();
-        
+
         $keySelector = function (Participant $participant) {
-            return $participant->getRole()->getViewer()->__toString();
+            return $participant->getRole()->getActor()->__toString();
         };
         $groups = $this->getParticipantList()->toGroups($keySelector);
         /** @var ArrayList $group */
@@ -142,13 +139,15 @@ class Play {
      * @param string $commandLine
      */
     function tryExecute($userKey, string $commandLine) {
+        $round = $this->getRound();
+
         $role = $this->getParticipant($userKey)->getRole();
         if (!$role->isPlayer()) {
             throw new \InvalidArgumentException('not player.');
         }
 
-        $requireActor = $role->getViewer();
+        $requireActor = $role->getActor();
         $allowDebugCommand = true; // todo
-        $this->getRound()->getProcessor()->processLine($commandLine, $requireActor, $allowDebugCommand);
+        $round->getProcessor()->processLine($commandLine, $requireActor, $allowDebugCommand);
     }
 }

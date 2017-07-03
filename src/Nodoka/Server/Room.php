@@ -47,8 +47,7 @@ class Room {
             $users = array_splice($this->matchingUserList, 0, 4);
 
             shuffle($users);
-            $play = new Play();
-            $play->joinAll($users);
+            $play = new Play($users);
 
             foreach ($users as $user) {
                 $this->playList[$user->getId()] = $play;

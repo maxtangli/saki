@@ -46,7 +46,7 @@ class AI extends Singleton {
             /** @var Participant $publicParticipant */
             foreach ($publicParticipantList as $publicParticipant) {
                 if ($this->isAI($publicParticipant)) {
-                    $actor = $publicParticipant->getRole()->getViewer();
+                    $actor = $publicParticipant->getRole()->getActor();
                     $commandList = $commandProvided->getActorProvided($actor);
                     $isPass = Utils::toClassPredicate(PassCommand::class);
                     $passCommand = $commandList->getSingleOrDefault($isPass, false);

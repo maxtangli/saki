@@ -16,7 +16,6 @@ class NullClient implements ConnectionInterface {
     }
 
     //region ConnectionInterface impl
-
     function send($data) {
         // do nothing
     }

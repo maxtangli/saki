@@ -40,7 +40,7 @@ class RonCommand extends PublicCommand {
         $result = new WinResult(WinResultInput::createRon(
             [[$actor, $winReport->getFanAndFu()]],
             $round->getCurrentSeatWind(),
-            $round->getAreaList()->getOtherSeatWinds([$actor, $round->getCurrentSeatWind()]),
+            $round->getRule()->getPlayerType()->getSeatWindList(null, [$actor, $round->getCurrentSeatWind()])->toArray(),
             $round->getRiichiHolder()->getRiichiPoints(),
             $round->getPrevailing()->getSeatWindTurn(),
             [$winReport],

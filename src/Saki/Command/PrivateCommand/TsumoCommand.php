@@ -50,7 +50,7 @@ class TsumoCommand extends PrivateCommand {
         // to over phase
         $result = new WinResult(WinResultInput::createTsumo(
             [$actor, $winReport->getFanAndFu()],
-            $round->getAreaList()->getOtherSeatWinds([$actor]),
+            $round->getRule()->getPlayerType()->getSeatWindList(null, [$actor])->toArray(),
             $round->getRiichiHolder()->getRiichiPoints(),
             $round->getPrevailing()->getSeatWindTurn(),
             $winReport,

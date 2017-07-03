@@ -1416,13 +1416,17 @@ rush 125 refactor lobby
 - [x] refactor: null client register 0.4h
 - [x] bug fix: catch error for call_user_func_array in lobby server 0.7h // php7 throwable!
 
-- [ ] bug fix: viewer should bind initialSeatWind
-
-- [ ] security: force wss connection
+- [x] bug fix: viewer should bind initialSeatWind 0.7h
+- [x] refactor: remove RoleManager 0.2h
+- [x] test 0.5h
 
 - [ ] validate role for command: allowDebug
 - [ ] refactor: play
-- [ ] refactor: AI action send by AIClient to be nature.
+- [ ] refactor: AI action send by AIClient to be nature
+
+- [ ] security: force wss connection?
+
+- [ ] room: handle clean when play is finished
 
 rush user persistence
 

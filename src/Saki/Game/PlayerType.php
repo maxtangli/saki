@@ -46,4 +46,16 @@ class PlayerType extends Enum {
         }
         return array_combine($keys, $values);
     }
+
+    /**
+     * @param array $values
+     * @return array e.g. ['E' => $values[0], ...]
+     */
+    function getSeatWindMapping(array $values) {
+        $seatWindList = $this->getSeatWindList();
+        $keys = $seatWindList->toArray(function (SeatWind $seatWind) {
+            return $seatWind->__toString();
+        });
+        return array_combine($keys, $values);
+    }
 }

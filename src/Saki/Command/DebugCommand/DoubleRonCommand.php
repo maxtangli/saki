@@ -49,7 +49,7 @@ class DoubleRonCommand extends DebugCommand {
         $result = new WinResult(WinResultInput::createRon(
             $winnerPairs,
             $round->getCurrentSeatWind(),
-            $round->getAreaList()->getOtherSeatWinds([$actorList[0], $actorList[1], $round->getCurrentSeatWind()]),
+            $round->getRule()->getPlayerType()->getSeatWindList(null, [$actorList[0], $actorList[1], $round->getCurrentSeatWind()])->toArray(),
             $round->getRiichiHolder()->getRiichiPoints(),
             $round->getPrevailing()->getSeatWindTurn(),
             $winReportList->toArray(),
