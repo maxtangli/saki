@@ -41,6 +41,21 @@ class LobbyServerTest extends \SakiTestCase {
     }
 
     /**
+     * @return Play
+     */
+    protected function setUpPlay() {
+        $server = $this->lobbyServer;
+
+        $server->getRoom()->setShuffleMatching(false);
+        foreach ($this->clients as $client) {
+            $server->onMessage($client, 'join');
+        }
+
+        $play = $server->getRoom()->getPlay($server->getUser($this->client1));
+        return $play;
+    }
+
+    /**
      * @param Play $play
      * @param bool $asMap
      * @return array list($clientE, $clientS, $clientW, $clientN)
@@ -97,16 +112,11 @@ class LobbyServerTest extends \SakiTestCase {
     function testPlay() {
         $server = $this->lobbyServer;
         $clients = $this->clients;
-        foreach ($clients as $client) {
-            $server->onMessage($client, 'join');
-        }
 
-        $play = $server->getRoom()->getPlay($server->getUser($clients[1]));
+        $play = $this->setUpPlay();
         $play->getRound()->getDebugConfig()->enableDecider(false);
-        $participantE = $play->getCurrentParticipant();
-        /** @var User $userE */
-        $userE = $participantE->getUserKey();
-        $clientE = $userE->getConnection();
+
+        $clientE = $this->getESWNClients($play)[0];
         $server->onMessage($clientE, 'play mockHand E E');
         $server->onMessage($clientE, 'play discard E E');
         $server->onMessage($clientE, 'play passAll');
@@ -114,14 +124,10 @@ class LobbyServerTest extends \SakiTestCase {
     }
 
     function testRole() {
-        // first round
         $server = $this->lobbyServer;
-        $clients = $this->clients;
-        foreach ($clients as $client) {
-            $server->onMessage($client, 'join');
-        }
+        $play = $this->setUpPlay();
 
-        $play = $server->getRoom()->getPlay($server->getUser($clients[1]));
+        // first round
         foreach ($this->getESWNClients($play, true) as $actor => $connection) {
             $this->assertResponseRound([$connection], null, $actor);
         }
@@ -130,17 +136,36 @@ class LobbyServerTest extends \SakiTestCase {
         $server->onMessage($this->client1, 'play skipToLast');
         $server->onMessage($this->client1, 'play skip 1');
         $server->onMessage($this->client1, 'play toNextRound');
+        $this->assertEquals(2, $play->getRound()->getPrevailing()->getStatus()->getPrevailingWindTurn());
         foreach ($this->getESWNClients($play, true) as $actor => $connection) {
             $this->assertResponseRound([$connection], null, $actor);
+        }
+    }
+
+    function testFinishPlay() {
+        $server = $this->lobbyServer;
+        $clients = $this->clients;
+
+        $play = $this->setUpPlay();
+
+        $room = $server->getRoom();
+        $clientE = $this->getESWNClients($play)[0];
+        foreach ($clients as $client) {
+            $this->assertTrue($room->isPlaying($server->getUser($client)));
+        }
+
+        $server->onMessage($clientE, 'play mockHand E EEESSSWWWNNNCC');
+        $server->onMessage($clientE, 'play tsumo E');
+        foreach ($clients as $client) {
+            $this->assertFalse($room->isPlaying($server->getUser($client)));
         }
     }
 
     function testLostConnection() {
         $server = $this->lobbyServer;
         $clients = $this->clients;
-        foreach ($clients as $client) {
-            $server->onMessage($client, 'join');
-        }
+
+        $this->setUpPlay();
 
         $client1 = $clients[1];
         $server->onClose($client1);
@@ -156,13 +181,10 @@ class LobbyServerTest extends \SakiTestCase {
 
     function testAI() {
         $server = $this->lobbyServer;
-        $clients = $this->clients;
-        foreach ($clients as $client) {
-            $server->onMessage($client, 'join');
-        }
 
-        $play = $server->getRoom()->getPlay($server->getUser($clients[1]));
+        $play = $this->setUpPlay();
         $play->getRound()->getDebugConfig()->enableDecider(false);
+
         list($clientE, $clientS, $clientW, $clientN) = $this->getESWNClients($play);
 
         // ai triggered by lost connection

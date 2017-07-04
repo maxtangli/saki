@@ -1420,13 +1420,14 @@ rush 125 refactor lobby
 - [x] refactor: remove RoleManager 0.2h
 - [x] test 0.5h
 
-- [ ] validate role for command: allowDebug
-- [ ] refactor: play
-- [ ] refactor: AI action send by AIClient to be nature
+- [x] room: handle clean when play is finished 0.5h
+- [x] refactor: LobbyServerTest 0.3h
+
+- [ ] refactor: Role and allowDebug
 
 - [ ] security: force wss connection?
 
-- [ ] room: handle clean when play is finished
+
 
 rush user persistence
 

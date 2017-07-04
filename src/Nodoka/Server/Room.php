@@ -10,9 +10,26 @@ use Saki\Play\Play;
 class Room {
     private $matchingUserList;
     private $playList;
+    private $shuffleMatching;
 
     function __construct() {
         $this->matchingUserList = [];
+        $this->playList = [];
+        $this->shuffleMatching = true;
+    }
+
+    /**
+     * @return bool
+     */
+    function isShuffleMatching() {
+        return $this->shuffleMatching;
+    }
+
+    /**
+     * @param bool $shuffleMatching
+     */
+    function setShuffleMatching(bool $shuffleMatching) {
+        $this->shuffleMatching = $shuffleMatching;
     }
 
     /**
@@ -45,8 +62,9 @@ class Room {
         if (count($this->matchingUserList) >= 4) {
             /** @var User[] $users */
             $users = array_splice($this->matchingUserList, 0, 4);
-
-            shuffle($users);
+            if ($this->isShuffleMatching()) {
+                shuffle($users);
+            }
             $play = new Play($users);
 
             foreach ($users as $user) {
@@ -113,5 +131,15 @@ class Room {
         }
 
         throw new \InvalidArgumentException();
+    }
+
+    /**
+     * @param Play $play
+     */
+    function finishPlay(Play $play) {
+        /** @var User $user */
+        foreach ($play->getUserKeys() as $user) {
+            unset($this->playList[$user->getId()]);
+        }
     }
 }

@@ -76,14 +76,19 @@ class LobbyServer implements MessageComponentInterface {
         $this->unRegisterConnection($conn);
 
         // handle lost connection for playing
-        if ($this->getRoom()->isPlaying($user)) {
-            $play = $this->getRoom()->getPlay($user);
+        $room = $this->getRoom();
+        if ($room->isPlaying($user)) {
+            $play = $room->getPlay($user);
 
             $aiClient = new NullClient();
             $user->setConnection($aiClient);
             $this->registerConnection($aiClient, $user);
 
             $this->tryAI($play);
+        } elseif ($room->isMatching($user)) {
+            $room->leaveMatching($user);
+        } else {
+            // idle, do nothing
         }
     }
 
@@ -206,12 +211,18 @@ class LobbyServer implements MessageComponentInterface {
      * @param string[] ...$roundCommandTokens
      */
     function onMessagePlay(User $user, ...$roundCommandTokens) {
+        $room = $this->getRoom();
+        $play = $room->getPlay($user);
+
         $commandLine = implode(' ', $roundCommandTokens);
-        $play = $this->getRoom()->getPlay($user);
         $play->tryExecute($user, $commandLine);
         $this->sendPlay($play);
 
         $this->tryAI($play);
+
+        if ($play->getRound()->getPhaseState()->isGameOver()) {
+            $room->finishPlay($play);
+        }
     }
 
     // todo move into Play?
