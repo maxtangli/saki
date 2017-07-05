@@ -105,4 +105,11 @@ class Role {
     function mayExecute(SeatWind $seatWind) {
         return $this->isPlayer() ? $this->isActor($seatWind) : false;
     }
+
+    /**
+     * @return bool
+     */
+    function mayExecuteDebug() {
+        return true;
+    }
 }

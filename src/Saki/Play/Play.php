@@ -146,8 +146,10 @@ class Play {
             throw new \InvalidArgumentException('not player.');
         }
 
-        $requireActor = $role->getActor();
-        $allowDebugCommand = true; // todo
-        $round->getProcessor()->processLine($commandLine, $requireActor, $allowDebugCommand);
+        $round->getProcessor()->processLine(
+            $commandLine,
+            $role->getActor(),
+            $role->mayExecuteDebug()
+        );
     }
 }

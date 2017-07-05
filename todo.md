@@ -37,8 +37,9 @@ rush 101-105|  7.6h
 rush 106-110|  9.8h
 rush 111-115|  7.7h
 rush 116-120|   27h
-rush 121-125|   ing
-     total  |493.5h + ing
+rush 121-125| 23.2h
+rush 126-130|  ing
+     total  |516.7h + ing
 
 ## rush history
 
@@ -1402,7 +1403,7 @@ rush 124 redesign a simplest lobby 6.4h
 - [x] handle lost connection come back 0.5h
 - [x] handle lost connection AI 2.4h
 
-rush 125 refactor lobby
+rush 125 refactor lobby 8.1h
 
 - [x] lobby ui: login rush 0.8h
 
@@ -1423,11 +1424,16 @@ rush 125 refactor lobby
 - [x] room: handle clean when play is finished 0.5h
 - [x] refactor: LobbyServerTest 0.3h
 
-- [ ] refactor: Role and allowDebug
+- [x] refactor: UserPool 0.2h
+- refactor: Role and allowDebug
+- [x] AI: discard target 0.2h
+
+rush 126 simple lobby ui
+
+- [ ] login
+- [ ] join
 
 - [ ] security: force wss connection?
-
-
 
 rush user persistence
 

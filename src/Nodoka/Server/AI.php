@@ -2,8 +2,6 @@
 
 namespace Nodoka\Server;
 
-use Saki\Command\Command;
-use Saki\Command\PrivateCommand\DiscardCommand;
 use Saki\Command\PublicCommand\PassCommand;
 use Saki\Play\Participant;
 use Saki\Play\Play;
@@ -33,11 +31,15 @@ class AI extends Singleton {
                 return false;
             }
 
-            /** @var Command $discard */
-            $randomDiscard = $commandProvided
-                ->getActorProvided($currentActor, DiscardCommand::class)
-                ->getRandom();
-            return [$currentParticipant->getUserKey(), $randomDiscard];
+            $targetTile = $round->getArea($currentActor)->getHand()->getTarget()->getTile();
+            $commandLine = "discard {$currentActor} {$targetTile}";
+            $discardTarget = $round->getProcessor()->getParser()->parseLine($commandLine);
+
+            if (!$commandProvided->getActorProvided($currentActor)->valueExist($discardTarget)) {
+                throw new \LogicException();
+            }
+
+            return [$currentParticipant->getUserKey(), $discardTarget];
         }
 
         // if any public actor is AI, return its PassCommand

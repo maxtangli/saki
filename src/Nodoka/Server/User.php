@@ -7,7 +7,7 @@ use Ratchet\ConnectionInterface;
 /**
  * @package Nodoka\Server
  */
-class User implements ConnectionInterface {
+class User {
     private $connection;
     private $authorized;
     private $id;
@@ -55,15 +55,12 @@ class User implements ConnectionInterface {
         $this->connection = $connection;
     }
 
-    //region ConnectionInterface impl
+    /**
+     * @param $data
+     */
     function send($data) {
-        return $this->getConnection()->send($data);
+        $this->getConnection()->send($data);
     }
-
-    function close() {
-        return $this->getConnection()->close();
-    }
-    //endregion
 
     /**
      * @param array $data

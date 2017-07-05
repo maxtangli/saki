@@ -13,7 +13,7 @@ use Saki\Play\Play;
 class LobbyServer implements MessageComponentInterface {
     private $debugError;
     private $authenticator;
-    private $users;
+    private $userPool;
     private $room;
 
     /**
@@ -22,7 +22,7 @@ class LobbyServer implements MessageComponentInterface {
     function __construct($debugError = false) {
         $this->debugError = $debugError;
         $this->authenticator = new NullAuthenticator();
-        $this->users = new \SplObjectStorage();
+        $this->userPool = new UserPool();
         $this->room = new Room();
     }
 
@@ -38,22 +38,7 @@ class LobbyServer implements MessageComponentInterface {
      * @return User
      */
     function getUser(ConnectionInterface $conn) {
-        return $this->users[$conn];
-    }
-
-    /**
-     * @param ConnectionInterface $conn
-     * @param User $user
-     */
-    private function registerConnection(ConnectionInterface $conn, User $user) {
-        $this->users[$conn] = $user;
-    }
-
-    /**
-     * @param ConnectionInterface $conn
-     */
-    private function unRegisterConnection(ConnectionInterface $conn) {
-        unset($this->users[$conn]);
+        return $this->userPool->getUser($conn);
     }
 
     /**
@@ -66,14 +51,14 @@ class LobbyServer implements MessageComponentInterface {
     //region MessageComponentInterface impl
     function onOpen(ConnectionInterface $conn) {
         $user = new User($conn);
-        $this->registerConnection($conn, $user);
+        $this->userPool->registerConnection($conn, $user);
     }
 
     function onClose(ConnectionInterface $conn) {
         /** @var User $user */
         $user = $this->getUser($conn);
 
-        $this->unRegisterConnection($conn);
+        $this->userPool->unRegisterConnection($conn);
 
         // handle lost connection for playing
         $room = $this->getRoom();
@@ -82,7 +67,7 @@ class LobbyServer implements MessageComponentInterface {
 
             $aiClient = new NullClient();
             $user->setConnection($aiClient);
-            $this->registerConnection($aiClient, $user);
+            $this->userPool->registerConnection($aiClient, $user);
 
             $this->tryAI($play);
         } elseif ($room->isMatching($user)) {
@@ -177,7 +162,7 @@ class LobbyServer implements MessageComponentInterface {
         if ($this->getRoom()->isPlaying($user)) {
             $originUser = $this->getRoom()->getPlayingUser($user->getId());
             $originUser->setConnection($connection);
-            $this->registerConnection($connection, $originUser);
+            $this->userPool->registerConnection($connection, $originUser);
 
             // notice all users that hero's come back
             $play = $this->getRoom()->getPlay($originUser);
@@ -225,7 +210,6 @@ class LobbyServer implements MessageComponentInterface {
         }
     }
 
-    // todo move into Play?
     private function sendPlay(Play $play) {
         /** @var User[] $users */
         $users = $play->getUserKeys();
