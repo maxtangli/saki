@@ -1435,6 +1435,10 @@ rush 126 simple lobby ui
 
 - [ ] security: force wss connection?
 
+rush etc.
+
+- [ ] fix WaitingType.getPriority() 0.5h
+
 rush user persistence
 
 - [x] setup mongodb: extension=php_mongodb.dll 0.5h

@@ -15,6 +15,12 @@ class WaitingType extends Enum {
      */
     function getPriority() {
         $m = [ // todo confirm rule about orders
+            /**
+             * multiple waiting type may exist e.g.
+             * - 1123m+1m: two-side > pair
+             * - 1233m+3m: one-side ? pair?
+             * - 1223m+2m: middle-chow ? pair?
+             */
             self::ORPHAN_WAITING => 7,
             self::TWO_SIDE_CHOW_WAITING => 6,
             self::ONE_SIDE_CHOW_WAITING => 5,
