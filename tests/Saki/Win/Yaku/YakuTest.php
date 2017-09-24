@@ -128,7 +128,9 @@ class YakuTest extends \SakiTestCase {
 
         // assert
         $winSubTarget = new WinSubTarget($round, $actorSeatWind, $handMeldList);
-        $this->assertBool($expectedExist, $yaku->existIn($winSubTarget));
+        $message = sprintf('Failed asserting that Yaku[%s] exist is [%s] in WinSubTarget[%s].',
+            $yaku, $expectedExist ? 'true' : 'false', $winSubTarget);
+        $this->assertBool($expectedExist, $yaku->existIn($winSubTarget), $message);
     }
 
     function yakuProvider() {
@@ -169,6 +171,9 @@ class YakuTest extends \SakiTestCase {
 
             // test PinfuYaku
             [PinfuYaku::create(), true, '123m,456m,789m,123s,55s', null, '1s'],
+            // waiting-type: force two-side > one-side, middle side, pair
+            [PinfuYaku::create(), true, '123m,456m,789m,123s,11s', null, '1s'],
+
             // not isConcealed
             [PinfuYaku::create(), false, '123m,456m,123s,55s', '789m', '1s'],
             // not 4 chow

@@ -1428,16 +1428,16 @@ rush 125 refactor lobby 8.1h
 - refactor: Role and allowDebug
 - [x] AI: discard target 0.2h
 
-rush 126 simple lobby ui
+rush 126 I'm back!
+
+- [x] fix multiple WaitingType issue 1.2h
+
+rush simple lobby ui
 
 - [ ] login
 - [ ] join
 
 - [ ] security: force wss connection?
-
-rush etc.
-
-- [ ] fix WaitingType.getPriority() 0.5h
 
 rush user persistence
 

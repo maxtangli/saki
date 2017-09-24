@@ -25,6 +25,13 @@ class WinSubTarget extends WinTarget {
     }
 
     /**
+     * @return string
+     */
+    function __toString() {
+        return sprintf('%s|%s', parent::__toString(), $this->getHandMeldList());
+    }
+
+    /**
      * @return MeldList
      */
     function getHandMeldList() {

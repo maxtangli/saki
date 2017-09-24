@@ -30,9 +30,8 @@ class PureFourConcealedPungsYaku extends Yaku {
         $isFourConcealedPungs = $subTarget->getAllMeldList()
             ->isFourPungsOrKongsAndAPair(true);
 
-        $waitingType = Series::create(Series::FOUR_WIN_SET_AND_ONE_PAIR)
-            ->getWaitingType($subTarget->getSubHand());
-        $isPairWaiting = ($waitingType == WaitingType::create(WaitingType::PAIR_WAITING));
+        $isPairWaiting = Series::create(Series::FOUR_WIN_SET_AND_ONE_PAIR)
+            ->existWaitingType($subTarget->getSubHand(), WaitingType::create(WaitingType::PAIR_WAITING));
 
         return $isFourConcealedPungs && $isPairWaiting;
     }

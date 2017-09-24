@@ -1,4 +1,5 @@
 <?php
+
 namespace Saki\Win\Waiting;
 
 use Saki\Util\ComparablePriority;
@@ -14,18 +15,24 @@ class WaitingType extends Enum {
      * @return int
      */
     function getPriority() {
-        $m = [ // todo confirm rule about orders
+        $m = [
             /**
              * multiple waiting type may exist e.g.
-             * - 1123m+1m: two-side > pair
-             * - 1233m+3m: one-side ? pair?
-             * - 1223m+2m: middle-chow ? pair?
-             */
+             * - 1123m+1m: two-side, pair.
+             * - 1233m+3m: one-side, pair.
+             * - 1223m+2m: middle-chow, pair.
+             *
+             * yaku case
+             * - PinfuYaku: require two-side. multiple waiting type MAY exist.
+             * - PureFourConcealedPungsYaku: require pair-waiting. multiple waiting type WON'T exist.
+             * fu case
+             * - chose highest one: one-side = middle-chow = pair-waiting > two-side = triple-waiting
+             * */
             self::ORPHAN_WAITING => 7,
-            self::TWO_SIDE_CHOW_WAITING => 6,
-            self::ONE_SIDE_CHOW_WAITING => 5,
-            self::MIDDLE_CHOW_WAITING => 4,
-            self::PAIR_WAITING => 3,
+            self::ONE_SIDE_CHOW_WAITING => 6,
+            self::MIDDLE_CHOW_WAITING => 5,
+            self::PAIR_WAITING => 4,
+            self::TWO_SIDE_CHOW_WAITING => 3,
             self::TRIPLE_WAITING => 2,
             self::NOT_WAITING => 1,
         ];
@@ -38,7 +45,7 @@ class WaitingType extends Enum {
     const MIDDLE_CHOW_WAITING = 3; // 嵌張待ち 7 9 -> 789
     const PAIR_WAITING = 4; // 単騎待ち 1 -> 11
     const TRIPLE_WAITING = 5; // 双碰待ち 11 -> 111
-    const ORPHAN_WAITING = 6;
+    const ORPHAN_WAITING = 6; // 国士無双
 
     /**
      * @return bool

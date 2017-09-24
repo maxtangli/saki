@@ -6,6 +6,7 @@ use Saki\Game\Meld\MeldList;
 use Saki\Game\Tile\Tile;
 use Saki\Win\Waiting\WaitingType;
 use Saki\Win\WinSubTarget;
+use Saki\Win\Yaku\Fan1\PinfuYaku;
 use Saki\Win\Yaku\YakuItemList;
 
 /**
@@ -25,7 +26,12 @@ class FuTarget {
     function __construct(WinSubTarget $subTarget, YakuItemList $yakuList, WaitingType $waitingType) {
         $this->subTarget = $subTarget;
         $this->yakuList = $yakuList;
-        $this->waitingType = $waitingType;
+
+        // if PinfuYaku exist, force two-side waiting to avoid confusion.
+        $actualWaitingType = $yakuList->valueExist(PinfuYaku::create())
+            ? WaitingType::create(WaitingType::TWO_SIDE_CHOW_WAITING)
+            : $waitingType;
+        $this->waitingType = $actualWaitingType;
     }
 
     /**

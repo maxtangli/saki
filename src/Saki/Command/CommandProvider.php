@@ -79,13 +79,13 @@ class CommandProvider {
         $allExecutableList = (new ArrayList())
             ->fromSelectMany($this->getPlayerCommandSet(), $providerActorCommand);
 
-        // debug only todo remove
+        // todo remove this debug code
         $toNextRoundCommand = new ToNextRoundCommand($this->getRound());
         if ($toNextRoundCommand->executable()) {
             $allExecutableList->insertLast($toNextRoundCommand);
         }
 
-        // debug only todo remove
+        // todo remove this debug code
         if ($round->getPhaseState()->isGameOver()) {
             $initCommand = new InitCommand($round);
             $allExecutableList->insertLast($initCommand);

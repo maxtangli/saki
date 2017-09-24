@@ -28,9 +28,9 @@ class Participant {
         $userKey = $this->getUserKey();
 
         if (isset($userKey->resourceId)) {
-            $id = $userKey->resourceId; // todo remove
+            $id = $userKey->resourceId; // todo remove after refactor
         } else {
-            $id = $userKey->getId(); // todo remove
+            $id = $userKey->getId(); // todo remove after refactor
         }
 
         return $id . ',' . $this->getRole();

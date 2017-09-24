@@ -38,9 +38,8 @@ class PinfuYaku extends Yaku {
 
         $isAllSuit = $subTarget->getHand()->getComplete()->isAllSuit();
 
-        $waitingType = Series::create(Series::FOUR_WIN_SET_AND_ONE_PAIR)
-            ->getWaitingType($subTarget->getSubHand());
-        $isTwoSideWaiting = ($waitingType == WaitingType::create(WaitingType::TWO_SIDE_CHOW_WAITING));
+        $isTwoSideWaiting = Series::create(Series::FOUR_WIN_SET_AND_ONE_PAIR)
+            ->existWaitingType($subTarget->getSubHand(), WaitingType::create(WaitingType::TWO_SIDE_CHOW_WAITING));
 
         return $isFourChowAndOnePair && $isAllSuit && $isTwoSideWaiting;
     }

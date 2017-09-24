@@ -38,6 +38,13 @@ class WinTarget {
     }
 
     /**
+     * @return string
+     */
+    function __toString() {
+        return sprintf('%s', $this->getActor());
+    }
+
+    /**
      * @param MeldList $handMeldList
      * @return WinSubTarget
      */

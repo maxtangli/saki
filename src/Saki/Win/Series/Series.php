@@ -1,9 +1,11 @@
 <?php
+
 namespace Saki\Win\Series;
 
 use Saki\Game\Meld\Meld;
 use Saki\Game\Meld\MeldList;
 use Saki\Game\SubHand;
+use Saki\Util\ArrayList;
 use Saki\Util\Enum;
 use Saki\Win\Waiting\WaitingType;
 
@@ -46,15 +48,32 @@ class Series extends Enum {
 
     /**
      * @param SubHand $hand
-     * @return WaitingType
+     * @return ArrayList
      */
-    function getWaitingType(SubHand $hand) {
+    private function getWaitingTypeList(SubHand $hand) {
         $winTile = $hand->getTarget()->getTile();
         $toWaitingType = function (Meld $meld) use ($winTile) {
             return $meld->getWeakMeldWaitingType($winTile);
         };
         return $hand->getPrivateMeldList()
-            ->toArrayList($toWaitingType)
+            ->toArrayList($toWaitingType);
+    }
+
+    /**
+     * @param SubHand $hand
+     * @return WaitingType
+     */
+    function getMaxWaitingType(SubHand $hand) {
+        return $this->getWaitingTypeList($hand)
             ->getMax(WaitingType::getPrioritySelector());
+    }
+
+    /**
+     * @param SubHand $hand
+     * @param WaitingType $waitingType
+     * @return bool
+     */
+    function existWaitingType(SubHand $hand, WaitingType $waitingType) {
+        return $this->getWaitingTypeList($hand)->valueExist($waitingType);
     }
 }

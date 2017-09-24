@@ -153,7 +153,7 @@ class WinAnalyzer {
         // case3: win by self or win by other
         $winState = WinState::getTsumoOrOther($subTarget->getRound()->getPhase()->isPrivate());
 
-        $waitingType = $series->getWaitingType($subTarget->getSubHand());
+        $waitingType = $series->getMaxWaitingType($subTarget->getSubHand());
         $fuTarget = new FuTarget($subTarget, $yakuList, $waitingType);
         $fuResult = FuAnalyzer::create()->getResult($fuTarget);
         $fu = $fuResult->getTotalFu();
