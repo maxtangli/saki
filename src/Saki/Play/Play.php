@@ -36,8 +36,7 @@ class Play {
         $roleList = $round->getRule()->getPlayerType()->getSeatWindList($toRole);
 
         $toParticipant = function ($userKey, Role $role) use ($round) {
-            $serializer = new RoundSerializer($round, $role);
-            return new Participant($userKey, $role, $serializer);
+            return new Participant($userKey, $role);
         };
         $participantList = (new ArrayList())->fromMapping($userKeyList, $roleList, $toParticipant);
 

@@ -1432,6 +1432,15 @@ rush 126 I'm back!
 
 - [x] fix multiple WaitingType issue 1.2h
 
+- [x] refactor: Role etc. 0.2h
+- [ ] refactor: Play 0.3h
+
+~~~~
+Round: 麻将逻辑。
+Play=Table: 玩家逻辑。命令权限、视角权限与json定制、命令执行后的消息转发?。
+Server：连接映射到玩家。
+~~~~
+
 rush simple lobby ui
 
 - [ ] login

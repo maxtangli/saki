@@ -8,7 +8,7 @@ class RoundSerializerTest extends \SakiTestCase {
     function testJson() {
         $round = $this->getInitRound();
         $privilege = Role::createPlayer($round, SeatWind::createEast());
-        $serializer = new RoundSerializer($round, $privilege);
+        $serializer = new RoundSerializer($privilege);
 
         $a = $serializer->toAllJson();
         $this->assertCount(4, $a['areas']);

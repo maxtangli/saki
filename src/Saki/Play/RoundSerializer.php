@@ -11,23 +11,13 @@ use Saki\Win\WinReport;
  * @package Saki\Play
  */
 class RoundSerializer {
-    private $round;
     private $role;
 
     /**
-     * @param Round $round
      * @param Role $role
      */
-    function __construct(Round $round, Role $role) {
-        $this->round = $round;
+    function __construct(Role $role) {
         $this->role = $role;
-    }
-
-    /**
-     * @return Round
-     */
-    function getRound() {
-        return $this->round;
     }
 
     /**
@@ -35,6 +25,13 @@ class RoundSerializer {
      */
     function getRole() {
         return $this->role;
+    }
+
+    /**
+     * @return Round
+     */
+    function getRound() {
+        return $this->getRole()->getRound();
     }
 
     /**

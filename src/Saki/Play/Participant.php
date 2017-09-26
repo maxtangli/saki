@@ -13,12 +13,11 @@ class Participant {
     /**
      * @param $userKey
      * @param Role $role
-     * @param RoundSerializer $roundSerializer
      */
-    function __construct($userKey, Role $role, RoundSerializer $roundSerializer) {
+    function __construct($userKey, Role $role) {
         $this->userKey = $userKey;
         $this->role = $role;
-        $this->roundSerializer = $roundSerializer;
+        $this->roundSerializer = new RoundSerializer($role);
     }
 
     /**

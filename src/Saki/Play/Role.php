@@ -52,6 +52,13 @@ class Role {
     }
 
     /**
+     * @return Round
+     */
+    function getRound() {
+        return $this->round;
+    }
+
+    /**
      * @return SeatWind
      */
     function getInitialSeatWind() {
