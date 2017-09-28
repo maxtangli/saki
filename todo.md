@@ -1433,12 +1433,20 @@ rush 126 I'm back!
 - [x] fix multiple WaitingType issue 1.2h
 
 - [x] refactor: Role etc. 0.2h
-- [ ] refactor: Play 0.3h
+- [ ] refactor: Table, Room 1.3h
 
 ~~~~
 Round: 麻将逻辑。
-Play=Table: 玩家逻辑。命令权限、视角权限与json定制、命令执行后的消息转发?。
-Server：连接映射到玩家。
+Table: 玩家逻辑。命令权限、视角权限与json定制、命令执行后的消息转发?。
+Room: 大厅逻辑。
+
+Server：连接映射到玩家。goal分离验证逻辑，业务逻辑归入Saki/
+
+server
+- not-authorized: auth.
+- authorized: join, leave.
+- playing: playCommand.
+
 ~~~~
 
 rush simple lobby ui
