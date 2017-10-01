@@ -25,40 +25,13 @@ class Room {
      * @param UserProxy $userProxy
      * @return Roomer
      */
-    function enter(UserProxy $userProxy) {
-    }
-}
-
-/**
- * @package Saki\Play
- */
-class Roomer {
-    private $room;
-    private $userProxy;
-
-    /**
-     * @param Room $room
-     * @param UserProxy $userProxy
-     */
-    function __construct(Room $room, UserProxy $userProxy) {
-        $this->room = $room;
-        $this->userProxy = $userProxy;
-    }
-
-    /**
-     * @return Room
-     */
-    function getRoom() {
-        return $this->room;
-    }
-
-    /**
-     * @return UserProxy
-     */
-    function getUserProxy() {
-        return $this->userProxy;
-    }
-
-    function leave() {
+    function getRoomer(UserProxy $userProxy) {
+        $match = function (Roomer $roomer) use($userProxy) {
+            return $roomer->isUserProxy($userProxy);
+        };
+        $generator = function () use($userProxy) {
+            return new Roomer($userProxy, $this);
+        };
+        return $this->getRoomerList()->getSingleOrGenerate($match, $generator);
     }
 }

@@ -48,6 +48,14 @@ class Seat {
     }
 
     /**
+     * @param UserProxy $userProxy
+     * @return bool
+     */
+    function matchUserProxy(UserProxy $userProxy) {
+        return $this->getUserProxy()->getId() == $userProxy->getId();
+    }
+
+    /**
      * @return Role
      */
     function getRole() {
@@ -64,11 +72,11 @@ class Seat {
     /**
      * @return array
      */
-    function getJson() {
+    function getRoundJson() {
         $roundJson = $this->getRoundSerializer()->toAllJson();
 
-        $keySelector = function (Participant $participant) {
-            return $participant->getRole()->getActor()->__toString();
+        $keySelector = function (Seat $seat) {
+            return $seat->getRole()->getActor()->__toString();
         };
         $groups = $this->getTable()->getSeatList()->toGroups($keySelector);
         /** @var ArrayList $group */
@@ -81,7 +89,7 @@ class Seat {
     }
 
     function notify() {
-        $this->getUserProxy()->sendJson($this->getJson());
+        $this->getUserProxy()->sendRound($this->getRoundJson());
     }
 
     /**

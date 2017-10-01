@@ -344,6 +344,15 @@ class ArrayList implements \IteratorAggregate, \Countable, \ArrayAccess {
         }
         return $result ?? $default;
     }
+
+    /**
+     * @param callable $predicate
+     * @param callable $generator
+     * @return mixed
+     */
+    function getSingleOrGenerate(callable $predicate, callable $generator) {
+        return $this->getSingleOrDefault($predicate, null) ?? call_user_func($generator);
+    }
     //endregion
 
     //region properties

@@ -48,6 +48,17 @@ class Table {
         return $this->seatList;
     }
 
+    /**
+     * @param UserProxy $userProxy
+     * @return Seat
+     */
+    function getSeat(UserProxy $userProxy) {
+        $match = function (Seat $seat) use($userProxy) {
+            return $seat->matchUserProxy($userProxy);
+        };
+        return $this->getSeatList()->getSingle($match);
+    }
+
     function notifyAll() {
         $this->getSeatList()->walk(Utils::getMethodCallback('notify'));
     }

@@ -1408,7 +1408,7 @@ rush 125 refactor lobby 8.1h
 - [x] lobby ui: login rush 0.8h
 
 - [x] refactor: remove PlayServer and related Play methods 0.1h
-- [x] refactor: remove viewer logic in play.getParticipantList 0.6h
+- [x] refactor: remove viewer logic in play.getParticipantList 0.6hx
 
 - [x] refactor: move decider into DebugConfig 0.7h
 - [x] round option: skip redundant pass 1.6h
@@ -1433,21 +1433,13 @@ rush 126 I'm back!
 - [x] fix multiple WaitingType issue 1.2h
 
 - [x] refactor: Role etc. 0.2h
-- [ ] refactor: Table, Room 1.3h
 
-~~~~
-Round: 麻将逻辑。
-Table: 玩家逻辑。命令权限、视角权限与json定制、命令执行后的消息转发?。
-Room: 大厅逻辑。
-
-Server：连接映射到玩家。goal分离验证逻辑，业务逻辑归入Saki/
-
-server
-- not-authorized: auth.
-- authorized: join, leave.
-- playing: playCommand.
-
-~~~~
+- [x] rewrite: Table, Room 1.3h
+- [x] rewrite: server 2.4h
+- [ ] rewrite: matching, play
+- [ ] rewrite: lost-connection
+- [ ] rewrite: AI
+- [ ] rewrite: test cases
 
 rush simple lobby ui
 

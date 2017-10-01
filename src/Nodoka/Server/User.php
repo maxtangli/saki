@@ -1,44 +1,35 @@
 <?php
 
 namespace Nodoka\Server;
-
 use Ratchet\ConnectionInterface;
+use Saki\Play\UserProxy;
+use Saki\Util\ArrayList;
 
 /**
  * @package Nodoka\Server
  */
-class User {
+class User implements UserProxy {
+    private $context;
     private $connection;
-    private $authorized;
     private $id;
-    private $username;
+    private $state;
 
-    function __construct(ConnectionInterface $connection) {
-        $this->connection = $connection;
-        $this->authorized = false;
-        $this->id = sprintf('guest-%s-%s', date('YmdHis'), rand());
-        $this->username = 'unknown';
+    /**
+     * @param Context $context
+     * @param ConnectionInterface $conn
+     */
+    function __construct(Context $context, ConnectionInterface $conn) {
+        $this->context = $context;
+        $this->connection = $conn;
+        $this->id = sprintf('s-%s-%s', time(), mt_rand());
+        $this->state = 'unauthorized';
     }
 
     /**
-     * @return string
+     * @return Context
      */
-    function __toString() {
-        return "user {$this->getId()}";
-    }
-
-    /**
-     * @return string
-     */
-    function getId() {
-        return $this->id;
-    }
-
-    /**
-     * @return string
-     */
-    function getUsername() {
-        return $this->username;
+    function getContext() {
+        return $this->context;
     }
 
     /**
@@ -48,55 +39,80 @@ class User {
         return $this->connection;
     }
 
-    /**
-     * @param ConnectionInterface $connection
-     */
-    function setConnection(ConnectionInterface $connection) {
-        $this->connection = $connection;
+    function send(array $json) {
+        $this->getConnection()->send(json_encode($json));
     }
 
-    /**
-     * @param $data
-     */
-    function send($data) {
-        $this->getConnection()->send($data);
+    //region UserProxy impl
+    function getId() {
+        return $this->id;
     }
 
-    /**
-     * @param array $data
-     */
-    function sendJson(array $data) {
-        $this->send(json_encode($data));
+    function sendRound(array $json) {
+        $this->send($json);
     }
 
-    function sendResponseOk() {
-        $this->sendJson(['response' => 'ok']);
+    function sendOk() {
+        $this->send([
+            'response' => 'ok'
+        ]);
     }
 
-    /**
-     * @param string $message
-     */
-    function sendResponseError(string $message) {
-        $this->sendJson([
+    function sendError(string $message) {
+        $this->send([
             'response' => 'error',
             'message' => $message
         ]);
     }
+    //endregion
 
-    /**
-     * @return bool
-     */
-    function isAuthorized() {
-        return $this->authorized;
+    function onOpen() {
+        $this->getContext()->getConnectionRegister()->register($this->getConnection(), $this);
+        $this->getContext()->getRoom()->getRoomer($this)->join();
     }
 
-    /**
-     * @param string $id
-     * @param string $username
-     */
-    function setAuthorized(string $id, string $username) {
-        $this->id = $id;
-        $this->username = $username;
-        $this->authorized = true;
+    function onClose() {
+        $this->getContext()->getRoom()->getRoomer($this)->leave();
+        $this->getContext()->getConnectionRegister()->unRegister($this->getConnection());
+    }
+
+    function onError(\Exception $e) {
+        $this->sendError($e->getMessage());
+    }
+
+    function onMessage(string $message) {
+        $tokenList = new ArrayList(explode(' ', $message));
+        $command = $tokenList->getFirst(); // validate
+        $paramList = $tokenList->removeFirst();
+        $tokenList = null;
+
+        $roomer = $this->getContext()->getRoom()->getRoomer($this);
+        if ($command == 'auth') {
+            $paramList->assertCount(2);
+            list($username, $password) = $paramList->toArray();
+            // todo auth
+
+            $this->id = $username;
+            $roomer->authorize();
+            return;
+        }
+
+        if ($command == 'matchingOn') {
+            $roomer->matchingOn();
+            return;
+        }
+
+        if ($command == 'matchingOff') {
+            $roomer->matchingOff();
+            return;
+        }
+
+        if ($command == 'play') {
+            $roundCommand = implode(' ', $paramList->toArray());
+            // todo play logic
+            return;
+        }
+
+        throw new \InvalidArgumentException();
     }
 }

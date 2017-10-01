@@ -7,6 +7,7 @@ namespace Saki\Play;
  */
 interface UserProxy {
     function getId();
-
-    function sendJson(array $data);
+    function sendRound(array $json);
+    function sendOk();
+    function sendError(string $message);
 }
