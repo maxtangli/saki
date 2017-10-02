@@ -68,11 +68,11 @@ class User implements UserProxy {
 
     function onOpen() {
         $this->getContext()->getConnectionRegister()->register($this->getConnection(), $this);
-        $this->getContext()->getRoom()->getRoomer($this)->join();
+        $this->getContext()->getRoom()->getRoomerOrGenerate($this)->join();
     }
 
     function onClose() {
-        $this->getContext()->getRoom()->getRoomer($this)->leave();
+        $this->getContext()->getRoom()->getRoomerOrGenerate($this)->leave();
         $this->getContext()->getConnectionRegister()->unRegister($this->getConnection());
     }
 
@@ -86,7 +86,7 @@ class User implements UserProxy {
         $paramList = $tokenList->removeFirst();
         $tokenList = null;
 
-        $roomer = $this->getContext()->getRoom()->getRoomer($this);
+        $roomer = $this->getContext()->getRoom()->getRoomerOrGenerate($this);
         if ($command == 'auth') {
             $paramList->assertCount(2);
             list($username, $password) = $paramList->toArray();
@@ -109,7 +109,7 @@ class User implements UserProxy {
 
         if ($command == 'play') {
             $roundCommand = implode(' ', $paramList->toArray());
-            // todo play logic
+            $roomer->play($roundCommand);
             return;
         }
 

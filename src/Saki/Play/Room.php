@@ -9,9 +9,11 @@ use Saki\Util\ArrayList;
  */
 class Room {
     private $roomerList;
+    private $tableMatcher;
 
     function __construct() {
         $this->roomerList = new ArrayList();
+        $this->tableMatcher = new TableMatcher();
     }
 
     /**
@@ -22,10 +24,17 @@ class Room {
     }
 
     /**
+     * @return TableMatcher
+     */
+    function getTableMatcher() {
+        return $this->tableMatcher;
+    }
+
+    /**
      * @param UserProxy $userProxy
      * @return Roomer
      */
-    function getRoomer(UserProxy $userProxy) {
+    function getRoomerOrGenerate(UserProxy $userProxy) {
         $match = function (Roomer $roomer) use($userProxy) {
             return $roomer->isUserProxy($userProxy);
         };
