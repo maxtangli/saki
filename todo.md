@@ -1437,8 +1437,12 @@ rush 126 I'm back!
 - [x] rewrite: Table, Room 1.3h
 - [x] rewrite: server 2.4h
 - [x] rewrite: matching, play 0.5h
-- [ ] rewrite: lost-connection
+
+- [x] rewrite: mockUserProxy, mockJson 0.4h
+- [ ] refactor: UserProxy.send
 - [ ] rewrite: test cases
+
+- [ ] rewrite: lost-connection
 
 - [ ] rewrite: AI
 
