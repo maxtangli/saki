@@ -5,14 +5,38 @@ namespace Saki\Play;
 /**
  * @package Saki\Play
  */
-class MockJson {
+class Response {
+    /**
+     * @param array $json
+     * @return Response
+     */
+    static function createOk(array $json = null) {
+        if (!isset($json)) {
+            return new self(['response' => 'ok']);
+        }
+
+        $isOk = isset($json['response']) && ($json['response'] == 'ok');
+        if (!$isOk) {
+            throw new \InvalidArgumentException();
+        }
+        return new self($json);
+    }
+
+    /**
+     * @param string $string
+     * @return Response
+     */
+    static function createError(string $string) {
+        return new self(['response' => 'error', 'message' => $string]);
+    }
+
     private $jsonInArray;
 
     /**
-     * @param array $json
+     * @param array $jsonInArray
      */
-    function __construct(array $json) {
-        $this->jsonInArray = $json;
+    private function __construct(array $jsonInArray) {
+        $this->jsonInArray = $jsonInArray;
     }
 
     /**
@@ -27,6 +51,10 @@ class MockJson {
      */
     function getJsonInArray() {
         return $this->jsonInArray;
+    }
+
+    function getBinary() {
+        throw new \InvalidArgumentException('todo');
     }
 
     /**

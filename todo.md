@@ -1439,7 +1439,7 @@ rush 126 I'm back!
 - [x] rewrite: matching, play 0.5h
 
 - [x] rewrite: mockUserProxy, mockJson 0.4h
-- [ ] refactor: UserProxy.send
+- [ ] refactor: UserProxy.send 0.3h
 - [ ] rewrite: test cases
 
 - [ ] rewrite: lost-connection

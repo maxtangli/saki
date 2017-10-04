@@ -37,26 +37,6 @@ class RoundSerializer {
     /**
      * @return array
      */
-    function toOkJson() {
-        return [
-            'response' => 'ok'
-        ];
-    }
-
-    /**
-     * @param string $message
-     * @return array
-     */
-    function toErrorJson(string $message) {
-        return [
-            'response' => 'error',
-            'message' => $message
-        ];
-    }
-
-    /**
-     * @return array
-     */
     function toAllJson() {
         $a = [
             'response' => 'ok',
