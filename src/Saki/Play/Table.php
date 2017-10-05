@@ -53,10 +53,20 @@ class Table {
      * @return Seat
      */
     function getSeat(UserProxy $userProxy) {
-        $match = function (Seat $seat) use($userProxy) {
+        $match = function (Seat $seat) use ($userProxy) {
             return $seat->matchUserProxy($userProxy);
         };
         return $this->getSeatList()->getSingle($match);
+    }
+
+    /**
+     * @param callable $callable
+     */
+    function initAll(callable $callable) {
+        $init = function (Seat $seat) use ($callable) {
+            $seat->init($callable);
+        };
+        $this->getSeatList()->walk($init);
     }
 
     function notifyAll() {

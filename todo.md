@@ -1439,8 +1439,8 @@ rush 126 I'm back!
 - [x] rewrite: matching, play 0.5h
 
 - [x] rewrite: mockUserProxy, mockJson 0.4h
-- [ ] refactor: UserProxy.send 0.3h
-- [ ] rewrite: test cases
+- [x] refactor: UserProxy.send etc. 0.5h
+- [ ] rewrite: RoomTest 0.6h
 
 - [ ] rewrite: lost-connection
 

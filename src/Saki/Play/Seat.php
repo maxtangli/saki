@@ -88,8 +88,15 @@ class Seat {
         return $roundJson;
     }
 
+    /**
+     * @param callable $callable
+     */
+    function init(callable $callable) {
+        call_user_func($callable, $this->getUserProxy());
+    }
+
     function notify() {
-        $this->getUserProxy()->sendRound($this->getRoundJson());
+        $this->getUserProxy()->send(Response::createOk($this->getRoundJson()));
     }
 
     /**

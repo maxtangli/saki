@@ -23,10 +23,15 @@ class Response {
     }
 
     /**
-     * @param string $string
+     * @param $stringOrException
      * @return Response
      */
-    static function createError(string $string) {
+    static function createError($stringOrException) {
+        if ($stringOrException instanceof \Exception) {
+            $string = $stringOrException->getMessage();
+        } else {
+            $string = (string) $stringOrException;
+        }
         return new self(['response' => 'error', 'message' => $string]);
     }
 

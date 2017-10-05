@@ -1,9 +1,12 @@
 <?php
 
 namespace Nodoka\Server;
+
 use Ratchet\ConnectionInterface;
+use Saki\Play\Response;
 use Saki\Play\UserProxy;
 use Saki\Util\ArrayList;
+use Saki\Util\Utils;
 
 /**
  * @package Nodoka\Server
@@ -12,7 +15,6 @@ class User implements UserProxy {
     private $context;
     private $connection;
     private $id;
-    private $state;
 
     /**
      * @param Context $context
@@ -21,8 +23,7 @@ class User implements UserProxy {
     function __construct(Context $context, ConnectionInterface $conn) {
         $this->context = $context;
         $this->connection = $conn;
-        $this->id = sprintf('s-%s-%s', time(), mt_rand());
-        $this->state = 'unauthorized';
+        $this->id = Utils::generateRandomToken('unauthorized');
     }
 
     /**
@@ -39,31 +40,15 @@ class User implements UserProxy {
         return $this->connection;
     }
 
-    function send(array $json) {
-        $this->getConnection()->send(json_encode($json));
-    }
-
     //region UserProxy impl
     function getId() {
         return $this->id;
     }
 
-    function sendRound(array $json) {
-        $this->send($json);
+    function send(Response $response) {
+        $this->getConnection()->send($response->getJsonInString());
     }
 
-    function sendOk() {
-        $this->send([
-            'response' => 'ok'
-        ]);
-    }
-
-    function sendError(string $message) {
-        $this->send([
-            'response' => 'error',
-            'message' => $message
-        ]);
-    }
     //endregion
 
     function onOpen() {
@@ -77,7 +62,7 @@ class User implements UserProxy {
     }
 
     function onError(\Exception $e) {
-        $this->sendError($e->getMessage());
+        $this->send(Response::createError($e));
     }
 
     function onMessage(string $message) {
@@ -90,7 +75,12 @@ class User implements UserProxy {
         if ($command == 'auth') {
             $paramList->assertCount(2);
             list($username, $password) = $paramList->toArray();
+
             // todo auth
+            $authorized = true;
+            if (!$authorized) {
+                throw new \InvalidArgumentException();
+            }
 
             $this->id = $username;
             $roomer->authorize();
@@ -113,6 +103,6 @@ class User implements UserProxy {
             return;
         }
 
-        throw new \InvalidArgumentException();
+        throw new \InvalidArgumentException("Invalid message[$message].");
     }
 }
