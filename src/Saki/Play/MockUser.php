@@ -24,6 +24,17 @@ class MockUser implements UserProxy {
         return $this->responseList;
     }
 
+    /**
+     * @return Response
+     */
+    function getLastResponse() {
+        return $this->getResponseList()->getLast();
+    }
+
+    function clearResponseList() {
+        $this->responseList->removeAll();
+    }
+
     //region UserProxy impl
     function getId() {
         return $this->id;

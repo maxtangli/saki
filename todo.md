@@ -1440,7 +1440,8 @@ rush 126 I'm back!
 
 - [x] rewrite: mockUserProxy, mockJson 0.4h
 - [x] refactor: UserProxy.send etc. 0.5h
-- [ ] rewrite: RoomTest 0.6h
+- [x] rewrite: RoomTest 0.9h
+- [ ] refactor: Room, Roomer, Table, Seat simpler relations 0.1h
 
 - [ ] rewrite: lost-connection
 

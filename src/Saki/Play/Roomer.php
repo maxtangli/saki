@@ -67,6 +67,8 @@ class Roomer implements UserProxy {
         return $this->getUserProxy()->send($response);
     }
 
+    //endregion
+
     /**
      * @return Seat
      */
@@ -79,8 +81,6 @@ class Roomer implements UserProxy {
         }
         throw new \InvalidArgumentException();
     }
-
-    //endregion
 
     /**
      * @return $this
@@ -141,7 +141,7 @@ class Roomer implements UserProxy {
         if ($tableOrFalse instanceof Table) {
             $table = $tableOrFalse;
 
-            $playOn = function (Roomer $roomer) use($table) {
+            $playOn = function (Roomer $roomer) use ($table) {
                 $roomer->playOn($table);
             };
             $table->initAll($playOn);
@@ -167,6 +167,10 @@ class Roomer implements UserProxy {
         return $this;
     }
 
+    /**
+     * @param Table $table
+     * @return $this
+     */
     function playOn(Table $table) {
         if (!$this->getRoomState()->isMatching()) {
             throw new \InvalidArgumentException();

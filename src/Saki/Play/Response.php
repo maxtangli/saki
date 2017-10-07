@@ -30,7 +30,7 @@ class Response {
         if ($stringOrException instanceof \Exception) {
             $string = $stringOrException->getMessage();
         } else {
-            $string = (string) $stringOrException;
+            $string = (string)$stringOrException;
         }
         return new self(['response' => 'error', 'message' => $string]);
     }
@@ -42,6 +42,13 @@ class Response {
      */
     private function __construct(array $jsonInArray) {
         $this->jsonInArray = $jsonInArray;
+    }
+
+    /**
+     * @return string
+     */
+    function __toString() {
+        return 'response ' . $this->getJsonInString();
     }
 
     /**
