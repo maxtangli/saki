@@ -100,12 +100,17 @@ class Roomer implements UserProxy {
      * @return $this
      */
     function leave() {
-        if ($this->getRoomState()->isInRoom()) {
+        if (!$this->getRoomState()->isInRoom()) {
             throw new \InvalidArgumentException();
         }
 
+        if ($this->getRoomState()->isMatching()) {
+            $tableMatcher = $this->getRoom()->getTableMatcher();
+            $tableMatcher->matchOff($this);
+        }
+
         $this->getRoom()->getRoomerList()->remove($this);
-        $this->roomState = RoomState::create(RoomState::UNAUTHORIZED);
+        $this->roomState = RoomState::create(RoomState::NULL);
         $this->getUserProxy()->send(Response::createOk());
         return $this;
     }

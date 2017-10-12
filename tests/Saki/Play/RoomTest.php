@@ -23,20 +23,64 @@ class RoomTest extends \SakiTestCase {
         $roomer->matchingOn();
         $this->assertState($roomer, RoomState::MATCHING);
         $this->assertResponseOk($roomer, true);
+        $this->assertMatchingCount($room, 1);
 
         $roomer->matchingOff();
         $this->assertState($roomer, RoomState::IDLE);
         $this->assertResponseOk($roomer, true);
+        $this->assertMatchingCount($room, 0);
 
         $room->getRoomerOrGenerate(new MockUser())->join()->authorize()->matchingOn();
+        $this->assertMatchingCount($room, 1);
         $room->getRoomerOrGenerate(new MockUser())->join()->authorize()->matchingOn();
+        $this->assertMatchingCount($room, 2);
         $room->getRoomerOrGenerate(new MockUser())->join()->authorize()->matchingOn();
+        $this->assertMatchingCount($room, 3);
         $roomer->matchingOn();
         $this->assertState($roomer, RoomState::PLAYING);
         $this->assertResponseOk($roomer, true);
+        $this->assertMatchingCount($room, 0);
 
         $roomer->play('mockHand E E');
         $this->assertResponseRound($roomer, true);
+    }
+
+    /**
+     * @depends testState
+     */
+    function testLeave() {
+        $room = new Room();
+        $user = new MockUser();
+        $roomer = $room->getRoomerOrGenerate($user);
+
+        $roomer->join();
+
+        $roomer->leave();
+        $this->assertState($roomer, RoomState::NULL);
+        $this->assertResponseOk($roomer, true);
+
+        $roomer->join();
+        $roomer->authorize();
+        $roomer->leave();
+        $this->assertState($roomer, RoomState::NULL);
+        $this->assertResponseOk($roomer, true);
+
+        $roomer->join();
+        $roomer->authorize();
+        $roomer->matchingOn();
+        $roomer->leave();
+        $this->assertState($roomer, RoomState::NULL);
+        $this->assertResponseOk($roomer, true);
+        $this->assertMatchingCount($room,0);
+
+        $roomer->join();
+        $roomer->authorize();
+        $roomer->matchingOn();
+        $room->getRoomerOrGenerate(new MockUser())->join()->authorize()->matchingOn();
+        $room->getRoomerOrGenerate(new MockUser())->join()->authorize()->matchingOn();
+        $room->getRoomerOrGenerate(new MockUser())->join()->authorize()->matchingOn();
+        $roomer->leave();
+        // todo handle lost connection
     }
 
     /**
@@ -78,5 +122,13 @@ class RoomTest extends \SakiTestCase {
         if ($clear) {
             $mockUser->clearResponseList();
         }
+    }
+
+    /**
+     * @param Room $room
+     * @param int $n
+     */
+    static function assertMatchingCount(Room $room, int $n) {
+        static::assertEquals($n, $room->getTableMatcher()->getMatchingCount());
     }
 }
