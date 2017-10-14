@@ -73,14 +73,37 @@ class RoomTest extends \SakiTestCase {
         $this->assertResponseOk($roomer, true);
         $this->assertMatchingCount($room,0);
 
+
+    }
+
+    /**
+     * @depends testLeave
+     */
+    function testLeaveWhenPlaying() {
+        $room = new Room();
+        $user = new MockUser('loser');
+        $roomer = $room->getRoomerOrGenerate($user);
+
         $roomer->join();
         $roomer->authorize();
         $roomer->matchingOn();
         $room->getRoomerOrGenerate(new MockUser())->join()->authorize()->matchingOn();
         $room->getRoomerOrGenerate(new MockUser())->join()->authorize()->matchingOn();
         $room->getRoomerOrGenerate(new MockUser())->join()->authorize()->matchingOn();
+
+        // roomer remains with mock user
         $roomer->leave();
-        // todo handle lost connection
+        $this->assertInRoomCount($room, 4);
+
+        // todo roomer keep playing by ai
+
+        // user come back and became roomer again
+        $user2 = new MockUser('loser');
+        $roomer2 = $room->getRoomerOrGenerate($user2);
+        $this->assertSame($user2, $roomer2->getUserProxy());
+        $this->assertInRoomCount($room, 4);
+
+        // todo when game over, remove disconnected roomer
     }
 
     /**
@@ -122,6 +145,14 @@ class RoomTest extends \SakiTestCase {
         if ($clear) {
             $mockUser->clearResponseList();
         }
+    }
+
+    /**
+     * @param Room $room
+     * @param int $n
+     */
+    static function assertInRoomCount(Room $room, int $n) {
+        static::assertEquals($n, $room->getRoomerList()->count());
     }
 
     /**

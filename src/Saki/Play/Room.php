@@ -41,6 +41,14 @@ class Room {
         $generator = function () use($userProxy) {
             return new Roomer($userProxy, $this);
         };
-        return $this->getRoomerList()->getSingleOrGenerate($match, $generator);
+        /** @var Roomer $roomer */
+        $roomer = $this->getRoomerList()->getSingleOrGenerate($match, $generator);
+
+        // reconnected to continue playing
+        if ($roomer->getRoomState()->isPlaying()) {
+            $roomer->setUserProxy($userProxy);
+        }
+
+        return $roomer;
     }
 }

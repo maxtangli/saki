@@ -52,6 +52,16 @@ class Roomer implements UserProxy {
 
     /**
      * @param UserProxy $userProxy
+     */
+    function setUserProxy(UserProxy $userProxy) {
+        if (!$this->isUserProxy($userProxy)) {
+            throw new \InvalidArgumentException();
+        }
+        $this->userProxy = $userProxy;
+    }
+
+    /**
+     * @param UserProxy $userProxy
      * @return bool
      */
     function isUserProxy(UserProxy $userProxy) {
@@ -100,18 +110,29 @@ class Roomer implements UserProxy {
      * @return $this
      */
     function leave() {
-        if (!$this->getRoomState()->isInRoom()) {
+        $roomState = $this->getRoomState();
+        if (!$roomState->isInRoom()) {
             throw new \InvalidArgumentException();
         }
 
-        if ($this->getRoomState()->isMatching()) {
-            $tableMatcher = $this->getRoom()->getTableMatcher();
-            $tableMatcher->matchOff($this);
+        if ($roomState->isPlaying()) {
+            $disconnectedUser = new DisconnectedUser($this->getId());
+            $this->setUserProxy($disconnectedUser);
+        } else {
+            if ($roomState->isUnauthorized() || $roomState->isIdle()) {
+                // no special handling required
+            } elseif ($roomState->isMatching()) {
+                $tableMatcher = $this->getRoom()->getTableMatcher();
+                $tableMatcher->matchOff($this);
+            } else {
+                throw new \LogicException();
+            }
+
+            $this->getRoom()->getRoomerList()->remove($this);
+            $this->roomState = RoomState::create(RoomState::NULL);
+            $this->getUserProxy()->send(Response::createOk());
         }
 
-        $this->getRoom()->getRoomerList()->remove($this);
-        $this->roomState = RoomState::create(RoomState::NULL);
-        $this->getUserProxy()->send(Response::createOk());
         return $this;
     }
 

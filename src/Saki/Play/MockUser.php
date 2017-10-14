@@ -12,9 +12,16 @@ class MockUser implements UserProxy {
     private $id;
     private $responseList;
 
-    function __construct() {
-        $this->id = Utils::generateRandomToken('mockUser');
+    function __construct(string $id = null) {
+        $this->id = $id ?? Utils::generateRandomToken('mockUser');
         $this->responseList = new ArrayList();
+    }
+
+    /**
+     * @return string
+     */
+    function __toString() {
+        return sprintf('MockUser[%s]', $this->getId());
     }
 
     /**
