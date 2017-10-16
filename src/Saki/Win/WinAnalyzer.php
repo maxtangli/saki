@@ -11,6 +11,7 @@ use Saki\Game\Meld\ThirteenOrphanMeldType;
 use Saki\Game\Tile\Tile;
 use Saki\Game\Tile\TileList;
 use Saki\Util\ArrayList;
+use Saki\Util\Immutable;
 use Saki\Win\Fu\FuAnalyzer;
 use Saki\Win\Fu\FuTarget;
 use Saki\Win\Series\SeriesAnalyzer;
@@ -23,7 +24,7 @@ use Saki\Win\Yaku\YakuSet;
  * Analyze WinResult for a given player.
  * @package Saki\Win
  */
-class WinAnalyzer {
+class WinAnalyzer implements Immutable {
     private $yakuAnalyzer;
     private $seriesAnalyzer;
     private $waitingAnalyzer;

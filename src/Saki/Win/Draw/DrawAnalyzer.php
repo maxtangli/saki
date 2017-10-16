@@ -4,11 +4,12 @@ namespace Saki\Win\Draw;
 
 use Saki\Game\Round;
 use Saki\Util\ArrayList;
+use Saki\Util\Immutable;
 
 /**
  * @package Saki\Win\Draw
  */
-class DrawAnalyzer {
+class DrawAnalyzer implements Immutable {
     private static $standardInstance;
 
     static function createStandard() {

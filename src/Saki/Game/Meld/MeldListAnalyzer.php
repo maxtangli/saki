@@ -4,12 +4,13 @@ namespace Saki\Game\Meld;
 
 use Saki\Game\Tile\TileList;
 use Saki\Util\ArrayList;
+use Saki\Util\Immutable;
 
 /**
  * Analyze all possible meld combinations for a given TileList and conditions.
  * @package Saki\Game\Meld
  */
-class MeldListAnalyzer {
+class MeldListAnalyzer implements Immutable {
     private $meldTypes;
     private $allowPureWeakCount;
 

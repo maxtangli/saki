@@ -4,13 +4,14 @@ namespace Saki\Win\Series;
 
 use Saki\Game\Meld\MeldList;
 use Saki\Util\ArrayList;
+use Saki\Util\Immutable;
 use Saki\Util\Singleton;
 
 /**
  * Analyze Series for a given complete hand MeldList.
  * @package Saki\Win
  */
-class SeriesAnalyzer extends Singleton {
+class SeriesAnalyzer extends Singleton implements Immutable {
     private $seriesList;
 
     /**

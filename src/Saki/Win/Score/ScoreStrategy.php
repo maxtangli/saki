@@ -3,12 +3,13 @@ namespace Saki\Win\Score;
 
 use Saki\Game\PointItem;
 use Saki\Game\PointSetting;
+use Saki\Util\Immutable;
 use Saki\Win\Point\PointList;
 
 /**
  * @package Saki\Win\Score
  */
-abstract class ScoreStrategy {
+abstract class ScoreStrategy implements Immutable {
     private $pointSetting;
 
     /**

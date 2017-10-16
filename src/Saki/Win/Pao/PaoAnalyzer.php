@@ -5,12 +5,13 @@ namespace Saki\Win\Pao;
 use Saki\Game\Meld\Meld;
 use Saki\Game\Meld\MeldList;
 use Saki\Game\SeatWind;
+use Saki\Util\Immutable;
 use Saki\Util\Singleton;
 
 /**
  * @package Saki\Win\Pao
  */
-class PaoAnalyzer extends Singleton {
+class PaoAnalyzer extends Singleton implements Immutable {
     /**
      * @param SeatWind $from
      * @param SeatWind $to

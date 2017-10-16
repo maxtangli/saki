@@ -2,12 +2,13 @@
 
 namespace Saki\Win\Yaku;
 
+use Saki\Util\Immutable;
 use Saki\Win\WinSubTarget;
 
 /**
  * @package Saki\Win\Yaku
  */
-class YakuAnalyzer {
+class YakuAnalyzer implements Immutable {
     private $yakuSet;
 
     /**

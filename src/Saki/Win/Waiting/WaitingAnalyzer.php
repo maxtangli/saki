@@ -12,6 +12,7 @@ use Saki\Game\Meld\WeakChowMeldType;
 use Saki\Game\Meld\WeakThirteenOrphanMeldType;
 use Saki\Game\Tile\Tile;
 use Saki\Game\Tile\TileList;
+use Saki\Util\Immutable;
 use Saki\Util\Utils;
 use Saki\Win\Series\SeriesAnalyzer;
 
@@ -29,10 +30,10 @@ use Saki\Win\Series\SeriesAnalyzer;
  * - furiten: private 18-1 or public 17 tiles, is waitingTiles contains exclude tiles?
  * @package Saki\Win
  */
-class WaitingAnalyzer {
+class WaitingAnalyzer implements Immutable {
     private $publicMeldListAnalyzer;
     private $seriesAnalyzer;
-    private $analyzePrivateBuffer; // temp solution to speed up RiichiCommand provide
+    private $analyzePrivateBuffer; // temp solution to speed up RiichiCommand provide, which break Immutable
 
     /**
      * @param SeriesAnalyzer $seriesAnalyzer
