@@ -1444,7 +1444,8 @@ rush 126 I'm back!
 - refactor: Room, Roomer, Table, Seat simpler relations 0.1h
 - [x] test: leave 0.4h
 
-- [ ] rewrite: lost-connection 0.5h
+- [x] DebugConfig: forceGameOver 0.5h
+- [ ] rewrite: lost-connection 0.7h
 
 - [ ] rewrite: AI
 

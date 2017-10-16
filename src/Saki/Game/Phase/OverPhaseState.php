@@ -63,6 +63,11 @@ class OverPhaseState extends PhaseState {
      */
     function isGameOver() {
         $round = $this->getRound();
+
+        if ($round->getDebugConfig()->isForceGameOver()) {
+            return true;
+        }
+
         $pointList = $round->getPointHolder()->getPointList();
         $prevailingCurrent = $round->getPrevailing();
 
