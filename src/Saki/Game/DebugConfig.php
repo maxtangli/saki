@@ -11,9 +11,17 @@ class DebugConfig {
     private $forceGameOver;
 
     function __construct() {
-        $this->enableDecider = true;
-        $this->skipTrivialPass = true;
-        $this->forceGameOver = false;
+        $this->reset();
+    }
+
+    /**
+     * @return string
+     */
+    function __toString() {
+        return sprintf('%s%s%s',
+            $this->isEnableDecider() ? 'enableDecider' : '',
+            $this->isSkipTrivialPass() ? 'skipTrivialPass' : '',
+            $this->isForceGameOver() ? 'isForceGameOver' : '');
     }
 
     /**
@@ -35,6 +43,16 @@ class DebugConfig {
      */
     function isForceGameOver() {
         return $this->forceGameOver;
+    }
+
+    /**
+     * @return $this
+     */
+    function reset() {
+        $this->enableDecider = true;
+        $this->skipTrivialPass = true;
+        $this->forceGameOver = false;
+        return $this;
     }
 
     /**

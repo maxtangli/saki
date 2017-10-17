@@ -13,6 +13,7 @@ use Saki\Command\DebugCommand\PassAllCommand;
 use Saki\Command\DebugCommand\SkipCommand;
 use Saki\Command\DebugCommand\SkipToLastCommand;
 use Saki\Command\DebugCommand\SkipToCommand;
+use Saki\Command\DebugCommand\ToGameOverCommand;
 use Saki\Command\DebugCommand\ToNextRoundCommand;
 use Saki\Command\DebugCommand\TripleRonCommand;
 use Saki\Command\PrivateCommand\ConcealedKongCommand;
@@ -53,6 +54,7 @@ class CommandSet extends ArrayList {
                 SkipCommand::class,
                 SkipToLastCommand::class,
                 SkipToCommand::class,
+                ToGameOverCommand::class,
                 ToNextRoundCommand::class,
                 TripleRonCommand::class,
                 // private

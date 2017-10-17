@@ -1,6 +1,7 @@
 <?php
 
 namespace Saki\Play;
+use Saki\Util\Utils;
 
 /**
  * @package Saki\Play
@@ -118,21 +119,16 @@ class Roomer implements UserProxy {
         if ($roomState->isPlaying()) {
             $disconnectedUser = new DisconnectedUser($this->getId());
             $this->setUserProxy($disconnectedUser);
-        } else {
-            if ($roomState->isUnauthorized() || $roomState->isIdle()) {
-                // no special handling required
-            } elseif ($roomState->isMatching()) {
-                $tableMatcher = $this->getRoom()->getTableMatcher();
-                $tableMatcher->matchOff($this);
-            } else {
-                throw new \LogicException();
-            }
-
-            $this->getRoom()->getRoomerList()->remove($this);
-            $this->roomState = RoomState::create(RoomState::NULL);
-            $this->getUserProxy()->send(Response::createOk());
+            return $this;
         }
 
+        if ($roomState->isMatching()) {
+            $tableMatcher = $this->getRoom()->getTableMatcher();
+            $tableMatcher->matchOff($this);
+        }
+        $this->getRoom()->getRoomerList()->remove($this);
+        $this->roomState = RoomState::create(RoomState::NULL);
+        $this->getUserProxy()->send(Response::createOk());
         return $this;
     }
 
@@ -170,7 +166,7 @@ class Roomer implements UserProxy {
             $playOn = function (Roomer $roomer) use ($table) {
                 $roomer->playOn($table);
             };
-            $table->initAll($playOn);
+            $table->callAll($playOn);
 
             $table->notifyAll();
         }
@@ -220,12 +216,31 @@ class Roomer implements UserProxy {
         $seat = $this->getSeat();
         $seat->tryExecute($command);
 
-        $isGameOver = $seat->getTable()->getRound()
-            ->getPhaseState()->isGameOver();
-        if ($isGameOver) {
-            $this->roomState = RoomState::create(RoomState::IDLE);
-            $this->seat = null;
+        if ($seat->getTable()->isGameOver()) {
+            $seat->getTable()->callAll(Utils::getMethodCallback('gameOver'));
         }
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    function gameOver() {
+        if (!$this->getRoomState()->isPlaying()) {
+            throw new \InvalidArgumentException();
+        }
+
+        if (!$this->getSeat()->getTable()->isGameOver()) {
+            throw new \InvalidArgumentException();
+        }
+
+        $this->roomState = RoomState::create(RoomState::IDLE);
+        $this->seat = null;
+        if ($this->getUserProxy() instanceof DisconnectedUser) {
+            $this->leave();
+        }
+
         return $this;
     }
 }

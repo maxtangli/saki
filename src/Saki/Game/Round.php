@@ -10,6 +10,9 @@ use Saki\Game\Phase\PhaseState;
 use Saki\Game\Phase\PrivatePhaseState;
 use Saki\Game\Phase\PublicPhaseState;
 use Saki\Util\Utils;
+use Saki\Win\Result\AbortiveDrawResult;
+use Saki\Win\Result\ExhaustiveDrawResult;
+use Saki\Win\Result\ResultType;
 use Saki\Win\WinReport;
 use Saki\Win\WinTarget;
 
@@ -115,6 +118,16 @@ class Round {
         // to private phase
         $this->phaseState = new InitPhaseState($this);
         $this->toNextPhase();
+    }
+
+    function debugToGameOver() {
+        $this->getDebugConfig()->setForceGameOver(true);
+
+        $waitingMap = $this->getRule()->getPlayerType()->getSeatWindMap(false);
+        $result = new ExhaustiveDrawResult($waitingMap);
+        $overPhaseState = new OverPhaseState($this, $result);
+
+        $this->toNextPhase($overPhaseState);
     }
 
     private function deal() {

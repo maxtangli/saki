@@ -42,6 +42,13 @@ class Table {
     }
 
     /**
+     * @return bool
+     */
+    function isGameOver() {
+        return $this->getRound()->getPhaseState()->isGameOver();
+    }
+
+    /**
      * @return ArrayList
      */
     function getSeatList() {
@@ -62,9 +69,9 @@ class Table {
     /**
      * @param callable $callable
      */
-    function initAll(callable $callable) {
+    function callAll(callable $callable) {
         $init = function (Seat $seat) use ($callable) {
-            $seat->init($callable);
+            $seat->call($callable);
         };
         $this->getSeatList()->walk($init);
     }

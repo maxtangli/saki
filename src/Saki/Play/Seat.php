@@ -91,7 +91,7 @@ class Seat {
     /**
      * @param callable $callable
      */
-    function init(callable $callable) {
+    function call(callable $callable) {
         call_user_func($callable, $this->getUserProxy());
     }
 

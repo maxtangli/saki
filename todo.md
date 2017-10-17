@@ -1445,7 +1445,10 @@ rush 126 I'm back!
 - [x] test: leave 0.4h
 
 - [x] DebugConfig: forceGameOver 0.5h
-- [ ] rewrite: lost-connection 0.7h
+- [x] ToGameOverCommand 0.2h
+
+- [x] rewrite: lost-connection 1h
+- [x] more RoomTest 0.3h
 
 - [ ] rewrite: AI
 

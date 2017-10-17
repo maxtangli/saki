@@ -59,4 +59,12 @@ class CommandTest extends \SakiTestCase {
         );
         $this->assertNotExecutable('chow S 23m');
     }
+
+    function testToGameOver() {
+        $round = $this->getInitRound();
+        $this->assertFalse($round->getPhaseState()->isGameOver());
+
+        $round->process('toGameOver');
+        $this->assertTrue($round->getPhaseState()->isGameOver());
+    }
 }
