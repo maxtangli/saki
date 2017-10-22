@@ -1,33 +1,35 @@
 <?php
 
-use Saki\Game\Meld\MeldList;
-use Saki\Game\Round;
-use Saki\Game\SeatWind;
-use Saki\Game\Tile\TileList;
-use Saki\Util\MsTimer;
-
 require_once __DIR__ . '/../bootstrap.php';
 
-//$round = new Round();
-//$round->process('mockHand E 123456789m12344s');
-//$waitingAnalyzer = $round->getRule()->getWinAnalyzer()->getWaitingAnalyzer();
-//
-//// 2ms
-//echo MsTimer::create()->measure(function () use ($waitingAnalyzer) {
-//        $waitingAnalyzer->analyzePublic(TileList::fromString('123456789m1234s'), MeldList::fromString(''));
-//    }) . "\n";
-//
-//// 20ms
-//echo MsTimer::create()->measure(function () use ($waitingAnalyzer) {
-//        $waitingAnalyzer->analyzePrivate(TileList::fromString('123456789m12344s'), MeldList::fromString(''));
-//    }) . "\n";
-//
-//// 50ms
-//echo MsTimer::create()->measure(function () use ($round) {
-//        $round->getProcessor()->getProvider()->provideActorAll(SeatWind::createEast());
-//    }) . "\n";
+// c 14 / 9x4
 
-$client = new MongoDB\Client("mongodb://localhost:27017");
-foreach ($client->listDatabases() as $db) {
-    echo $db->getName() . "\n";
+$a = [];
+for ($i = 1; $i < 10; ++$i) {
+    $s = '' . $i;
+    if (strpos('0', $s) !== false) continue;
+
+    $parts = str_split($s);
+    sort($parts);
+    $key = implode('', $parts);
+
+    $a[$key] = $key;
 }
+//echo count($a);
+// echo 996 * pow(3, 10);
+//echo 19440 * pow(3,7);
+
+// 1 10 9
+// 2 100 63
+// 3 1000 282
+// 4 10000 996
+// 5 100000 2997
+// 6 1000000 8001
+// 7 10000000 19440
+// 8
+// 9
+// 10
+// 11
+// 12
+// 13
+// 14 < 996 * 3^11 = 58812804; < 19440 x 3^7 = 42515280
