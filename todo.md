@@ -1450,6 +1450,8 @@ rush 126 I'm back!
 - [x] rewrite: lost-connection 1h
 - [x] more RoomTest 0.3h
 
+- [x] etc. MeldListAnalyzer.getCompositionCount() 1h
+
 - [ ] rewrite: AI
 
 rush simple lobby ui

@@ -38,6 +38,31 @@ class MeldListAnalyzer implements Immutable {
     }
 
     /**
+     * @return int
+     */
+    function getCompositionCountSum() {
+        $f9 = function ($count) {
+            return $this->getCompositionCount(9, $count);
+        };
+        return array_sum(array_map($f9, range(1, 14)));
+    }
+
+    /**
+     * @param int $kinds
+     * @param int $count
+     * @return int
+     */
+    function getCompositionCount(int $kinds, int $count) {
+        if ($kinds < 0 || $count < 0) return 0;
+        if ($count == 0) return 1;
+
+        $t = function ($takeCount) use ($kinds, $count) {
+            return $this->getCompositionCount($kinds - 1, $count - $takeCount);
+        };
+        return array_sum(array_map($t, range(0, 4)));
+    }
+
+    /**
      * @param TileList $tileList
      * @return ArrayList Return an ArrayList of MeldList which is a melds-combination of $tileList.
      */
