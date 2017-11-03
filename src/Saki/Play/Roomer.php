@@ -98,7 +98,10 @@ class Roomer implements UserProxy {
      */
     function join() {
         if (!$this->getRoomState()->isNull()) {
-            throw new \InvalidArgumentException();
+            throw new \InvalidArgumentException(
+                sprintf('Invalid state, expected[%s] but given[%s].',
+                    RoomState::create(RoomState::NULL), $this->getRoomState())
+            );
         }
 
         $this->getRoom()->getRoomerList()->insertLast($this);
@@ -119,6 +122,19 @@ class Roomer implements UserProxy {
         if ($roomState->isPlaying()) {
             $disconnectedUser = new DisconnectedUser($this->getId());
             $this->setUserProxy($disconnectedUser);
+
+            $isDisconnectedSeat = function (Seat $seat) {
+                // todo remove Roomer's UserProxy interface
+                return $seat->getUserProxy()->getUserProxy() instanceof DisconnectedUser;
+            };
+            $table = $this->getSeat()->getTable();
+            if ($table->getSeatList()->all($isDisconnectedSeat)) {
+                $forceGameOver = function (Roomer $roomer) {
+                    $roomer->gameOver(true);
+                };
+                $table->callAll($forceGameOver);
+            }
+
             return $this;
         }
 
@@ -224,14 +240,15 @@ class Roomer implements UserProxy {
     }
 
     /**
+     * @param bool $forceGameOver
      * @return $this
      */
-    function gameOver() {
+    function gameOver(bool $forceGameOver = false) {
         if (!$this->getRoomState()->isPlaying()) {
             throw new \InvalidArgumentException();
         }
 
-        if (!$this->getSeat()->getTable()->isGameOver()) {
+        if (!$forceGameOver && !$this->getSeat()->getTable()->isGameOver()) {
             throw new \InvalidArgumentException();
         }
 

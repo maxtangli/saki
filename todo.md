@@ -1428,7 +1428,7 @@ rush 125 refactor lobby 8.1h
 - refactor: Role and allowDebug
 - [x] AI: discard target 0.2h
 
-rush 126 I'm back!
+rush 126 I'm back! 10.9h
 
 - [x] fix multiple WaitingType issue 1.2h
 
@@ -1451,6 +1451,11 @@ rush 126 I'm back!
 - [x] more RoomTest 0.3h
 
 - [x] etc. MeldListAnalyzer.getCompositionCount() 1h
+
+rush 127 AI
+
+- [x] handle all disconnected 0.6h
+- [ ] refactor: remove Roomer's UserProxy interface
 
 - [ ] rewrite: AI
 

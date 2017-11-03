@@ -133,6 +133,34 @@ class RoomTest extends \SakiTestCase {
     }
 
     /**
+     * @depends testLeaveWhenPlaying
+     */
+    function testAllLeaveWhenPlaying() {
+        $room = new Room();
+
+        $roomer = $room->getRoomerOrGenerate(new MockUser('roomer'))->join()->authorize()->matchingOn();
+        $roomer2 = $room->getRoomerOrGenerate(new MockUser('roomer2'))->join()->authorize()->matchingOn();
+        $roomer3 = $room->getRoomerOrGenerate(new MockUser('roomer3'))->join()->authorize()->matchingOn();
+        $roomer4 = $room->getRoomerOrGenerate(new MockUser('roomer4'))->join()->authorize()->matchingOn();
+        $roomers = [$roomer, $roomer2, $roomer3, $roomer4];
+        $this->assertState($roomers, RoomState::PLAYING);
+
+        // if all disconnected, play canceled
+        $roomer->leave();
+        $roomer2->leave();
+        $roomer3->leave();
+        $roomer4->leave();
+
+        // reconnected user is idle since last play canceld
+        $roomer = $room->getRoomerOrGenerate(new MockUser('roomer'))->join()->authorize();
+        $roomer2 = $room->getRoomerOrGenerate(new MockUser('roomer2'))->join()->authorize();
+        $roomer3 = $room->getRoomerOrGenerate(new MockUser('roomer3'))->join()->authorize();
+        $roomer4 = $room->getRoomerOrGenerate(new MockUser('roomer4'))->join()->authorize();
+        $roomers = [$roomer, $roomer2, $roomer3, $roomer4];
+        $this->assertState($roomers, RoomState::IDLE);
+    }
+
+    /**
      * @param Roomer|array $roomers
      * @param int $value
      */
