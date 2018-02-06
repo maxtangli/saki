@@ -2,7 +2,8 @@
 
 goal: A japanese-mahjong game server + browser client.
 
-See a demo(network 10%, UI 10%) hosted in [AWS](http://saki.ninja/).
+---See a demo(network 10%, UI 10%) hosted in [AWS](http://saki.ninja/).---
+The demo is currently removed to save money.
 
 ## reference
 
